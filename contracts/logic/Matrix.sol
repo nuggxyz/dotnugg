@@ -99,6 +99,38 @@ library Matrix {
         resetIterator(matrix);
     }
 
+    function addRowAt(
+        IDotNugg.Matrix memory matrix,
+        uint8 index,
+        uint8 amount
+    ) internal pure {
+        require(index < matrix.height, 'MAT:ARA:0');
+
+        for (uint256 j = matrix.height - amount - 1; j > index; j--) {
+            if (j < index) break;
+            if (matrix.data[j].length > 0) matrix.data[j + amount] = matrix.data[j];
+        }
+        for (uint256 j = index + 1; j < index + amount; j++) {
+            matrix.data[j] = matrix.data[index];
+        }
+    }
+
+    function addColumnsAt(
+        IDotNugg.Matrix memory matrix, /// cowboy hat
+        uint8 index,
+        uint8 amount
+    ) internal pure {
+        require(index < matrix.width, 'MAT:ACA:0');
+        for (uint256 i = 0; i < matrix.height; i++) {
+            for (uint256 j = matrix.width - amount - 1; j > index; j--) {
+                if (j < index) break;
+                if (matrix.data[i][j].exists) matrix.data[i][j + amount] = matrix.data[i][j];
+            }
+            for (uint256 j = index + 1; j < index + amount; j++) {
+                matrix.data[i][j] = matrix.data[i][index];
+            }
+        }
+    }
     // function currentX() internal pure returns (int8 res) {
     //     res = int8(matrix.currentUnsetX) - int8(m.height) / 2;
     // }
