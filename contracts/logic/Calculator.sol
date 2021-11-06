@@ -39,51 +39,6 @@ library Calculator {
         return canvas.matrix;
     }
 
-    function setMix(
-        IDotNugg.Mix memory res,
-        IDotNugg.Item memory item,
-        uint8 versionIndex
-    ) internal pure {
-        res.version = item.versions[versionIndex];
-        res.feature = item.feature;
-
-        res.matrix.set(res.version.data, item.pallet, res.version.width);
-    }
-
-    /**
-     * @notice
-     * @dev
-     */
-    function addToCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal pure {
-        // this should return not full matrix - only the thing inside .nugg files - this is because we want to make it easy to expand
-        // update child anchors - this accomplishes same thing as what anchor-on-attribute did before
-        // can come before or after mer
-    }
-
-    /**
-     * @notice
-     * @dev
-     */
-    function updateReceivers(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal pure {
-        for (uint8 i = 0; i < mix.version.staticReceivers.length; i++) {
-            IDotNugg.Coordinate memory m = mix.version.staticReceivers[i];
-            uint168 v;
-
-            // uint168 fakeV;
-            // uint168 fake2V;
-            // IDotNugg.Coordinate memory fake;
-            // IDotNugg.Coordinate memory fake2 = IDotNugg.Coordinate({a: 0, b: 0});
-
-            assembly {
-                v := eq(m, 0)
-                //  fakeV := eq(fake, 0)
-                //  fake2V := eq(fake2, 0)
-            }
-            // require(fakeV == 0 && fake2V != 0, 'WE FUCKED UP');
-            if (v == 0) canvas.receivers[i] = m;
-        }
-    }
-
     /**
      * @notice
      * @dev
@@ -102,6 +57,57 @@ library Calculator {
     /**
      * @notice
      * @dev
+     * makes the sorts versions
+     */
+    function pickVersionIndex(IDotNugg.Canvas memory canvas, IDotNugg.Item memory item) internal pure returns (uint8 res) {
+        if (item.versions.length == 1) {
+            res = 0;
+        }
+    }
+
+    /**
+     * @notice
+     * @dev done
+     * makes the sorts versions
+     */
+    function setMix(
+        IDotNugg.Mix memory res,
+        IDotNugg.Item memory item,
+        uint8 versionIndex
+    ) internal pure {
+        res.version = item.versions[versionIndex];
+        res.feature = item.feature;
+
+        res.matrix.set(res.version.data, item.pallet, res.version.width);
+    }
+
+    /**
+     * @notice done
+     * @dev
+     */
+    function updateReceivers(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal pure {
+        for (uint8 i = 0; i < mix.version.staticReceivers.length; i++) {
+            IDotNugg.Coordinate memory m = mix.version.staticReceivers[i];
+            uint168 v;
+
+            uint168 fakeV;
+            uint168 fake2V;
+            IDotNugg.Coordinate memory fake;
+            IDotNugg.Coordinate memory fake2 = IDotNugg.Coordinate({a: 0, b: 0});
+
+            assembly {
+                v := eq(m, 0)
+                fakeV := eq(fake, 0)
+                fake2V := eq(fake2, 0)
+            }
+            require(fakeV == 0 && fake2V != 0, 'WE FUCKED UP');
+            if (v == 0) canvas.receivers[i] = m;
+        }
+    }
+
+    /**
+     * @notice done
+     * @dev
      */
     function mergeToCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal pure {
         while (canvas.matrix.next() && mix.matrix.next()) {
@@ -110,17 +116,17 @@ library Calculator {
 
             uint8 v;
 
-            // uint8 fakeV;
-            // uint8 fake2V;
-            // IDotNugg.Coordinate memory fake;
-            // IDotNugg.Coordinate memory fake2 = IDotNugg.Coordinate({a: 0, b: 0});
+            uint8 fakeV;
+            uint8 fake2V;
+            IDotNugg.Coordinate memory fake;
+            IDotNugg.Coordinate memory fake2 = IDotNugg.Coordinate({a: 0, b: 0});
 
             assembly {
                 v := eq(a, 0)
-                //  fakeV := eq(fake, 0)
-                //  fake2V := eq(fake2, 0)
+                fakeV := eq(fake, 0)
+                fake2V := eq(fake2, 0)
             }
-            // require(fakeV == 0 && fake2V != 0, 'WE FUCKED UP');
+            require(fakeV == 0 && fake2V != 0, 'WE FUCKED UP');
 
             if (v == 0 && a.zindex > b.zindex) {
                 b.zindex = a.zindex;
@@ -130,17 +136,6 @@ library Calculator {
 
         canvas.matrix.resetIterator();
         mix.matrix.resetIterator();
-    }
-
-    /**
-     * @notice
-     * @dev
-     * makes the sorts versions
-     */
-    function pickVersionIndex(IDotNugg.Canvas memory canvas, IDotNugg.Item memory item) internal pure returns (uint8 res) {
-        if (item.versions.length == 1) {
-            res = 0;
-        }
     }
 
     // you combine one by one, and as you combine, child refs get overridden
