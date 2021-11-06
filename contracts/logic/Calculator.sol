@@ -2,39 +2,59 @@
 
 pragma solidity 0.8.4;
 
-import '../interfaces/INuggIn.sol';
-
 import './Matrix.sol';
 import './Decoder.sol';
+import './Rgba.sol';
 
-library Calcultor {
+import '../interfaces/IDotNugg.sol';
+
+library Calculator {
+    using Rgba for IDotNugg.Rgba;
+    using Matrix for IDotNugg.Matrix;
+
     /**
      * @notice
      * @dev
      */
-    function combine(Collection memory collection, bytes[] memory inputs) internal pure returns (Matrix memory res) {
-        Base memory base = Base({matrix: MatrixLib.create(collection.width, collection.height), anchors: new Coordinate[](collection.feautreLen)});
+    function combine(IDotNugg.Collection memory collection, bytes[] memory inputs) internal pure returns (IDotNugg.Matrix memory resa) {
+        IDotNugg.Canvas memory canvas;
+        canvas.matrix = Matrix.create(collection.width, collection.height);
+        canvas.receivers = new IDotNugg.Coordinate[](collection.numFeatures);
 
-        Item[] memory items = Decoder.parseItems(inputs);
+        IDotNugg.Mix memory mix;
+        mix.matrix = Matrix.create(collection.width, collection.height);
+
+        IDotNugg.Item[] memory items = Decoder.parseItems(inputs);
 
         for (uint8 i = 0; i < inputs.length; i++) {
-            Mix memory mix = Decoder.parseMix(item, pickVersionIndex(base, item));
+            setMix(mix, items[i], pickVersionIndex(canvas, items[i]));
 
-            formatForBase(base, mix);
+            formatForCanvas(canvas, mix);
 
-            mergeToBase(base, mix);
+            mergeToCanvas(canvas, mix);
 
-            updateChildAnchors(base, mix);
+            updateReceivers(canvas, mix);
         }
 
-        return base.matrix;
+        return canvas.matrix;
+    }
+
+    function setMix(
+        IDotNugg.Mix memory res,
+        IDotNugg.Item memory item,
+        uint8 versionIndex
+    ) internal pure {
+        res.version = item.versions[versionIndex];
+        res.feature = item.feature;
+
+        res.matrix.set(res.version.data, item.pallet, res.version.width);
     }
 
     /**
      * @notice
      * @dev
      */
-    function addToBase(Base memory base, Mix memory mix) internal pure {
+    function addToCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal pure {
         // this should return not full matrix - only the thing inside .nugg files - this is because we want to make it easy to expand
         // update child anchors - this accomplishes same thing as what anchor-on-attribute did before
         // can come before or after mer
@@ -44,11 +64,23 @@ library Calcultor {
      * @notice
      * @dev
      */
-    function updateChildAnchors(Base memory base, Mix memory mixs) internal pure {
-        for (uint8 i = 0; i < mix.version.childAnchors.length; i++) {
-            if (mix.version.childAnchors[i] != 0) {
-                base.anchors[i] = mix.version.childAnchors[i];
+    function updateReceivers(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal pure {
+        for (uint8 i = 0; i < mix.version.staticReceivers.length; i++) {
+            IDotNugg.Coordinate memory m = mix.version.staticReceivers[i];
+            uint168 v;
+
+            // uint168 fakeV;
+            // uint168 fake2V;
+            // IDotNugg.Coordinate memory fake;
+            // IDotNugg.Coordinate memory fake2 = IDotNugg.Coordinate({a: 0, b: 0});
+
+            assembly {
+                v := eq(m, 0)
+                //  fakeV := eq(fake, 0)
+                //  fake2V := eq(fake2, 0)
             }
+            // require(fakeV == 0 && fake2V != 0, 'WE FUCKED UP');
+            if (v == 0) canvas.receivers[i] = m;
         }
     }
 
@@ -56,13 +88,9 @@ library Calcultor {
      * @notice
      * @dev
      */
-    function formatForBase(
-        Base memory base,
-        Item memory item,
-        Matrix memory versionMatrix
-    ) internal pure returns (Matrix memory res) {
-        Coordinate memory baseAnchor = base.childAnchors[item.feature];
-        Coordinate memory matchAnchor = item.parentAnchor;
+    function formatForCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal pure returns (IDotNugg.Matrix memory res) {
+        IDotNugg.Coordinate memory receiver = canvas.receivers[mix.feature];
+        IDotNugg.Coordinate memory anchor = mix.version.anchor;
 
         int8 xoffset = 0; // FIXME
         int8 yoffset = 0; // FIXME
@@ -75,18 +103,33 @@ library Calcultor {
      * @notice
      * @dev
      */
-    function mergeToBase(Base memory base, Matrix memory versionMatrix) internal pure {
-        require(versionMatrix.length == base.matrix.length && versionMatrix[0].length == base.matrix[0].length, 'COM:ADD:0');
+    function mergeToCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal pure {
+        while (canvas.matrix.next() && mix.matrix.next()) {
+            IDotNugg.Pixel memory b = canvas.matrix.current();
+            IDotNugg.Pixel memory a = mix.matrix.current();
 
-        while (base.martrix.next() && versionMatrix.matrix.next()) {
-            Pixel memory b = base.martrix.current();
-            Pixel memory a = versionMatrix.current();
+            uint8 v;
 
-            if (a != 0 && a.layer > b.layer) {
-                b.layer = a.layer;
-                b.rgba = Colors.combine(b.rgba, a.rgba);
+            // uint8 fakeV;
+            // uint8 fake2V;
+            // IDotNugg.Coordinate memory fake;
+            // IDotNugg.Coordinate memory fake2 = IDotNugg.Coordinate({a: 0, b: 0});
+
+            assembly {
+                v := eq(a, 0)
+                //  fakeV := eq(fake, 0)
+                //  fake2V := eq(fake2, 0)
+            }
+            // require(fakeV == 0 && fake2V != 0, 'WE FUCKED UP');
+
+            if (v == 0 && a.zindex > b.zindex) {
+                b.zindex = a.zindex;
+                b.rgba.combine(a.rgba);
             }
         }
+
+        canvas.matrix.resetIterator();
+        mix.matrix.resetIterator();
     }
 
     /**
@@ -94,9 +137,9 @@ library Calcultor {
      * @dev
      * makes the sorts versions
      */
-    function pickVersionIndex(Base memory base, Item memory item) internal pure returns (uint8 res) {
+    function pickVersionIndex(IDotNugg.Canvas memory canvas, IDotNugg.Item memory item) internal pure returns (uint8 res) {
         if (item.versions.length == 1) {
-            res = item.versions[0];
+            res = 0;
         }
     }
 
@@ -104,20 +147,20 @@ library Calcultor {
 
     // function add(Combinable comb, )
 }
-// add parent refs, if any - will use ***REMOVED***s algo only for the base
-// the base will always be defined as the first, so if it isnt (will not happen for dotnugg), we define the center as all the child refs
+// add parent refs, if any - will use ***REMOVED***s algo only for the canvas
+// the canvas will always be defined as the first, so if it isnt (will not happen for dotnugg), we define the center as all the child refs
 //  pick best version
 // figure out offset
 
-// function merge(Base memory base, Matrix memory versionMatrix) internal pure {
-//     for (int8 y = (base.matrix.length / 2) * -1; y <= base.matrix.length / 2; y++) {
-//         for (int8 x = (base.matrix.width / 2) * -1; x <= base.matrix[j].width / 2; x++) {
-//             Pixel memory base = base.matrix.at(x, y);
+// function merge(Canvas memory canvas, Matrix memory versionMatrix) internal pure {
+//     for (int8 y = (canvas.matrix.data.length / 2) * -1; y <= canvas.matrix.data.length / 2; y++) {
+//         for (int8 x = (canvas.matrix.width / 2) * -1; x <= canvas.matrix[j].width / 2; x++) {
+//             Pixel memory canvas = canvas.matrix.at(x, y);
 //             Pixel memory addr = combinable.matrix.at(x, y);
 
-//             if (addr != 0 && addr.layer > base.layer) {
-//                 base.layer = addr.layer;
-//                 base.rgba = Colors.combine(base.rgba, add.rgba);
+//             if (addr != 0 && addr.layer > canvas.layer) {
+//                 canvas.layer = addr.layer;
+//                 canvas.rgba = Colors.combine(canvas.rgba, add.rgba);
 //             }
 //         }
 //     }

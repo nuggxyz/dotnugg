@@ -3,7 +3,9 @@
 pragma solidity 0.8.4;
 
 import './logic/Decoder.sol';
-import '../libraries/Base64.sol';
+import './logic/Calculator.sol';
+
+import './libraries/Base64.sol';
 import './interfaces/IDotNugg.sol';
 import './interfaces/INuggIn.sol';
 
@@ -14,35 +16,42 @@ import './interfaces/INuggIn.sol';
  * @dev hold my margarita
  */
 contract DotNugg is IDotNugg {
+    using Calculator for IDotNugg.Collection;
+    using Calculator for IDotNugg.Collection;
+
     function nuggify(
         bytes calldata _collection,
         bytes[] calldata _items,
         address _resolver,
-        uint256 _width
+        bytes calldata data
     ) external view override returns (string memory image) {
-        INuggIn resolver = INuggIn(_resolver);
+        IFileResolver fileResolver = IFileResolver(_resolver);
+        IColorResolver colorResolver = IColorResolver(_resolver);
 
-        require(resolver.supportsInterface(type(INuggIn).interfaceId), 'NUG:TURI:2');
+        require(fileResolver.supportsInterface(type(IFileResolver).interfaceId), 'NUG:TURI:2');
 
         IDotNugg.Collection memory collection = Decoder.parseCollection(_collection);
 
-        bytes[] memory selected = new bytes[](collection.featurelen); // + one for the base
+        bytes[] memory selected = new bytes[](collection.numFeatures);
 
         for (uint256 i = 0; i < _items.length; i++) {
             selected[Decoder.parseItemFeatureId(_items[i])] = _items[i];
         }
-        for (uint256 i = 0; i < colleciton.defaults.length; i++) {
-            if (check[collection.defaults[i].feature] == 0) selected[collection.defaults[i].feature] = collection.defaults[i];
+
+        for (uint256 i = 0; i < collection.defaults.length; i++) {
+            uint8 featureId = Decoder.parseItemFeatureId(collection.defaults[i]);
+            if (selected[featureId].length == 0) {
+                selected[featureId] = collection.defaults[i];
+            }
         }
 
-        Items[] memory parsed = Decoder.parseItems(selected);
+        IDotNugg.Matrix memory matrix = collection.combine(selected);
 
-        Item[] memory resolved = resolver.before(parsed);
+        if (colorResolver.supportsInterface(type(IColorResolver).interfaceId)) {
+            colorResolver.resolveColor(matrix, data);
+        }
+        (bytes memory fileData, string memory fileType) = fileResolver.resolveFile(matrix, data);
 
-        INuggIn.Display memory display = Combine.combine(resolved);
-
-        bytes memory data = resolver.buildNugg(display, _width);
-
-        image = Base64.encode(data, resolver.file());
+        image = Base64.encode(fileData, fileType);
     }
 }
