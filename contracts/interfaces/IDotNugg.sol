@@ -1,8 +1,13 @@
 pragma solidity 0.8.4;
 
-import '../interfaces/INuggIn.sol';
-
 interface IDotNugg {
+    function nuggify(
+        bytes calldata _collection,
+        bytes[] calldata _items,
+        address _resolver,
+        bytes calldata data
+    ) external view returns (string memory image);
+
     struct Rlud {
         uint8 r;
         uint8 l;
@@ -19,17 +24,18 @@ interface IDotNugg {
 
     struct Anchor {
         Coordinate coordinate;
-        Rlud radii;
     }
 
     struct Coordinate {
-        uint8 x;
-        uint8 y;
+        uint8 a;
+        uint8 b;
     }
 
-    struct Base {
-        Matrix matrix;
-        Coordinate[] anchors;
+    struct Collection {
+        uint8 width;
+        uint8 height;
+        uint8 numFeatures;
+        bytes[] defaults;
     }
 
     struct Item {
@@ -39,10 +45,18 @@ interface IDotNugg {
     }
 
     struct Version {
-        Anchor anchor;
-        Coordinate[] childAnchors; // can be empty
+        uint8 width;
+        Coordinate anchor;
+        Coordinate[] calculatedReceivers; // can be empty
+        Coordinate[] staticReceivers; // can be empty
         Rlud expanders;
+        Rlud radii;
         bytes data;
+    }
+
+    struct Canvas {
+        Matrix matrix;
+        Coordinate[] receivers;
     }
 
     struct Mix {
@@ -52,14 +66,14 @@ interface IDotNugg {
     }
 
     struct Pixel {
+        int8 zindex;
         Rgba rgba;
-        int8 layer;
+        bool exists;
     }
 
     struct Matrix {
         uint8 width;
         uint8 height;
-        // uint8 radius;
         Pixel[][] data;
         uint8 currentUnsetX;
         uint8 currentUnsetY;

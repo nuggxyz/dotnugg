@@ -3,8 +3,11 @@
 pragma solidity 0.8.4;
 
 import '../interfaces/IDotNugg.sol';
+import '../libraries/Bytes.sol';
 
 library Matrix {
+    using Bytes for bytes;
+
     function create(uint8 width, uint8 height) internal pure returns (IDotNugg.Matrix memory res) {
         require(width % 2 == 1 && height % 2 == 1, 'ML:C:0');
 
@@ -24,8 +27,12 @@ library Matrix {
     }
 
     function next(IDotNugg.Matrix memory matrix) internal pure returns (bool res) {
+        res = next(matrix, matrix.width);
+    }
+
+    function next(IDotNugg.Matrix memory matrix, uint8 width) internal pure returns (bool res) {
         if (!matrix.init) {
-            if (matrix.width == matrix.currentUnsetX + 1) {
+            if (width == matrix.currentUnsetX + 1) {
                 if (matrix.height == matrix.currentUnsetY + 1) {
                     return false;
                 }
@@ -44,9 +51,52 @@ library Matrix {
         res = matrix.data[matrix.currentUnsetY][matrix.currentUnsetX];
     }
 
-    function reset(IDotNugg.Matrix memory matrix) internal pure {
+    function setCurrent(IDotNugg.Matrix memory matrix, IDotNugg.Pixel memory pix) internal pure {
+        matrix.data[matrix.currentUnsetY][matrix.currentUnsetX] = pix;
+    }
+
+    function deleteCurrent(IDotNugg.Matrix memory matrix) internal pure {
+        delete matrix.data[matrix.currentUnsetY][matrix.currentUnsetX];
+    }
+
+    function resetIterator(IDotNugg.Matrix memory matrix) internal pure {
         matrix.currentUnsetX = 0;
         matrix.currentUnsetY = 0;
+    }
+
+    function reset(IDotNugg.Matrix memory matrix) internal pure {
+        for (; next(matrix); ) delete matrix.data[matrix.currentUnsetY][matrix.currentUnsetX];
+    }
+
+    function fakeHeight(IDotNugg.Matrix memory matrix) internal pure returns (uint256 res) {
+        for (uint256 i = 0; i < matrix.data.length; i++) {
+            if (!matrix.data[i][0].exists) return i + 1;
+        }
+        return matrix.data.length;
+    }
+
+    function fakeWidth(IDotNugg.Matrix memory matrix) internal pure returns (uint256 res) {
+        for (uint256 i = 0; i < matrix.data[0].length; i++) {
+            if (!matrix.data[0][i].exists) return i + 1;
+        }
+        return matrix.data[0].length;
+    }
+
+    function set(
+        IDotNugg.Matrix memory matrix,
+        bytes memory data,
+        IDotNugg.Pixel[] memory pallet,
+        uint8 groupWidth
+    ) internal pure {
+        for (uint256 i = 0; i < data.length; i++) {
+            (uint8 colorKey, uint8 len) = data.toUint4(i);
+            for (uint256 j = 0; j < len; j++) {
+                setCurrent(matrix, pallet[colorKey]);
+                next(matrix, groupWidth);
+            }
+        }
+
+        resetIterator(matrix);
     }
 
     // function currentX() internal pure returns (int8 res) {

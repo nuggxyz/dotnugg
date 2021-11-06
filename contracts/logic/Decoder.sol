@@ -6,197 +6,246 @@ import '../interfaces/IDotNugg.sol';
 
 import '../libraries/Bytes.sol';
 import '../libraries/BytesLib.sol';
-import '../../libraries/Uint.sol';
+import '../libraries/Checksum.sol';
+import '../libraries/Uint.sol';
 
-library Decode {
+library Decoder {
     using Bytes for bytes;
+    using Bytes for bytes;
+
+    using Checksum for bytes;
     using BytesLib for bytes;
+
     using Uint256 for uint256;
 
-    function parseCollection(bytes memory data) internal pure returns (IDotNugg.Collecion memory res) {
-        res = _bytesToCollection(data);
+    function parseCollection(bytes memory data) internal pure returns (IDotNugg.Collection memory res) {}
+
+    function parseItems(bytes[] memory data) internal pure returns (IDotNugg.Item[] memory res) {
+        res = new IDotNugg.Item[](data.length);
+        for (uint256 i = 0; i < data.length; i++) {
+            res[i] = parseItem(data[i]);
+        }
     }
 
-    function parseItem(bytes memory data) internal pure returns (Item memory res) {
-        res = _bytesToBase(data);
+    // ┌───────────────────────────────────────────────────────────────────┐
+    // │                                                                   │
+    // │                     _____ _                                       │
+    // │                    |_   _| |                                      │
+    // │                      | | | |_ ___ _ __ ___                        │
+    // │                      | | | __/ _ \ '_ ` _ \                       │
+    // │                     _| |_| ||  __/ | | | | |                      │
+    // │                     \___/ \__\___|_| |_| |_|                      │
+    // │                                                                   │
+    // │                                                                   │
+    // │     ┌─────┬────────────────────────────────────────────────┐      │
+    // │     │ 0-6 │  "DOTNUGG" (7 bytes in ascii)                  │      │
+    // │     ├─────┼────────────────────────────────────────────────┤      │
+    // │     │ 7-8 │  checksum - (2 bytes)                          │      │
+    // │     ├─────┼────────────────────────────────────────────────┤      │
+    // │     │  9  │  feature key - (1 byte)                        │      │
+    // │     ├─────┼────────────────────────────────────────────────┤      │
+    // │     │10-11│  colors array index from 0 (uint16)            │      │
+    // │     ├─────┼────────────────────────────────────────────────┤      │
+    // │     │12-* │  version index array - ([*][2]byte)            │      │
+    // │     ├─────┼────────────────────────────────────────────────┤      │
+    // │     │ *-* │  color array - ([*][6]byte)                    │      │
+    // │     ├─────┼────────────────────────────────────────────────┤      │
+    // │     │ *-* │  version array ([*][*]byte)                    │      │
+    // │     └─────┴────────────────────────────────────────────────┘      │
+    // │                                                                   │
+    // │                                                                   │
+    // └───────────────────────────────────────────────────────────────────┘
+
+    function validateItem(bytes memory data) internal pure {
+        require(data.length > 13, 'D:VI:0');
+        require(data.slice(0, 6).equal(abi.encodePacked('DOTNUGG')), 'D:VI:1');
+        require(data.slice(9, data.length).fletcher16() == bytes2(data.toUint16(7)), 'D:VI:2');
+    }
+
+    function parseItem(bytes memory data) internal pure returns (IDotNugg.Item memory res) {
+        validateItem(data);
+
+        res.feature = parseItemFeatureId(data);
+
+        uint16 colorsIndex = data.toUint16(10);
+        uint16[] memory versionsIndexz = new uint16[]((colorsIndex - 12) / 2);
+
+        for (uint16 i = 0; i < versionsIndexz.length; i++) {
+            versionsIndexz[i] = data.toUint16(12 + i * 2);
+        }
+
+        res.pallet = new IDotNugg.Pixel[]((versionsIndexz[0] - colorsIndex) / 2);
+        res.versions = new IDotNugg.Version[](versionsIndexz.length);
+
+        for (uint16 i = 0; i < res.pallet.length; i++) {
+            res.pallet[i] = parsePixel(data, colorsIndex + 5 * i);
+        }
+
+        for (uint16 i = 0; i < versionsIndexz.length; i++) {
+            uint256 endIndex = i + 1 == versionsIndexz.length ? data.length : versionsIndexz[i + 1];
+            res.versions[i] = parseVersion(data, versionsIndexz[i], uint16(endIndex));
+        }
     }
 
     function parseItemFeatureId(bytes memory data) internal pure returns (uint8 res) {
-        res = uint8(data[11]); // FIXME - this cannot be right lol
+        res = uint8(data[9]);
     }
 
-    function parseMix(Item memory item, uint8 versionIndex) internal pure returns (Mix memory res) {}
+    // ┌──────────────────────────────────────────────────────────────┐
+    // │                                                              │
+    // │                                                              │
+    // │                    ______ _          _                       │
+    // │                    | ___ (_)        | |                      │
+    // │                    | |_/ /___  _____| |                      │
+    // │                    |  __/| \ \/ / _ \ |                      │
+    // │                    | |   | |>  <  __/ |                      │
+    // │                    \_|   |_/_/\_\___|_|                      │
+    // │                                                              │
+    // │                                                              │
+    // │   ┌─────┬────────────────────────────────────────────────┐   │
+    // │   │  0  │  zindex (int8)                                 │   │
+    // │   ├─────┼────────────────────────────────────────────────┤   │
+    // │   │ 1-4 │  rgba (4 bytes)                                │   │
+    // │   └─────┴────────────────────────────────────────────────┘   │
+    // │                                                              │
+    // └──────────────────────────────────────────────────────────────┘
 
-    function parseMatrix(
-        bytes memory data,
-        uint8 width,
-        uint8 height
-    ) internal pure returns (Matrix memory res) {
-        res = MatrixLib.create(width, height);
+    function parsePixel(bytes memory _bytes, uint256 _start) internal pure returns (IDotNugg.Pixel memory res) {
+        require(_bytes.length >= _start + 5, 'parsePixel_outOfBounds');
 
-        for (uint16 i = 0; i < data.length; i += Constants.GROUP_BYTE_LEN) {
-            groups[index++] = _bytesToGroup(data.slice(i, Constants.GROUP_BYTE_LEN));
-        }
+        res.zindex = _bytes.toInt8(_start);
+        res.rgba = parseRgba(_bytes, _start + 1);
     }
 
-    // for danny to delete
+    // ┌──────────────────────────────────────────────────────────────┐
+    // │                                                              │
+    // │                                                              │
+    // │                    ______      _                             │
+    // │                    | ___ \    | |                            │
+    // │                    | |_/ /__ _| |__   __ _                   │
+    // │                    |    // _` | '_ \ / _` |                  │
+    // │                    | |\ \ (_| | |_) | (_| |                  │
+    // │                    \_| \_\__, |_.__/ \__,_|                  │
+    // │                           __/ |                              │
+    // │                          |___/                               │
+    // │                                                              │
+    // │    ┌─────┬─────────────────────────────────────────────┐     │
+    // │    │  0  │  r (uint8)                                  │     │
+    // │    ├─────┼─────────────────────────────────────────────┤     │
+    // │    │  1  │  l (uint8)                                  │     │
+    // │    ├─────┼─────────────────────────────────────────────┤     │
+    // │    │  2  │  u (uint8)                                  │     │
+    // │    ├─────┼─────────────────────────────────────────────┤     │
+    // │    │  3  │  d (uint8)                                  │     │
+    // │    └─────┴─────────────────────────────────────────────┘     │
+    // │                                                              │
+    // │                                                              │
+    // └──────────────────────────────────────────────────────────────┘
 
-    function _validateFile(bytes memory data) internal pure returns (bytes memory res) {
-        require(data.length > 13);
-        require(data.slice(0, Constants.FILE_HEADER.length).equal(Constants.FILE_HEADER));
-        res = data.slice(Constants.FILE_HEADER.length, data.length - Constants.FILE_HEADER.length);
+    function parseRgba(bytes memory _bytes, uint256 _start) internal pure returns (IDotNugg.Rgba memory res) {
+        require(_bytes.length >= _start + 4, 'parsePixel_outOfBounds');
+        res.r = uint8(_bytes[_start + 0]);
+        res.g = uint8(_bytes[_start + 1]);
+        res.b = uint8(_bytes[_start + 2]);
+        res.a = uint8(_bytes[_start + 3]);
     }
 
-    function _bytesToCollection(bytes memory data) internal pure returns (IDotNugg.Collection memory collection) {
-        data = _validateFile(data);
-
-        require(uint8(data[0]) == Constants.NUGG_FILETYPE_COLLECTION);
-
-        collection.features = _bytesToFeatures((data.slice(uint8(data[2]) - Constants.FILE_HEADER.length, uint8(data[1]) * Constants.FEATURE_BYTE_LEN)));
+    function parseRlud(bytes memory _bytes, uint256 _start) internal pure returns (IDotNugg.Rlud memory res) {
+        require(_bytes.length >= _start + 2, 'parseRlud_outOfBounds');
+        (res.r, res.l) = _bytes.toUint4(_start + 0);
+        (res.u, res.d) = _bytes.toUint4(_start + 1);
     }
 
-    function _bytesToBase(bytes memory data) internal pure returns (IDotNugg.Base memory base) {
-        data = _validateFile(data);
+    // ┌──────────────────────────────────────────────────────────────┐
+    // │                                                              │
+    // │                _   _               _                         │
+    // │               | | | |             (_)                        │
+    // │               | | | | ___ _ __ ___ _  ___  _ __              │
+    // │               | | | |/ _ \ '__/ __| |/ _ \| '_ \             │
+    // │               \ \_/ /  __/ |  \__ \ | (_) | | | |            │
+    // │                \___/ \___|_|  |___/_|\___/|_| |_|            │
+    // │                                                              │
+    // │                                                              │
+    // │   ┌─────┬────────────────────────────────────────────────┐   │
+    // │   │  0  │  width (1 bytes)                               │   │
+    // │   ├─────┼────────────────────────────────────────────────┤   │
+    // │   │  1  │  anchor (1 byte - 2 uint4s)                    │   │
+    // │   ├─────┼────────────────────────────────────────────────┤   │
+    // │   │ 2-3 │  expanders (2 bytes - rlud - 4 uint4s)         │   │
+    // │   ├─────┼────────────────────────────────────────────────┤   │
+    // │   │ 4-5 │  radii (2 bytes - rlud - 4 uint4s)             │   │
+    // │   ├─────┼────────────────────────────────────────────────┤   │
+    // │   │  6  │  groups index  (uint8)                         │   │
+    // │   ├─────┼────────────────────────────────────────────────┤   │
+    // │   │ 7-* │  receivers ([*][2] bytes)                      │   │
+    // │   ├─────┼────────────────────────────────────────────────┤   │
+    // │   │ *-* │  group array ([*][1]byte)                      │   │
+    // │   └─────┴────────────────────────────────────────────────┘   │
+    // │                                                              │
+    // └──────────────────────────────────────────────────────────────┘
 
-        require(uint8(data[0]) == Constants.NUGG_FILETYPE_BASE);
+    function parseVersion(
+        bytes memory _bytes,
+        uint256 _start,
+        uint256 _end
+    ) internal pure returns (IDotNugg.Version memory res) {
+        require(_bytes.length >= _end && _start < _end, 'parsePixel_outOfBounds');
 
-        base.baseFeatures = _bytesToBaseFeatures((data.slice(uint8(data[4]) - Constants.FILE_HEADER.length, uint8(data[3]) * Constants.BASE_FEATURE_BYTE_LEN)));
+        res.width = _bytes.toUint8(_start + 0);
+        (res.anchor.a, res.anchor.b) = _bytes.toUint4(_start + 1);
+        res.expanders = parseRlud(_bytes, _start + 2);
+        res.radii = parseRlud(_bytes, _start + 4);
 
-        base.display.colors = _bytesToColors(data.slice(uint8(data[2]) - Constants.FILE_HEADER.length, uint8(data[1]) * Constants.COLOR_BYTE_LEN));
+        uint8 groupsIndex = _bytes.toUint8(6);
 
-        base.display.len = _bytesToCoordinate(data[7], data[8]);
+        uint256 i = 7;
+        for (; i < groupsIndex; i += 2) {
+            (IDotNugg.Coordinate memory rec, uint8 feature, bool calculated) = parseReceiver(_bytes, _start);
 
-        base.display.groups = _bytesToGroups(data.slice(uint8(data[6]) - Constants.FILE_HEADER.length, uint16(uint8(data[5])) * Constants.GROUP_BYTE_LEN));
-    }
-
-    function _bytesToAttribute(bytes memory data) internal pure returns (IDotNugg.Attribute memory attribute) {
-        data = _validateFile(data);
-        require(uint8(data[0]) == Constants.NUGG_FILETYPE_ATTRIBUTE);
-
-        attribute.feature.id = uint8(data[11]);
-        attribute.anchor = _bytesToCoordinate(data.slice(13 - Constants.FILE_HEADER.length, 2));
-        attribute.expanders = _bytesToExpanderGroup(data.slice(uint8(data[4]) - Constants.FILE_HEADER.length, uint8(data[3]) * Constants.EXPANDER_BYTE_LEN));
-        attribute.display.len = _bytesToCoordinate(data[7], data[8]);
-        attribute.display.colors = _bytesToColors(data.slice(uint8(data[2]) - Constants.FILE_HEADER.length, uint8(data[1]) * Constants.COLOR_BYTE_LEN));
-        attribute.display.groups = _bytesToGroups(data.slice(uint8(data[6]) - Constants.FILE_HEADER.length, uint8(data[5]) * Constants.GROUP_BYTE_LEN));
-    }
-
-    function _bytesToFeatures(bytes memory data) internal pure returns (IDotNugg.Feature[] memory features) {
-        require(data.length % Constants.FEATURE_BYTE_LEN == 0, 'DN_DECODER:ARGUMENTS: length of data must be 6');
-        features = new IDotNugg.Feature[](data.length / Constants.FEATURE_BYTE_LEN);
-        uint8 index = 0;
-        for (uint8 i = 0; i < data.length; i += Constants.FEATURE_BYTE_LEN) {
-            features[index++] = _bytesToFeature(data.slice(i, Constants.FEATURE_BYTE_LEN));
-        }
-    }
-
-    function _bytesToFeature(bytes memory data) internal pure returns (IDotNugg.Feature memory feature) {
-        require(data.length == Constants.FEATURE_BYTE_LEN, 'DN_DECODER:FEATURE: length of data must be FEATURE_BYTE_LEN');
-
-        feature.id = uint8(data[0]);
-    }
-
-    function _bytesToColors(bytes memory data) internal pure returns (INuggIn.Color[] memory colors) {
-        require(data.length % Constants.COLOR_BYTE_LEN == 0, 'DN_DECODER:COLORS: length of data must be ');
-        colors = new INuggIn.Color[](data.length / Constants.COLOR_BYTE_LEN);
-        uint16 index = 0;
-        for (uint16 i = 0; i < data.length; i += Constants.COLOR_BYTE_LEN) {
-            colors[index++] = _bytesToColor(data.slice(i, Constants.COLOR_BYTE_LEN));
-        }
-    }
-
-    function _bytesToColor(bytes memory data) internal pure returns (INuggIn.Color memory color) {
-        require(data.length == Constants.COLOR_BYTE_LEN, 'DN_DECODER:COLOR: length of bytes must be Constants.COLOR_BYTE_LEN');
-        color.exists = true;
-        color.id = uint8(data[0]);
-        color.layer = uint8(data[1]);
-        color.rgba.r = uint8(data[2]);
-        color.rgba.g = uint8(data[3]);
-        color.rgba.b = uint8(data[4]);
-        color.rgba.a = uint8(data[5]);
-    }
-
-    function _bytesToExpanderGroup(bytes memory data) internal pure returns (IDotNugg.ExpanderGroup memory expanderGroup) {
-        require(data.length % Constants.EXPANDER_BYTE_LEN == 0, 'DN_DECODER:EXPANDERGROUP: length of DATA invaliid');
-        for (uint16 i = 0; i < data.length; i += Constants.EXPANDER_BYTE_LEN) {
-            if (uint8(data[i]) == 82) {
-                // R
-                expanderGroup.right = _bytesToExpander(data.slice(i, Constants.EXPANDER_BYTE_LEN));
-            } else if (uint8(data[i]) == 114) {
-                // r
-                expanderGroup.right2 = _bytesToExpander(data.slice(i, Constants.EXPANDER_BYTE_LEN));
-            } else if (uint8(data[i]) == 76) {
-                // L
-                expanderGroup.left = _bytesToExpander(data.slice(i, Constants.EXPANDER_BYTE_LEN));
-            } else if (uint8(data[i]) == 108) {
-                // l
-                expanderGroup.left2 = _bytesToExpander(data.slice(i, Constants.EXPANDER_BYTE_LEN));
-            } else if (uint8(data[i]) == 85) {
-                // U
-                expanderGroup.up = _bytesToVerticalExpander(data.slice(i, Constants.EXPANDER_BYTE_LEN));
-            } else if (uint8(data[i]) == 68) {
-                // D
-                expanderGroup.down = _bytesToVerticalExpander(data.slice(i, Constants.EXPANDER_BYTE_LEN));
+            if (calculated) {
+                res.calculatedReceivers[feature] = rec;
             } else {
-                require(false, 'DN_DECODER:EXPANDERGROUP: invalid expander type found');
+                res.staticReceivers[feature] = rec;
             }
         }
+
+        res.data = _bytes.slice(_start + i, _end - _start + i);
     }
 
-    function _bytesToGroups(bytes memory data) internal pure returns (INuggIn.Group[] memory groups) {
-        require(data.length % Constants.GROUP_BYTE_LEN == 0, 'DN_DECODER:GROUPS: length of data must be 6');
-        groups = new INuggIn.Group[](data.length / Constants.GROUP_BYTE_LEN);
-        uint16 index = 0;
-        for (uint16 i = 0; i < data.length; i += Constants.GROUP_BYTE_LEN) {
-            groups[index++] = _bytesToGroup(data.slice(i, Constants.GROUP_BYTE_LEN));
+    // ┌────────────────────────────────────────────────────────────┐
+    // │                                                            │
+    // │             ______              _                          │
+    // │             | ___ \            (_)                         │
+    // │             | |_/ /___  ___ ___ ___   _____ _ __           │
+    // │             |    // _ \/ __/ _ \ \ \ / / _ \ '__|          │
+    // │             | |\ \  __/ (_|  __/ |\ V /  __/ |             │
+    // │             \_| \_\___|\___\___|_| \_/ \___|_|             │
+    // │                                                            │
+    // │                                                            │
+    // │  ┌─────┬────────────────────────────────────────────────┐  │
+    // │  │  0  │  preset | x (uint4) & yoffset | y (int4)       │  │
+    // │  ├─────┼────────────────────────────────────────────────┤  │
+    // │  │  1  │  type (1 byte)                                 │  │
+    // │  └─────┴────────────────────────────────────────────────┘  │
+    // │                                                            │
+    // └────────────────────────────────────────────────────────────┘
+
+    function parseReceiver(bytes memory _bytes, uint256 _start)
+        internal
+        pure
+        returns (
+            IDotNugg.Coordinate memory res,
+            uint8 feature,
+            bool calculated
+        )
+    {
+        require(_bytes.length >= _start + 2, 'parseRlud_outOfBounds');
+        (res.a, res.b) = _bytes.toUint4(_start + 0);
+        feature = _bytes.toUint8(_start + 1);
+
+        if (feature >= uint8(type(int8).max)) {
+            feature -= uint8(type(int8).max);
+            calculated = true;
         }
-    }
-
-    function _bytesToGroup(bytes memory data) internal pure returns (INuggIn.Group memory group) {
-        require(data.length == 2, 'DN_DECODER:GROUP: length of group must be 2');
-        group.colorID = uint8(data[0]);
-        group.len = uint8(data[1]);
-    }
-
-    function _bytesToBaseFeatures(bytes memory data) internal pure returns (IDotNugg.BaseFeature[] memory baseFeatures) {
-        require(data.length % Constants.BASE_FEATURE_BYTE_LEN == 0, 'DN_DECODER:ARGUMENTS: length of data must be 6');
-
-        IDotNugg.BaseFeature[] memory tmp = new IDotNugg.BaseFeature[](data.length / Constants.BASE_FEATURE_BYTE_LEN);
-        uint16 index = 0;
-        for (uint16 i = 0; i < data.length; i += Constants.BASE_FEATURE_BYTE_LEN) {
-            tmp[index++] = _bytesToBaseFeature(data.slice(i, Constants.BASE_FEATURE_BYTE_LEN));
-        }
-        baseFeatures = new IDotNugg.BaseFeature[](tmp.length);
-        for (uint16 i = 0; i < tmp.length; i++) {
-            baseFeatures[tmp[i].feature.id] = tmp[i];
-        }
-    }
-
-    function _bytesToBaseFeature(bytes memory data) internal pure returns (IDotNugg.BaseFeature memory baseFeature) {
-        require(data.length == Constants.BASE_FEATURE_BYTE_LEN, 'DN_DECODER:BASEFEATURE: length of data must be Constants.BASE_FEATURE_BYTE_LEN');
-        baseFeature.feature.id = uint8(data[0]);
-        baseFeature.anchor = _bytesToCoordinate(data[1], data[2]);
-        baseFeature.arguments = _bytesToArguments(data.slice(3, Constants.ARGUMENTS_BYTE_LEN));
-        baseFeature.exists = true;
-    }
-
-    function _bytesToArguments(bytes memory data) internal pure returns (IDotNugg.Arguments memory arguments) {
-        require(data.length == 6, 'DN_DECODER:ARGUMENTS: length of data must be 6');
-        arguments.l = uint8(data[0]);
-        arguments.r = uint8(data[1]);
-        arguments.u = uint8(data[2]);
-        arguments.d = uint8(data[3]);
-        arguments.z = uint8(data[4]);
-        arguments.c = uint8(data[5]);
-    }
-
-    function _bytesToCoordinate(bytes memory data) internal pure returns (INuggIn.Coordinate memory coordinate) {
-        require(data.length == 2, 'DN_DECODER:COORDINATE: length of data must be 2');
-        coordinate = _bytesToCoordinate(data[0], data[1]);
-    }
-
-    function _bytesToCoordinate(bytes1 x, bytes1 y) internal pure returns (INuggIn.Coordinate memory coordinate) {
-        coordinate.x = uint8(x);
-        coordinate.y = uint8(y);
     }
 }
