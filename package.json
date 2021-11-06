@@ -1,0 +1,9 @@
+{
+  "name": "dotnugg-core",
+  "version": "0.0.1",
+  "description": "DotNugg Assembler Contracts in Solidity",
+  "main": "index.js",
+  "repository": "https://github.com/nugg-labs/dotnugg-core.git",
+  "author": "dub6ix <dub6ix@nugglabs.org>",
+  "license": "MIT"
+}
