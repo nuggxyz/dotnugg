@@ -20,14 +20,6 @@ library Matrix {
         }
     }
 
-    //  function at(
-    //      IDotNugg.Matrix memory m,
-    //      int8 x,
-    //      int8 y
-    //  ) internal pure returns (IDotNugg.Pixel memory res) {
-    //      res = m.data[uint8(y + int8(m.height) / 2)][uint8(x + int8(m.width) / 2)];
-    //  }
-
     function moveTo(
         IDotNugg.Matrix memory matrix,
         uint8 xoffset,
@@ -85,14 +77,12 @@ library Matrix {
         for (uint256 i = 0; i < (res = uint8(matrix.data.length)); i++) {
             if (!matrix.data[i][0].exists) return uint8(i + 1);
         }
-        //   res = uint8(matrix.data.length);
     }
 
     function fakeWidth(IDotNugg.Matrix memory matrix) internal pure returns (uint8 res) {
         for (uint256 i = 0; i < (res = uint8(matrix.data[0].length)); i++) {
             if (!matrix.data[0][i].exists) return uint8(i) + 1;
         }
-        //   res = uint8(matrix.data[0].length);
     }
 
     function set(
@@ -118,7 +108,6 @@ library Matrix {
         uint8 amount
     ) internal pure {
         require(index < matrix.height, 'MAT:ARA:0');
-
         for (uint256 j = matrix.height - amount - 1; j > index; j--) {
             if (j < index) break;
             if (matrix.data[j].length > 0) matrix.data[j + amount] = matrix.data[j];
@@ -144,18 +133,4 @@ library Matrix {
             }
         }
     }
-    // function currentX() internal pure returns (int8 res) {
-    //     res = int8(matrix.currentUnsetX) - int8(m.height) / 2;
-    // }
-
-    // function currentY() internal pure returns (int8 res) {
-    //     res = int8(matrix.currentUnsetY) - int8(m.height) / 2;
-    // }
-    // function currentX(IDotNugg.Matrix memory matrix) internal pure returns (bool res) {
-    //     res = matrix.
-    // }
-
-    // function currentUnsetY(IDotNugg.Matrix memory matrix) internal pure returns (bool res) {
-    //     res =
-    // }
 }
