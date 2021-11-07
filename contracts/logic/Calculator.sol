@@ -19,7 +19,7 @@ library Calculator {
     function combine(IDotNugg.Collection memory collection, bytes[] memory inputs) internal pure returns (IDotNugg.Matrix memory resa) {
         IDotNugg.Canvas memory canvas;
         canvas.matrix = Matrix.create(collection.width, collection.height);
-        canvas.receivers = new IDotNugg.Coordinate[](collection.numFeatures);
+        canvas.receivers = new IDotNugg.Anchor[](collection.numFeatures);
 
         IDotNugg.Mix memory mix;
         mix.matrix = Matrix.create(collection.width, collection.height);
@@ -30,6 +30,8 @@ library Calculator {
             setMix(mix, items[i], pickVersionIndex(canvas, items[i]));
 
             formatForCanvas(canvas, mix);
+
+            postionForCanvas(canvas, mix);
 
             mergeToCanvas(canvas, mix);
 
@@ -43,15 +45,41 @@ library Calculator {
      * @notice
      * @dev
      */
+    function postionForCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal pure returns (IDotNugg.Matrix memory res) {
+        IDotNugg.Anchor memory receiver = canvas.receivers[mix.feature];
+        IDotNugg.Anchor memory anchor = mix.version.anchor;
+
+        uint8 xoffset = receiver.coordinate.a - anchor.coordinate.a;
+        uint8 yoffset = receiver.coordinate.b - anchor.coordinate.b;
+
+        canvas.matrix.moveTo(xoffset, yoffset);
+    }
+
+    /**
+     * @notice
+     * @dev
+     */
     function formatForCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal pure returns (IDotNugg.Matrix memory res) {
-        IDotNugg.Coordinate memory receiver = canvas.receivers[mix.feature];
-        IDotNugg.Coordinate memory anchor = mix.version.anchor;
+        IDotNugg.Anchor memory receiver = canvas.receivers[mix.feature];
+        IDotNugg.Anchor memory anchor = mix.version.anchor;
 
-        int8 xoffset = 0; // FIXME
-        int8 yoffset = 0; // FIXME
+        require(anchor.radii.r <= receiver.radii.r, 'CAL:FFC:0'); // DBP
+        mix.matrix.addColumnsAt(anchor.coordinate.a + 1, receiver.radii.r - anchor.radii.r);
 
-        // this is where we exand and shit
-        // this should return a matrix with
+        require(anchor.radii.l <= receiver.radii.l, 'CAL:FFC:0'); // DBP
+        mix.matrix.addColumnsAt(anchor.coordinate.a - 1, receiver.radii.l - anchor.radii.l);
+
+        anchor.coordinate.a += receiver.radii.l - anchor.radii.l;
+
+        require(anchor.radii.u <= receiver.radii.u, 'CAL:FFC:0'); // DBP
+        mix.matrix.addRowsAt(anchor.coordinate.b + 1, receiver.radii.u - anchor.radii.u);
+
+        require(anchor.radii.d <= receiver.radii.d, 'CAL:FFC:0'); // DBP
+        mix.matrix.addRowsAt(anchor.coordinate.b - 1, receiver.radii.d - anchor.radii.d);
+
+        anchor.coordinate.b += receiver.radii.d - anchor.radii.d;
+
+        // postion for base
     }
 
     /**
@@ -88,14 +116,15 @@ library Calculator {
     function updateReceivers(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal pure {
         for (uint8 i = 0; i < mix.version.staticReceivers.length; i++) {
             IDotNugg.Coordinate memory m = mix.version.staticReceivers[i];
-            uint168 v;
+            uint16 v;
 
-            uint168 fakeV;
-            uint168 fake2V;
+            uint16 fakeV;
+            uint16 fake2V;
             IDotNugg.Coordinate memory fake;
             IDotNugg.Coordinate memory fake2 = IDotNugg.Coordinate({a: 0, b: 0});
 
             assembly {
+                v := m
                 v := eq(m, 0)
                 fakeV := eq(fake, 0)
                 fake2V := eq(fake2, 0)

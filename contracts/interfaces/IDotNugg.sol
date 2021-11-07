@@ -23,6 +23,7 @@ interface IDotNugg {
     }
 
     struct Anchor {
+        Rlud radii;
         Coordinate coordinate;
     }
 
@@ -46,17 +47,16 @@ interface IDotNugg {
 
     struct Version {
         uint8 width;
-        Coordinate anchor;
+        Anchor anchor;
         Coordinate[] calculatedReceivers; // can be empty
         Coordinate[] staticReceivers; // can be empty
         Rlud expanders;
-        Rlud radii;
         bytes data;
     }
 
     struct Canvas {
         Matrix matrix;
-        Coordinate[] receivers;
+        Anchor[] receivers;
     }
 
     struct Mix {
@@ -78,5 +78,6 @@ interface IDotNugg {
         uint8 currentUnsetX;
         uint8 currentUnsetY;
         bool init;
+        uint8 startX;
     }
 }
