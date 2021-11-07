@@ -192,9 +192,9 @@ library Decoder {
         require(_bytes.length >= _end && _start < _end, 'parsePixel_outOfBounds');
 
         res.width = _bytes.toUint8(_start + 0);
-        (res.anchor.a, res.anchor.b) = _bytes.toUint4(_start + 1);
+        (res.anchor.coordinate.a, res.anchor.coordinate.b) = _bytes.toUint4(_start + 1);
         res.expanders = parseRlud(_bytes, _start + 2);
-        res.radii = parseRlud(_bytes, _start + 4);
+        res.anchor.radii = parseRlud(_bytes, _start + 4);
 
         uint8 groupsIndex = _bytes.toUint8(6);
 
