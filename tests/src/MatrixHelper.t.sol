@@ -8,26 +8,30 @@ import '../../contracts/logic/Matrix.sol';
 import '../../contracts/logic/Rgba.sol';
 
 contract MatrixHelperTest is DSTest {
-    struct CreateArgs {
-        uint8 width;
-        uint8 height;
-    }
+    // ┌──────────────────────────────────────────────────┐
+    // │                                 _                │
+    // │                                | |               │
+    // │       ___  __ _ _ __ ___  _ __ | | ___  ___      │
+    // │      / __|/ _` | '_ ` _ \| '_ \| |/ _ \/ __|     │
+    // │      \__ \ (_| | | | | | | |_) | |  __/\__ \     │
+    // │      |___/\__,_|_| |_| |_| .__/|_|\___||___/     │
+    // │                          | |                     │
+    // │                          |_|                     │
+    // │                                                  │
+    // └──────────────────────────────────────────────────┘
 
-    struct SetArgs {
-        IDotNugg.Matrix matrix;
-        bytes data;
-        IDotNugg.Pixel[] pallet;
-        uint8 groupWidth;
-    }
-
-    function example_pallet_1() internal pure returns (IDotNugg.Pixel[] memory res) {
+    function sample_pallet_0() internal pure returns (IDotNugg.Pixel[] memory res) {
         res = new IDotNugg.Pixel[](2);
         res[0] = IDotNugg.Pixel({rgba: IDotNugg.Rgba({r: 1, g: 1, b: 1, a: 255}), zindex: 2, exists: true});
         res[1] = IDotNugg.Pixel({rgba: IDotNugg.Rgba({r: 255, g: 255, b: 255, a: 27}), zindex: 3, exists: true});
     }
 
-    function example_matrix_1() internal pure returns (IDotNugg.Matrix memory res) {
-        IDotNugg.Pixel[] memory pallet = example_pallet_1();
+    function sample_matrix_blank() internal pure returns (IDotNugg.Matrix memory res) {
+        res = Matrix.create(33, 33);
+    }
+
+    function sample_matrix_filled() internal pure returns (IDotNugg.Matrix memory res) {
+        IDotNugg.Pixel[] memory pallet = sample_pallet_0();
 
         res = Matrix.create(33, 33);
 
@@ -54,6 +58,23 @@ contract MatrixHelperTest is DSTest {
         res.height = 2;
     }
 
+    // ┌──────────────────────────────────────────────────┐
+    // │                                                  │
+    // │                                _                 │
+    // │                               | |                │
+    // │             ___ _ __ ___  __ _| |_ ___           │
+    // │            / __| '__/ _ \/ _` | __/ _ \          │
+    // │           | (__| | |  __/ (_| | ||  __/          │
+    // │            \___|_|  \___|\__,_|\__\___|          │
+    // │                                                  │
+    // │                                                  │
+    // └──────────────────────────────────────────────────┘
+
+    struct CreateArgs {
+        uint8 width;
+        uint8 height;
+    }
+
     function test_matrix_create() public {
         uint8 width = 33;
         uint8 height = 33;
@@ -61,6 +82,25 @@ contract MatrixHelperTest is DSTest {
 
         assertEq(width, matrix.data[0].length);
         assertEq(height, matrix.data.length);
+    }
+
+    // ┌──────────────────────────────────────────────────┐
+    // │                                                  │
+    // │                            _                     │
+    // │                           | |                    │
+    // │                   ___  ___| |_                   │
+    // │                  / __|/ _ \ __|                  │
+    // │                  \__ \  __/ |_                   │
+    // │                  |___/\___|\__|                  │
+    // │                                                  │
+    // │                                                  │
+    // └──────────────────────────────────────────────────┘
+
+    struct SetArgs {
+        IDotNugg.Matrix matrix;
+        bytes data;
+        IDotNugg.Pixel[] pallet;
+        uint8 groupWidth;
     }
 
     function test_matrix_set() public {
@@ -133,10 +173,22 @@ contract MatrixHelperTest is DSTest {
         assertEq(got, want);
     }
 
-    function test_matrix_reset() public {
-        IDotNugg.Matrix memory want = Matrix.create(33, 33);
+    // ┌──────────────────────────────────────────────────┐
+    // │                                                  │
+    // │                                 _                │
+    // │                                | |               │
+    // │              _ __ ___  ___  ___| |_              │
+    // │             | '__/ _ \/ __|/ _ \ __|             │
+    // │             | | |  __/\__ \  __/ |_              │
+    // │             |_|  \___||___/\___|\__|             │
+    // │                                                  │
+    // │                                                  │
+    // └──────────────────────────────────────────────────┘
 
-        IDotNugg.Matrix memory got = example_matrix_1();
+    function test_matrix_reset() public {
+        IDotNugg.Matrix memory want = sample_matrix_blank();
+
+        IDotNugg.Matrix memory got = sample_matrix_filled();
 
         Matrix.reset(got);
 
