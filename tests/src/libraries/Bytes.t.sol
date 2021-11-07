@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity ^0.8.4;
 
-import '../lib/DSTest.sol';
-import '../../contracts/libraries/Bytes.sol';
+import '../../lib/DSTest.sol';
+import '../../../contracts/libraries/Bytes.sol';
 
 contract BytesTest is DSTest {
     function test_toUint4() public {
