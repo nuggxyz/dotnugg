@@ -1,0 +1,14 @@
+DAPP_SRC=./tests/src
+DAPP_LIB=./tests/lib
+DAPP_OUT=./tests/out
+DAPP_SOLC_VERSION=0.8.4
+
+
+
+
+
+
+
+
+
+
