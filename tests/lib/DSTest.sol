@@ -15,6 +15,8 @@
 
 pragma solidity >=0.4.23;
 
+import '../../contracts/interfaces/IDotNugg.sol';
+
 contract DSTest {
     event log(string);
     event logs(bytes);
@@ -69,6 +71,53 @@ contract DSTest {
         if (!condition) {
             emit log_named_string('Error', err);
             assertTrue(condition);
+        }
+    }
+
+    function assertEq(IDotNugg.Matrix memory m1, IDotNugg.Matrix memory m2) internal {
+        for (uint16 i = 0; i < m1.data.length; i++) {
+                for (uint16 j = 0; j < m1.data[0].length; j++) {
+                    assertEq(m1.data[i][j], m2.data[i][j]);
+                }
+            }
+        if (m1.init != m2.init
+        || m1.width != m2.width
+        || m1.currentUnsetX != m2.currentUnsetX
+        || m1.currentUnsetY != m2.currentUnsetY
+        || m1.startX != m2.startX
+        || m1.data.length != m2.data.length
+        || m1.data[0].length != m2.data[0].length) {
+            emit log("Matrices are not equal");
+            fail();
+        }
+    }
+
+    function assertEq(IDotNugg.Pixel memory p1, IDotNugg.Pixel memory p2) internal {
+        assertEq(p1.rgba, p2.rgba);
+        if (p1.zindex != p2.zindex
+        || p1.exists != p2.exists) {
+             emit log("Pixels are not equal");
+            fail();
+        }
+    }
+
+    function assertEq(IDotNugg.Rgba memory r1, IDotNugg.Rgba memory r2) internal {
+        if (r1.r != r2.r
+        || r1.g != r2.g
+        || r1.b != r2.b
+        || r1.a != r2.a) {
+            emit log("RGBAs are not equal");
+            fail();
+        }
+    }
+
+    function assertEq(IDotNugg.Rlud memory r1, IDotNugg.Rlud memory r2) internal {
+        if (r1.r != r2.r
+        || r1.l != r2.l
+        || r1.u != r2.u
+        || r1.d != r2.d) {
+            emit log("RLUDs are not equal");
+            fail();
         }
     }
 
