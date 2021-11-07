@@ -23,12 +23,12 @@ library Bytes {
 
     function toUint4(bytes memory _bytes, uint256 _start) internal pure returns (uint8, uint8) {
         uint8 tempUint = toUint8(_bytes, _start);
-        return (tempUint >>= 4, tempUint & 0xf);
+        return (tempUint >> 4, tempUint & 0xf);
     }
 
     function toInt8(bytes memory _bytes, uint256 _start) internal pure returns (int8) {
         uint8 tempUint = toUint8(_bytes, _start);
-        return int8(~tempUint) + 1;
+        return (int8(~tempUint) + 1) * -1;
     }
 
     function toUint16(bytes memory _bytes, uint256 _start) internal pure returns (uint16) {
