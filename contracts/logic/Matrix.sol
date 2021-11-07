@@ -31,13 +31,13 @@ library Matrix {
     }
 
     function next(IDotNugg.Matrix memory matrix) internal pure returns (bool res) {
-        res = next(matrix, fakeWidth(matrix));
+        res = next(matrix, matrix.width);
     }
 
     function next(IDotNugg.Matrix memory matrix, uint8 width) internal pure returns (bool res) {
         if (!matrix.init) {
             if (width == matrix.currentUnsetX + 1) {
-                if (fakeHeight(matrix) == matrix.currentUnsetY + 1) {
+                if (matrix.height == matrix.currentUnsetY + 1) {
                     return false;
                 }
                 matrix.currentUnsetX = matrix.startX; // 0 by default
@@ -69,31 +69,26 @@ library Matrix {
         for (; next(matrix); ) delete matrix.data[matrix.currentUnsetY][matrix.currentUnsetX];
     }
 
-    function fakeHeight(IDotNugg.Matrix memory matrix) internal pure returns (uint8 res) {
-        for (uint256 i = 0; i < (res = uint8(matrix.data.length)); i++) {
-            if (!matrix.data[i][0].exists) return uint8(i + 1);
-        }
-    }
-
-    function fakeWidth(IDotNugg.Matrix memory matrix) internal pure returns (uint8 res) {
-        for (uint256 i = 0; i < (res = uint8(matrix.data[0].length)); i++) {
-            if (!matrix.data[0][i].exists) return uint8(i) + 1;
-        }
-    }
-
     function set(
         IDotNugg.Matrix memory matrix,
         bytes memory data,
         IDotNugg.Pixel[] memory pallet,
         uint8 groupWidth
     ) internal pure {
+        uint256 totalLength = 0;
         for (uint256 i = 0; i < data.length; i++) {
             (uint8 colorKey, uint8 len) = data.toUint4(i);
+            totalLength += len;
             for (uint256 j = 0; j < len; j++) {
                 setCurrent(matrix, pallet[colorKey]);
                 next(matrix, groupWidth);
             }
         }
+
+        require(totalLength % groupWidth == 0, "MTRX:SET:0");
+
+        matrix.width = groupWidth;
+        matrix.height = uint8(totalLength / groupWidth);
 
         resetIterator(matrix);
     }
@@ -103,14 +98,15 @@ library Matrix {
         uint8 index,
         uint8 amount
     ) internal pure {
-        require(index < matrix.height, 'MAT:ARA:0');
-        for (uint256 j = matrix.height - amount - 1; j > index; j--) {
+        require(index < matrix.data.length, 'MAT:ARA:0');
+        for (uint256 j = matrix.data.length - amount - 1; j > index; j--) {
             if (j < index) break;
             if (matrix.data[j].length > 0) matrix.data[j + amount] = matrix.data[j];
         }
         for (uint256 j = index + 1; j < index + amount; j++) {
             matrix.data[j] = matrix.data[index];
         }
+        matrix.height += amount;
     }
 
     function addColumnsAt(
@@ -118,9 +114,9 @@ library Matrix {
         uint8 index,
         uint8 amount
     ) internal pure {
-        require(index < matrix.width, 'MAT:ACA:0');
+        require(index < matrix.data[0].length, 'MAT:ACA:0');
         for (uint256 i = 0; i < matrix.height; i++) {
-            for (uint256 j = matrix.width - amount - 1; j > index; j--) {
+            for (uint256 j = matrix.data[0].length - amount - 1; j > index; j--) {
                 if (j < index) break;
                 if (matrix.data[i][j].exists) matrix.data[i][j + amount] = matrix.data[i][j];
             }
@@ -128,5 +124,6 @@ library Matrix {
                 matrix.data[i][j] = matrix.data[i][index];
             }
         }
+        matrix.width += amount;
     }
 }
