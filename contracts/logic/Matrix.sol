@@ -59,10 +59,6 @@ library Matrix {
         matrix.data[matrix.currentUnsetY][matrix.currentUnsetX] = pix;
     }
 
-    function deleteCurrent(IDotNugg.Matrix memory matrix) internal pure {
-        delete matrix.data[matrix.currentUnsetY][matrix.currentUnsetX];
-    }
-
     function resetIterator(IDotNugg.Matrix memory matrix) internal pure {
         matrix.currentUnsetX = 0;
         matrix.currentUnsetY = 0;
