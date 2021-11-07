@@ -155,6 +155,22 @@ contract DSTest {
         }
     }
 
+// ┌─────────────────────────────────────────────────┐
+// │                                                 │
+// │                                                 │
+// │                                                 │
+// │         _____                                   │
+// │        /  __ \                                  │
+// │        | /  \/ __ _ _ ____   ____ _ ___         │
+// │        | |    / _` | '_ \ \ / / _` / __|        │
+// │        | \__/\ (_| | | | \ V / (_| \__ \        │
+// │         \____/\__,_|_| |_|\_/ \__,_|___/        │
+// │                                                 │
+// │                                                 │
+// │                                                 │
+// │                                                 │
+// └─────────────────────────────────────────────────┘
+
     function assertEq(IDotNugg.Canvas memory c1, IDotNugg.Canvas memory c2) internal {
         if (c1.receivers.length != c2.receivers.length) {
             emit log("Canvases are not equal");
