@@ -130,7 +130,7 @@ library Calculator {
                 fake2V := eq(fake2, 0)
             }
             require(fakeV == 0 && fake2V != 0, 'WE FUCKED UP');
-            if (v == 0) canvas.receivers[i] = m;
+            // if (v == 0) canvas.receivers[i] = m;
         }
     }
 
