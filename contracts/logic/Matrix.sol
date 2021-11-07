@@ -4,6 +4,7 @@ pragma solidity 0.8.4;
 
 import '../interfaces/IDotNugg.sol';
 import '../libraries/Bytes.sol';
+import '../../tests/lib/DSTest.sol';
 
 library Matrix {
     using Bytes for bytes;
@@ -12,8 +13,8 @@ library Matrix {
         require(width % 2 == 1 && height % 2 == 1, 'ML:C:0');
 
         res.data = new IDotNugg.Pixel[][](height);
-        res.width = width;
-        res.height = height;
+        //   res.width = width;
+        //   res.height = height;
 
         for (uint8 i = 0; i < height; i++) {
             res.data[i] = new IDotNugg.Pixel[](width);
@@ -35,7 +36,7 @@ library Matrix {
     }
 
     function next(IDotNugg.Matrix memory matrix, uint8 width) internal pure returns (bool res) {
-        if (!matrix.init) {
+        if (matrix.init) {
             if (width == matrix.currentUnsetX + 1) {
                 if (matrix.height == matrix.currentUnsetY + 1) {
                     return false;
@@ -63,6 +64,7 @@ library Matrix {
         matrix.currentUnsetX = 0;
         matrix.currentUnsetY = 0;
         matrix.startX = 0;
+        matrix.init = false;
     }
 
     function reset(IDotNugg.Matrix memory matrix) internal pure {
@@ -80,12 +82,12 @@ library Matrix {
             (uint8 colorKey, uint8 len) = data.toUint4(i);
             totalLength += len;
             for (uint256 j = 0; j < len; j++) {
-                setCurrent(matrix, pallet[colorKey]);
                 next(matrix, groupWidth);
+                setCurrent(matrix, pallet[colorKey]);
             }
         }
 
-        require(totalLength % groupWidth == 0, "MTRX:SET:0");
+        require(totalLength % groupWidth == 0, 'MTRX:SET:0');
 
         matrix.width = groupWidth;
         matrix.height = uint8(totalLength / groupWidth);
