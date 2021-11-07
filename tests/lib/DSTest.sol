@@ -74,12 +74,9 @@ contract DSTest {
         }
     }
 
+    // IDOTNUGG EQ ASSERTS
+
     function assertEq(IDotNugg.Matrix memory m1, IDotNugg.Matrix memory m2) internal {
-        for (uint16 i = 0; i < m1.data.length; i++) {
-                for (uint16 j = 0; j < m1.data[0].length; j++) {
-                    assertEq(m1.data[i][j], m2.data[i][j]);
-                }
-            }
         if (m1.init != m2.init
         || m1.width != m2.width
         || m1.currentUnsetX != m2.currentUnsetX
@@ -89,6 +86,11 @@ contract DSTest {
         || m1.data[0].length != m2.data[0].length) {
             emit log("Matrices are not equal");
             fail();
+        }
+        for (uint16 i = 0; i < m1.data.length; i++) {
+            for (uint16 j = 0; j < m1.data[0].length; j++) {
+                assertEq(m1.data[i][j], m2.data[i][j]);
+            }
         }
     }
 
@@ -121,7 +123,86 @@ contract DSTest {
         }
     }
 
-    function assertEq(address a, address b) internal {
+    function assertEq(IDotNugg.Coordinate memory c1, IDotNugg.Coordinate memory c2) internal {
+        if (c1.a != c2.a
+        || c1.b != c2.b) {
+            emit log("Coordinates are not equal");
+            fail();
+        }
+    }
+
+    function assertEq(IDotNugg.Anchor memory a1, IDotNugg.Anchor memory a2) internal {
+        assertEq(a1.coordinate, a2.coordinate);
+        assertEq(a1.radii, a2.radii);
+    }
+
+    function assertEq(IDotNugg.Version memory v1, IDotNugg.Version memory v2) internal {
+        if (v1.width != v2.width
+        || v1.calculatedReceivers.length != v2.calculatedReceivers.length
+        || v1.staticReceivers.length != v2.staticReceivers.length
+        || v1.data.length != v2.data.length) {
+            emit log("Coordinates are not equal");
+            fail();
+        }
+        assertEq(v1.data, v2.data);
+        assertEq(v1.anchor, v2.anchor);
+        assertEq(v1.expanders, v2.expanders);
+        for (uint8 i = 0; i < v1.calculatedReceivers.length; i++) {
+            assertEq(v1.calculatedReceivers[i], v2.calculatedReceivers[i]);
+        }
+        for (uint8 i = 0; i < v1.staticReceivers.length; i++) {
+            assertEq(v1.staticReceivers[i], v2.staticReceivers[i]);
+        }
+    }
+
+    function assertEq(IDotNugg.Canvas memory c1, IDotNugg.Canvas memory c2) internal {
+        if (c1.receivers.length != c2.receivers.length) {
+            emit log("Canvases are not equal");
+            fail();
+        }
+        assertEq(c1.matrix, c2.matrix);
+        for (uint8 i = 0; i < c1.receivers.length; i++) {
+            assertEq(c1.receivers[i], c2.receivers[i]);
+        }
+    }
+
+    function assertEq(IDotNugg.Mix memory m1, IDotNugg.Mix memory m2) internal {
+        if (m1.feature != m2.feature) {
+            emit log("Mixes are not equal");
+            fail();
+        }
+        assertEq(m1.version, m2.version);
+        assertEq(m1.matrix, m2.matrix);
+    }
+
+    function assertEq(IDotNugg.Item memory i1, IDotNugg.Item memory i2) internal {
+        if (i1.feature != i2.feature
+        || i1.pallet.length != i2.pallet.length
+        || i1.versions.length != i2.versions.length) {
+            emit log("Items are not equal");
+            fail();
+        }
+        for (uint8 i = 0; i < i1.pallet.length; i++) {
+            assertEq(i1.pallet[i], i2.pallet[i]);
+        }
+        for (uint8 i = 0; i < i1.versions.length; i++) {
+            assertEq(i1.versions[i], i2.versions[i]);
+        }
+    }
+
+    function assertEq(IDotNugg.Collection memory c1, IDotNugg.Collection memory c2) internal {
+        if (c1.width != c2.width
+        || c1.height != c2.height
+        || c1.numFeatures != c2.numFeatures
+        || c1.defaults.length != c2.defaults.length) {
+            emit log("Collections are not equal");
+            fail();
+        }
+        for (uint8 i = 0; i < c1.defaults.length; i++) {
+            assertEq(c1.defaults[i], c2.defaults[i]);
+        }
+    }
+        function assertEq(address a, address b) internal {
         if (a != b) {
             emit log('Error: a == b not satisfied [address]');
             emit log_named_address('  Expected', b);
@@ -147,6 +228,16 @@ contract DSTest {
             emit log_named_bytes32('  Expected', b);
             emit log_named_bytes32('    Actual', a);
             fail();
+        }
+    }
+
+    function assertEq(bytes memory a, bytes memory b) internal {
+        if (a.length != b.length) {
+            emit log('Error: a == b not satisfied [bytes]');
+            fail();
+        }
+        for (uint8 i = 0; i < a.length; i++) {
+            assertEq(a[i], b[i]);
         }
     }
 
