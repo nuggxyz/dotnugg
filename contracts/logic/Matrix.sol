@@ -68,7 +68,10 @@ library Matrix {
     }
 
     function reset(IDotNugg.Matrix memory matrix) internal pure {
-        for (; next(matrix); ) delete matrix.data[matrix.currentUnsetY][matrix.currentUnsetX];
+        for (; next(matrix); ) if (current(matrix).exists) delete matrix.data[matrix.currentUnsetY][matrix.currentUnsetX];
+        matrix.width = 0;
+        matrix.height = 0;
+        resetIterator(matrix);
     }
 
     function set(
