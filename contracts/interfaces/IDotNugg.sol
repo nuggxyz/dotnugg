@@ -29,8 +29,9 @@ interface IDotNugg {
     }
 
     struct Coordinate {
-        uint8 a;
-        uint8 b;
+        uint8 a; // anchorId
+        uint8 b; // yoffset
+        bool exists;
     }
 
     struct Collection {
@@ -49,6 +50,7 @@ interface IDotNugg {
     struct Version {
         uint8 width;
         Anchor anchor;
+        // these must be in same order as canvas receivers, respectively
         Coordinate[] calculatedReceivers; // can be empty
         Coordinate[] staticReceivers; // can be empty
         Rlud expanders;
@@ -64,6 +66,7 @@ interface IDotNugg {
         uint8 feature;
         Version version;
         Matrix matrix;
+        Anchor[] receivers;
     }
 
     struct Pixel {

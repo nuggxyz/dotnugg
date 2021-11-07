@@ -5,6 +5,7 @@ pragma solidity 0.8.4;
 import './Matrix.sol';
 import './Decoder.sol';
 import './Rgba.sol';
+import './Anchor.sol';
 
 import '../interfaces/IDotNugg.sol';
 
@@ -35,6 +36,8 @@ library Calculator {
 
             mergeToCanvas(canvas, mix);
 
+            calculateReceivers(mix);
+
             updateReceivers(canvas, mix);
         }
 
@@ -45,7 +48,7 @@ library Calculator {
      * @notice
      * @dev
      */
-    function postionForCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal pure returns (IDotNugg.Matrix memory res) {
+    function postionForCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal pure {
         IDotNugg.Anchor memory receiver = canvas.receivers[mix.feature];
         IDotNugg.Anchor memory anchor = mix.version.anchor;
 
@@ -59,7 +62,7 @@ library Calculator {
      * @notice
      * @dev
      */
-    function formatForCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal pure returns (IDotNugg.Matrix memory res) {
+    function formatForCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal pure {
         IDotNugg.Anchor memory receiver = canvas.receivers[mix.feature];
         IDotNugg.Anchor memory anchor = mix.version.anchor;
 
@@ -78,8 +81,6 @@ library Calculator {
         mix.matrix.addRowsAt(anchor.coordinate.b - 1, receiver.radii.d - anchor.radii.d);
 
         anchor.coordinate.b += receiver.radii.d - anchor.radii.d;
-
-        // postion for base
     }
 
     /**
@@ -87,10 +88,22 @@ library Calculator {
      * @dev
      * makes the sorts versions
      */
-    function pickVersionIndex(IDotNugg.Canvas memory canvas, IDotNugg.Item memory item) internal pure returns (uint8 res) {
+    function pickVersionIndex(IDotNugg.Canvas memory canvas, IDotNugg.Item memory item) internal pure returns (uint8) {
         if (item.versions.length == 1) {
-            res = 0;
+            return 0;
         }
+
+        for (uint8 i = uint8(item.versions.length - 1); i >= 0; i--) {
+            if (checkRluds(item.versions[i].anchor.radii, canvas.receivers[item.feature].radii)) {
+                return i;
+            }
+        }
+
+        return 0;
+    }
+
+    function checkRluds(IDotNugg.Rlud memory r1, IDotNugg.Rlud memory r2) internal pure returns (bool) {
+        return r1.r <= r2.r && r1.l <= r2.l && r1.u <= r2.u && r1.l <= r2.l;
     }
 
     /**
@@ -114,23 +127,10 @@ library Calculator {
      * @dev
      */
     function updateReceivers(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal pure {
-        for (uint8 i = 0; i < mix.version.staticReceivers.length; i++) {
-            IDotNugg.Coordinate memory m = mix.version.staticReceivers[i];
-            uint16 v;
 
-            uint16 fakeV;
-            uint16 fake2V;
-            IDotNugg.Coordinate memory fake;
-            IDotNugg.Coordinate memory fake2 = IDotNugg.Coordinate({a: 0, b: 0});
-
-            assembly {
-                v := m
-                v := eq(m, 0)
-                fakeV := eq(fake, 0)
-                fake2V := eq(fake2, 0)
-            }
-            require(fakeV == 0 && fake2V != 0, 'WE FUCKED UP');
-            // if (v == 0) canvas.receivers[i] = m;
+        for (uint8 i = 0; i < mix.receivers.length; i++) {
+            IDotNugg.Anchor memory m = mix.receivers[i];
+            if (m.coordinate.exists) canvas.receivers[i] = m;
         }
     }
 
@@ -140,31 +140,32 @@ library Calculator {
      */
     function mergeToCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal pure {
         while (canvas.matrix.next() && mix.matrix.next()) {
-            IDotNugg.Pixel memory b = canvas.matrix.current();
-            IDotNugg.Pixel memory a = mix.matrix.current();
+            IDotNugg.Pixel memory canvasPixel = canvas.matrix.current();
+            IDotNugg.Pixel memory mixPixel = mix.matrix.current();
 
-            uint8 v;
-
-            uint8 fakeV;
-            uint8 fake2V;
-            IDotNugg.Coordinate memory fake;
-            IDotNugg.Coordinate memory fake2 = IDotNugg.Coordinate({a: 0, b: 0});
-
-            assembly {
-                v := eq(a, 0)
-                fakeV := eq(fake, 0)
-                fake2V := eq(fake2, 0)
-            }
-            require(fakeV == 0 && fake2V != 0, 'WE FUCKED UP');
-
-            if (v == 0 && a.zindex > b.zindex) {
-                b.zindex = a.zindex;
-                b.rgba.combine(a.rgba);
+            if (mixPixel.exists && mixPixel.zindex > canvasPixel.zindex) {
+                canvasPixel.zindex = mixPixel.zindex;
+                canvasPixel.rgba.combine(mixPixel.rgba);
             }
         }
 
         canvas.matrix.resetIterator();
         mix.matrix.resetIterator();
+    }
+
+    /**
+     * @notice poop
+     * @dev
+     */
+    function calculateReceivers(IDotNugg.Mix memory mix) internal pure {
+        for (uint8 i = 0; i < mix.version.staticReceivers.length; i++) {
+            IDotNugg.Rlud memory rlud;
+            mix.receivers[i] = IDotNugg.Anchor({
+                coordinate: mix.version.staticReceivers[i],
+                radii: rlud
+            });
+        }
+        Anchor.convertCalculatedReceiversToAnchors(mix);
     }
 
     // you combine one by one, and as you combine, child refs get overridden
