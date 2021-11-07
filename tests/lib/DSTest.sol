@@ -108,6 +108,16 @@ contract DSTest {
         }
     }
 
+    function assertEq(IDotNugg.Rlud memory r1, IDotNugg.Rlud memory r2) internal {
+        if (r1.r != r2.r
+        || r1.l != r2.l
+        || r1.u != r2.u
+        || r1.d != r2.d) {
+            emit log("RLUDs are not equal");
+            fail();
+        }
+    }
+
     function assertEq(address a, address b) internal {
         if (a != b) {
             emit log("Error: a == b not satisfied [address]");
