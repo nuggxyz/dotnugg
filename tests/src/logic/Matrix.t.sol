@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity ^0.8.4;
 
-import '../lib/DSTest.sol';
+import '../../lib/DSTest.sol';
 
-import '../../contracts/interfaces/IDotNugg.sol';
-import '../../contracts/logic/Matrix.sol';
-import '../../contracts/logic/Rgba.sol';
+import '../../../contracts/interfaces/IDotNugg.sol';
+import '../../../contracts/logic/Matrix.sol';
+import '../../../contracts/logic/Rgba.sol';
 
-contract MatrixHelperTest is DSTest {
+contract MatrixTest is DSTest {
     // ┌──────────────────────────────────────────────────┐
     // │                                 _                │
     // │                                | |               │
