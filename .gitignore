@@ -21,3 +21,4 @@ coverage.json
 /graph/generated
 /graph/graph-node
 /deployments/localhost/
+/out
