@@ -9,6 +9,8 @@ import '../libraries/BytesLib.sol';
 import '../libraries/Checksum.sol';
 import '../libraries/Uint.sol';
 
+import './String.sol';
+
 library Decoder {
     using Bytes for bytes;
     using Bytes for bytes;
@@ -58,8 +60,8 @@ library Decoder {
 
     function validateItem(bytes memory data) internal pure {
         require(data.length > 13, 'D:VI:0');
-        require(data.slice(0, 7).equal(abi.encodePacked('DOTNUGG')), 'D:VI:1');
-        // require(data.slice(9, data.length - 9).fletcher16() == data.toUint16(7), 'D:VI:2');
+        //   require(data.slice(0, 7).equal(abi.encodePacked('DOTNUGG')), 'D:VI:1');
+        //   require(data.slice(9, 2).fletcher16() == data.toUint16(7), 'D:VI:2');
     }
 
     function parseItem(bytes memory data) internal pure returns (IDotNugg.Item memory res) {
@@ -155,10 +157,10 @@ library Decoder {
         // require(_bytes.length >= _start + 5, 'parseRlud_outOfBounds');
         res.exists = bool(uint8(_bytes[_start + 0]) == 1);
         if (res.exists) {
-            res.r = uint8(_bytes[_start + 0]);
-            res.l = uint8(_bytes[_start + 1]);
-            res.u = uint8(_bytes[_start + 2]);
-            res.d = uint8(_bytes[_start + 3]);
+            res.r = uint8(_bytes[_start + 1]);
+            res.l = uint8(_bytes[_start + 2]);
+            res.u = uint8(_bytes[_start + 3]);
+            res.d = uint8(_bytes[_start + 4]);
         }
     }
 
@@ -196,31 +198,36 @@ library Decoder {
         uint256 _end
     ) internal pure returns (IDotNugg.Version memory res) {
         require(_bytes.length >= _end && _start < _end, 'parsePixel_outOfBounds');
-        uint16 addr = 0;
-        res.width = _bytes.toUint8(_start + addr++);
-        res.anchor.coordinate.a = _bytes.toUint8(_start + addr++);
-        res.anchor.coordinate.b = _bytes.toUint8(_start + addr++);
-        res.expanders = parseRlud(_bytes, _start + addr);
-        res.expanders.exists ? addr += 5 : addr++;
-        res.anchor.radii = parseRlud(_bytes, _start + addr);
-        res.anchor.radii.exists ? addr += 5 : addr++;
 
-        uint8 groupsIndex = _bytes.toUint8(addr);
+        res.calculatedReceivers = new IDotNugg.Coordinate[](16);
+        res.staticReceivers = new IDotNugg.Coordinate[](16);
 
-        uint256 i = addr;
-        uint8 count = 0;
-        for (; i < groupsIndex; i++) {
-            (IDotNugg.Coordinate memory rec, uint8 feature, bool calculated) = parseReceiver(_bytes, _start);
+        res.width = _bytes.toUint8(_start + 0);
+        res.height = _bytes.toUint8(_start + 1);
+        res.anchor.coordinate.a = _bytes.toUint8(_start + 2);
+        res.anchor.coordinate.b = _bytes.toUint8(_start + 3);
+        res.expanders = parseRlud(_bytes, _start + 4);
+
+        res.anchor.radii = parseRlud(_bytes, _start + (res.expanders.exists ? 9 : 5));
+
+        uint8 groupsIndex = _bytes.toUint8(
+            _start + (res.expanders.exists && res.anchor.radii.exists ? 14 : res.expanders.exists || res.anchor.radii.exists ? 10 : 6)
+        );
+
+        uint256 i = (res.expanders.exists && res.expanders.exists ? 14 : res.expanders.exists || res.expanders.exists ? 10 : 6) + 1;
+
+        for (; i < groupsIndex; i += 2) {
+            (IDotNugg.Coordinate memory rec, uint8 feature, bool calculated) = parseReceiver(_bytes, _start + i);
 
             if (calculated) {
                 res.calculatedReceivers[feature] = rec;
             } else {
+                require(feature < 16, String.fromUint256(i));
                 res.staticReceivers[feature] = rec;
             }
-            count++;
         }
 
-        res.data = _bytes.slice(_start + count, _end - _start + count);
+        res.data = _bytes.slice(_start + groupsIndex, _end - _start - groupsIndex);
     }
 
     // ┌────────────────────────────────────────────────────────────┐
@@ -252,10 +259,12 @@ library Decoder {
     {
         require(_bytes.length >= _start + 2, 'parseRlud_outOfBounds');
         (res.a, res.b) = _bytes.toUint4(_start + 0);
-        feature = _bytes.toUint8(_start + 1);
+        int8 tmpfeat = _bytes.toInt8(_start + 1);
 
-        if (feature >= uint8(type(int8).max)) {
-            feature -= uint8(type(int8).max);
+        if (tmpfeat >= 0) {
+            feature = uint8(tmpfeat);
+        } else {
+            feature = uint8(tmpfeat * -1);
             calculated = true;
         }
     }

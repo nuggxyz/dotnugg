@@ -4,79 +4,34 @@ pragma solidity 0.8.4;
 
 import '../interfaces/IDotNugg.sol';
 
+import '../../contracts/logic/Decoder.sol';
+import '../../contracts/interfaces/IDotNugg.sol';
+import '../../contracts/libraries/BytesLib.sol';
+import '../../contracts/logic/Rgba.sol';
+import '../../contracts/logic/Matrix.sol';
+
 contract PlainTest {
-    /**
-     * @notice done
-     * @dev
-     */
-    function tfizzle()
-        external
-        pure
-        returns (
-            uint256,
-            uint256,
-            uint256,
-            uint256
-        )
-    // uint256
-    {
-        uint256 d;
-        uint256 d3;
-        uint256 d4;
-        //   uint256 d5;
-        //   uint256 d6;
+    using BytesLib for bytes;
 
-        uint256 v;
+    bytes sample1 =
+        hex'6e6e6e6e75676709c800000e002c00f19325e500eb8a12e500f9b042e500c96619e500a84b1ee500f49f35e52121000000001723fe23ff23fd23fa23fc23f923fb23f80f0f0f0f0f0f0f0f0f0f0e5c0f015130633222520f005030653124500f005031653222500f005031663222500e5131651035500e50336436500e50346435500e50346435500e503111306534500e5034651033500e5035641132500e50346633500e50346930500e503569500e503569500f50321169500f50341067510f5034116124500f00504033601026500f0050402032622341500f0050412031622341500f00522031612241510f035a0f0f0f0f0f0f0f0f0f';
 
-        IDotNugg.Coordinate memory fake;
-        IDotNugg.Coordinate memory fake3;
+    function tfizzle() public {
+        IDotNugg.Item memory item = Decoder.parseItem(sample1);
 
-        IDotNugg.Coordinate memory fake4;
-        //   IDotNugg.Coordinate memory fake5;
-        //   IDotNugg.Coordinate memory fake6;
+        //   assertTrue(item.feature == 0);
+        //   assertTrue(item.versions.length == 1);
+        //   assertTrue(item.versions[0].width == 33);
 
-        IDotNugg.Coordinate memory fake2 = IDotNugg.Coordinate({a: 0, b: 0});
-
-        assembly {
-            d := mload(add(fake, 2))
-            d3 := mload(add(fake3, 2))
-            d4 := mload(add(fake4, 2))
-            // d := fake5
-            // d := fake6
-
-            v := mload(add(fake2, 2))
-            // v := iszero(v)
-            // fakeV := eq(fake, 0)
-            // fake2V := eq(fake2, 0)
+        for (uint256 i = 0; i < 6; i++) {
+            // emit log_named_bytes(string(abi.encodePacked(i)), item.versions[0].data);
         }
+        //   assertTrue(item.pallet.length == 7);
+        //   IDotNugg.Matrix memory mat = Matrix.create(33, 33);
 
-        //   require(fakeV == 0 && fake2V != 0, 'WE FUCKED UP');
+        //   Matrix.set(mat, item.versions[0].data, item.pallet, item.versions[0].width);
 
-        return (d, d3, d4, v);
+        //   assertTrue(mat.width == 33);
+        //  IDotNugg.Item memory item = Decoder.parseItem(sample1);
     }
-
-    //   canvas.matrix.resetIterator();
-    //   mix.matrix.resetIterator();
-
-    // you combine one by one, and as you combine, child refs get overridden
-
-    // function add(Combinable comb, )
 }
-// add parent refs, if any - will use ***REMOVED***s algo only for the canvas
-// the canvas will always be defined as the first, so if it isnt (will not happen for dotnugg), we define the center as all the child refs
-//  pick best version
-// figure out offset
-
-// function merge(Canvas memory canvas, Matrix memory versionMatrix) internal pure {
-//     for (int8 y = (canvas.matrix.data.length / 2) * -1; y <= canvas.matrix.data.length / 2; y++) {
-//         for (int8 x = (canvas.matrix.width / 2) * -1; x <= canvas.matrix[j].width / 2; x++) {
-//             Pixel memory canvas = canvas.matrix.at(x, y);
-//             Pixel memory addr = combinable.matrix.at(x, y);
-
-//             if (addr != 0 && addr.layer > canvas.layer) {
-//                 canvas.layer = addr.layer;
-//                 canvas.rgba = Colors.combine(canvas.rgba, add.rgba);
-//             }
-//         }
-//     }
-// }

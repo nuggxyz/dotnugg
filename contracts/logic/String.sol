@@ -38,18 +38,18 @@ library String {
         }
     }
 
-    function concat(
-        string memory _a,
-        string memory _b,
-        string memory _c,
-        string memory _d,
-        string memory _e,
-        string memory _f,
-        string memory _g,
-        string memory _h
-    ) internal pure returns (string memory) {
-        return string(abi.encodePacked(_a, _b, _c, _d, _e, _f, _g, _h));
-    }
+    //  function concat(
+    //      string memory _a,
+    //      string memory _b,
+    //      string memory _c,
+    //      string memory _d,
+    //      string memory _e,
+    //      string memory _f,
+    //      string memory _g,
+    //      string memory _h
+    //  ) internal pure returns (string memory) {
+    //      return string(abi.encodePacked(_a, _b, _c, _d, _e, _f, _g, _h));
+    //  }
 
     function concat(string memory _a, string memory _b) internal pure returns (string memory) {
         return concat(_a, _b, '', '', '', '', '', '');
@@ -70,5 +70,18 @@ library String {
         string memory _d
     ) internal pure returns (string memory) {
         return concat(_a, _b, _c, _d, '', '', '', '');
+    }
+
+    function concat(
+        string memory _a,
+        string memory _b,
+        string memory _c,
+        string memory _d,
+        string memory _e,
+        string memory _f,
+        string memory _g,
+        string memory _h
+    ) internal pure returns (string memory) {
+        return string(abi.encodePacked(_a, ' ', _b, ' ', _c, ' ', _d, ' ', _e, ' ', _f, ' ', _g, ' ', _h));
     }
 }

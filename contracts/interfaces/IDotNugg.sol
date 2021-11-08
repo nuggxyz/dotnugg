@@ -50,6 +50,7 @@ interface IDotNugg {
 
     struct Version {
         uint8 width;
+        uint8 height;
         Anchor anchor;
         // these must be in same order as canvas receivers, respectively
         Coordinate[] calculatedReceivers; // can be empty

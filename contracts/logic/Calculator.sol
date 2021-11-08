@@ -17,7 +17,7 @@ library Calculator {
      * @notice
      * @dev
      */
-    function combine(IDotNugg.Collection memory collection, bytes[] memory inputs) internal pure returns (IDotNugg.Matrix memory resa) {
+    function combine(IDotNugg.Collection memory collection, bytes[] memory inputs) internal view returns (IDotNugg.Matrix memory resa) {
         IDotNugg.Canvas memory canvas;
         canvas.matrix = Matrix.create(collection.width, collection.height);
         canvas.receivers = new IDotNugg.Anchor[](collection.numFeatures);
@@ -48,7 +48,7 @@ library Calculator {
      * @notice
      * @dev
      */
-    function postionForCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal pure {
+    function postionForCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal view {
         IDotNugg.Anchor memory receiver = canvas.receivers[mix.feature];
         IDotNugg.Anchor memory anchor = mix.version.anchor;
 
@@ -62,7 +62,7 @@ library Calculator {
      * @notice
      * @dev
      */
-    function formatForCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal pure {
+    function formatForCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal view {
         IDotNugg.Anchor memory receiver = canvas.receivers[mix.feature];
         IDotNugg.Anchor memory anchor = mix.version.anchor;
 
@@ -88,7 +88,7 @@ library Calculator {
      * @dev
      * makes the sorts versions
      */
-    function pickVersionIndex(IDotNugg.Canvas memory canvas, IDotNugg.Item memory item) internal pure returns (uint8) {
+    function pickVersionIndex(IDotNugg.Canvas memory canvas, IDotNugg.Item memory item) internal view returns (uint8) {
         if (item.versions.length == 1) {
             return 0;
         }
@@ -102,7 +102,7 @@ library Calculator {
         return 0;
     }
 
-    function checkRluds(IDotNugg.Rlud memory r1, IDotNugg.Rlud memory r2) internal pure returns (bool) {
+    function checkRluds(IDotNugg.Rlud memory r1, IDotNugg.Rlud memory r2) internal view returns (bool) {
         return r1.r <= r2.r && r1.l <= r2.l && r1.u <= r2.u && r1.l <= r2.l;
     }
 
@@ -115,7 +115,7 @@ library Calculator {
         IDotNugg.Mix memory res,
         IDotNugg.Item memory item,
         uint8 versionIndex
-    ) internal pure {
+    ) internal view {
         res.version = item.versions[versionIndex];
         res.feature = item.feature;
 
@@ -126,7 +126,7 @@ library Calculator {
      * @notice done
      * @dev
      */
-    function updateReceivers(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal pure {
+    function updateReceivers(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal view {
         for (uint8 i = 0; i < mix.receivers.length; i++) {
             IDotNugg.Anchor memory m = mix.receivers[i];
             if (m.coordinate.exists) canvas.receivers[i] = m;
@@ -137,7 +137,7 @@ library Calculator {
      * @notice done
      * @dev
      */
-    function mergeToCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal pure {
+    function mergeToCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal view {
         while (canvas.matrix.next() && mix.matrix.next()) {
             IDotNugg.Pixel memory canvasPixel = canvas.matrix.current();
             IDotNugg.Pixel memory mixPixel = mix.matrix.current();
@@ -156,7 +156,7 @@ library Calculator {
      * @notice poop
      * @dev
      */
-    function calculateReceivers(IDotNugg.Mix memory mix) internal pure {
+    function calculateReceivers(IDotNugg.Mix memory mix) internal view {
         for (uint8 i = 0; i < mix.version.staticReceivers.length; i++) {
             IDotNugg.Rlud memory rlud;
             mix.receivers[i] = IDotNugg.Anchor({coordinate: mix.version.staticReceivers[i], radii: rlud});
@@ -173,7 +173,7 @@ library Calculator {
 //  pick best version
 // figure out offset
 
-// function merge(Canvas memory canvas, Matrix memory versionMatrix) internal pure {
+// function merge(Canvas memory canvas, Matrix memory versionMatrix) internal view {
 //     for (int8 y = (canvas.matrix.data.length / 2) * -1; y <= canvas.matrix.data.length / 2; y++) {
 //         for (int8 x = (canvas.matrix.width / 2) * -1; x <= canvas.matrix[j].width / 2; x++) {
 //             Pixel memory canvas = canvas.matrix.at(x, y);
