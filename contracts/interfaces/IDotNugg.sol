@@ -10,6 +10,7 @@ interface IDotNugg {
     ) external view returns (string memory image);
 
     struct Rlud {
+        bool exists;
         uint8 r;
         uint8 l;
         uint8 u;
