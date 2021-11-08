@@ -1,17 +1,19 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
-pragma solidity ^0.8.4;
+// SPDX-License-Identifier: MIT
 
-import '../../lib/DSTest.sol';
-import '../../../contracts/interfaces/IDotNugg.sol';
-import '../../../contracts/logic/Matrix.sol';
-import '../../../contracts/logic/Anchor.sol';
+pragma solidity 0.8.4;
 
-contract AnchorTest is DSTest {
-    using Matrix for IDotNugg.Matrix;
+import '../interfaces/IDotNugg.sol';
+import '../logic/Matrix.sol';
+import '../logic/Anchor.sol';
+import 'hardhat/console.sol';
 
-    function test_getAnchors() public {}
-
-    function test_getBox() public {
+contract AnchorTest {
+    /**
+     * @notice done
+     * @dev
+     */
+    function tfizzle() external view returns (uint8, uint8, uint8, uint8)
+    {
         IDotNugg.Pixel[] memory pallet = new IDotNugg.Pixel[](2);
         pallet[0] = IDotNugg.Pixel({rgba: IDotNugg.Rgba({r: 1, g: 1, b: 1, a: 255}), zindex: 2, exists: true});
         pallet[1] = IDotNugg.Pixel({rgba: IDotNugg.Rgba({r: 255, g: 255, b: 255, a: 27}), zindex: 3, exists: true});
@@ -542,8 +544,7 @@ contract AnchorTest is DSTest {
         input.data[21][29] = pallet[1];
 
         (uint8 top, uint8 bot, IDotNugg.Coordinate memory center) = Anchor.getBox(input);
-        assertEq(top, 9);
-        assertEq(bot, 10);
-        assertEq(center, IDotNugg.Coordinate({a:16, b: 11, exists: true}));
+
+        return (top, bot, center.a, center.b);
     }
 }
