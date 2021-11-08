@@ -12,9 +12,6 @@ library Matrix {
         require(width % 2 == 1 && height % 2 == 1, 'ML:C:0');
 
         res.data = new IDotNugg.Pixel[][](height);
-        //   res.width = width;
-        //   res.height = height;
-
         for (uint8 i = 0; i < height; i++) {
             res.data[i] = new IDotNugg.Pixel[](width);
         }
@@ -86,10 +83,7 @@ library Matrix {
             totalLength += len;
             for (uint256 j = 0; j < len; j++) {
                 next(matrix, groupWidth);
-                //  require(matrix.currentUnsetY < 33, String.concat(String.fromUint256(colorKey), ' ', String.fromUint256(len)));
-
                 setCurrent(matrix, pallet[colorKey]);
-                //  require(matrix.currentUnsetX < 33, String.concat('x', String.fromUint256(matrix.currentUnsetX)));
             }
         }
 

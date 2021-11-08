@@ -10,7 +10,7 @@ import '../../contracts/test/Console.sol';
 
 import '../logic/Matrix.sol';
 
-contract PlainTest {
+contract NuggInTest {
     using BytesLib for bytes;
     //  using Rgba for IDotNugg.Rgba;
 
@@ -33,12 +33,12 @@ contract PlainTest {
         //   IDotNugg.Item memory item = Decoder.parseItem(sample1);
         //   IDotNugg.Matrix memory mat = Matrix.create(33, 33);
         //   Matrix.set(mat, item.versions[0].data, item.pallet, item.versions[0].width);
-        bytes[] memory sampleItems = new bytes[](4);
+        bytes[] memory sampleItems = new bytes[](1);
 
         sampleItems[0] = sample1;
-        sampleItems[1] = sample2;
-        sampleItems[2] = sample3;
-        sampleItems[3] = sample4;
+        //   sampleItems[1] = sample2;
+        //   sampleItems[2] = sample3;
+        //   sampleItems[3] = sample4;
 
         string memory res = _contract.nuggify(sampleCollection, sampleItems, address(_resolver), '');
         console.log(res);

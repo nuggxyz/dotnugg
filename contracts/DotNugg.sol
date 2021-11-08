@@ -24,10 +24,10 @@ contract DotNugg is IDotNugg {
         address _resolver,
         bytes memory data
     ) public view override returns (string memory image) {
-        IFileResolver fileResolver = IFileResolver(_resolver);
-        IColorResolver colorResolver = IColorResolver(_resolver);
+        //   IFileResolver fileResolver = IFileResolver(_resolver);
+        //   IColorResolver colorResolver = IColorResolver(_resolver);
 
-        require(fileResolver.supportsInterface(type(IFileResolver).interfaceId), 'NUG:TURI:2');
+        //   require(fileResolver.supportsInterface(type(IFileResolver).interfaceId), 'NUG:TURI:2');
 
         IDotNugg.Collection memory collection = Decoder.parseCollection(_collection);
 
@@ -46,11 +46,11 @@ contract DotNugg is IDotNugg {
 
         IDotNugg.Matrix memory matrix = collection.combine(selected);
 
-        if (colorResolver.supportsInterface(type(IColorResolver).interfaceId)) {
-            colorResolver.resolveColor(matrix, data);
-        }
-        (bytes memory fileData, string memory fileType) = fileResolver.resolveFile(matrix, data);
+        //   if (colorResolver.supportsInterface(type(IColorResolver).interfaceId)) {
+        //       colorResolver.resolveColor(matrix, data);
+        //   }
+        //   (bytes memory fileData, string memory fileType) = fileResolver.resolveFile(matrix, data);
 
-        image = Base64.encode(fileData, fileType);
+        //   image = Base64.encode(fileData, fileType);
     }
 }
