@@ -167,11 +167,7 @@ library Calculator {
      * @dev
      */
     function calculateReceivers(IDotNugg.Mix memory mix) internal view {
-        for (uint8 i = 0; i < mix.version.staticReceivers.length; i++) {
-            IDotNugg.Rlud memory rlud;
-            mix.receivers[i] = IDotNugg.Anchor({coordinate: mix.version.staticReceivers[i], radii: rlud});
-        }
-        Anchor.convertCalculatedReceiversToAnchors(mix);
+        Anchor.convertReceiversToAnchors(mix);
     }
 
     // you combine one by one, and as you combine, child refs get overridden
