@@ -83,6 +83,7 @@ library Matrix {
         uint256 totalLength = 0;
         for (uint256 i = 0; i < data.length; i++) {
             (uint8 colorKey, uint8 len) = data.toUint4(i);
+            len++;
             totalLength += len;
             for (uint256 j = 0; j < len; j++) {
                 next(matrix, groupWidth);

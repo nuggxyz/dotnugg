@@ -127,7 +127,6 @@ library Calculator {
      * @dev
      */
     function updateReceivers(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal pure {
-
         for (uint8 i = 0; i < mix.receivers.length; i++) {
             IDotNugg.Anchor memory m = mix.receivers[i];
             if (m.coordinate.exists) canvas.receivers[i] = m;
@@ -160,10 +159,7 @@ library Calculator {
     function calculateReceivers(IDotNugg.Mix memory mix) internal pure {
         for (uint8 i = 0; i < mix.version.staticReceivers.length; i++) {
             IDotNugg.Rlud memory rlud;
-            mix.receivers[i] = IDotNugg.Anchor({
-                coordinate: mix.version.staticReceivers[i],
-                radii: rlud
-            });
+            mix.receivers[i] = IDotNugg.Anchor({coordinate: mix.version.staticReceivers[i], radii: rlud});
         }
         Anchor.convertCalculatedReceiversToAnchors(mix);
     }
@@ -172,21 +168,3 @@ library Calculator {
 
     // function add(Combinable comb, )
 }
-// add parent refs, if any - will use remys algo only for the canvas
-// the canvas will always be defined as the first, so if it isnt (will not happen for dotnugg), we define the center as all the child refs
-//  pick best version
-// figure out offset
-
-// function merge(Canvas memory canvas, Matrix memory versionMatrix) internal pure {
-//     for (int8 y = (canvas.matrix.data.length / 2) * -1; y <= canvas.matrix.data.length / 2; y++) {
-//         for (int8 x = (canvas.matrix.width / 2) * -1; x <= canvas.matrix[j].width / 2; x++) {
-//             Pixel memory canvas = canvas.matrix.at(x, y);
-//             Pixel memory addr = combinable.matrix.at(x, y);
-
-//             if (addr != 0 && addr.layer > canvas.layer) {
-//                 canvas.layer = addr.layer;
-//                 canvas.rgba = Colors.combine(canvas.rgba, add.rgba);
-//             }
-//         }
-//     }
-// }

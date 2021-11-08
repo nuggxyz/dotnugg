@@ -151,9 +151,14 @@ library Decoder {
     }
 
     function parseRlud(bytes memory _bytes, uint256 _start) internal pure returns (IDotNugg.Rlud memory res) {
-        require(_bytes.length >= _start + 2, 'parseRlud_outOfBounds');
-        (res.r, res.l) = _bytes.toUint4(_start + 0);
-        (res.u, res.d) = _bytes.toUint4(_start + 1);
+        require(_bytes.length >= _start + 5, 'parseRlud_outOfBounds');
+        res.exists = bool(uint8(_bytes[_start + 0]) == 1);
+        if (res.exists) {
+            res.r = uint8(_bytes[_start + 0]);
+            res.l = uint8(_bytes[_start + 1]);
+            res.u = uint8(_bytes[_start + 2]);
+            res.d = uint8(_bytes[_start + 3]);
+        }
     }
 
     // ┌──────────────────────────────────────────────────────────────┐
@@ -169,15 +174,15 @@ library Decoder {
     // │   ┌─────┬────────────────────────────────────────────────┐   │
     // │   │  0  │  width (1 bytes)                               │   │
     // │   ├─────┼────────────────────────────────────────────────┤   │
-    // │   │  1  │  anchor (1 byte - 2 uint4s)                    │   │
+    // │   │ 1-2 │  anchor (2 bytes)                              │   │
     // │   ├─────┼────────────────────────────────────────────────┤   │
-    // │   │ 2-3 │  expanders (2 bytes - rlud - 4 uint4s)         │   │
+    // │   │ 3-7 │  expanders (2 bytes - rlud - 5 uint4s)         │   │
     // │   ├─────┼────────────────────────────────────────────────┤   │
-    // │   │ 4-5 │  radii (2 bytes - rlud - 4 uint4s)             │   │
+    // │   │ 8-6 │  radii (2 bytes - rlud - 5 uint4s)             │   │
     // │   ├─────┼────────────────────────────────────────────────┤   │
-    // │   │  6  │  groups index  (uint8)                         │   │
+    // │   │  7  │  groups index  (uint8)                         │   │
     // │   ├─────┼────────────────────────────────────────────────┤   │
-    // │   │ 7-* │  receivers ([*][2] bytes)                      │   │
+    // │   │ 8-* │  receivers ([*][2] bytes)                      │   │
     // │   ├─────┼────────────────────────────────────────────────┤   │
     // │   │ *-* │  group array ([*][1]byte)                      │   │
     // │   └─────┴────────────────────────────────────────────────┘   │
@@ -190,15 +195,18 @@ library Decoder {
         uint256 _end
     ) internal pure returns (IDotNugg.Version memory res) {
         require(_bytes.length >= _end && _start < _end, 'parsePixel_outOfBounds');
+        uint16 addr = 0;
+        res.width = _bytes.toUint8(_start + addr++);
+        res.anchor.coordinate.a = _bytes.toUint8(_start + addr++);
+        res.anchor.coordinate.b = _bytes.toUint8(_start + addr++);
+        res.expanders = parseRlud(_bytes, _start + addr);
+        res.expanders.exists ? addr += 5 : addr++;
+        res.anchor.radii = parseRlud(_bytes, _start + addr);
+        res.anchor.radii.exists ? addr += 5 : addr++;
 
-        res.width = _bytes.toUint8(_start + 0);
-        (res.anchor.coordinate.a, res.anchor.coordinate.b) = _bytes.toUint4(_start + 1);
-        res.expanders = parseRlud(_bytes, _start + 2);
-        res.anchor.radii = parseRlud(_bytes, _start + 4);
+        uint8 groupsIndex = _bytes.toUint8(addr);
 
-        uint8 groupsIndex = _bytes.toUint8(6);
-
-        uint256 i = 7;
+        uint256 i = addr;
         for (; i < groupsIndex; i += 2) {
             (IDotNugg.Coordinate memory rec, uint8 feature, bool calculated) = parseReceiver(_bytes, _start);
 
