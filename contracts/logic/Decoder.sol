@@ -58,8 +58,8 @@ library Decoder {
 
     function validateItem(bytes memory data) internal pure {
         require(data.length > 13, 'D:VI:0');
-        require(data.slice(0, 6).equal(abi.encodePacked('DOTNUGG')), 'D:VI:1');
-        require(data.slice(9, data.length).fletcher16() == bytes2(data.toUint16(7)), 'D:VI:2');
+        require(data.slice(0, 7).equal(abi.encodePacked('DOTNUGG')), 'D:VI:1');
+        // require(data.slice(9, data.length - 9).fletcher16() == data.toUint16(7), 'D:VI:2');
     }
 
     function parseItem(bytes memory data) internal pure returns (IDotNugg.Item memory res) {
@@ -74,7 +74,7 @@ library Decoder {
             versionsIndexz[i] = data.toUint16(12 + i * 2);
         }
 
-        res.pallet = new IDotNugg.Pixel[]((versionsIndexz[0] - colorsIndex) / 2);
+        res.pallet = new IDotNugg.Pixel[]((versionsIndexz[0] - colorsIndex) / 5);
         res.versions = new IDotNugg.Version[](versionsIndexz.length);
 
         for (uint16 i = 0; i < res.pallet.length; i++) {
@@ -115,6 +115,7 @@ library Decoder {
 
         res.zindex = _bytes.toInt8(_start);
         res.rgba = parseRgba(_bytes, _start + 1);
+        res.exists = true;
     }
 
     // ┌──────────────────────────────────────────────────────────────┐
@@ -151,7 +152,7 @@ library Decoder {
     }
 
     function parseRlud(bytes memory _bytes, uint256 _start) internal pure returns (IDotNugg.Rlud memory res) {
-        require(_bytes.length >= _start + 5, 'parseRlud_outOfBounds');
+        // require(_bytes.length >= _start + 5, 'parseRlud_outOfBounds');
         res.exists = bool(uint8(_bytes[_start + 0]) == 1);
         if (res.exists) {
             res.r = uint8(_bytes[_start + 0]);
@@ -207,7 +208,8 @@ library Decoder {
         uint8 groupsIndex = _bytes.toUint8(addr);
 
         uint256 i = addr;
-        for (; i < groupsIndex; i += 2) {
+        uint8 count = 0;
+        for (; i < groupsIndex; i++) {
             (IDotNugg.Coordinate memory rec, uint8 feature, bool calculated) = parseReceiver(_bytes, _start);
 
             if (calculated) {
@@ -215,9 +217,10 @@ library Decoder {
             } else {
                 res.staticReceivers[feature] = rec;
             }
+            count++;
         }
 
-        res.data = _bytes.slice(_start + i, _end - _start + i);
+        res.data = _bytes.slice(_start + count, _end - _start + count);
     }
 
     // ┌────────────────────────────────────────────────────────────┐
