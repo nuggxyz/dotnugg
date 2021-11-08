@@ -87,9 +87,9 @@ library Anchor {
         bool bottomFound;
         bool shouldExpandSide = true;
 
-        topOffset = 6;
-        bottomOffset = 6;
-        uint8 sideOffset = 4;
+        topOffset = 2;
+        bottomOffset = 2;
+        uint8 sideOffset = 0;
 
         while (!topFound && !bottomFound) {
             if (shouldExpandSide = !shouldExpandSide) {
