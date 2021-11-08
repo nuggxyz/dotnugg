@@ -5,22 +5,15 @@ pragma solidity 0.8.4;
 import '../interfaces/IDotNugg.sol';
 import '../logic/Matrix.sol';
 import '../logic/Anchor.sol';
+import '../test/Console.sol';
 
 contract AnchorTest {
     /**
      * @notice done
      * @dev
      */
-    function tfizzle()
-        external
-        view
-        returns (
-            uint8,
-            uint8,
-            uint8,
-            uint8
-        )
-    {
+
+    function initialize() internal view returns (IDotNugg.Matrix memory) {
         IDotNugg.Pixel[] memory pallet = new IDotNugg.Pixel[](2);
         pallet[0] = IDotNugg.Pixel({rgba: IDotNugg.Rgba({r: 1, g: 1, b: 1, a: 255}), zindex: 2, exists: true});
         pallet[1] = IDotNugg.Pixel({rgba: IDotNugg.Rgba({r: 255, g: 255, b: 255, a: 27}), zindex: 3, exists: true});
@@ -550,8 +543,64 @@ contract AnchorTest {
         input.data[21][28] = pallet[1];
         input.data[21][29] = pallet[1];
 
+        return input;
+    }
+
+    function tfizzle()
+        external
+        view
+        returns (
+            uint8,
+            uint8,
+            uint8,
+            uint8
+        )
+    {
+        IDotNugg.Matrix memory input = initialize();
+
         (uint8 top, uint8 bot, IDotNugg.Coordinate memory center) = Anchor.getBox(input);
 
         return (top, bot, center.a, center.b);
+    }
+
+    function tswizzle() external view returns (IDotNugg.Coordinate[] memory) {
+        IDotNugg.Matrix memory input = initialize();
+        IDotNugg.Coordinate[] memory anchors = Anchor.getAnchors(input);
+
+        for (uint8 i = 0; i < anchors.length; i++) {
+            console.log(i, anchors[i].a, anchors[i].b);
+        }
+
+        return anchors;
+    }
+
+    function initMix() internal view returns (IDotNugg.Mix memory) {
+        IDotNugg.Mix memory mix;
+        mix.matrix = initialize();
+        mix.version.width = 33;
+        mix.version.height = 33;
+        mix.version.calculatedReceivers = new IDotNugg.Coordinate[](4);
+        mix.version.calculatedReceivers[0].a = 1;
+        mix.version.calculatedReceivers[0].b = 1;
+        mix.version.calculatedReceivers[0].exists = true;
+        mix.version.calculatedReceivers[1].a = 2;
+        mix.version.calculatedReceivers[1].b = 2;
+        mix.version.calculatedReceivers[1].exists = true;
+        mix.version.calculatedReceivers[2].a = 3;
+        mix.version.calculatedReceivers[2].b = 1;
+        mix.version.calculatedReceivers[2].exists = true;
+
+        return mix;
+    }
+
+    function tbizzle() external view {
+        IDotNugg.Mix memory mix = initMix();
+
+        Anchor.convertCalculatedReceiversToAnchors(mix);
+        for (uint8 i = 0; i < mix.receivers.length; i++) {
+            console.log(i, mix.receivers[i].coordinate.a, mix.receivers[i].coordinate.b);
+            console.log('r', mix.receivers[i].radii.r, 'l', mix.receivers[i].radii.l);
+            console.log('u', mix.receivers[i].radii.u, 'd', mix.receivers[i].radii.d);
+        }
     }
 }
