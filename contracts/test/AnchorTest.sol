@@ -596,7 +596,7 @@ contract AnchorTest {
     function tbizzle() external view {
         IDotNugg.Mix memory mix = initMix();
 
-        Anchor.convertCalculatedReceiversToAnchors(mix);
+        Anchor.convertReceiversToAnchors(mix);
         for (uint8 i = 0; i < mix.receivers.length; i++) {
             console.log(i, mix.receivers[i].coordinate.a, mix.receivers[i].coordinate.b);
             console.log('r', mix.receivers[i].radii.r, 'l', mix.receivers[i].radii.l);

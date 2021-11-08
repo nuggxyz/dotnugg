@@ -4,6 +4,7 @@ pragma solidity 0.8.4;
 
 import '../interfaces/IDotNugg.sol';
 import './Matrix.sol';
+import '../test/Console.sol';
 
 library Anchor {
     using Matrix for IDotNugg.Matrix;
@@ -13,14 +14,15 @@ library Anchor {
      * @dev this is where we implement the logic you wrote in go
      */
 
-    function convertReceiversToAnchors(IDotNugg.Mix memory mix) internal pure {
-        IDotNugg.Coordinate[] memory anchors = getAnchors(mix.matrix);
+    function convertReceiversToAnchors(IDotNugg.Mix memory mix) internal view {
+        IDotNugg.Coordinate[] memory anchors;
 
         for (uint8 i = 0; i < mix.version.calculatedReceivers.length; i++) {
             IDotNugg.Coordinate memory coordinate;
             if (mix.version.staticReceivers[i].exists) {
                 coordinate = mix.version.staticReceivers[i];
             } else if (mix.version.calculatedReceivers[i].exists) {
+                if (anchors.length == 0) anchors = getAnchors(mix.matrix);
                 coordinate = calculateReceiverCoordinate(mix, mix.version.calculatedReceivers[i], anchors);
             }
             fledgeOutTheRluds(mix, coordinate, i);
@@ -31,18 +33,19 @@ library Anchor {
         IDotNugg.Mix memory mix,
         IDotNugg.Coordinate memory coordinate,
         uint8 index
-    ) internal pure {
+    ) internal view {
         IDotNugg.Rlud memory radii;
-        while (mix.matrix.data[coordinate.b][coordinate.a + (radii.r + 1)].exists) {
+        while (coordinate.a < mix.matrix.width - 1 && mix.matrix.data[coordinate.b][coordinate.a + (radii.r + 1)].exists) {
             radii.r++;
         }
-        while (mix.matrix.data[coordinate.b][coordinate.a - (radii.l + 1)].exists) {
+        console.log(coordinate.b, coordinate.a, radii.l);
+        while (coordinate.a != 0 && mix.matrix.data[coordinate.b][coordinate.a - (radii.l + 1)].exists) {
             radii.l++;
         }
-        while (mix.matrix.data[coordinate.b - (radii.u + 1)][coordinate.a].exists) {
+        while (coordinate.b != 0 && mix.matrix.data[coordinate.b - (radii.u + 1)][coordinate.a].exists) {
             radii.u++;
         }
-        while (mix.matrix.data[coordinate.b + (radii.d + 1)][coordinate.a].exists) {
+        while (coordinate.b < mix.matrix.height - 1 && mix.matrix.data[coordinate.b + (radii.d + 1)][coordinate.a].exists) {
             radii.d++;
         }
 
@@ -55,7 +58,7 @@ library Anchor {
         IDotNugg.Mix memory mix,
         IDotNugg.Coordinate memory calculatedReceiver,
         IDotNugg.Coordinate[] memory anchors
-    ) internal pure returns (IDotNugg.Coordinate memory coordinate) {
+    ) internal view returns (IDotNugg.Coordinate memory coordinate) {
         coordinate.a = anchors[calculatedReceiver.a].a;
         coordinate.b = anchors[calculatedReceiver.a].b;
         coordinate.exists = true;
@@ -76,7 +79,7 @@ library Anchor {
         return coordinate;
     }
 
-    function getAnchors(IDotNugg.Matrix memory matrix) internal pure returns (IDotNugg.Coordinate[] memory anchors) {
+    function getAnchors(IDotNugg.Matrix memory matrix) internal view returns (IDotNugg.Coordinate[] memory anchors) {
         (uint8 topOffset, uint8 bottomOffset, IDotNugg.Coordinate memory center) = getBox(matrix);
 
         anchors = new IDotNugg.Coordinate[](5);
@@ -102,7 +105,7 @@ library Anchor {
 
     function getBox(IDotNugg.Matrix memory matrix)
         internal
-        pure
+        view
         returns (
             uint8 topOffset,
             uint8 bottomOffset,

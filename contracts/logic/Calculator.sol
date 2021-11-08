@@ -21,7 +21,14 @@ library Calculator {
         IDotNugg.Canvas memory canvas;
         canvas.matrix = Matrix.create(collection.width, collection.height);
         canvas.receivers = new IDotNugg.Anchor[](collection.numFeatures);
-
+        IDotNugg.Coordinate memory coord;
+        coord.a = collection.width / 2;
+        coord.b = collection.width / 2;
+        coord.exists = true;
+        IDotNugg.Rlud memory r;
+        for (uint8 i = 0; i < collection.numFeatures; i++) {
+            canvas.receivers[i] = IDotNugg.Anchor({coordinate: coord, radii: r});
+        }
         canvas.matrix.width = collection.width;
         canvas.matrix.height = collection.height;
 
@@ -33,6 +40,7 @@ library Calculator {
 
         for (uint8 i = 0; i < items.length; i++) {
             if (items[i].versions.length > 0) {
+                console.log('start feature:', items[i].feature);
                 setMix(mix, items[i], pickVersionIndex(canvas, items[i]));
 
                 formatForCanvas(canvas, mix);
@@ -44,6 +52,7 @@ library Calculator {
                 calculateReceivers(mix);
 
                 updateReceivers(canvas, mix);
+                console.log('end feature:', items[i].feature);
             }
         }
 
@@ -57,6 +66,7 @@ library Calculator {
     function postionForCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal view {
         IDotNugg.Anchor memory receiver = canvas.receivers[mix.feature];
         IDotNugg.Anchor memory anchor = mix.version.anchor;
+
         uint8 xoffset = receiver.coordinate.a - anchor.coordinate.a;
         uint8 yoffset = receiver.coordinate.b - anchor.coordinate.b;
 

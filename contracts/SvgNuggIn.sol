@@ -23,11 +23,11 @@ contract SvgNuggIn is IFileResolver {
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId) public view override(IFileResolver) returns (bool) {
+    function supportsInterface(bytes4 interfaceId) public pure override(IFileResolver) returns (bool) {
         return interfaceId == type(IFileResolver).interfaceId || interfaceId == type(IColorResolver).interfaceId || interfaceId == type(IERC165).interfaceId;
     }
 
-    function resolveFile(IDotNugg.Matrix memory matrix, bytes memory data) public pure override returns (bytes memory res, string memory fileType) {
+    function resolveFile(IDotNugg.Matrix memory matrix, bytes memory data) public view override returns (bytes memory res, string memory fileType) {
         uint256 svgWidth = matrix.width * 10;
         bytes memory header = abi.encodePacked(
             "<svg viewBox='0 0 ",
@@ -44,7 +44,7 @@ contract SvgNuggIn is IFileResolver {
         return (abi.encodePacked(header, rects, '</svg>'), 'svg');
     }
 
-    function getSvgRects(IDotNugg.Matrix memory matrix, uint256 pixelWidth) internal pure returns (bytes memory res) {
+    function getSvgRects(IDotNugg.Matrix memory matrix, uint256 pixelWidth) internal view returns (bytes memory res) {
         //   IDotNugg.Rgba memory lastRgba;
         IDotNugg.Pixel memory lastPix;
         uint256 count;
