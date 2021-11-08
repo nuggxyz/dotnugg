@@ -39,4 +39,8 @@ library Rgba {
         bytes memory input = abi.encodePacked(base.r, base.g, base.b, base.a);
         return input.toAscii();
     }
+
+    function equalssss(IDotNugg.Rgba memory base, IDotNugg.Rgba memory next) internal pure returns (bool res) {
+        res = base.a == next.a && base.r == next.r && base.g == next.g && base.b == next.g;
+    }
 }
