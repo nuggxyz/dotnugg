@@ -24,11 +24,11 @@ contract SvgNuggIn is IFileResolver {
      * @dev See {IERC165-supportsInterface}.
      */
     function supportsInterface(bytes4 interfaceId) public pure override(IFileResolver) returns (bool) {
-        return interfaceId == type(IFileResolver).interfaceId || interfaceId == type(IColorResolver).interfaceId || interfaceId == type(IERC165).interfaceId;
+        return interfaceId == type(IFileResolver).interfaceId || interfaceId == type(IERC165).interfaceId;
     }
 
     function resolveFile(IDotNugg.Matrix memory matrix, bytes memory data) public view override returns (bytes memory res, string memory fileType) {
-        uint256 svgWidth = matrix.width * 10;
+        uint256 svgWidth = uint256(matrix.width) * 10;
         bytes memory header = abi.encodePacked(
             "<svg viewBox='0 0 ",
             svgWidth.toString(),
@@ -46,38 +46,44 @@ contract SvgNuggIn is IFileResolver {
 
     function getSvgRects(IDotNugg.Matrix memory matrix, uint256 pixelWidth) internal view returns (bytes memory res) {
         //   IDotNugg.Rgba memory lastRgba;
-        IDotNugg.Pixel memory lastPix;
-        uint256 count;
-        bool done;
+
         //   uint256 xtracker;
-        while (!done) {
-            lastPix = matrix.current();
-            while (!done) {
-                if (!matrix.next()) {
-                    done = true;
-                    break;
-                }
-                if (!lastPix.rgba.equalssss(matrix.current().rgba)) break;
-                count++;
-            }
-            if (lastPix.rgba.a != 0) {
-                if (matrix.currentUnsetX < count) {
-                    uint256 diff = count - matrix.currentUnsetX;
-                    res = abi.encodePacked(
-                        res,
-                        getRekt(lastPix.rgba, (matrix.width - diff) * pixelWidth, (matrix.currentUnsetY - 1) * pixelWidth, pixelWidth, diff * pixelWidth),
-                        getRekt(lastPix.rgba, 0, (matrix.currentUnsetY) * pixelWidth, pixelWidth, (count - diff) * pixelWidth)
-                    );
-                    //  res = abi.encodePacked(res, getRekt(lastPix.rgba, 0, (lastPix.currentUnsetY) * pixelWidth, pixelWidth, (count - diff) * pixelWidth));
-                } else {
-                    res = abi.encodePacked(
-                        res,
-                        getRekt(lastPix.rgba, (matrix.width - count) * pixelWidth, (matrix.currentUnsetY - 1) * pixelWidth, pixelWidth, count * pixelWidth),
-                        getRekt(lastPix.rgba, 0, (matrix.currentUnsetY) * pixelWidth, pixelWidth, (count) * pixelWidth)
-                    );
-                }
-            }
+
+        while (matrix.next()) {
+            res = abi.encodePacked(res, getRekt(matrix.current().rgba, matrix.currentUnsetX, matrix.currentUnsetY, pixelWidth, pixelWidth));
         }
+        //   while (!done) {
+        //       lastPix = matrix.current();
+        //       while (!done) {
+        //           if (!matrix.next()) {
+        //               done = true;
+        //               break;
+        //           }
+        //           if (!lastPix.rgba.equalssss(matrix.current().rgba)) break;
+
+        //           count++;
+        //           if (count == matrix.width - 1) break;
+        //       }
+        //       if (lastPix.rgba.a != 0) {
+        //           if (matrix.currentUnsetX < count) {
+        //               uint256 diff = count - matrix.currentUnsetX;
+        //               console.log(diff, count, matrix.currentUnsetX, matrix.currentUnsetY);
+        //               console.log(matrix.width);
+
+        //               res = abi.encodePacked(
+        //                   res,
+        //                   getRekt(lastPix.rgba, (matrix.width - diff) * pixelWidth, (matrix.currentUnsetY - 1) * pixelWidth, pixelWidth, diff * pixelWidth),
+        //                   getRekt(lastPix.rgba, 0, (matrix.currentUnsetY) * pixelWidth, pixelWidth, (count - diff) * pixelWidth)
+        //               );
+        //               //  res = abi.encodePacked(res, getRekt(lastPix.rgba, 0, (lastPix.currentUnsetY) * pixelWidth, pixelWidth, (count - diff) * pixelWidth));
+        //           } else {
+        //               res = abi.encodePacked(
+        //                   res,
+        //                   getRekt(lastPix.rgba, (matrix.width - count) * pixelWidth, (matrix.currentUnsetY - 1) * pixelWidth, pixelWidth, count * pixelWidth)
+        //               );
+        //           }
+        //       }
+        //   }
     }
 
     function getRekt(
