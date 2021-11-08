@@ -304,6 +304,7 @@ library Decoder {
     {
         require(_bytes.length >= _start + 2, 'parseRlud_outOfBounds');
         (res.a, res.b) = _bytes.toUint4(_start + 0);
+        res.exists = true;
         int8 tmpfeat = _bytes.toInt8(_start + 1);
 
         if (tmpfeat >= 0) {
