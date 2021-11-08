@@ -5,14 +5,21 @@ pragma solidity 0.8.4;
 import '../interfaces/IDotNugg.sol';
 import '../logic/Matrix.sol';
 import '../logic/Anchor.sol';
-import 'hardhat/console.sol';
 
 contract AnchorTest {
     /**
      * @notice done
      * @dev
      */
-    function tfizzle() external view returns (uint8, uint8, uint8, uint8)
+    function tfizzle()
+        external
+        view
+        returns (
+            uint8,
+            uint8,
+            uint8,
+            uint8
+        )
     {
         IDotNugg.Pixel[] memory pallet = new IDotNugg.Pixel[](2);
         pallet[0] = IDotNugg.Pixel({rgba: IDotNugg.Rgba({r: 1, g: 1, b: 1, a: 255}), zindex: 2, exists: true});

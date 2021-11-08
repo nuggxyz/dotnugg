@@ -30,9 +30,9 @@ contract PlainTest {
         hex'6e6e6e6e7567672109000d00456e6e6e6e7567672ab3020010001a002600000000ff00ffffffff0702040100000711021302110b03060100000722042310200420102304226e6e6e6e7567673431060010001a0022000000009900ffffffff03010201000007120501030100000714';
 
     function tfizzle(IDotNugg _contract, IFileResolver _resolver) public {
-        IDotNugg.Item memory item = Decoder.parseItem(sample1);
-        IDotNugg.Matrix memory mat = Matrix.create(33, 33);
-        Matrix.set(mat, item.versions[0].data, item.pallet, item.versions[0].width);
+        //   IDotNugg.Item memory item = Decoder.parseItem(sample1);
+        //   IDotNugg.Matrix memory mat = Matrix.create(33, 33);
+        //   Matrix.set(mat, item.versions[0].data, item.pallet, item.versions[0].width);
         bytes[] memory sampleItems = new bytes[](4);
 
         sampleItems[0] = sample1;
