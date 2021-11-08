@@ -76,6 +76,10 @@ interface IDotNugg {
         bool exists;
     }
 
+    struct Pallet {
+        Pixel[] pixels;
+    }
+
     struct Matrix {
         uint8 width;
         uint8 height;

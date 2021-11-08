@@ -107,7 +107,7 @@ contract MatrixTest is DSTest {
         // arguments
         uint8 width = 33;
         uint8 height = 33;
-        bytes memory data = hex'051105110511';
+        bytes memory data = hex'041004100410';
         uint8 groupWidth = 9;
         IDotNugg.Pixel[] memory pallet = new IDotNugg.Pixel[](2);
         pallet[0] = IDotNugg.Pixel({rgba: IDotNugg.Rgba({r: 1, g: 1, b: 1, a: 255}), zindex: 2, exists: true});
@@ -136,7 +136,7 @@ contract MatrixTest is DSTest {
         // arguments
         uint8 width = 33;
         uint8 height = 33;
-        bytes memory data = hex'051105110511';
+        bytes memory data = hex'041004100410';
         uint8 groupWidth = 9;
         IDotNugg.Pixel[] memory pallet = new IDotNugg.Pixel[](2);
         pallet[0] = IDotNugg.Pixel({rgba: IDotNugg.Rgba({r: 1, g: 1, b: 1, a: 255}), zindex: 2, exists: true});
