@@ -74,10 +74,10 @@ library Decoder {
             versionsIndexz[i] = data.toUint16(12 + i * 2);
         }
 
-        res.pallet = new IDotNugg.Pixel[]((versionsIndexz[0] - colorsIndex) / 5);
+        res.pallet = new IDotNugg.Pixel[](1 + (versionsIndexz[0] - colorsIndex) / 5);
         res.versions = new IDotNugg.Version[](versionsIndexz.length);
-
-        for (uint16 i = 0; i < res.pallet.length; i++) {
+        res.pallet[0] = IDotNugg.Pixel({rgba: IDotNugg.Rgba({r: 1, g: 1, b: 1, a: 0}), zindex: 0, exists: true});
+        for (uint16 i = 1; i < res.pallet.length; i++) {
             res.pallet[i] = parsePixel(data, colorsIndex + 5 * i);
         }
 
