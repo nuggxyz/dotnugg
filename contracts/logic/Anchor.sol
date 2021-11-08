@@ -15,9 +15,12 @@ library Anchor {
 
     function convertCalculatedReceiversToAnchors(IDotNugg.Mix memory mix) internal pure {
         IDotNugg.Coordinate[] memory anchors = getAnchors(mix.matrix);
+        mix.receivers = new IDotNugg.Anchor[](mix.version.calculatedReceivers.length);
 
         for (uint8 i = 0; i < mix.version.calculatedReceivers.length; i++) {
-            calculateReceiver(mix, mix.version.calculatedReceivers[i], anchors, i);
+            if (mix.version.calculatedReceivers[i].exists) {
+                calculateReceiver(mix, mix.version.calculatedReceivers[i], anchors, i);
+            }
         }
     }
 
@@ -38,16 +41,24 @@ library Anchor {
             coordinate.b = coordinate.b + (8 - calculatedReceiver.b);
         }
 
-        while (mix.matrix.data[coordinate.b][coordinate.a + radii.r].exists) {
+        while (!mix.matrix.data[coordinate.b][coordinate.a].exists) {
+            if (anchors[0].b > coordinate.b) {
+                coordinate.b++;
+            } else {
+                coordinate.b--;
+            }
+        }
+
+        while (mix.matrix.data[coordinate.b][coordinate.a + (radii.r + 1)].exists) {
             radii.r++;
         }
-        while (mix.matrix.data[coordinate.b][coordinate.a - radii.l].exists) {
+        while (mix.matrix.data[coordinate.b][coordinate.a - (radii.l + 1)].exists) {
             radii.l++;
         }
-        while (mix.matrix.data[coordinate.b - radii.u][coordinate.a].exists) {
+        while (mix.matrix.data[coordinate.b - (radii.u + 1)][coordinate.a].exists) {
             radii.u++;
         }
-        while (mix.matrix.data[coordinate.b + radii.d][coordinate.a].exists) {
+        while (mix.matrix.data[coordinate.b + (radii.d + 1)][coordinate.a].exists) {
             radii.d++;
         }
 
@@ -59,23 +70,25 @@ library Anchor {
     function getAnchors(IDotNugg.Matrix memory matrix) internal pure returns (IDotNugg.Coordinate[] memory anchors) {
         (uint8 topOffset, uint8 bottomOffset, IDotNugg.Coordinate memory center) = getBox(matrix);
 
+        anchors = new IDotNugg.Coordinate[](5);
+
         anchors[0] = center; // center
 
         anchors[1] = IDotNugg.Coordinate({a: center.a, b: center.b - topOffset, exists: true}); // top
 
-        uint8 upperOffset = center.b - topOffset;
+        uint8 upperOffset = topOffset;
         if (upperOffset % 2 != 0) {
             upperOffset++;
         }
-        anchors[2] = IDotNugg.Coordinate({a: center.a, b: upperOffset / 2, exists: true}); // inner top
+        anchors[2] = IDotNugg.Coordinate({a: center.a, b: center.b - (upperOffset / 2), exists: true}); // inner top
 
-        uint8 lowerOffset = center.b - bottomOffset;
+        uint8 lowerOffset = bottomOffset;
         if (lowerOffset % 2 != 0) {
             lowerOffset++;
         }
-        anchors[2] = IDotNugg.Coordinate({a: center.a, b: lowerOffset / 2, exists: true}); // inner bottom
+        anchors[3] = IDotNugg.Coordinate({a: center.a, b: center.b + (lowerOffset / 2), exists: true}); // inner bottom
 
-        anchors[3] = IDotNugg.Coordinate({a: center.a, b: center.b - bottomOffset, exists: true}); // inner bottom
+        anchors[4] = IDotNugg.Coordinate({a: center.a, b: center.b + bottomOffset, exists: true}); // inner bottom
     }
 
     function getBox(IDotNugg.Matrix memory matrix)

@@ -26,13 +26,35 @@ describe('anchor tests', async function () {
         await refresh();
     });
 
-    describe('getBox', async () => {
-        it('good box :)', async () => {
-            const [a, b, c, d] = await anchor.tfizzle();
-            expect(a).to.equal(9);
-            expect(b).to.equal(10);
-            expect(c).to.equal(16);
-            expect(d).to.equal(11);
+    // describe('getBox', async () => {
+    //     it('good box :)', async () => {
+    //         const [a, b, c, d] = await anchor.tfizzle();
+    //         expect(a).to.equal(9);
+    //         expect(b).to.equal(10);
+    //         expect(c).to.equal(16);
+    //         expect(d).to.equal(11);
+    //     });
+    // });
+
+    // describe('getAnchors', async () => {
+    //     it('good anchors :)', async () => {
+    //         const vals = await anchor.tswizzle();
+    //         console.log(vals)
+    //         expect(vals[0].a).to.equal(16);
+    //         expect(vals[0].b).to.equal(11);
+    //         expect(vals[1].a).to.equal(16);
+    //         expect(vals[1].b).to.equal(2);
+    //         expect(vals[2].a).to.equal(16);
+    //         expect(vals[2].b).to.equal(6);
+    //         expect(vals[3].a).to.equal(16);
+    //         expect(vals[3].b).to.equal(16);
+    //         expect(vals[4].a).to.equal(16);
+    //         expect(vals[4].b).to.equal(21);
+    //     });
+    // })
+    describe('all the receivers shit', async () => {
+        it('good receivers', async () => {
+            const vals = await anchor.tbizzle();
         });
-    });
+    })
 });
