@@ -45,6 +45,8 @@ library Decoder {
 
     function parseCollection(bytes memory data) internal view returns (IDotNugg.Collection memory res) {
         res.width = data.toUint8(7);
+        res.height = res.width;
+
         res.numFeatures = data.toUint8(8);
         uint16 tmp = data.toUint16(9);
         uint16[] memory itemIndexs = new uint16[]((tmp - 9) / 2);
@@ -66,7 +68,7 @@ library Decoder {
     function parseItems(bytes[] memory data) internal view returns (IDotNugg.Item[] memory res) {
         res = new IDotNugg.Item[](data.length);
         for (uint256 i = 0; i < data.length; i++) {
-            res[i] = parseItem(data[i]);
+            if (data[i].length > 0) res[i] = parseItem(data[i]);
         }
     }
 
