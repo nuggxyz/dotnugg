@@ -4,7 +4,6 @@ pragma solidity 0.8.4;
 
 import '../interfaces/IDotNugg.sol';
 import '../libraries/Bytes.sol';
-import './String.sol';
 
 library Matrix {
     using Bytes for bytes;
@@ -87,7 +86,7 @@ library Matrix {
             totalLength += len;
             for (uint256 j = 0; j < len; j++) {
                 next(matrix, groupWidth);
-                require(matrix.currentUnsetY < 33, String.concat(String.fromUint256(colorKey), ' ', String.fromUint256(len)));
+                //  require(matrix.currentUnsetY < 33, String.concat(String.fromUint256(colorKey), ' ', String.fromUint256(len)));
 
                 setCurrent(matrix, pallet[colorKey]);
                 //  require(matrix.currentUnsetX < 33, String.concat('x', String.fromUint256(matrix.currentUnsetX)));
