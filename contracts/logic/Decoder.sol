@@ -8,7 +8,6 @@ import '../libraries/Bytes.sol';
 import '../libraries/BytesLib.sol';
 import '../libraries/Checksum.sol';
 import '../libraries/Uint.sol';
-import '../test/Console.sol';
 
 library Decoder {
     using Bytes for bytes;
@@ -104,8 +103,8 @@ library Decoder {
 
     function validateItem(bytes memory data) internal view {
         require(data.length > 13, 'D:VI:0');
-        //   require(data.slice(0, 7).equal(abi.encodePacked('DOTNUGG')), 'D:VI:1');
-        //   require(data.slice(9, 2).fletcher16() == data.toUint16(7), 'D:VI:2');
+        require(data.slice(0, 7).equal(abi.encodePacked('DOTNUGG')), 'D:VI:1');
+        require(data.slice(9, data.length - 9).fletcher16() == data.toUint16(7), 'D:VI:2');
     }
 
     function parseItem(bytes memory data, uint8 featureLen) internal view returns (IDotNugg.Item memory res) {

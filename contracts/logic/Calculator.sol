@@ -6,7 +6,6 @@ import './Matrix.sol';
 import './Decoder.sol';
 import './Rgba.sol';
 import './Anchor.sol';
-import '../test/Console.sol';
 
 import '../interfaces/IDotNugg.sol';
 
@@ -58,7 +57,6 @@ library Calculator {
     function postionForCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal view {
         IDotNugg.Anchor memory receiver = canvas.receivers[mix.feature];
         IDotNugg.Anchor memory anchor = mix.version.anchor;
-        console.log(receiver.coordinate.exists, mix.feature);
         uint8 xoffset = receiver.coordinate.a - anchor.coordinate.a;
         uint8 yoffset = receiver.coordinate.b - anchor.coordinate.b;
 
@@ -127,7 +125,6 @@ library Calculator {
         IDotNugg.Item memory item,
         uint8 versionIndex
     ) internal view {
-        console.log(item.versions.length);
         res.version = item.versions[versionIndex];
         res.feature = item.feature;
         res.receivers = new IDotNugg.Anchor[](res.receivers.length);
