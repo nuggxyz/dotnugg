@@ -11,17 +11,21 @@ import 'hardhat-erc1820';
 import 'hardhat-abi-exporter';
 import 'hardhat-contract-sizer';
 import { resolve } from 'path';
+
 import '@atixlabs/hardhat-time-n-mine';
 import 'hardhat-storage-layout';
 // NORMAL IMPORTS
 import './tasks/general/accounts';
-
 import 'hardhat-tracer';
 
-import { HardhatUserConfig, NetworksUserConfig, NetworkUserConfig } from 'hardhat/types';
-import { removeConsoleLog } from 'hardhat-preprocessor';
 import { config as dotenvConfig } from 'dotenv';
 import { utils } from 'ethers';
+import { removeConsoleLog } from 'hardhat-preprocessor';
+import {
+    HardhatUserConfig,
+    NetworksUserConfig,
+    NetworkUserConfig,
+} from 'hardhat/types';
 
 dotenvConfig({ path: resolve(__dirname, './.env') });
 
