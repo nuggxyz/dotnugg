@@ -4,7 +4,6 @@ pragma solidity 0.8.4;
 
 import '../interfaces/IDotNugg.sol';
 import './Matrix.sol';
-import './String.sol';
 
 library Anchor {
     using Matrix for IDotNugg.Matrix;
