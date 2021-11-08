@@ -17,14 +17,13 @@ import './interfaces/INuggIn.sol';
  */
 contract DotNugg is IDotNugg {
     using Calculator for IDotNugg.Collection;
-    using Calculator for IDotNugg.Collection;
 
     function nuggify(
-        bytes calldata _collection,
-        bytes[] calldata _items,
+        bytes memory _collection,
+        bytes[] memory _items,
         address _resolver,
-        bytes calldata data
-    ) external view override returns (string memory image) {
+        bytes memory data
+    ) public view override returns (string memory image) {
         IFileResolver fileResolver = IFileResolver(_resolver);
         IColorResolver colorResolver = IColorResolver(_resolver);
 
