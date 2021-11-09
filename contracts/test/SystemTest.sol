@@ -29,7 +29,7 @@ contract SystemTest {
     bytes sampleCollection =
         hex'444f544e5547472109000d0045444f544e5547471fb1020010001a002601000000ff01ffffffff0702030000000711021302110b0305000000072204231020042010230422444f544e5547473d2f060010001a0022010000009901ffffffff03010100000007120501020000000714';
 
-    function tfizzle(IDotNugg _contract, IFileResolver _resolver) public {
+    function tfizzle(IDotNugg _contract, IFileResolver _resolver) public view returns (string memory res) {
         //   IDotNugg.Item memory item = Decoder.parseItem(sample1);
         //   IDotNugg.Matrix memory mat = Matrix.create(33, 33);
         //   Matrix.set(mat, item.versions[0].data, item.pallet, item.versions[0].width);
@@ -40,7 +40,7 @@ contract SystemTest {
         sampleItems[2] = sample3;
         sampleItems[3] = sample4;
 
-        string memory res = _contract.nuggify(sampleCollection, sampleItems, address(_resolver), '');
+        res = _contract.nuggify(sampleCollection, sampleItems, address(_resolver), '');
         console.log(res);
         //   General.convert(sampleCollection, sampleItems, address(0), '');
         //   assertTrue(item.feature == 0);

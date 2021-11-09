@@ -42,6 +42,6 @@ library Rgba {
     }
 
     function equalssss(IDotNugg.Rgba memory base, IDotNugg.Rgba memory next) internal view returns (bool res) {
-        res = base.a == next.a && base.r == next.r && base.g == next.g && base.b == next.g;
+        res = base.a == next.a && base.r == next.r && base.g == next.g && base.b == next.b;
     }
 }
