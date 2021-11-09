@@ -4,10 +4,13 @@ pragma solidity 0.8.4;
 
 import '../interfaces/IDotNugg.sol';
 import '../libraries/Bytes.sol';
+import '../logic/Rgba.sol';
+
 import '../test/Console.sol';
 
 library Matrix {
     using Bytes for bytes;
+    using Rgba for IDotNugg.Rgba;
 
     function create(uint8 width, uint8 height) internal view returns (IDotNugg.Matrix memory res) {
         require(width % 2 == 1 && height % 2 == 1, 'ML:C:0');
@@ -85,6 +88,7 @@ library Matrix {
             for (uint256 j = 0; j < len; j++) {
                 next(matrix, groupWidth);
                 setCurrent(matrix, pallet[colorKey]);
+                console.log('yo', current(matrix).rgba.toAscii());
             }
         }
 

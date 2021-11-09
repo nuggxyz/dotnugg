@@ -23,7 +23,7 @@ contract SvgNuggIn is IFileResolver {
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId) public pure override(IFileResolver) returns (bool) {
+    function supportsInterface(bytes4 interfaceId) public view override(IFileResolver) returns (bool) {
         return interfaceId == type(IFileResolver).interfaceId || interfaceId == type(IERC165).interfaceId;
     }
 
@@ -45,13 +45,30 @@ contract SvgNuggIn is IFileResolver {
     }
 
     function getSvgRects(IDotNugg.Matrix memory matrix, uint256 pixelWidth) internal view returns (bytes memory res) {
-        //   IDotNugg.Rgba memory lastRgba;
+        IDotNugg.Rgba memory lastRgba;
+        uint8 lastX;
 
-        //   uint256 xtracker;
-
+        uint256 xtracker;
+        uint256 count = 1;
         while (matrix.next()) {
-            res = abi.encodePacked(res, getRekt(matrix.current().rgba, matrix.currentUnsetX, matrix.currentUnsetY, pixelWidth, pixelWidth));
+            if (lastRgba.equalssss(matrix.current().rgba) && matrix.currentUnsetX < matrix.width) {
+                count++;
+                continue;
+            }
+            if (lastRgba.a != 0) {
+                res = abi.encodePacked(
+                    res,
+                    getRekt(matrix.current().rgba, lastX * pixelWidth, matrix.currentUnsetY * pixelWidth, count * pixelWidth, pixelWidth)
+                );
+            }
+            lastRgba = matrix.current().rgba;
+            lastX = matrix.currentUnsetX;
+            xtracker = 0;
+            count = 1;
         }
+
+        res = abi.encodePacked(res, getRekt(matrix.current().rgba, lastX * pixelWidth, matrix.currentUnsetY * pixelWidth, count * pixelWidth, pixelWidth));
+
         //   while (!done) {
         //       lastPix = matrix.current();
         //       while (!done) {
@@ -92,7 +109,7 @@ contract SvgNuggIn is IFileResolver {
         uint256 y,
         uint256 xlen,
         uint256 ylen
-    ) internal pure returns (bytes memory res) {
+    ) internal view returns (bytes memory res) {
         if (rgba.a == 0) return '';
         //   (rgba, ) = rgba.combine(IDotNugg.Rgba({r: 0, g: 255, b: 0, a: 99}));
         res = abi.encodePacked(
