@@ -265,16 +265,17 @@ library Decoder {
         res.anchor.coordinate.b = _bytes.toUint8(_start + 3);
         res.expanders = parseRlud(_bytes, _start + 4);
 
-        res.anchor.radii = parseRlud(_bytes, _start + (res.expanders.exists ? 9 : 5));
+        res.anchor.radii = parseRlud(_bytes, _start + (res.expanders.exists ? 10 : 5));
 
-        uint8 groupsIndex = _bytes.toUint8(
-            _start + (res.expanders.exists && res.anchor.radii.exists ? 14 : res.expanders.exists || res.anchor.radii.exists ? 10 : 6)
-        );
+        uint16 groupsIndex = uint16(_start) +
+            _bytes.toUint8(_start + (res.expanders.exists && res.anchor.radii.exists ? 15 : res.expanders.exists || res.anchor.radii.exists ? 11 : 6));
 
-        uint256 i = _start + (res.expanders.exists && res.expanders.exists ? 14 : res.expanders.exists || res.expanders.exists ? 10 : 6) + 1;
+        uint256 i = _start + (res.expanders.exists && res.expanders.exists ? 15 : res.expanders.exists || res.expanders.exists ? 11 : 6) + 1;
+
+        console.log('ayo', _start, groupsIndex, i);
         for (; i < groupsIndex; i += 2) {
             (IDotNugg.Coordinate memory rec, uint8 feature, bool calculated) = parseReceiver(_bytes, i);
-            console.log('here', groupsIndex, i, _start);
+            console.log('HERE IS THE RECEIVER: ', rec.a, feature, calculated);
 
             if (calculated) {
                 res.calculatedReceivers[feature] = rec;
@@ -284,7 +285,7 @@ library Decoder {
             }
         }
 
-        res.data = _bytes.slice(_start + groupsIndex, _end - _start - groupsIndex);
+        res.data = _bytes.slice(groupsIndex, _end - groupsIndex);
     }
 
     // ┌────────────────────────────────────────────────────────────┐
