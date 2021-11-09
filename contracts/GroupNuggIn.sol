@@ -66,20 +66,21 @@ contract GroupNuggIn is IFileResolver {
 
         IDotNugg.Pixel[] memory mapper = new IDotNugg.Pixel[](50);
 
-        bytes memory tmp = new bytes(256);
+        bytes memory tmp = new bytes(1000);
 
         //   uint256 xtracker;
 
-        uint8 restracker = 0;
+        uint256 restracker = 0;
         uint8 count = 1;
         while (matrix.next()) {
-            if (lastPixel.rgba.equalssss(matrix.current().rgba) && count < 16) {
+            if (lastPixel.rgba.equalssss(matrix.current().rgba) && count < 256) {
                 //  lastPixel = matrix.current().rgba;
                 count++;
                 continue;
             }
             // if (lastPixel.rgba.a != 0) {
-            tmp[restracker++] = combineBros(getPixelIndex(mapper, lastPixel), count - 1);
+            tmp[restracker++] = bytes1(getPixelIndex(mapper, lastPixel));
+            tmp[restracker++] = bytes1(count - 1);
             // res = abi.encodePacked(res, combineBros(getPixelIndex(mapper, lastPixel), count));
             // }
             lastPixel = matrix.current();
@@ -89,7 +90,8 @@ contract GroupNuggIn is IFileResolver {
         }
 
         //   res = abi.encodePacked(res, combineBros(getPixelIndex(mapper, lastPixel), count));
-        tmp[restracker++] = combineBros(getPixelIndex(mapper, lastPixel), count - 1);
+        tmp[restracker++] = bytes1(getPixelIndex(mapper, lastPixel));
+        tmp[restracker++] = bytes1(count - 1);
 
         res = new bytes(restracker + 1);
         for (uint256 i = 0; i < res.length; i++) {
