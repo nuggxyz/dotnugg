@@ -39,7 +39,7 @@ library Calculator {
         IDotNugg.Item[] memory items = Decoder.parseItems(inputs, collection.numFeatures);
 
         for (uint8 i = 0; i < items.length; i++) {
-            if (items[i].versions.length > 0) {
+            if (items[i].versions.length > 0 && i < 1) {
                 console.log('start feature:', items[i].feature);
                 setMix(mix, items[i], pickVersionIndex(canvas, items[i]));
 
@@ -139,7 +139,7 @@ library Calculator {
         res.feature = item.feature;
         res.receivers = new IDotNugg.Anchor[](res.receivers.length);
 
-        res.matrix.set(res.version.data, item.pallet, res.version.width);
+        res.matrix.set(res.version.data, item.pallet, res.version.width, res.version.height);
     }
 
     /**
@@ -161,15 +161,15 @@ library Calculator {
         while (canvas.matrix.next() && mix.matrix.next()) {
             IDotNugg.Pixel memory canvasPixel = canvas.matrix.current();
             IDotNugg.Pixel memory mixPixel = mix.matrix.current();
-            // console.log(mixPixel.exists);
-            // console.logInt(mixPixel.zindex);
-            // console.logInt(canvasPixel.zindex);
-            // console.log('-------------');
+            console.log(mixPixel.exists);
+            console.logInt(mixPixel.zindex);
+            console.logInt(canvasPixel.zindex);
+            console.log('-------------');
             if (mixPixel.exists && mixPixel.zindex >= canvasPixel.zindex) {
                 canvasPixel.zindex = mixPixel.zindex;
                 //  console.log(Rgba.toAscii(canvasPixel.rgba), Rgba.toAscii(mixPixel.rgba));
 
-                canvasPixel.rgba = canvasPixel.rgba.combine(mixPixel.rgba);
+                canvasPixel.rgba.combine(mixPixel.rgba);
 
                 //  console.log(Rgba.toAscii(canvasPixel.rgba), Rgba.toAscii(mixPixel.rgba));
             }

@@ -49,8 +49,8 @@ contract DotNugg is IDotNugg {
         if (colorResolver.supportsInterface(type(IColorResolver).interfaceId)) {
             colorResolver.resolveColor(matrix, data);
         }
-        (bytes memory fileData, string memory fileType) = fileResolver.resolveFile(matrix, data);
+        //   (bytes memory fileData, string memory fileType) = fileResolver.resolveFile(matrix, data);
 
-        image = Base64.encode(fileData, fileType);
+        //   image = Base64.encode(fileData, fileType);
     }
 }
