@@ -258,19 +258,19 @@ library Decoder {
 
         res.calculatedReceivers = new IDotNugg.Coordinate[](featureLen);
         res.staticReceivers = new IDotNugg.Coordinate[](featureLen);
+        uint256 addr = 0;
+        res.width = _bytes.toUint8(_start + addr++);
+        res.height = _bytes.toUint8(_start + addr++);
+        res.anchor.coordinate.a = _bytes.toUint8(_start + addr++);
+        res.anchor.coordinate.b = _bytes.toUint8(_start + addr++);
+        res.expanders = parseRlud(_bytes, _start + addr++);
+        if (res.expanders.exists) addr += 4;
+        res.anchor.radii = parseRlud(_bytes, _start + addr++);
+        if (res.anchor.radii.exists) addr += 4;
 
-        res.width = _bytes.toUint8(_start + 0);
-        res.height = _bytes.toUint8(_start + 1);
-        res.anchor.coordinate.a = _bytes.toUint8(_start + 2);
-        res.anchor.coordinate.b = _bytes.toUint8(_start + 3);
-        res.expanders = parseRlud(_bytes, _start + 4);
+        uint16 groupsIndex = uint16(_start) + _bytes.toUint8(_start + addr++);
 
-        res.anchor.radii = parseRlud(_bytes, _start + (res.expanders.exists ? 10 : 5));
-
-        uint16 groupsIndex = uint16(_start) +
-            _bytes.toUint8(_start + (res.expanders.exists && res.anchor.radii.exists ? 15 : res.expanders.exists || res.anchor.radii.exists ? 11 : 6));
-
-        uint256 i = _start + (res.expanders.exists && res.expanders.exists ? 15 : res.expanders.exists || res.expanders.exists ? 11 : 6) + 1;
+        uint256 i = _start + addr++;
 
         console.log('ayo', _start, groupsIndex, i);
         for (; i < groupsIndex; i += 2) {

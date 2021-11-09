@@ -85,13 +85,14 @@ library Matrix {
         for (uint256 i = 0; i < data.length; i++) {
             (uint8 colorKey, uint8 len) = data.toUint4(i);
             len++;
-            console.log(colorKey, len);
+            // console.log(colorKey, len);
             totalLength += len;
             for (uint256 j = 0; j < len; j++) {
                 next(matrix, groupWidth);
                 setCurrent(matrix, pallet[colorKey]);
                 //  console.log('yo', current(matrix).rgba.toAscii());
             }
+            console.log(totalLength, groupWidth, groupHeight);
         }
 
         require(totalLength % groupWidth == 0, 'MTRX:SET:0');
