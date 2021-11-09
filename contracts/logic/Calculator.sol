@@ -80,7 +80,7 @@ library Calculator {
     function formatForCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal view {
         IDotNugg.Anchor memory receiver = canvas.receivers[mix.feature];
         IDotNugg.Anchor memory anchor = mix.version.anchor;
-
+        console.log("BEFORE x:",anchor.coordinate.a,", y:", anchor.coordinate.b);
         if (anchor.radii.r != 0 && anchor.radii.r <= receiver.radii.r) {
             // require(anchor.radii.r <= receiver.radii.r, 'CAL:FFC:0'); // DBP
             mix.matrix.addColumnsAt(anchor.coordinate.a + 1, receiver.radii.r - anchor.radii.r);
@@ -97,6 +97,7 @@ library Calculator {
         if (anchor.radii.d != 0 && anchor.radii.d <= receiver.radii.d) {
             // require(anchor.radii.d <= receiver.radii.d, 'CAL:FFC:0'); // DBP
             mix.matrix.addRowsAt(anchor.coordinate.b - 1, receiver.radii.d - anchor.radii.d);
+            console.log("OLE ASS", anchor.coordinate.b, (receiver.radii.d - anchor.radii.d)) ;
             anchor.coordinate.b += receiver.radii.d - anchor.radii.d;
         }
     }
@@ -111,11 +112,13 @@ library Calculator {
         if (item.versions.length == 1) {
             return 0;
         }
+        uint8 index = uint8(item.versions.length) - 1;
 
-        for (uint8 i = 0; i < item.versions.length; i++) {
-            if (checkRluds(item.versions[i].anchor.radii, canvas.receivers[item.feature].radii)) {
-                return i;
+        while (index > 0) {
+            if (checkRluds(item.versions[index].anchor.radii, canvas.receivers[item.feature].radii)) {
+                return index;
             }
+            index = index - 1;
         }
 
         return 0;
@@ -151,6 +154,11 @@ library Calculator {
             IDotNugg.Anchor memory m = mix.receivers[i];
             if (m.coordinate.exists) canvas.receivers[i] = m;
         }
+        // for (uint8 i = 0 ; i < canvas.receivers.length; i++) {
+        //     console.log("CANVAS", i);
+        //     console.log("x:", canvas.receivers[i].coordinate.a, ", y:" ,canvas.receivers[i].coordinate.b);
+        //     console.log("___END___");
+        // }
     }
 
     /**
