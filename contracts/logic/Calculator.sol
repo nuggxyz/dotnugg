@@ -161,10 +161,17 @@ library Calculator {
         while (canvas.matrix.next() && mix.matrix.next()) {
             IDotNugg.Pixel memory canvasPixel = canvas.matrix.current();
             IDotNugg.Pixel memory mixPixel = mix.matrix.current();
-
-            if (mixPixel.exists && mixPixel.zindex > canvasPixel.zindex) {
+            // console.log(mixPixel.exists);
+            // console.logInt(mixPixel.zindex);
+            // console.logInt(canvasPixel.zindex);
+            // console.log('-------------');
+            if (mixPixel.exists && mixPixel.zindex >= canvasPixel.zindex) {
                 canvasPixel.zindex = mixPixel.zindex;
-                canvasPixel.rgba.combine(mixPixel.rgba);
+                //  console.log(Rgba.toAscii(canvasPixel.rgba), Rgba.toAscii(mixPixel.rgba));
+
+                canvasPixel.rgba = canvasPixel.rgba.combine(mixPixel.rgba);
+
+                //  console.log(Rgba.toAscii(canvasPixel.rgba), Rgba.toAscii(mixPixel.rgba));
             }
         }
 
