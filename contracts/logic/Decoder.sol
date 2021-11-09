@@ -118,6 +118,7 @@ library Decoder {
 
         uint16 colorsIndex = data.toUint16(10);
         uint16[] memory versionsIndexz = new uint16[]((colorsIndex - 12) / 2);
+        console.log('yello', versionsIndexz.length);
 
         for (uint16 i = 0; i < versionsIndexz.length; i++) {
             versionsIndexz[i] = data.toUint16(12 + i * 2);
@@ -125,6 +126,8 @@ library Decoder {
 
         res.pallet = new IDotNugg.Pixel[](1 + (versionsIndexz[0] - colorsIndex) / 5);
         res.versions = new IDotNugg.Version[](versionsIndexz.length);
+        console.log('p', res.pallet.length);
+
         require(res.versions.length > 0, 'DEC:PI:0');
         res.pallet[0] = IDotNugg.Pixel({rgba: IDotNugg.Rgba({r: 1, g: 1, b: 1, a: 0}), zindex: 0, exists: false});
         for (uint16 i = 1; i < res.pallet.length; i++) {
@@ -164,7 +167,11 @@ library Decoder {
     function parsePixel(bytes memory _bytes, uint256 _start) internal view returns (IDotNugg.Pixel memory res) {
         require(_bytes.length >= _start + 5, 'parsePixel_outOfBounds');
 
+        console.log('sup', _bytes.toUint8(_start));
+
         res.zindex = _bytes.toInt8(_start);
+
+        console.logInt(res.zindex);
         res.rgba = parseRgba(_bytes, _start + 1);
         res.exists = true;
     }
@@ -264,10 +271,10 @@ library Decoder {
             _start + (res.expanders.exists && res.anchor.radii.exists ? 14 : res.expanders.exists || res.anchor.radii.exists ? 10 : 6)
         );
 
-        uint256 i = (res.expanders.exists && res.expanders.exists ? 14 : res.expanders.exists || res.expanders.exists ? 10 : 6) + 1;
-
+        uint256 i = _start + (res.expanders.exists && res.expanders.exists ? 14 : res.expanders.exists || res.expanders.exists ? 10 : 6) + 1;
         for (; i < groupsIndex; i += 2) {
-            (IDotNugg.Coordinate memory rec, uint8 feature, bool calculated) = parseReceiver(_bytes, _start + i);
+            (IDotNugg.Coordinate memory rec, uint8 feature, bool calculated) = parseReceiver(_bytes, i);
+            console.log('here', groupsIndex, i, _start);
 
             if (calculated) {
                 res.calculatedReceivers[feature] = rec;
