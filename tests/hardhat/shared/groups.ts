@@ -1,7 +1,14 @@
 import { ethers } from 'ethers';
 
-const Box = '█';
-const Box2 = '░';
+// const Box = '⬆︎';
+// const Box2 = '░';
+// const Box3 = '🀫';
+// const Box4 = '♦︎';
+
+const Box = '⬆︎';
+const Box2 = '⬇︎';
+const Box3 = '⇧';
+const Box4 = '⇩';
 const Reset = '\x1B[0m';
 const Red = '\x1B[31m';
 const Green = '\x1B[32m';
@@ -12,39 +19,53 @@ const Cyan = '\x1B[36m';
 const Gray = '\x1B[37m';
 const White = '\x1B[97m';
 
-const colorLookup: { [_: number]: string } = {
-    0: ' ',
-    1: Green + Box + Reset,
-    2: Yellow + Box + Reset,
-    3: Blue + Box + Reset,
-    4: Cyan + Box + Reset,
-    5: Purple + Box + Reset,
-    6: Gray + Box + Reset,
-    7: Red + Box + Reset,
-    8: White + Box2 + Reset,
-    9: White + Box + Reset,
-    10: Green + Box2 + Reset,
-    11: Yellow + Box2 + Reset,
-    12: Red + Box2 + Reset,
-    13: Blue + Box2 + Reset,
-    14: Cyan + Box2 + Reset,
-    15: Purple + Box2 + Reset,
-    16: Gray + Box2 + Reset,
-    17: Red + Box2 + Reset,
-    18: Blue + Box2 + Reset,
-};
+const colorLookup: { [_: number]: string } = [
+    ' ',
+    Green + Box + Reset,
+    Yellow + Box + Reset,
+    Blue + Box + Reset,
+    Cyan + Box + Reset,
+    Purple + Box + Reset,
+    Gray + Box + Reset,
+    Red + Box + Reset,
+    White + Box + Reset,
+    Green + Box2 + Reset,
+    Yellow + Box2 + Reset,
+    Blue + Box2 + Reset,
+    Cyan + Box2 + Reset,
+    Purple + Box2 + Reset,
+    Gray + Box2 + Reset,
+    Red + Box2 + Reset,
+    White + Box2 + Reset,
+    Green + Box3 + Reset,
+    Yellow + Box3 + Reset,
+    Blue + Box3 + Reset,
+    Cyan + Box3 + Reset,
+    Purple + Box3 + Reset,
+    Gray + Box3 + Reset,
+    Red + Box3 + Reset,
+    White + Box3 + Reset,
+    Green + Box4 + Reset,
+    Yellow + Box4 + Reset,
+    Blue + Box4 + Reset,
+    Cyan + Box4 + Reset,
+    Purple + Box4 + Reset,
+    Gray + Box4 + Reset,
+    Red + Box4 + Reset,
+    White + Box4 + Reset,
+];
 
 type Group = {
     key: number;
     len: number;
 };
 
-function DecodeByteToGroup(data: number): Group {
+function DecodeByteToGroup(a: number, b: number): Group {
     // if len(data) != 1 {
     // 	log.Fatal("trying to decode row not of length 2" + string(data))
     // }
 
-    const [a, b] = toUint4(data);
+    //  const [a, b] = toUint4(data);
 
     // fmt.Println(a, b+1)
     return {
@@ -58,8 +79,8 @@ function DecodeBytesToGroups(data: Uint8Array): Group[] {
     // 	log.Fatal("trying to decode row not of length 2" + string(data))
     // }
     let res: Group[] = [];
-    for (let i = 0; i < data.length; i++) {
-        res.push(DecodeByteToGroup(data[i]));
+    for (let i = 0; i < data.length; i += 2) {
+        res.push(DecodeByteToGroup(data[i], data[i + 1]));
     }
     return res;
 }
