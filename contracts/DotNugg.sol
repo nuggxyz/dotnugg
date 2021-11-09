@@ -17,6 +17,7 @@ import './interfaces/INuggIn.sol';
  */
 contract DotNugg is IDotNugg {
     using Calculator for IDotNugg.Collection;
+    using Bytes for bytes;
 
     function nuggify(
         bytes memory _collection,
@@ -52,5 +53,6 @@ contract DotNugg is IDotNugg {
         (bytes memory fileData, string memory fileType) = fileResolver.resolveFile(matrix, data);
 
         image = Base64.encode(fileData, fileType);
+        //   image = fileData.toAscii();
     }
 }
