@@ -80,7 +80,7 @@ library Calculator {
     function formatForCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal view {
         IDotNugg.Anchor memory receiver = canvas.receivers[mix.feature];
         IDotNugg.Anchor memory anchor = mix.version.anchor;
-        console.log("BEFORE x:",anchor.coordinate.a,", y:", anchor.coordinate.b);
+        console.log('BEFORE x:', anchor.coordinate.a, ', y:', anchor.coordinate.b);
         if (anchor.radii.r != 0 && anchor.radii.r <= receiver.radii.r) {
             // require(anchor.radii.r <= receiver.radii.r, 'CAL:FFC:0'); // DBP
             mix.matrix.addColumnsAt(anchor.coordinate.a + 1, receiver.radii.r - anchor.radii.r);
@@ -97,7 +97,7 @@ library Calculator {
         if (anchor.radii.d != 0 && anchor.radii.d <= receiver.radii.d) {
             // require(anchor.radii.d <= receiver.radii.d, 'CAL:FFC:0'); // DBP
             mix.matrix.addRowsAt(anchor.coordinate.b - 1, receiver.radii.d - anchor.radii.d);
-            console.log("OLE ASS", anchor.coordinate.b, (receiver.radii.d - anchor.radii.d)) ;
+            console.log('OLE ASS', anchor.coordinate.b, (receiver.radii.d - anchor.radii.d));
             anchor.coordinate.b += receiver.radii.d - anchor.radii.d;
         }
     }
@@ -176,8 +176,12 @@ library Calculator {
             if (mixPixel.exists && mixPixel.zindex >= canvasPixel.zindex) {
                 canvasPixel.zindex = mixPixel.zindex;
                 //  console.log(Rgba.toAscii(canvasPixel.rgba), Rgba.toAscii(mixPixel.rgba));
+                console.log('COMBINE', canvasPixel.rgba.toAscii(), mixPixel.rgba.toAscii());
+                console.logInt(mixPixel.zindex);
+                console.logInt(canvasPixel.zindex);
 
                 canvasPixel.rgba.combine(mixPixel.rgba);
+                console.log('COMBINE', canvasPixel.rgba.toAscii(), mixPixel.rgba.toAscii());
 
                 //  console.log(Rgba.toAscii(canvasPixel.rgba), Rgba.toAscii(mixPixel.rgba));
             }
