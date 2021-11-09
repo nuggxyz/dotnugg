@@ -48,22 +48,20 @@ contract SvgNuggIn is IFileResolver {
         IDotNugg.Rgba memory lastRgba;
         uint8 lastX;
 
-        uint256 xtracker;
+        //   uint256 xtracker;
         uint256 count = 1;
         while (matrix.next()) {
-            if (lastRgba.equalssss(matrix.current().rgba) && matrix.currentUnsetX < matrix.width) {
+            if ((lastRgba.equalssss(matrix.current().rgba) && matrix.currentUnsetX < matrix.data[matrix.currentUnsetY].length)) {
+                //  lastRgba = matrix.current().rgba;
                 count++;
                 continue;
             }
             if (lastRgba.a != 0) {
-                res = abi.encodePacked(
-                    res,
-                    getRekt(matrix.current().rgba, lastX * pixelWidth, matrix.currentUnsetY * pixelWidth, count * pixelWidth, pixelWidth)
-                );
+                res = abi.encodePacked(res, getRekt(lastRgba, lastX * pixelWidth, matrix.currentUnsetY * pixelWidth, count * pixelWidth, pixelWidth));
             }
             lastRgba = matrix.current().rgba;
             lastX = matrix.currentUnsetX;
-            xtracker = 0;
+            // xtracker = 0;
             count = 1;
         }
 

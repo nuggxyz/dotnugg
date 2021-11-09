@@ -39,7 +39,7 @@ library Calculator {
         IDotNugg.Item[] memory items = Decoder.parseItems(inputs, collection.numFeatures);
 
         for (uint8 i = 0; i < items.length; i++) {
-            if (items[i].versions.length > 0 && i < 1) {
+            if (items[i].versions.length > 0) {
                 console.log('start feature:', items[i].feature);
                 setMix(mix, items[i], pickVersionIndex(canvas, items[i]));
 
@@ -81,21 +81,21 @@ library Calculator {
         IDotNugg.Anchor memory receiver = canvas.receivers[mix.feature];
         IDotNugg.Anchor memory anchor = mix.version.anchor;
 
-        if (anchor.radii.r != 0) {
-            require(anchor.radii.r <= receiver.radii.r, 'CAL:FFC:0'); // DBP
+        if (anchor.radii.r != 0 && anchor.radii.r <= receiver.radii.r) {
+            // require(anchor.radii.r <= receiver.radii.r, 'CAL:FFC:0'); // DBP
             mix.matrix.addColumnsAt(anchor.coordinate.a + 1, receiver.radii.r - anchor.radii.r);
         }
-        if (anchor.radii.l != 0) {
-            require(anchor.radii.l <= receiver.radii.l, 'CAL:FFC:0'); // DBP
+        if (anchor.radii.l != 0 && anchor.radii.l <= receiver.radii.l) {
+            // require(anchor.radii.l <= receiver.radii.l, 'CAL:FFC:0'); // DBP
             mix.matrix.addColumnsAt(anchor.coordinate.a - 1, receiver.radii.l - anchor.radii.l);
             anchor.coordinate.a += receiver.radii.l - anchor.radii.l;
         }
-        if (anchor.radii.u != 0) {
-            require(anchor.radii.u <= receiver.radii.u, 'CAL:FFC:0'); // DBP
+        if (anchor.radii.u != 0 && anchor.radii.u <= receiver.radii.u) {
+            // require(anchor.radii.u <= receiver.radii.u, 'CAL:FFC:0'); // DBP
             mix.matrix.addRowsAt(anchor.coordinate.b + 1, receiver.radii.u - anchor.radii.u);
         }
-        if (anchor.radii.d != 0) {
-            require(anchor.radii.d <= receiver.radii.d, 'CAL:FFC:0'); // DBP
+        if (anchor.radii.d != 0 && anchor.radii.d <= receiver.radii.d) {
+            // require(anchor.radii.d <= receiver.radii.d, 'CAL:FFC:0'); // DBP
             mix.matrix.addRowsAt(anchor.coordinate.b - 1, receiver.radii.d - anchor.radii.d);
             anchor.coordinate.b += receiver.radii.d - anchor.radii.d;
         }
