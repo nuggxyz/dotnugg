@@ -57,7 +57,7 @@ contract SvgNuggIn is IFileResolver {
                 continue;
             }
             if (lastRgba.a != 0) {
-                res = abi.encodePacked(res, getRekt(lastRgba, lastX * pixelWidth, matrix.currentUnsetY * pixelWidth, count * pixelWidth, pixelWidth));
+                res = abi.encodePacked(res, getRekt(lastRgba, lastX * pixelWidth, matrix.currentUnsetY * pixelWidth, pixelWidth, count * pixelWidth));
             }
             lastRgba = matrix.current().rgba;
             lastX = matrix.currentUnsetX;
@@ -65,7 +65,7 @@ contract SvgNuggIn is IFileResolver {
             count = 1;
         }
 
-        res = abi.encodePacked(res, getRekt(matrix.current().rgba, lastX * pixelWidth, matrix.currentUnsetY * pixelWidth, count * pixelWidth, pixelWidth));
+        res = abi.encodePacked(res, getRekt(matrix.current().rgba, lastX * pixelWidth, matrix.currentUnsetY * pixelWidth, pixelWidth, count * pixelWidth));
 
         //   while (!done) {
         //       lastPix = matrix.current();

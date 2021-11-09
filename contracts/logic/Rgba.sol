@@ -17,7 +17,11 @@ library Rgba {
 
     function combine(IDotNugg.Rgba memory base, IDotNugg.Rgba memory mix) internal view {
         if (mix.a == 255) {
-            base = mix;
+            base.r = mix.r;
+            base.g = mix.g;
+            base.b = mix.b;
+            base.a = mix.a;
+            return;
         }
 
         RGBA16 memory baseRGB = RGBA16({r: uint16(base.r), g: uint16(base.g), b: uint16(base.b), a: uint16(base.a)});
