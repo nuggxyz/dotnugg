@@ -118,7 +118,7 @@ library Decoder {
 
         uint16 colorsIndex = data.toUint16(10);
         uint16[] memory versionsIndexz = new uint16[]((colorsIndex - 12) / 2);
-        console.log('yello', versionsIndexz.length);
+        // console.log('yello', versionsIndexz.length);
 
         for (uint16 i = 0; i < versionsIndexz.length; i++) {
             versionsIndexz[i] = data.toUint16(12 + i * 2);
@@ -126,13 +126,13 @@ library Decoder {
 
         res.pallet = new IDotNugg.Pixel[](1 + (versionsIndexz[0] - colorsIndex) / 5);
         res.versions = new IDotNugg.Version[](versionsIndexz.length);
-        console.log('p', res.pallet.length);
+        // console.log('p', res.pallet.length);
 
         require(res.versions.length > 0, 'DEC:PI:0');
         res.pallet[0] = IDotNugg.Pixel({rgba: IDotNugg.Rgba({r: 1, g: 1, b: 1, a: 0}), zindex: 0, exists: false});
         for (uint16 i = 1; i < res.pallet.length; i++) {
             res.pallet[i] = parsePixel(data, colorsIndex + 5 * (i - 1));
-            console.log(res.pallet[i].rgba.toAscii(), uint8(int8(res.pallet[i].zindex * int8(res.pallet[i].zindex < int8(0) ? -1 : int8(1)))));
+            // console.log(res.pallet[i].rgba.toAscii(), uint8(int8(res.pallet[i].zindex * int8(res.pallet[i].zindex < int8(0) ? -1 : int8(1)))));
         }
 
         for (uint16 i = 0; i < versionsIndexz.length; i++) {
@@ -167,11 +167,11 @@ library Decoder {
     function parsePixel(bytes memory _bytes, uint256 _start) internal view returns (IDotNugg.Pixel memory res) {
         require(_bytes.length >= _start + 5, 'parsePixel_outOfBounds');
 
-        console.log('sup', _bytes.toUint8(_start));
+        // console.log('sup', _bytes.toUint8(_start));
 
         res.zindex = _bytes.toInt8(_start);
 
-        console.logInt(res.zindex);
+        // console.logInt(res.zindex);
         res.rgba = parseRgba(_bytes, _start + 1);
         res.exists = true;
     }
@@ -255,6 +255,7 @@ library Decoder {
         uint8 featureLen
     ) internal view returns (IDotNugg.Version memory res) {
         require(_bytes.length >= _end && _start < _end, 'parsePixel_outOfBounds');
+        // console.log("PARSING VERSION");
 
         res.calculatedReceivers = new IDotNugg.Coordinate[](featureLen);
         res.staticReceivers = new IDotNugg.Coordinate[](featureLen);
@@ -270,7 +271,7 @@ library Decoder {
 
         uint16 groupsIndex = uint16(_start) + _bytes.toUint8(_start + addr++);
 
-        uint256 i = _start + addr++;
+         uint256 i = _start + addr++;
 
         console.log('ayo', _start, groupsIndex, i);
         for (; i < groupsIndex; i += 2) {

@@ -21,10 +21,10 @@ const refresh = async () => {
     anchor = await deployContract<AnchorTest__factory>({ factory: 'AnchorTest', from: accounts.frank, args: [] });
 };
 
-describe('anchor tests', async function () {
-    beforeEach(async () => {
-        await refresh();
-    });
+// describe('anchor tests', async function () {
+    // beforeEach(async () => {
+    //     await refresh();
+    // });
 
     // describe('getBox', async () => {
     //     it('good box :)', async () => {
@@ -52,9 +52,9 @@ describe('anchor tests', async function () {
     //         expect(vals[4].b).to.equal(21);
     //     });
     // })
-    describe('all the receivers shit', async () => {
-        it('good receivers', async () => {
-            const vals = await anchor.tbizzle();
-        });
-    })
-});
+    // describe('all the receivers shit', async () => {
+    //     it('good receivers', async () => {
+    //         const vals = await anchor.tbizzle();
+    //     });
+    // })
+// });

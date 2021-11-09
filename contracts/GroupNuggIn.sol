@@ -23,12 +23,12 @@ contract GroupNuggIn is IFileResolver {
     function combineBros(uint8 n1, uint8 n2) internal view returns (bytes1 res) {
         uint8 one = n1 << 4;
         res = bytes1(one | n2);
-        //   console.log(n1, n2);
-        //   console.log(one, uint8(res));
+        // console.log(n1, n2);
+        // console.log(one, uint8(res));
 
-        //   console.logBytes1(res);
+        // console.logBytes1(res);
 
-        //   console.log('=============');
+        // console.log('=============');
     }
 
     /**

@@ -1,8 +1,8 @@
 import { ethers } from 'ethers';
 
 // const Box = '⬆︎';
-// const Box2 = '░';
-// const Box3 = '🀫';
+const Box7 = '░';
+const Box6 = '🀫';
 // const Box4 = '♦︎';
 
 const Box = '⬆︎';
@@ -29,30 +29,30 @@ const colorLookup: { [_: number]: string } = [
     Gray + Box + Reset,
     Red + Box + Reset,
     White + Box + Reset,
-    Green + Box2 + Reset,
-    Yellow + Box2 + Reset,
-    Blue + Box2 + Reset,
-    Cyan + Box2 + Reset,
-    Purple + Box2 + Reset,
-    Gray + Box2 + Reset,
-    Red + Box2 + Reset,
-    White + Box2 + Reset,
-    Green + Box3 + Reset,
-    Yellow + Box3 + Reset,
-    Blue + Box3 + Reset,
-    Cyan + Box3 + Reset,
-    Purple + Box3 + Reset,
-    Gray + Box3 + Reset,
-    Red + Box3 + Reset,
-    White + Box3 + Reset,
-    Green + Box4 + Reset,
-    Yellow + Box4 + Reset,
-    Blue + Box4 + Reset,
-    Cyan + Box4 + Reset,
-    Purple + Box4 + Reset,
-    Gray + Box4 + Reset,
-    Red + Box4 + Reset,
-    White + Box4 + Reset,
+    Green + Box6 + Reset,
+    Yellow + Box6 + Reset,
+    Blue + Box6 + Reset,
+    Cyan + Box6 + Reset,
+    Purple + Box6 + Reset,
+    Gray + Box6 + Reset,
+    Red + Box6 + Reset,
+    White + Box6 + Reset,
+    Green + Box6 + Reset,
+    Yellow + Box6 + Reset,
+    Blue + Box6 + Reset,
+    Cyan + Box6 + Reset,
+    Purple + Box6 + Reset,
+    Gray + Box6 + Reset,
+    Red + Box6 + Reset,
+    White + Box6 + Reset,
+    Green + Box6 + Reset,
+    Yellow + Box6 + Reset,
+    Blue + Box6 + Reset,
+    Cyan + Box6 + Reset,
+    Purple + Box6 + Reset,
+    Gray + Box6 + Reset,
+    Red + Box6 + Reset,
+    White + Box6 + Reset,
 ];
 
 type Group = {

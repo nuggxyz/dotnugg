@@ -92,8 +92,12 @@ library Matrix {
                 setCurrent(matrix, pallet[colorKey]);
                 //  console.log('yo', current(matrix).rgba.toAscii());
             }
-            console.log(totalLength, groupWidth, groupHeight);
+            // console.log(totalLength, groupWidth, groupHeight);
         }
+
+        console.log("total length", totalLength);
+        console.log("width", groupWidth);
+        console.log("height", groupHeight);
 
         require(totalLength % groupWidth == 0, 'MTRX:SET:0');
 
