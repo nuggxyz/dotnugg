@@ -15,20 +15,20 @@ library Rgba {
         uint16 a;
     }
 
-    function combine(IDotNugg.Rgba memory base, IDotNugg.Rgba memory mix) internal view returns (IDotNugg.Rgba memory res) {
+    function combine(IDotNugg.Rgba memory base, IDotNugg.Rgba memory mix) internal view {
         if (mix.a == 255) {
-            return mix;
+            base = mix;
         }
 
         RGBA16 memory baseRGB = RGBA16({r: uint16(base.r), g: uint16(base.g), b: uint16(base.b), a: uint16(base.a)});
         RGBA16 memory mixRGB = RGBA16({r: uint16(mix.r), g: uint16(mix.g), b: uint16(mix.b), a: uint16(mix.a)});
 
         // uint8 alpha = uint8(255 - (((255 - baseRGB.a) * (255 - mixRGB.a)) / 255));
-        uint8 r = uint8((baseRGB.r * (255 - mixRGB.a) + mixRGB.r * mixRGB.a) / 255);
-        uint8 g = uint8((baseRGB.g * (255 - mixRGB.a) + mixRGB.g * mixRGB.a) / 255);
-        uint8 b = uint8((baseRGB.b * (255 - mixRGB.a) + mixRGB.b * mixRGB.a) / 255);
-        console.log(r, g, b);
-        return IDotNugg.Rgba({r: r, g: g, b: b, a: 255});
+        base.r = uint8((baseRGB.r * (255 - mixRGB.a) + mixRGB.r * mixRGB.a) / 255);
+        base.g = uint8((baseRGB.g * (255 - mixRGB.a) + mixRGB.g * mixRGB.a) / 255);
+        base.b = uint8((baseRGB.b * (255 - mixRGB.a) + mixRGB.b * mixRGB.a) / 255);
+        base.a = 255;
+        //   return IDotNugg.Rgba({r: r, g: g, b: b, a: 255});
     }
 
     function toUint64(IDotNugg.Rgba memory base) internal view returns (uint64 res) {

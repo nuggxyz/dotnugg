@@ -8,6 +8,9 @@ import '../libraries/Bytes.sol';
 import '../libraries/BytesLib.sol';
 import '../libraries/Checksum.sol';
 import '../libraries/Uint.sol';
+import '../logic/Rgba.sol';
+
+import '../test/Console.sol';
 
 library Decoder {
     using Bytes for bytes;
@@ -17,6 +20,7 @@ library Decoder {
     using BytesLib for bytes;
 
     using Uint256 for uint256;
+    using Rgba for IDotNugg.Rgba;
 
     // ┌──────────────────────────────────────────────────────────────┐
     // │                                                              │
@@ -124,7 +128,8 @@ library Decoder {
         require(res.versions.length > 0, 'DEC:PI:0');
         res.pallet[0] = IDotNugg.Pixel({rgba: IDotNugg.Rgba({r: 1, g: 1, b: 1, a: 0}), zindex: 0, exists: false});
         for (uint16 i = 1; i < res.pallet.length; i++) {
-            res.pallet[i] = parsePixel(data, colorsIndex + 5 * i);
+            res.pallet[i] = parsePixel(data, colorsIndex + 5 * (i - 1));
+            console.log(res.pallet[i].rgba.toAscii(), uint8(int8(res.pallet[i].zindex * int8(res.pallet[i].zindex < int8(0) ? -1 : int8(1)))));
         }
 
         for (uint16 i = 0; i < versionsIndexz.length; i++) {
