@@ -5,6 +5,8 @@ pragma solidity 0.8.4;
 import '../../contracts/libraries/BytesLib.sol';
 import '../../contracts/logic/Rgba.sol';
 import '../../contracts/logic/Decoder.sol';
+import '../../contracts/libraries/Base64.sol';
+
 import '../../contracts/interfaces/INuggIn.sol';
 import '../../contracts/test/Console.sol';
 
@@ -23,8 +25,8 @@ contract SystemTest {
     bytes sample3 =
         hex'444f544e554747d3c2030010001a0039020000009902e100e1990a0405010001040401020b00130015211221100010211000102110001300130e0507010001050501030b00140214001022100210221222142210001022100210221000140214';
 
-    bytes sample4 =
-        hex'444f544e5547476489030010001f004402f85c0f9902fb1a069902ffdb3c990a0404010001030301020b01100310021020021020011020302100203021001020021020010f0506010001050501030b0110061004102010041020100210203023001020302300102010041020100410061003';
+    //  bytes sample4 =
+    //      hex'444f544e5547476489030010001f004402f85c0f9902fb1a069902ffdb3c990a0404010001030301020b01100310021020021020011020302100203021001020021020010f0506010001050501030b0110061004102010041020100210203023001020302300102010041020100410061003';
 
     bytes sampleCollection =
         hex'444f544e5547472109000d0045444f544e5547471fb1020010001a002601000000ff01ffffffff0702030000000711021302110b0305000000072204231020042010230422444f544e5547473d2f060010001a0022010000009901ffffffff03010100000007120501020000000714';
@@ -33,15 +35,52 @@ contract SystemTest {
         //   IDotNugg.Item memory item = Decoder.parseItem(sample1);
         //   IDotNugg.Matrix memory mat = Matrix.create(33, 33);
         //   Matrix.set(mat, item.versions[0].data, item.pallet, item.versions[0].width);
-        bytes[] memory sampleItems = new bytes[](4);
+        bytes[] memory sampleItems = new bytes[](3);
 
         sampleItems[0] = sample1;
         sampleItems[1] = sample2;
         sampleItems[2] = sample3;
-        sampleItems[3] = sample4;
+        //   sampleItems[3] = sample4;
+
+        //   res = _contract.nuggify(sampleCollection, sampleItems, address(_resolver), '');
+        IDotNugg.Matrix memory temp = Matrix.create(17, 5);
+        IDotNugg.Item memory t2 = Decoder.parseItem(sample2, 10);
+        Matrix.set(temp, t2.versions[0].data, t2.pallet, t2.versions[0].width, t2.versions[0].height);
+        (bytes memory tmp, string memory file) = _resolver.resolveFile(temp, '');
+        //   (bytes memory byt, string memory file) = _resolver.resolveFile(temp, '');
+        res = Base64.encode(tmp, file);
+        //   General.convert(sampleCollection, sampleItems, address(0), '');
+        //   assertTrue(item.feature == 0);
+        //   assertTrue(item.versions.length == 1);
+        //   assertTrue(item.versions[0].width == 33);
+
+        //   assertTrue(item.pallet.length == 7);
+        //   IDotNugg.Matrix memory mat = Matrix.create(33, 33);
+
+        //   Matrix.set(mat, item.versions[0].data, item.pallet, item.versions[0].width);
+
+        //   assertTrue(mat.width == 33);
+        //  IDotNugg.Item memory item = Decoder.parseItem(sample1);
+    }
+
+    function tfull(IDotNugg _contract, IFileResolver _resolver) public view returns (string memory res) {
+        //   IDotNugg.Item memory item = Decoder.parseItem(sample1);
+        //   IDotNugg.Matrix memory mat = Matrix.create(33, 33);
+        //   Matrix.set(mat, item.versions[0].data, item.pallet, item.versions[0].width);
+        bytes[] memory sampleItems = new bytes[](3);
+
+        sampleItems[0] = sample1;
+        sampleItems[1] = sample2;
+        sampleItems[2] = sample3;
+        //   sampleItems[3] = sample4;
 
         res = _contract.nuggify(sampleCollection, sampleItems, address(_resolver), '');
-        console.log(res);
+        //   IDotNugg.Matrix memory temp = Matrix.create(17, 5);
+        //   IDotNugg.Item memory t2 = Decoder.parseItem(sample2, 10);
+        //   Matrix.set(temp, t2.versions[0].data, t2.pallet, t2.versions[0].width, t2.versions[0].height);
+        //   (bytes memory tmp, string memory file) = _resolver.resolveFile(temp, '');
+        //   //   (bytes memory byt, string memory file) = _resolver.resolveFile(temp, '');
+        //   res = Base64.encode(tmp, file);
         //   General.convert(sampleCollection, sampleItems, address(0), '');
         //   assertTrue(item.feature == 0);
         //   assertTrue(item.versions.length == 1);

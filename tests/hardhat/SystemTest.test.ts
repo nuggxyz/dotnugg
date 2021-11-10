@@ -51,10 +51,10 @@ describe('uint tests', async function () {
 
     describe('internal', async () => {
         it('should not fuck up', async () => {
-            const str = await plain.tfizzle(dotnugg.address, nugginSVG.address);
+            const str = await plain.tfull(dotnugg.address, nugginSVG.address);
 
             // console.log(ethers.utils.base64.decode(str));
-
+            console.log(str);
             bashit(str, 33, 33);
             // expect
             // console.log(a.toString(), b.toString(), c.toString(), d.toString());

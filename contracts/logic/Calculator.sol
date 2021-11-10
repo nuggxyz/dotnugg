@@ -97,7 +97,7 @@ library Calculator {
         if (anchor.radii.d != 0 && anchor.radii.d <= receiver.radii.d) {
             // require(anchor.radii.d <= receiver.radii.d, 'CAL:FFC:0'); // DBP
             mix.matrix.addRowsAt(anchor.coordinate.b - 1, receiver.radii.d - anchor.radii.d);
-            console.log('OLE ASS', anchor.coordinate.b, (receiver.radii.d - anchor.radii.d));
+            // console.log('OLE ASS', anchor.coordinate.b, (receiver.radii.d - anchor.radii.d));
             anchor.coordinate.b += receiver.radii.d - anchor.radii.d;
         }
     }
@@ -176,12 +176,12 @@ library Calculator {
             if (mixPixel.exists && mixPixel.zindex >= canvasPixel.zindex) {
                 canvasPixel.zindex = mixPixel.zindex;
                 //  console.log(Rgba.toAscii(canvasPixel.rgba), Rgba.toAscii(mixPixel.rgba));
-                console.log('COMBINE', canvasPixel.rgba.toAscii(), mixPixel.rgba.toAscii());
-                console.logInt(mixPixel.zindex);
-                console.logInt(canvasPixel.zindex);
+                //  console.log('COMBINE', canvasPixel.rgba.toAscii(), mixPixel.rgba.toAscii());
+                //  console.logInt(mixPixel.zindex);
+                //  console.logInt(canvasPixel.zindex);
 
                 canvasPixel.rgba.combine(mixPixel.rgba);
-                console.log('COMBINE', canvasPixel.rgba.toAscii(), mixPixel.rgba.toAscii());
+                //  console.log('COMBINE', canvasPixel.rgba.toAscii(), mixPixel.rgba.toAscii());
 
                 //  console.log(Rgba.toAscii(canvasPixel.rgba), Rgba.toAscii(mixPixel.rgba));
             }
