@@ -91,18 +91,14 @@ library Calculator {
         console.log('mix.version.expanders.l: ', mix.version.expanders.l);
         console.log('mix.version.expanders.u: ', mix.version.expanders.u);
         console.log('mix.version.expanders.d: ', mix.version.expanders.d);
-        if (mix.version.expanders.r != 0 && anchor.radii.r != 0 && anchor.radii.r <= receiver.radii.r) {
-            // require(anchor.radii.r <= receiver.radii.r, 'CAL:FFC:0'); // DBP
-            mix.matrix.addColumnsAt(mix.version.expanders.r + 1, receiver.radii.r - anchor.radii.r);
-        }
         if (mix.version.expanders.l != 0 && anchor.radii.l != 0 && anchor.radii.l <= receiver.radii.l) {
             // require(anchor.radii.l <= receiver.radii.l, 'CAL:FFC:0'); // DBP
             mix.matrix.addColumnsAt(mix.version.expanders.l - 1, receiver.radii.l - anchor.radii.l);
             anchor.coordinate.a += receiver.radii.l - anchor.radii.l;
         }
-        if (mix.version.expanders.u != 0 && anchor.radii.u != 0 && anchor.radii.u <= receiver.radii.u) {
-            // require(anchor.radii.u <= receiver.radii.u, 'CAL:FFC:0'); // DBP
-            mix.matrix.addRowsAt(mix.version.expanders.u + 1, receiver.radii.u - anchor.radii.u);
+        if (mix.version.expanders.r != 0 && anchor.radii.r != 0 && anchor.radii.r <= receiver.radii.r) {
+            // require(anchor.radii.r <= receiver.radii.r, 'CAL:FFC:0'); // DBP
+            mix.matrix.addColumnsAt(mix.version.expanders.r + 1, receiver.radii.r - anchor.radii.r);
         }
         if (mix.version.expanders.d != 0 && anchor.radii.d != 0 && anchor.radii.d <= receiver.radii.d) {
             // require(anchor.radii.d <= receiver.radii.d, 'CAL:FFC:0'); // DBP
@@ -110,6 +106,11 @@ library Calculator {
             // console.log('OLE ASS', anchor.coordinate.b, (receiver.radii.d - anchor.radii.d));
             anchor.coordinate.b += receiver.radii.d - anchor.radii.d;
         }
+        if (mix.version.expanders.u != 0 && anchor.radii.u != 0 && anchor.radii.u <= receiver.radii.u) {
+            // require(anchor.radii.u <= receiver.radii.u, 'CAL:FFC:0'); // DBP
+            mix.matrix.addRowsAt(mix.version.expanders.u + 1, receiver.radii.u - anchor.radii.u);
+        }
+
         console.log('AFTER x:', anchor.coordinate.a, ', y:', anchor.coordinate.b);
         console.log('AFTER w:', mix.matrix.width, ', h:', mix.matrix.height);
     }
@@ -137,7 +138,7 @@ library Calculator {
     }
 
     function checkRluds(IDotNugg.Rlud memory r1, IDotNugg.Rlud memory r2) internal view returns (bool) {
-        return r1.r <= r2.r && r1.l <= r2.l && r1.u <= r2.u && r1.l <= r2.l;
+        return (r1.r <= r2.r && r1.l <= r2.l) || (r1.u <= r2.u && r1.d <= r2.d);
     }
 
     /**
