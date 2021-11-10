@@ -69,8 +69,8 @@ library Calculator {
 
         uint8 xoffset = receiver.coordinate.a - anchor.coordinate.a;
         uint8 yoffset = receiver.coordinate.b - anchor.coordinate.b;
-
-        canvas.matrix.moveTo(xoffset, yoffset);
+        console.log(xoffset, yoffset);
+        canvas.matrix.moveTo(xoffset, yoffset, mix.matrix.width, mix.matrix.height);
     }
 
     /**
@@ -186,7 +186,7 @@ library Calculator {
                 //  console.log(Rgba.toAscii(canvasPixel.rgba), Rgba.toAscii(mixPixel.rgba));
             }
         }
-
+        canvas.matrix.moveBack();
         canvas.matrix.resetIterator();
         mix.matrix.resetIterator();
     }
