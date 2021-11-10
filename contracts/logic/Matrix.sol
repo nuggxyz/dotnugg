@@ -32,7 +32,7 @@ library Matrix {
         matrix.currentUnsetY = yoffset;
         matrix.startX = xoffset;
         matrix.width = width + xoffset;
-        matrix.height = height + yoffset + 10;
+        matrix.height = height + yoffset;
     }
 
     function next(IDotNugg.Matrix memory matrix) internal view returns (bool res) {
@@ -57,8 +57,8 @@ library Matrix {
     }
 
     function current(IDotNugg.Matrix memory matrix) internal view returns (IDotNugg.Pixel memory res) {
-        console.log("OVERFLOW?",matrix.currentUnsetY, matrix.currentUnsetX);
-        console.log("MATRIXX", matrix.height, matrix.width);
+        //   console.log('OVERFLOW?', matrix.currentUnsetY, matrix.currentUnsetX);
+        //   console.log('MATRIXX', matrix.height, matrix.width);
         res = matrix.data[matrix.currentUnsetY][matrix.currentUnsetX];
     }
 
@@ -93,6 +93,7 @@ library Matrix {
         uint8 groupHeight
     ) internal view {
         uint256 totalLength = 0;
+        matrix.height = groupHeight;
         for (uint256 i = 0; i < data.length; i++) {
             (uint8 colorKey, uint8 len) = data.toUint4(i);
             len++;
@@ -106,11 +107,12 @@ library Matrix {
             // console.log(totalLength, groupWidth, groupHeight);
         }
 
-        console.log("total length", totalLength);
-        console.log("width", groupWidth);
-        console.log("height", groupHeight);
+        console.log('total length', totalLength);
+        console.log('width', groupWidth);
+        console.log('height', groupHeight);
 
         require(totalLength % groupWidth == 0, 'MTRX:SET:0');
+        require(totalLength / groupWidth == groupHeight, 'MTRX:SET:1');
 
         matrix.width = groupWidth;
         matrix.height = uint8(totalLength / groupWidth);
