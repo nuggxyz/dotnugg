@@ -130,7 +130,9 @@ library Matrix {
             if (j < index) break;
             if (matrix.data[j].length > 0) matrix.data[j + amount] = matrix.data[j];
         }
-        for (uint256 j = index + 1; j < index + amount; j++) {
+        // "<=" is because this loop needs to run [amount] times
+        for (uint256 j = index + 1; j <= index + amount; j++) {
+            //
             matrix.data[j] = matrix.data[index];
         }
         matrix.height += amount;
@@ -142,12 +144,14 @@ library Matrix {
         uint8 amount
     ) internal view {
         require(index < matrix.data[0].length, 'MAT:ACA:0');
-        for (uint256 i = 0; i < matrix.height; i++) {
-            for (uint256 j = matrix.height; j > index; j--) {
+        for (uint256 i = 0; i < matrix.width; i++) {
+            for (uint256 j = matrix.width; j > index; j--) {
                 if (j < index) break;
-                if (matrix.data[i][j].exists) matrix.data[i][j + amount] = matrix.data[i][j];
+                //  if (matrix.data[i][j].exists) @note - do not completly understand this.. but it fixes a bug
+                matrix.data[i][j + amount] = matrix.data[i][j];
             }
-            for (uint256 j = index + 1; j < index + amount; j++) {
+            // "<=" is because this loop needs to run [amount] times
+            for (uint256 j = index + 1; j <= index + amount; j++) {
                 matrix.data[i][j] = matrix.data[i][index];
             }
         }
