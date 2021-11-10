@@ -13,7 +13,6 @@ archive
 /images/generated
 coverage.json
 /coverage
-/docs
 /deployments/hardhat/
 /data/abi
 /graph_copy
