@@ -84,23 +84,29 @@ library Calculator {
         console.log('BEFORE w:', mix.matrix.width, ', h:', mix.matrix.height);
         console.log('radii.r anchor: ', anchor.radii.r, 'receiver: ', receiver.radii.r);
         console.log('radii.l anchor: ', anchor.radii.l, 'receiver: ', receiver.radii.l);
+        console.log('radii.u anchor: ', anchor.radii.u, 'receiver: ', receiver.radii.u);
+        console.log('radii.d anchor: ', anchor.radii.l, 'receiver: ', receiver.radii.d);
 
+        console.log('mix.version.expanders.r: ', mix.version.expanders.r);
+        console.log('mix.version.expanders.l: ', mix.version.expanders.l);
+        console.log('mix.version.expanders.u: ', mix.version.expanders.u);
+        console.log('mix.version.expanders.d: ', mix.version.expanders.d);
         if (mix.version.expanders.r != 0 && anchor.radii.r != 0 && anchor.radii.r <= receiver.radii.r) {
             // require(anchor.radii.r <= receiver.radii.r, 'CAL:FFC:0'); // DBP
-            mix.matrix.addColumnsAt(anchor.coordinate.a + 1, receiver.radii.r - anchor.radii.r);
+            mix.matrix.addColumnsAt(mix.version.expanders.r + 1, receiver.radii.r - anchor.radii.r);
         }
         if (mix.version.expanders.l != 0 && anchor.radii.l != 0 && anchor.radii.l <= receiver.radii.l) {
             // require(anchor.radii.l <= receiver.radii.l, 'CAL:FFC:0'); // DBP
-            mix.matrix.addColumnsAt(anchor.coordinate.a - 1, receiver.radii.l - anchor.radii.l);
+            mix.matrix.addColumnsAt(mix.version.expanders.l - 1, receiver.radii.l - anchor.radii.l);
             anchor.coordinate.a += receiver.radii.l - anchor.radii.l;
         }
         if (mix.version.expanders.u != 0 && anchor.radii.u != 0 && anchor.radii.u <= receiver.radii.u) {
             // require(anchor.radii.u <= receiver.radii.u, 'CAL:FFC:0'); // DBP
-            mix.matrix.addRowsAt(anchor.coordinate.b + 1, receiver.radii.u - anchor.radii.u);
+            mix.matrix.addRowsAt(mix.version.expanders.u + 1, receiver.radii.u - anchor.radii.u);
         }
         if (mix.version.expanders.d != 0 && anchor.radii.d != 0 && anchor.radii.d <= receiver.radii.d) {
             // require(anchor.radii.d <= receiver.radii.d, 'CAL:FFC:0'); // DBP
-            mix.matrix.addRowsAt(anchor.coordinate.b - 1, receiver.radii.d - anchor.radii.d);
+            mix.matrix.addRowsAt(mix.version.expanders.d - 1, receiver.radii.d - anchor.radii.d);
             // console.log('OLE ASS', anchor.coordinate.b, (receiver.radii.d - anchor.radii.d));
             anchor.coordinate.b += receiver.radii.d - anchor.radii.d;
         }
