@@ -92,23 +92,22 @@ library Calculator {
         console.log('mix.version.expanders.u: ', mix.version.expanders.u);
         console.log('mix.version.expanders.d: ', mix.version.expanders.d);
         if (mix.version.expanders.l != 0 && anchor.radii.l != 0 && anchor.radii.l <= receiver.radii.l) {
-            // require(anchor.radii.l <= receiver.radii.l, 'CAL:FFC:0'); // DBP
-            mix.matrix.addColumnsAt(mix.version.expanders.l - 1, receiver.radii.l - anchor.radii.l);
-            anchor.coordinate.a += receiver.radii.l - anchor.radii.l;
+            uint8 amount = receiver.radii.l - anchor.radii.l;
+            mix.matrix.addColumnsAt(mix.version.expanders.l, amount); // FIXME - i removed adding and subtracting here... maybe we need to add back
+            anchor.coordinate.a += amount;
+            if (mix.version.expanders.r > 0) mix.version.expanders.r += amount;
         }
         if (mix.version.expanders.r != 0 && anchor.radii.r != 0 && anchor.radii.r <= receiver.radii.r) {
-            // require(anchor.radii.r <= receiver.radii.r, 'CAL:FFC:0'); // DBP
-            mix.matrix.addColumnsAt(mix.version.expanders.r + 1, receiver.radii.r - anchor.radii.r);
+            mix.matrix.addColumnsAt(mix.version.expanders.r, receiver.radii.r - anchor.radii.r);
         }
         if (mix.version.expanders.d != 0 && anchor.radii.d != 0 && anchor.radii.d <= receiver.radii.d) {
-            // require(anchor.radii.d <= receiver.radii.d, 'CAL:FFC:0'); // DBP
-            mix.matrix.addRowsAt(mix.version.expanders.d - 1, receiver.radii.d - anchor.radii.d);
-            // console.log('OLE ASS', anchor.coordinate.b, (receiver.radii.d - anchor.radii.d));
-            anchor.coordinate.b += receiver.radii.d - anchor.radii.d;
+            uint8 amount = receiver.radii.d - anchor.radii.d;
+            mix.matrix.addRowsAt(mix.version.expanders.d, amount);
+            anchor.coordinate.b += amount;
+            if (mix.version.expanders.u > 0) mix.version.expanders.u += amount;
         }
         if (mix.version.expanders.u != 0 && anchor.radii.u != 0 && anchor.radii.u <= receiver.radii.u) {
-            // require(anchor.radii.u <= receiver.radii.u, 'CAL:FFC:0'); // DBP
-            mix.matrix.addRowsAt(mix.version.expanders.u + 1, receiver.radii.u - anchor.radii.u);
+            mix.matrix.addRowsAt(mix.version.expanders.u, receiver.radii.u - anchor.radii.u);
         }
 
         console.log('AFTER x:', anchor.coordinate.a, ', y:', anchor.coordinate.b);
