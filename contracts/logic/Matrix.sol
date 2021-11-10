@@ -24,11 +24,15 @@ library Matrix {
     function moveTo(
         IDotNugg.Matrix memory matrix,
         uint8 xoffset,
-        uint8 yoffset
+        uint8 yoffset,
+        uint8 width,
+        uint8 height
     ) internal view {
         matrix.currentUnsetX = xoffset;
         matrix.currentUnsetY = yoffset;
         matrix.startX = xoffset;
+        matrix.width = width + xoffset;
+        matrix.height = height + yoffset + 10;
     }
 
     function next(IDotNugg.Matrix memory matrix) internal view returns (bool res) {
@@ -37,7 +41,7 @@ library Matrix {
 
     function next(IDotNugg.Matrix memory matrix, uint8 width) internal view returns (bool res) {
         if (matrix.init) {
-            if (width == matrix.currentUnsetX + 1) {
+            if (width <= matrix.currentUnsetX + 1) {
                 if (matrix.height == matrix.currentUnsetY + 1) {
                     return false;
                 }
@@ -53,6 +57,8 @@ library Matrix {
     }
 
     function current(IDotNugg.Matrix memory matrix) internal view returns (IDotNugg.Pixel memory res) {
+        console.log("OVERFLOW?",matrix.currentUnsetY, matrix.currentUnsetX);
+        console.log("MATRIXX", matrix.height, matrix.width);
         res = matrix.data[matrix.currentUnsetY][matrix.currentUnsetX];
     }
 
@@ -65,6 +71,11 @@ library Matrix {
         matrix.currentUnsetY = 0;
         matrix.startX = 0;
         matrix.init = false;
+    }
+
+    function moveBack(IDotNugg.Matrix memory matrix) internal view {
+        matrix.width = uint8(matrix.data[0].length);
+        matrix.height = uint8(matrix.data.length);
     }
 
     function reset(IDotNugg.Matrix memory matrix) internal view {
