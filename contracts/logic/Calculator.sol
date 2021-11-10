@@ -81,25 +81,31 @@ library Calculator {
         IDotNugg.Anchor memory receiver = canvas.receivers[mix.feature];
         IDotNugg.Anchor memory anchor = mix.version.anchor;
         console.log('BEFORE x:', anchor.coordinate.a, ', y:', anchor.coordinate.b);
-        if (anchor.radii.r != 0 && anchor.radii.r <= receiver.radii.r) {
+        console.log('BEFORE w:', mix.matrix.width, ', h:', mix.matrix.height);
+        console.log('radii.r anchor: ', anchor.radii.r, 'receiver: ', receiver.radii.r);
+        console.log('radii.l anchor: ', anchor.radii.l, 'receiver: ', receiver.radii.l);
+
+        if (mix.version.expanders.r != 0 && anchor.radii.r != 0 && anchor.radii.r <= receiver.radii.r) {
             // require(anchor.radii.r <= receiver.radii.r, 'CAL:FFC:0'); // DBP
             mix.matrix.addColumnsAt(anchor.coordinate.a + 1, receiver.radii.r - anchor.radii.r);
         }
-        if (anchor.radii.l != 0 && anchor.radii.l <= receiver.radii.l) {
+        if (mix.version.expanders.l != 0 && anchor.radii.l != 0 && anchor.radii.l <= receiver.radii.l) {
             // require(anchor.radii.l <= receiver.radii.l, 'CAL:FFC:0'); // DBP
             mix.matrix.addColumnsAt(anchor.coordinate.a - 1, receiver.radii.l - anchor.radii.l);
             anchor.coordinate.a += receiver.radii.l - anchor.radii.l;
         }
-        if (anchor.radii.u != 0 && anchor.radii.u <= receiver.radii.u) {
+        if (mix.version.expanders.u != 0 && anchor.radii.u != 0 && anchor.radii.u <= receiver.radii.u) {
             // require(anchor.radii.u <= receiver.radii.u, 'CAL:FFC:0'); // DBP
             mix.matrix.addRowsAt(anchor.coordinate.b + 1, receiver.radii.u - anchor.radii.u);
         }
-        if (anchor.radii.d != 0 && anchor.radii.d <= receiver.radii.d) {
+        if (mix.version.expanders.d != 0 && anchor.radii.d != 0 && anchor.radii.d <= receiver.radii.d) {
             // require(anchor.radii.d <= receiver.radii.d, 'CAL:FFC:0'); // DBP
             mix.matrix.addRowsAt(anchor.coordinate.b - 1, receiver.radii.d - anchor.radii.d);
             // console.log('OLE ASS', anchor.coordinate.b, (receiver.radii.d - anchor.radii.d));
             anchor.coordinate.b += receiver.radii.d - anchor.radii.d;
         }
+        console.log('AFTER x:', anchor.coordinate.a, ', y:', anchor.coordinate.b);
+        console.log('AFTER w:', mix.matrix.width, ', h:', mix.matrix.height);
     }
 
     /**
@@ -152,7 +158,9 @@ library Calculator {
     function updateReceivers(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal view {
         for (uint8 i = 0; i < mix.receivers.length; i++) {
             IDotNugg.Anchor memory m = mix.receivers[i];
-            if (m.coordinate.exists) canvas.receivers[i] = m;
+            if (m.coordinate.exists) {
+                canvas.receivers[i] = m;
+            }
         }
         // for (uint8 i = 0 ; i < canvas.receivers.length; i++) {
         //     console.log("CANVAS", i);

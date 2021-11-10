@@ -19,7 +19,6 @@ library Anchor {
         uint8 stat = 0;
         uint8 cal = 0;
 
-
         for (uint8 i = 0; i < mix.version.calculatedReceivers.length; i++) {
             IDotNugg.Coordinate memory coordinate;
             if (mix.version.staticReceivers[i].exists) {
@@ -29,13 +28,14 @@ library Anchor {
                 cal++;
                 if (anchors.length == 0) anchors = getAnchors(mix.matrix);
                 coordinate = calculateReceiverCoordinate(mix, mix.version.calculatedReceivers[i], anchors);
+                fledgeOutTheRluds(mix, coordinate, i);
             }
-            fledgeOutTheRluds(mix, coordinate, i);
         }
 
         // console.log("static receivers", stat);
         // console.log("calc receivers", cal);
     }
+
     // receiver := { feature: EYES, zindex: 2, yoffset: +2 }
     // receiver := { feature: EARS, zindex: 2, yoffset: +2 }
     // receiver := { feature: GLASSES, zindex: 2, yoffset: +2 }
@@ -51,16 +51,16 @@ library Anchor {
         uint8 index
     ) internal view {
         IDotNugg.Rlud memory radii;
-        while (mix.version.expanders.r != 0 && coordinate.a < mix.matrix.width - 1 && mix.matrix.data[coordinate.b][coordinate.a + (radii.r + 1)].exists) {
+        while (coordinate.a < mix.matrix.width - 1 && mix.matrix.data[coordinate.b][coordinate.a + (radii.r + 1)].exists) {
             radii.r++;
         }
-        while (mix.version.expanders.l != 0 && coordinate.a != 0 && mix.matrix.data[coordinate.b][coordinate.a - (radii.l + 1)].exists) {
+        while (coordinate.a != 0 && mix.matrix.data[coordinate.b][coordinate.a - (radii.l + 1)].exists) {
             radii.l++;
         }
-        while (mix.version.expanders.u != 0 && coordinate.b != 0 && mix.matrix.data[coordinate.b - (radii.u + 1)][coordinate.a].exists) {
+        while (coordinate.b != 0 && mix.matrix.data[coordinate.b - (radii.u + 1)][coordinate.a].exists) {
             radii.u++;
         }
-        while (mix.version.expanders.d != 0 && coordinate.b < mix.matrix.height - 1 && mix.matrix.data[coordinate.b + (radii.d + 1)][coordinate.a].exists) {
+        while (coordinate.b < mix.matrix.height - 1 && mix.matrix.data[coordinate.b + (radii.d + 1)][coordinate.a].exists) {
             radii.d++;
         }
 
