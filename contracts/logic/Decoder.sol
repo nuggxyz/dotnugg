@@ -268,10 +268,15 @@ library Decoder {
         if (res.expanders.exists) addr += 4;
         res.anchor.radii = parseRlud(_bytes, _start + addr++);
         if (res.anchor.radii.exists) addr += 4;
+        console.log('res.expanders.exists: ', res.expanders.exists);
+        console.log('res.expanders.r: ', res.expanders.r);
+        console.log('res.expanders.l: ', res.expanders.l);
+        console.log('res.expanders.u: ', res.expanders.u);
+        console.log('res.expanders.d: ', res.expanders.d);
 
         uint16 groupsIndex = uint16(_start) + _bytes.toUint8(_start + addr++);
 
-         uint256 i = _start + addr++;
+        uint256 i = _start + addr++;
 
         console.log('ayo', _start, groupsIndex, i);
         for (; i < groupsIndex; i += 2) {

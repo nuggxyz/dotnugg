@@ -126,7 +126,7 @@ library Matrix {
         uint8 amount
     ) internal view {
         require(index < matrix.data.length, 'MAT:ARA:0');
-        for (uint256 j = matrix.data.length - amount - 1; j > index; j--) {
+        for (uint256 j = matrix.width; j > index; j--) {
             if (j < index) break;
             if (matrix.data[j].length > 0) matrix.data[j + amount] = matrix.data[j];
         }
@@ -143,7 +143,7 @@ library Matrix {
     ) internal view {
         require(index < matrix.data[0].length, 'MAT:ACA:0');
         for (uint256 i = 0; i < matrix.height; i++) {
-            for (uint256 j = matrix.data[0].length - amount - 1; j > index; j--) {
+            for (uint256 j = matrix.height; j > index; j--) {
                 if (j < index) break;
                 if (matrix.data[i][j].exists) matrix.data[i][j + amount] = matrix.data[i][j];
             }
