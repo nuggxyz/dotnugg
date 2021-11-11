@@ -2,12 +2,12 @@
 
 pragma solidity 0.8.4;
 
-import './interfaces/IDotNugg.sol';
-import './interfaces/INuggIn.sol';
-import './erc165/IERC165.sol';
-import '../contracts/logic/Rgba.sol';
-import '../contracts/logic/Matrix.sol';
-import '../contracts/libraries/Uint.sol';
+import '.././interfaces/IDotNugg.sol';
+import '.././interfaces/INuggIn.sol';
+import '.././erc165/IERC165.sol';
+import '../../contracts/logic/Rgba.sol';
+import '../../contracts/logic/Matrix.sol';
+import '../../contracts/libraries/Uint.sol';
 
 // import '../erc165/ERC165.sol';
 
