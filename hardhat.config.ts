@@ -13,7 +13,7 @@ import 'hardhat-contract-sizer';
 import '@atixlabs/hardhat-time-n-mine';
 import 'hardhat-storage-layout';
 // NORMAL IMPORTS
-import './src/tasks/general/accounts';
+import './tasks/general/accounts';
 import 'hardhat-tracer';
 
 import { config as dotenvConfig } from 'dotenv';
@@ -291,7 +291,7 @@ const HardhatConfig: HardhatUserConfig = {
         eachLine: removeConsoleLog((bre) => bre.network.name !== 'hardhat' && bre.network.name !== 'localhost'),
     },
     abiExporter: {
-        path: './data/abi',
+        path: './abis',
         clear: true,
         flat: true,
         only: [],
