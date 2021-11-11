@@ -1,0 +1,50 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "contract IDotNugg",
+        "name": "_contract",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IFileResolver",
+        "name": "_resolver",
+        "type": "address"
+      }
+    ],
+    "name": "tfizzle",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "res",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IDotNugg",
+        "name": "_contract",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IFileResolver",
+        "name": "_resolver",
+        "type": "address"
+      }
+    ],
+    "name": "tfull",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "res",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
