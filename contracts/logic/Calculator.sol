@@ -80,25 +80,25 @@ library Calculator {
     function formatForCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal view {
         IDotNugg.Anchor memory receiver = canvas.receivers[mix.feature];
         IDotNugg.Anchor memory anchor = mix.version.anchor;
-        console.log('BEFORE x:', anchor.coordinate.a, ', y:', anchor.coordinate.b);
-        console.log('BEFORE w:', mix.matrix.width, ', h:', mix.matrix.height);
-        console.log('radii.r anchor: ', anchor.radii.r, 'receiver: ', receiver.radii.r);
-        console.log('radii.l anchor: ', anchor.radii.l, 'receiver: ', receiver.radii.l);
-        console.log('radii.u anchor: ', anchor.radii.u, 'receiver: ', receiver.radii.u);
-        console.log('radii.d anchor: ', anchor.radii.l, 'receiver: ', receiver.radii.d);
+        // console.log('BEFORE x:', anchor.coordinate.a, ', y:', anchor.coordinate.b);
+        // console.log('BEFORE w:', mix.matrix.width, ', h:', mix.matrix.height);
+        // console.log('radii.r anchor: ', anchor.radii.r, 'receiver: ', receiver.radii.r);
+        // console.log('radii.l anchor: ', anchor.radii.l, 'receiver: ', receiver.radii.l);
+        // console.log('radii.u anchor: ', anchor.radii.u, 'receiver: ', receiver.radii.u);
+        // console.log('radii.d anchor: ', anchor.radii.l, 'receiver: ', receiver.radii.d);
 
-        console.log('mix.version.expanders.r: ', mix.version.expanders.r);
-        console.log('mix.version.expanders.l: ', mix.version.expanders.l);
-        console.log('mix.version.expanders.u: ', mix.version.expanders.u);
-        console.log('mix.version.expanders.d: ', mix.version.expanders.d);
+        // console.log('mix.version.expanders.r: ', mix.version.expanders.r);
+        // console.log('mix.version.expanders.l: ', mix.version.expanders.l);
+        // console.log('mix.version.expanders.u: ', mix.version.expanders.u);
+        // console.log('mix.version.expanders.d: ', mix.version.expanders.d);
         if (mix.version.expanders.l != 0 && anchor.radii.l != 0 && anchor.radii.l <= receiver.radii.l) {
             uint8 amount = receiver.radii.l - anchor.radii.l;
-            mix.matrix.addColumnsAt(mix.version.expanders.l, amount); // FIXME - i removed adding and subtracting here... maybe we need to add back
+            mix.matrix.addColumnsAt(mix.version.expanders.l - 1, amount);
             anchor.coordinate.a += amount;
             if (mix.version.expanders.r > 0) mix.version.expanders.r += amount;
         }
         if (mix.version.expanders.r != 0 && anchor.radii.r != 0 && anchor.radii.r <= receiver.radii.r) {
-            mix.matrix.addColumnsAt(mix.version.expanders.r, receiver.radii.r - anchor.radii.r);
+            mix.matrix.addColumnsAt(mix.version.expanders.r - 1, receiver.radii.r - anchor.radii.r);
         }
         if (mix.version.expanders.d != 0 && anchor.radii.d != 0 && anchor.radii.d <= receiver.radii.d) {
             uint8 amount = receiver.radii.d - anchor.radii.d;
