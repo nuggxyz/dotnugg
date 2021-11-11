@@ -13,7 +13,7 @@ import 'hardhat-contract-sizer';
 import '@atixlabs/hardhat-time-n-mine';
 import 'hardhat-storage-layout';
 // NORMAL IMPORTS
-import './tasks/general/accounts';
+import './src/tasks/general/accounts';
 import 'hardhat-tracer';
 
 import { config as dotenvConfig } from 'dotenv';
