@@ -10,8 +10,6 @@ import '@typechain/hardhat';
 import 'hardhat-erc1820';
 import 'hardhat-abi-exporter';
 import 'hardhat-contract-sizer';
-import { resolve } from 'path';
-
 import '@atixlabs/hardhat-time-n-mine';
 import 'hardhat-storage-layout';
 // NORMAL IMPORTS
@@ -26,6 +24,7 @@ import {
     NetworksUserConfig,
     NetworkUserConfig,
 } from 'hardhat/types';
+import { resolve } from 'path';
 
 dotenvConfig({ path: resolve(__dirname, './.env') });
 
@@ -244,7 +243,7 @@ const HardhatConfig: HardhatUserConfig = {
                 settings: {
                     optimizer: {
                         enabled: true,
-                        runs: 75,
+                        runs: 100000,
                     },
                 },
             },
