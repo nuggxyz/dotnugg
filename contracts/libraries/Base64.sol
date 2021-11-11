@@ -22,33 +22,6 @@ library Base64 {
     }
 
     /**
-     * @notice wrapper for _encode for svg data
-     * @param data bytes to encode
-     * @return base64 string representation of input bytes, prefixed with json base64 prefix
-     */
-    function encodeSvg(bytes memory data) internal pure returns (string memory) {
-        return string(abi.encodePacked(_BASE64_PREFIX_SVGs, _encode(data)));
-    }
-
-    /**
-     * @notice wrapper for _encode for json data
-     * @param data bytes to encode
-     * @return base64 string representation of input bytes, prefixed with json base64 prefix
-     */
-    function encodeJson(bytes memory data) internal pure returns (string memory) {
-        return string(abi.encodePacked(_BASE64_PREFIX_JSON, _encode(data)));
-    }
-
-    /**
-     * @notice wrapper for _encode for dotnugg data
-     * @param data bytes to encode
-     * @return base64 string representation of input bytes, prefixed with dotnugg base64 prefix
-     */
-    function encodeDotNugg(bytes memory data) internal pure returns (string memory) {
-        return string(abi.encodePacked(_BASE64_PREFIX_DOTNUGG, _encode(data)));
-    }
-
-    /**
      * @notice Encodes some bytes in base64
      * @param data bytes to encode
      * @return base64 string representation of input bytes
