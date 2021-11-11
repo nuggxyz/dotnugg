@@ -1,0 +1,20 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "contract IDotNugg",
+        "name": "_contract",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IFileResolver",
+        "name": "_resolver",
+        "type": "address"
+      }
+    ],
+    "name": "tfizzle",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
