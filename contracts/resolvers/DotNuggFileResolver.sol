@@ -104,10 +104,10 @@ contract DotNuggFileResolver is IFileResolver {
         uint256 lengthIndex = colorKeysIndex + coltracker;
 
         res[index++] = bytes1(uint8(colorKeysIndex >> 8));
-        res[index++] = bytes1(uint8(0xff | colorKeysIndex));
+        res[index++] = bytes1(uint8(0xff & colorKeysIndex));
 
         res[index++] = bytes1(uint8(lengthIndex >> 8));
-        res[index++] = bytes1(uint8(0xff | lengthIndex));
+        res[index++] = bytes1(uint8(0xff & lengthIndex));
 
         for (uint256 i = 0; i < pallettracker; i++) {
             res[index++] = bytes1(pallet[i].rgba.r);
