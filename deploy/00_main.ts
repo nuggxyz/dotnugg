@@ -8,7 +8,7 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types';
 // import { NuggAuction } from '../typechain/NuggAuction.d';
 // import { NuggETH } from '../typechain/NuggETH';
 // import { NuggFather } from '../typechain/NuggFather';
-import { NuggFT } from '../typechain/NuggFT.d';
+// import { NuggFT } from '../typechain/NuggFT.d';
 
 const deployment = async (hre: HardhatRuntimeEnvironment) => {
     // const chainID = await hre.getChainId();
