@@ -125,32 +125,5 @@ contract DotNuggFileResolver is IFileResolver {
         }
     }
 
-    //   assembly {
-    //       mstore(colorKeysIndex0, shl(index, 8))
-    //       mstore(add(colorKeysIndex0, 1), or(0xff, index))
-    //   }
 
-    //  function getRekt(
-    //      IDotNugg.Rgba memory rgba,
-    //      uint256 x,
-    //      uint256 y,
-    //      uint256 xlen,
-    //      uint256 ylen
-    //  ) internal pure returns (bytes memory res) {
-    //      if (rgba.a == 0) return '';
-    //      //   (rgba, ) = rgba.combine(IDotNugg.Rgba({r: 0, g: 255, b: 0, a: 99}));
-    //      res = abi.encodePacked(
-    //          "\t<rect fill='#",
-    //          rgba.toAscii(),
-    //          "' x='",
-    //          x.toString(),
-    //          "' y='",
-    //          y.toString(),
-    //          "' height='",
-    //          xlen.toString(),
-    //          "' width='",
-    //          ylen.toString(),
-    //          "'/>\n"
-    //      );
-    //  }
 }
