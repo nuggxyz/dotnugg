@@ -6,7 +6,7 @@ module.exports = {
     singleQuote: true,
     jsxBracketSameLine: true,
     printWidth: 140,
-   
+
     overrides: [
         {
             files: '*.sol',

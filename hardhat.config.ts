@@ -19,11 +19,7 @@ import 'hardhat-tracer';
 import { config as dotenvConfig } from 'dotenv';
 import { utils } from 'ethers';
 import { removeConsoleLog } from 'hardhat-preprocessor';
-import {
-    HardhatUserConfig,
-    NetworksUserConfig,
-    NetworkUserConfig,
-} from 'hardhat/types';
+import { HardhatUserConfig, NetworksUserConfig, NetworkUserConfig } from 'hardhat/types';
 import { resolve } from 'path';
 
 dotenvConfig({ path: resolve(__dirname, './.env') });
