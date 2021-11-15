@@ -74,7 +74,7 @@ contract SystemTest {
         sampleItems[2] = sample3;
         sampleItems[3] = sample4;
 
-        res = _contract.nuggify(sampleCollection, sampleItems, address(_resolver), '');
+        res = _contract.nuggify(sampleCollection, sampleItems, address(_resolver), 'the name', 'the desc', 245, hex'02', '');
         //   IDotNugg.Matrix memory temp = Matrix.create(17, 5);
         //   IDotNugg.Item memory t2 = Decoder.parseItem(sample2, 10);
         //   Matrix.set(temp, t2.versions[0].data, t2.pallet, t2.versions[0].width, t2.versions[0].height);

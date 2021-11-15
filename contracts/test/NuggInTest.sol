@@ -40,7 +40,7 @@ contract NuggInTest {
         //   sampleItems[2] = sample3;
         //   sampleItems[3] = sample4;
 
-        string memory res = _contract.nuggify(sampleCollection, sampleItems, address(_resolver), '');
+        string memory res = _contract.nuggify(sampleCollection, sampleItems, address(_resolver), 'the name', 'the desc', 245, hex'02', '');
         console.log(res);
         //   General.convert(sampleCollection, sampleItems, address(0), '');
         //   assertTrue(item.feature == 0);

@@ -18,11 +18,16 @@ import './interfaces/INuggIn.sol';
 contract DotNugg is IDotNugg {
     using Calculator for IDotNugg.Collection;
     using Bytes for bytes;
+    using Uint256 for uint256;
 
     function nuggify(
         bytes memory _collection,
         bytes[] memory _items,
         address _resolver,
+        string memory name,
+        string memory,
+        uint256 tokenId,
+        bytes32 seed,
         bytes memory data
     ) public view override returns (string memory image) {
         IFileResolver fileResolver = IFileResolver(_resolver);
@@ -52,7 +57,22 @@ contract DotNugg is IDotNugg {
         }
         (bytes memory fileData, string memory fileType) = fileResolver.resolveFile(matrix, data);
 
-        image = Base64.encode(fileData, fileType);
+        image = Base64.encode(
+            bytes(
+                abi.encodePacked(
+                    '{"name":"',
+                    name,
+                    '","tokenId":"',
+                    tokenId.toString(),
+                    '","description":"',
+                    uint256(seed).toString(),
+                    '", "image": "',
+                    Base64.encode(fileData, fileType),
+                    '"}'
+                )
+            ),
+            'json'
+        );
         //   image = fileData.toAscii();
     }
 }
