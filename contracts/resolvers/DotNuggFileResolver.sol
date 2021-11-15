@@ -63,7 +63,7 @@ contract DotNuggFileResolver is IFileResolver {
 
         uint256 coltracker = 0;
         uint256 lentracker = 0;
-        uint256 pallettracker = 0;
+        uint256 pallettracker = 1;
 
         uint8 count = 1;
         while (matrix.next()) {
@@ -98,9 +98,9 @@ contract DotNuggFileResolver is IFileResolver {
         res[index++] = 0x67; // [6] - G
 
         res[index++] = 0; // [7] - FREE
-        res[index++] = 0; // [8] - FREE
+        res[index++] = bytes1(matrix.width); // [8] - width
 
-        uint256 colorKeysIndex = index + pallettracker * 4;
+        uint256 colorKeysIndex = index + (pallettracker + 1) * 4;
         uint256 lengthIndex = colorKeysIndex + coltracker;
 
         res[index++] = bytes1(uint8(colorKeysIndex >> 8));
