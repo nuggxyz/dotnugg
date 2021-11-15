@@ -22,7 +22,7 @@ import { removeConsoleLog } from 'hardhat-preprocessor';
 import { HardhatUserConfig, NetworksUserConfig, NetworkUserConfig } from 'hardhat/types';
 import { resolve } from 'path';
 
-dotenvConfig({ path: resolve(__dirname, './.env') });
+dotenvConfig({ path: resolve(__dirname, '.env') });
 
 export const GAS_PRICE = utils.parseUnits('5', 'gwei');
 
@@ -70,7 +70,7 @@ const DefaultProductionNetworkConfig = {
     ...DefaultNetworkConfig,
     tags: [NetworkTags.PRODUCTION],
 };
-
+console.log({ whoa: process.env });
 const LocalNetworks: NetworksUserConfig = {
     localhost: {
         ...DefaultLocalNetworkConfig,
