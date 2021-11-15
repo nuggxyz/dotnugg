@@ -1,19 +1,10 @@
-import {
-    ethers,
-    waffle,
-} from 'hardhat';
+import { ethers, waffle } from 'hardhat';
 
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/dist/src/signers';
 
 import { NamedAccounts } from '../../hardhat.config';
-import {
-    AnchorTest,
-    AnchorTest__factory,
-} from '../../types';
-import {
-    deployContract,
-    prepareAccounts,
-} from './';
+
+import { deployContract, prepareAccounts } from './';
 
 // import { getHRE } from './shared/deployment';
 const createFixtureLoader = waffle.createFixtureLoader;
@@ -21,14 +12,14 @@ const {
     constants: { MaxUint256 },
 } = ethers;
 
-let loadFixture: ReturnType<typeof createFixtureLoader>;
-let accounts: Record<keyof typeof NamedAccounts, SignerWithAddress>;
-let anchor: AnchorTest;
-const refresh = async () => {
-    accounts = await prepareAccounts();
-    loadFixture = createFixtureLoader();
-    anchor = await deployContract<AnchorTest__factory>({ factory: 'AnchorTest', from: accounts.frank, args: [] });
-};
+// let loadFixture: ReturnType<typeof createFixtureLoader>;
+// let accounts: Record<keyof typeof NamedAccounts, SignerWithAddress>;
+// let anchor: AnchorTest;
+// const refresh = async () => {
+//     accounts = await prepareAccounts();
+//     loadFixture = createFixtureLoader();
+//     anchor = await deployContract<AnchorTest__factory>({ factory: 'AnchorTest', from: accounts.frank, args: [] });
+// };
 
 // describe('anchor tests', async function () {
 // beforeEach(async () => {

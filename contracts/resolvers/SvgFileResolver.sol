@@ -14,7 +14,7 @@ import '../../contracts/libraries/Uint.sol';
 // /**
 //  * @dev Bytes1 operations.
 //  */
-contract SvgNuggIn is IFileResolver {
+contract SvgFileResolver is IFileResolver {
     using Rgba for IDotNugg.Rgba;
     using Uint256 for uint256;
 

@@ -1,7 +1,4 @@
-import {
-    ethers,
-    waffle,
-} from 'hardhat';
+import { ethers, waffle } from 'hardhat';
 
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/dist/src/signers';
 
@@ -13,15 +10,12 @@ import {
     DotNuggFileResolver__factory,
     GroupNuggIn,
     GroupNuggIn__factory,
-    SvgNuggIn,
-    SvgNuggIn__factory,
+    SvgFileResolver,
+    SvgFileResolver__factory,
     SystemTest,
     SystemTest__factory,
 } from '../../types';
-import {
-    deployContract,
-    prepareAccounts,
-} from './';
+import { deployContract, prepareAccounts } from './';
 import { bashit } from './shared/groups';
 
 // import { getHRE } from './shared/deployment';
@@ -34,7 +28,7 @@ let loadFixture: ReturnType<typeof createFixtureLoader>;
 let accounts: Record<keyof typeof NamedAccounts, SignerWithAddress>;
 let plain: SystemTest;
 let nuggin: GroupNuggIn;
-let nugginSVG: SvgNuggIn;
+let nugginSVG: SvgFileResolver;
 let nugginDotNugg: DotNuggFileResolver;
 
 let dotnugg: DotNugg;
@@ -45,7 +39,7 @@ const refresh = async () => {
     plain = await deployContract<SystemTest__factory>({ factory: 'SystemTest', from: accounts.frank, args: [] });
     nugginDotNugg = await deployContract<DotNuggFileResolver__factory>({ factory: 'DotNuggFileResolver', from: accounts.frank, args: [] });
 
-    nugginSVG = await deployContract<SvgNuggIn__factory>({ factory: 'SvgNuggIn', from: accounts.frank, args: [] });
+    nugginSVG = await deployContract<SvgFileResolver__factory>({ factory: 'SvgFileResolver', from: accounts.frank, args: [] });
     nuggin = await deployContract<GroupNuggIn__factory>({ factory: 'GroupNuggIn', from: accounts.frank, args: [] });
     dotnugg = await deployContract<DotNugg__factory>({ factory: 'DotNugg', from: accounts.frank, args: [] });
 };
