@@ -2,159 +2,195 @@
 
 pragma solidity 0.8.4;
 
-import '../interfaces/IDotNugg.sol';
 import '../libraries/Bytes.sol';
+import '../types/MatrixType.sol';
+
 import '../logic/Rgba.sol';
 
-import '../test/Console.sol';
+import '../test/Event.sol';
 
 library Matrix {
+    using Event for uint256;
+
     using Bytes for bytes;
-    using Rgba for IDotNugg.Rgba;
+    using ShiftLib for uint256;
+    using ShiftLib for uint256[];
 
-    function create(uint8 width, uint8 height) internal view returns (IDotNugg.Matrix memory res) {
+    using MatrixType for MatrixType.Memory;
+
+    using PalletType for PalletType.Memory;
+
+    using PixelType for uint256;
+    using PalletType for uint256[];
+    using MatrixType for uint256;
+
+    function create(uint256 width, uint256 height) internal returns (MatrixType.Memory memory res) {
         require(width % 2 == 1 && height % 2 == 1, 'ML:C:0');
+        // emit log_named_uint('HERE333333333', width);
 
-        res.data = new IDotNugg.Pixel[][](height);
-        for (uint8 i = 0; i < height; i++) {
-            res.data[i] = new IDotNugg.Pixel[](width);
-        }
+        res = MatrixType.matrix_load(width, height);
+        width.log('Matrix.create: width');
+        // emit log_named_uint('HERE44444444', width);
     }
 
     function moveTo(
-        IDotNugg.Matrix memory matrix,
-        uint8 xoffset,
-        uint8 yoffset,
-        uint8 width,
-        uint8 height
-    ) internal view {
-        matrix.currentUnsetX = xoffset;
-        matrix.currentUnsetY = yoffset;
-        matrix.startX = xoffset;
-        matrix.width = width + xoffset;
-        matrix.height = height + yoffset;
+        MatrixType.Memory memory m,
+        uint256 xoffset,
+        uint256 yoffset,
+        uint256 width,
+        uint256 height
+    ) internal {
+        m.data = m.data.matrix_currentUnsetX(xoffset).matrix_currentUnsetY(yoffset).matrix_startX(xoffset).matrix_width(width + xoffset).matrix_height(
+            height + yoffset
+        );
     }
 
-    function next(IDotNugg.Matrix memory matrix) internal view returns (bool res) {
-        res = next(matrix, matrix.width);
+    function next(MatrixType.Memory memory m) internal returns (bool res) {
+        res = next(m, m.data.matrix_width());
     }
 
-    function next(IDotNugg.Matrix memory matrix, uint8 width) internal view returns (bool res) {
-        if (matrix.init) {
-            if (width <= matrix.currentUnsetX + 1) {
-                if (matrix.height == matrix.currentUnsetY + 1) {
+    function next(MatrixType.Memory memory m, uint256 width) internal returns (bool res) {
+        require(width <= 0xff, 'M2:N:0');
+
+        uint256 data = m.data;
+
+        if (data.matrix_init()) {
+            if (width <= data.matrix_currentUnsetX() + 1) {
+                if (data.matrix_height() == data.matrix_currentUnsetY() + 1) {
                     return false;
                 }
-                matrix.currentUnsetX = matrix.startX; // 0 by default
-                matrix.currentUnsetY++;
+                data = data.matrix_currentUnsetX(data.matrix_startX()).matrix_currentUnsetY(data.matrix_currentUnsetY() + 1); // 0 by default
             } else {
-                matrix.currentUnsetX++;
+                data = data.matrix_currentUnsetX(data.matrix_currentUnsetX() + 1);
             }
         } else {
-            matrix.init = true;
+            data = data.matrix_init(true);
         }
+
         res = true;
+        m.data = data;
     }
 
-    function current(IDotNugg.Matrix memory matrix) internal view returns (IDotNugg.Pixel memory res) {
+    function current(MatrixType.Memory memory m) internal returns (uint256 res) {
         //   console.log('OVERFLOW?', matrix.currentUnsetY, matrix.currentUnsetX);
         //   console.log('MATRIXX', matrix.height, matrix.width);
-        res = matrix.data[matrix.currentUnsetY][matrix.currentUnsetX];
+        res = m.matrix_pixel(m.data.matrix_currentUnsetX(), m.data.matrix_currentUnsetY());
     }
 
-    function setCurrent(IDotNugg.Matrix memory matrix, IDotNugg.Pixel memory pix) internal view {
-        matrix.data[matrix.currentUnsetY][matrix.currentUnsetX] = pix;
+    function setCurrent(MatrixType.Memory memory m, uint256 pix) internal {
+        m.matrix_pixel(m.data.matrix_currentUnsetX(), m.data.matrix_currentUnsetY(), pix);
     }
 
-    function resetIterator(IDotNugg.Matrix memory matrix) internal view {
-        matrix.currentUnsetX = 0;
-        matrix.currentUnsetY = 0;
-        matrix.startX = 0;
-        matrix.init = false;
+    function resetIterator(MatrixType.Memory memory m) internal {
+        m.data = m.data.matrix_currentUnsetX(0).matrix_currentUnsetY(0).matrix_startX(0).matrix_init(false);
     }
 
-    function moveBack(IDotNugg.Matrix memory matrix) internal view {
-        matrix.width = uint8(matrix.data[0].length);
-        matrix.height = uint8(matrix.data.length);
+    function moveBack(MatrixType.Memory memory matrix) internal {
+        //       matrix.width = uint8(matrix.data[0].length);
+        // matrix.height = uint8(matrix.data.length);
+        // matrix.data = .width = uint256(matrix.data[0].length); // TODO
+        // matrix.data = .height = uint256(matrix.data.matrix_length);
+
+        matrix.data = matrix.data.matrix_width(matrix.data.matrix_og_width()).matrix_height(matrix.data.matrix_og_height());
     }
 
-    function reset(IDotNugg.Matrix memory matrix) internal view {
-        for (; next(matrix); ) if (current(matrix).exists) delete matrix.data[matrix.currentUnsetY][matrix.currentUnsetX];
-        matrix.width = 0;
-        matrix.height = 0;
-        resetIterator(matrix);
-    }
+    // function reset(IDotNugg.Matrix memory matrix) internal  {
+    //     for (; next(matrix); ) if (current(matrix).exists()) delete matrix.data[matrix.currentUnsetY][matrix.currentUnsetX];
+    //     matrix.width = 0;
+    //     matrix.height = 0;
+    //     resetIterator(matrix);
+    // }
 
     function set(
-        IDotNugg.Matrix memory matrix,
+        MatrixType.Memory memory m,
         bytes memory data,
-        IDotNugg.Pixel[] memory pallet,
-        uint8 groupWidth,
-        uint8 groupHeight
-    ) internal view {
+        PalletType.Memory memory pallet,
+        uint256 groupWidth,
+        uint256 groupHeight
+    ) internal {
         uint256 totalLength = 0;
-        matrix.height = groupHeight;
+        uint256 matrixData = m.data;
+        // uint256 data =
+        matrixData = matrixData.matrix_height(groupHeight).matrix_og_height(groupHeight);
+
         for (uint256 i = 0; i < data.length; i++) {
             (uint8 colorKey, uint8 len) = data.toUint4(i);
+            // if (len == 0) break;
+            uint256(len).log('len');
+            uint256(colorKey).log('colorKey');
             len++;
-            // console.log(colorKey, len);
             totalLength += len;
+            // groupHeight++;
             for (uint256 j = 0; j < len; j++) {
-                next(matrix, groupWidth);
-                setCurrent(matrix, pallet[colorKey]);
-                //  console.log('yo', current(matrix).rgba.toAscii());
+                next(m, groupWidth);
+                setCurrent(m, pallet.pixel(colorKey));
             }
-            // console.log(totalLength, groupWidth, groupHeight);
         }
 
-        console.log('total length', totalLength);
-        console.log('width', groupWidth);
-        console.log('height', groupHeight);
+        totalLength.log('totalLength');
+        groupWidth.log('groupWidth');
 
         require(totalLength % groupWidth == 0, 'MTRX:SET:0');
+
         require(totalLength / groupWidth == groupHeight, 'MTRX:SET:1');
 
-        matrix.width = groupWidth;
-        matrix.height = uint8(totalLength / groupWidth);
+        matrixData = matrixData.matrix_width(groupWidth).matrix_og_width(groupWidth);
 
-        resetIterator(matrix);
+        m.data = matrixData;
+
+        // MIGHT NEED THIS
+        // matrix.height = uint256(totalLength / groupWidth);
+
+        resetIterator(m);
     }
 
-    function addRowsAt(
-        IDotNugg.Matrix memory matrix,
-        uint8 index,
-        uint8 amount
-    ) internal view {
-        require(index < matrix.data.length, 'MAT:ARA:0');
-        for (uint256 j = matrix.width; j > index; j--) {
-            if (j < index) break;
-            if (matrix.data[j].length > 0) matrix.data[j + amount] = matrix.data[j];
-        }
-        // "<=" is because this loop needs to run [amount] times
-        for (uint256 j = index + 1; j <= index + amount; j++) {
-            //
-            matrix.data[j] = matrix.data[index];
-        }
-        matrix.height += amount;
-    }
+    // function addRowsAt(
+    //     MatrixType.Memory memory m,
+    //     uint256 index,
+    //     uint256 amount
+    // ) internal  {
+    //     uint256 matrixData = m.data;
 
-    function addColumnsAt(
-        IDotNugg.Matrix memory matrix, /// cowboy hat
-        uint8 index,
-        uint8 amount
-    ) internal view {
-        require(index < matrix.data[0].length, 'MAT:ACA:0');
-        for (uint256 i = 0; i < matrix.width; i++) {
-            for (uint256 j = matrix.width; j > index; j--) {
-                if (j < index) break;
-                //  if (matrix.data[i][j].exists) @note - do not completly understand this.. but it fixes a bug
-                matrix.data[i][j + amount] = matrix.data[i][j];
-            }
-            // "<=" is because this loop needs to run [amount] times
-            for (uint256 j = index + 1; j <= index + amount; j++) {
-                matrix.data[i][j] = matrix.data[i][index];
-            }
-        }
-        matrix.width += amount;
-    }
+    //     require(index < m.pixels.length, 'MAT:ARA:0');
+
+    //     for (uint256 j = matrixData.matrix_width(); j > index; j--) {
+    //         if (j < index) break;
+    //         if (m.pixels[j].dat.dat.length > 0) m.pixels[j + amount] = m.pixels[j];
+    //     }
+    //     // "<=" is because this loop needs to run [amount] times
+    //     for (uint256 j = index + 1; j <= index + amount; j++) {
+    //         //
+    //         m.pixels[j] = m.pixels[index];
+    //     }
+    //     matrixData = matrixData.height(matrixData.height() + amount);
+
+    //     m.data = matrixData;
+    // }
+
+    // function addColumnsAt(
+    //     MatrixType.Memory memory m, /// cowboy hat
+    //     uint256 index,
+    //     uint256 amount
+    // ) internal  {
+    //     require(index < m.pixels[0].length, 'MAT:ACA:0');
+
+    //     for (uint256 i = 0; i < m.data.matrix_width(); i++) {
+    //         for (uint256 j = m.data.matrix_width(); j > index; j--) {
+    //             if (j < index) break;
+    //             //  if (matrix.data[i][j].exists) @note - do not completly understand this.. but it fixes a bug
+    //             // matrix.data[i][j + amount] = matrix.data[i][j];
+
+    //             m.pixel(j + amount, i, m.pixel(j, i));
+    //         }
+    //         // "<=" is because this loop needs to run [amount] times
+    //         for (uint256 j = index + 1; j <= index + amount; j++) {
+    //             // matrix.data[i][j] = matrix.data[i][index];
+
+    //             m.pixel(j, i, m.pixel(index, i));
+    //         }
+    //     }
+    //     // matrix.width += amount;
+
+    //     m.data = m.data.matrix_width(m.data.matrix_width() + amount);
+    // }
 }

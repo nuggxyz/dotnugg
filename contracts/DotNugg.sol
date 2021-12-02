@@ -6,6 +6,8 @@ import './logic/Decoder.sol';
 import './logic/Calculator.sol';
 
 import './libraries/Base64.sol';
+import './libraries/Uint.sol';
+
 import './interfaces/IDotNugg.sol';
 import './interfaces/INuggIn.sol';
 
@@ -16,8 +18,6 @@ import './interfaces/INuggIn.sol';
  * @dev hold my margarita
  */
 contract DotNugg is IDotNugg {
-    using Calculator for IDotNugg.Collection;
-    using Bytes for bytes;
     using Uint256 for uint256;
 
     function nuggify(
@@ -25,36 +25,37 @@ contract DotNugg is IDotNugg {
         bytes[] memory _items,
         address _resolver,
         string memory name,
-        string memory,
+        string memory desc,
         uint256 tokenId,
-        bytes32 seed,
+        // bytes32 seed,
         bytes memory data
-    ) public view override returns (string memory image) {
+    ) public override returns (string memory image) {
         IFileResolver fileResolver = IFileResolver(_resolver);
         IColorResolver colorResolver = IColorResolver(_resolver);
 
-        require(fileResolver.supportsInterface(type(IFileResolver).interfaceId), 'NUG:TURI:2');
+        // require(fileResolver.supportsInterface(type(IFileResolver).interfaceId), 'NUG:TURI:2');
 
-        IDotNugg.Collection memory collection = Decoder.parseCollection(_collection);
+        uint256 collection = Decoder.parseCollection(_collection);
+        // emit log_named_uint('HERE2', collection);
 
-        bytes[] memory selected = new bytes[](collection.numFeatures);
+        // bytes[] memory selected = new bytes[](8);
 
-        for (uint256 i = 0; i < _items.length; i++) {
-            selected[Decoder.parseItemFeatureId(_items[i])] = _items[i];
-        }
+        // for (uint256 i = 0; i < _items.length; i++) {
+        //     selected[Decoder.parseItemFeatureId(_items[i])] = _items[i];
+        // }
 
-        for (uint256 i = 0; i < collection.defaults.length; i++) {
-            uint8 featureId = Decoder.parseItemFeatureId(collection.defaults[i]);
-            if (selected[featureId].length == 0) {
-                selected[featureId] = collection.defaults[i];
-            }
-        }
+        // for (uint256 i = 0; i < collection.defaults.length; i++) {
+        //     uint8 featureId = Decoder.parseItemFeatureId(collection.defaults[i]);
+        //     if (selected[featureId].length == 0) {
+        //         selected[featureId] = collection.defaults[i];
+        //     }
+        // }
 
-        IDotNugg.Matrix memory matrix = collection.combine(selected);
+        MatrixType.Memory memory matrix = Calculator.combine(collection, _items);
 
-        if (colorResolver.supportsInterface(type(IColorResolver).interfaceId)) {
-            colorResolver.resolveColor(matrix, data);
-        }
+        // if (colorResolver.supportsInterface(type(IColorResolver).interfaceId)) {
+        //     colorResolver.resolveColor(matrix, data);
+        // }
         (bytes memory fileData, string memory fileType) = fileResolver.resolveFile(matrix, data);
 
         image = Base64.encode(
@@ -65,7 +66,7 @@ contract DotNugg is IDotNugg {
                     '","tokenId":"',
                     tokenId.toString(),
                     '","description":"',
-                    uint256(seed).toString(),
+                    desc,
                     '", "image": "',
                     Base64.encode(fileData, fileType),
                     '"}'

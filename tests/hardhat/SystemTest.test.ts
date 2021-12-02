@@ -51,7 +51,7 @@ describe('uint tests', async function () {
 
     describe('internal', async () => {
         it('should not fuck up', async () => {
-            const str = await plain.tfull(dotnugg.address, nugginDotNugg.address);
+            const str = await plain.tfull(dotnugg.address, nugginSVG.address);
 
             // console.log(ethers.utils.base64.decode(str));
             console.log(str);
