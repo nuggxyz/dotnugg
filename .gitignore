@@ -3,7 +3,7 @@
 /build
 /tsconfig.tsbuildinfo
 .env
-types
+
 artifacts
 /abi
 .DS_Store
@@ -22,3 +22,4 @@ coverage.json
 /deployments/localhost/
 */out
 /tests/dapptools/out
+typechain

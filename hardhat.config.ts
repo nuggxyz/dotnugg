@@ -220,7 +220,7 @@ const HardhatConfig: HardhatUserConfig = {
         apiKey: process.env.ETHERSCAN_API_KEY,
     },
     typechain: {
-        outDir: 'types',
+        outDir: 'typechain',
         target: 'ethers-v5',
     },
     mocha: {

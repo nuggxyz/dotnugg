@@ -5,54 +5,105 @@ pragma solidity 0.8.4;
 import './Matrix.sol';
 import './Decoder.sol';
 import './Rgba.sol';
-import './Anchor.sol';
+// import './Anchor.sol';
 
-import '../interfaces/IDotNugg.sol';
+import '../types/PalletType.sol';
+import '../types/MatrixType.sol';
+import '../types/SudoArrayType.sol';
+import '../types/ContentType.sol';
+import '../types/CanvasType.sol';
+import '../types/VersionType.sol';
+import '../types/CollectionType.sol';
+import '../types/AnchorType.sol';
+import '../types/PixelType.sol';
+import '../types/ReceiverType.sol';
+import '../types/MixType.sol';
+
+import '../test/Event.sol';
 
 library Calculator {
-    using Rgba for IDotNugg.Rgba;
-    using Matrix for IDotNugg.Matrix;
+    using Event for uint256;
+
+    using ShiftLib for uint256;
+
+    using ShiftLib for uint256[];
+
+    using PalletType for PalletType.Memory;
+    using VersionType for VersionType.Memory;
+    using CanvasType for CanvasType.Memory;
+    using MixType for MixType.Memory;
+    using Matrix for MatrixType.Memory;
+    using MatrixType for MatrixType.Memory;
+
+    using CollectionType for uint256;
+    using PixelType for uint256;
+    using AnchorType for uint256;
+    using VersionType for uint256;
+    using ReceiverType for uint256;
+    using MatrixType for uint256;
 
     /**
      * @notice
      * @dev
      */
-    function combine(IDotNugg.Collection memory collection, bytes[] memory inputs) internal view returns (IDotNugg.Matrix memory resa) {
-        IDotNugg.Canvas memory canvas;
-        canvas.matrix = Matrix.create(collection.width, collection.height);
-        canvas.receivers = new IDotNugg.Anchor[](collection.numFeatures);
-        IDotNugg.Coordinate memory coord;
-        coord.a = collection.width / 2;
-        coord.b = collection.width / 2;
-        coord.exists = true;
-        IDotNugg.Rlud memory r;
-        for (uint8 i = 0; i < collection.numFeatures; i++) {
-            canvas.receivers[i] = IDotNugg.Anchor({coordinate: coord, radii: r});
+    function combine(uint256 collection, bytes[] memory inputs) internal returns (MatrixType.Memory memory resa) {
+        CanvasType.Memory memory canvas;
+        MixType.Memory memory mix;
+
+        canvas.matrix = Matrix.create(collection.collection_width(), collection.collection_height());
+
+        uint256 initalAnchor;
+
+        initalAnchor = initalAnchor.anchor_x(collection.collection_width() / 2);
+        initalAnchor.log('combine-initalAnchor-1');
+
+        initalAnchor = initalAnchor.anchor_y(collection.collection_width() / 2);
+        initalAnchor.log('combine-initalAnchor-2');
+
+        initalAnchor = initalAnchor.anchor_coordExists(true);
+        initalAnchor.log('combine-initalAnchor-3');
+
+        // IDotNugg.Coordinate memory coord;
+        // coord.a = collection.width / 2;
+        // coord.b = collection.width / 2;
+        // coord.exists = true;
+        // IDotNugg.Rlud memory r;
+        for (uint256 i = 0; i < collection.collection_numfeatures(); i++) {
+            // canvas.rec(i, )= IDotNugg.Anchor({coordinate: coord, radii: r});
+            collection.collection_numfeatures().log('how many?');
+
+            canvas.canvas_receivers(i, initalAnchor);
         }
-        canvas.matrix.width = collection.width;
-        canvas.matrix.height = collection.height;
 
-        IDotNugg.Mix memory mix;
-        mix.matrix = Matrix.create(collection.width, collection.height);
-        mix.receivers = new IDotNugg.Anchor[](collection.numFeatures);
+        collection.log('yo');
 
-        IDotNugg.Item[] memory items = Decoder.parseItems(inputs, collection.numFeatures);
+        // canvas.matrix.data = canvas.matrix.pixel(x, update);
+        canvas.matrix.data = canvas.matrix.data.matrix_width(collection.collection_width()).matrix_height(collection.collection_height());
+        // canvas.matrix.height = collection.height;
+
+        mix.canvas.matrix = Matrix.create(collection.collection_width(), collection.collection_height());
+        // mix.receivers = new IDotNugg.Anchor[](collection.numFeatures);
+        // , collection.collection_numfeatures()
+        ItemType.Memory[] memory items = Decoder.parseItems(inputs);
 
         for (uint8 i = 0; i < items.length; i++) {
             if (items[i].versions.length > 0) {
-                console.log('start feature:', items[i].feature);
-                setMix(mix, items[i], pickVersionIndex(canvas, items[i]));
+                // console.log('start feature:', items[i].feature);
+                // setMix(mix, items[i], pickVersionIndex(canvas, items[i]));
+                setMix(mix, items[i], 0);
 
-                formatForCanvas(canvas, mix);
+                // formatForCanvas(canvas, mix);
 
                 postionForCanvas(canvas, mix);
 
-                mergeToCanvas(canvas, mix);
+                {
+                    mergeToCanvas(canvas, mix);
+                }
 
-                calculateReceivers(mix);
+                // calculateReceivers(mix);
 
                 updateReceivers(canvas, mix);
-                console.log('end feature:', items[i].feature);
+                // console.log('end feature:', items[i].feature);
             }
         }
 
@@ -63,82 +114,22 @@ library Calculator {
      * @notice
      * @devg
      */
-    function postionForCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal view {
-        IDotNugg.Anchor memory receiver = canvas.receivers[mix.feature];
-        IDotNugg.Anchor memory anchor = mix.version.anchor;
+    function postionForCanvas(CanvasType.Memory memory canvas, MixType.Memory memory mix) internal {
+        uint256 receiver = canvas.canvas_receivers(mix.version.info.version_feature());
+        uint256 anchor = canvas.canvas_receivers(mix.version.info.version_anchor());
 
-        uint8 xoffset = receiver.coordinate.a - anchor.coordinate.a;
-        uint8 yoffset = receiver.coordinate.b - anchor.coordinate.b;
-        console.log(xoffset, yoffset);
-        canvas.matrix.moveTo(xoffset, yoffset, mix.matrix.width, mix.matrix.height);
+        uint256 xoffset = receiver.anchor_x() - anchor.anchor_x();
+        uint256 yoffset = receiver.anchor_y() - anchor.anchor_y();
+
+        xoffset.log('xoffset');
+
+        canvas.matrix.moveTo(xoffset, yoffset, mix.canvas.matrix.data.matrix_width(), mix.canvas.matrix.data.matrix_height());
+        yoffset.log('yoffset');
     }
 
-    /**
-     * @notice
-     * @dev
-     */
-    function formatForCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal view {
-        IDotNugg.Anchor memory receiver = canvas.receivers[mix.feature];
-        IDotNugg.Anchor memory anchor = mix.version.anchor;
-        // console.log('BEFORE x:', anchor.coordinate.a, ', y:', anchor.coordinate.b);
-        // console.log('BEFORE w:', mix.matrix.width, ', h:', mix.matrix.height);
-        // console.log('radii.r anchor: ', anchor.radii.r, 'receiver: ', receiver.radii.r);
-        // console.log('radii.l anchor: ', anchor.radii.l, 'receiver: ', receiver.radii.l);
-        // console.log('radii.u anchor: ', anchor.radii.u, 'receiver: ', receiver.radii.u);
-        // console.log('radii.d anchor: ', anchor.radii.l, 'receiver: ', receiver.radii.d);
-
-        // console.log('mix.version.expanders.r: ', mix.version.expanders.r);
-        // console.log('mix.version.expanders.l: ', mix.version.expanders.l);
-        // console.log('mix.version.expanders.u: ', mix.version.expanders.u);
-        // console.log('mix.version.expanders.d: ', mix.version.expanders.d);
-        if (mix.version.expanders.l != 0 && anchor.radii.l != 0 && anchor.radii.l <= receiver.radii.l) {
-            uint8 amount = receiver.radii.l - anchor.radii.l;
-            mix.matrix.addColumnsAt(mix.version.expanders.l - 1, amount);
-            anchor.coordinate.a += amount;
-            if (mix.version.expanders.r > 0) mix.version.expanders.r += amount;
-        }
-        if (mix.version.expanders.r != 0 && anchor.radii.r != 0 && anchor.radii.r <= receiver.radii.r) {
-            mix.matrix.addColumnsAt(mix.version.expanders.r - 1, receiver.radii.r - anchor.radii.r);
-        }
-        if (mix.version.expanders.d != 0 && anchor.radii.d != 0 && anchor.radii.d <= receiver.radii.d) {
-            uint8 amount = receiver.radii.d - anchor.radii.d;
-            mix.matrix.addRowsAt(mix.version.expanders.d, amount);
-            anchor.coordinate.b += amount;
-            if (mix.version.expanders.u > 0) mix.version.expanders.u += amount;
-        }
-        if (mix.version.expanders.u != 0 && anchor.radii.u != 0 && anchor.radii.u <= receiver.radii.u) {
-            mix.matrix.addRowsAt(mix.version.expanders.u, receiver.radii.u - anchor.radii.u);
-        }
-
-        console.log('AFTER x:', anchor.coordinate.a, ', y:', anchor.coordinate.b);
-        console.log('AFTER w:', mix.matrix.width, ', h:', mix.matrix.height);
-    }
-
-    /**
-     * @notice
-     * @dev
-     * makes the sorts versions
-     */
-    function pickVersionIndex(IDotNugg.Canvas memory canvas, IDotNugg.Item memory item) internal view returns (uint8) {
-        require(item.versions.length > 0, 'CALC:PVI:0');
-        if (item.versions.length == 1) {
-            return 0;
-        }
-        uint8 index = uint8(item.versions.length) - 1;
-
-        while (index > 0) {
-            if (checkRluds(item.versions[index].anchor.radii, canvas.receivers[item.feature].radii)) {
-                return index;
-            }
-            index = index - 1;
-        }
-
-        return 0;
-    }
-
-    function checkRluds(IDotNugg.Rlud memory r1, IDotNugg.Rlud memory r2) internal view returns (bool) {
-        return (r1.r <= r2.r && r1.l <= r2.l) || (r1.u <= r2.u && r1.d <= r2.d);
-    }
+    // function checkRluds(IDotNugg.Rlud memory r1, IDotNugg.Rlud memory r2) internal  returns (bool) {
+    //     return (r1.r <= r2.r && r1.l <= r2.l) || (r1.u <= r2.u && r1.d <= r2.d);
+    // }
 
     /**
      * @notice
@@ -146,83 +137,111 @@ library Calculator {
      * makes the sorts versions
      */
     function setMix(
-        IDotNugg.Mix memory res,
-        IDotNugg.Item memory item,
-        uint8 versionIndex
-    ) internal view {
+        MixType.Memory memory res,
+        ItemType.Memory memory item,
+        uint256 versionIndex
+    ) internal {
         res.version = item.versions[versionIndex];
-        res.feature = item.feature;
-        res.receivers = new IDotNugg.Anchor[](res.receivers.length);
-
-        res.matrix.set(res.version.data, item.pallet, res.version.width, res.version.height);
+        res.canvas.matrix.set(res.version.content, item.pallet, res.version.info.version_width(), res.version.info.version_height());
     }
 
     /**
      * @notice done
      * @dev
      */
-    function updateReceivers(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal view {
-        for (uint8 i = 0; i < mix.receivers.length; i++) {
-            IDotNugg.Anchor memory m = mix.receivers[i];
-            if (m.coordinate.exists) {
-                canvas.receivers[i] = m;
+    function updateReceivers(CanvasType.Memory memory canvas, MixType.Memory memory mix) internal {
+        for (uint8 i = 0; i < 8; i++) {
+            if (mix.canvas.canvas_receivers(i).anchor_coordExists()) {
+                canvas.canvas_receivers(i, mix.canvas.canvas_receivers(i));
             }
         }
-        // for (uint8 i = 0 ; i < canvas.receivers.length; i++) {
-        //     console.log("CANVAS", i);
-        //     console.log("x:", canvas.receivers[i].coordinate.a, ", y:" ,canvas.receivers[i].coordinate.b);
-        //     console.log("___END___");
-        // }
     }
 
     /**
      * @notice done
      * @dev
      */
-    function mergeToCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal view {
-        while (canvas.matrix.next() && mix.matrix.next()) {
-            IDotNugg.Pixel memory canvasPixel = canvas.matrix.current();
-            IDotNugg.Pixel memory mixPixel = mix.matrix.current();
-            // console.log(mixPixel.exists);
-            // console.logInt(mixPixel.zindex);
-            // console.logInt(canvasPixel.zindex);
-            // console.log('-------------');
-            if (mixPixel.exists && mixPixel.zindex >= canvasPixel.zindex) {
-                canvasPixel.zindex = mixPixel.zindex;
-                //  console.log(Rgba.toAscii(canvasPixel.rgba), Rgba.toAscii(mixPixel.rgba));
-                //  console.log('COMBINE', canvasPixel.rgba.toAscii(), mixPixel.rgba.toAscii());
-                //  console.logInt(mixPixel.zindex);
-                //  console.logInt(canvasPixel.zindex);
-
-                canvasPixel.rgba.combine(mixPixel.rgba);
-                //  console.log('COMBINE', canvasPixel.rgba.toAscii(), mixPixel.rgba.toAscii());
-
-                //  console.log(Rgba.toAscii(canvasPixel.rgba), Rgba.toAscii(mixPixel.rgba));
+    function mergeToCanvas(CanvasType.Memory memory canvas, MixType.Memory memory mix) internal {
+        while (canvas.matrix.next() && mix.canvas.matrix.next()) {
+            uint256 mixActive = mix.canvas.matrix.matrix_active_pixel();
+            uint256 canActive = canvas.matrix.matrix_active_pixel();
+            if (mixActive.pixel_exists() && mixActive.pixel_zindex() >= canActive.pixel_zindex()) {
+                uint256 combined = Rgba.combine(canActive, mixActive).pixel_zindex(mixActive.pixel_zindex());
+                canvas.matrix.matrix_active_pixel(combined);
             }
         }
-        canvas.matrix.moveBack();
         canvas.matrix.resetIterator();
-        mix.matrix.resetIterator();
+        mix.canvas.matrix.resetIterator();
     }
 
-    /**
-     * @notice poop
-     * @dev
-     */
-    function calculateReceivers(IDotNugg.Mix memory mix) internal view {
-        Anchor.convertReceiversToAnchors(mix);
-    }
+    // /**
+    //  * @notice poop
+    //  * @dev
+    //  */
+    // function calculateReceivers(MixType.Memory memory mix) internal  {
+    //     Anchor.convertReceiversToAnchors(mix);
+    // }
 
     // you combine one by one, and as you combine, child refs get overridden
 
     // function add(Combinable comb, )
 }
+
+// /**
+//  * @notice expansion
+//  * @dev
+//  */
+// function formatForCanvas(CanvasType.Memory memory canvas, MixType.Memory memory mix) internal  {
+//     uint256 receiver = canvas.canvas_receivers(mix.version.version_feature());
+//     uint256 anchor = canvas.canvas_receivers(mix.version.version_anchor());
+
+//     if (mix.version.version_expanders().rlud_left() != 0 && anchor.radii.l != 0 && anchor.radii.l <= receiver.radii.l) {
+//         uint8 amount = receiver.radii.l - anchor.radii.l;
+//         mix.canvas.matrix.addColumnsAt(mix.version.version_expanders().rlud_left() - 1, amount);
+//         anchor.coordinate.a += amount;
+//         if (mix.version.version_expanders().rlud_right() > 0) mix.version.version_expanders().rlud_right() += amount; // TODO
+//     }
+//     if (mix.version.version_expanders().rlud_right() != 0 && anchor.rlud_right() != 0 && anchor.rlud_right() <= receiver.rlud_right()) {
+//         mix.canvas.matrix.addColumnsAt(mix.version.version_expanders().rlud_right() - 1, receiver.rlud_right() - anchor.rlud_right());
+//     }
+//     if (mix.version.version_expanders().rlud_down() != 0 && anchor.radii.d != 0 && anchor.radii.d <= receiver.radii.d) {
+//         uint8 amount = receiver.radii.d - anchor.radii.d;
+//         mix.canvas.matrix.addRowsAt(mix.version.version_expanders().rlud_down(), amount);
+//         anchor.coordinate.b += amount;
+//         if (mix.version.version_expanders().rlud_down() > 0) mix.version.version_expanders().rlud_down() += amount; // TODO
+//     }
+//     if (mix.version.version_expanders().rlud_down() != 0 && anchor.radii.u != 0 && anchor.radii.u <= receiver.radii.u) {
+//         mix.canvas.matrix.addRowsAt(mix.version.version_expanders().rlud_down(), receiver.radii.u - anchor.radii.u);
+//     }
+// }
+
+// /**
+//  * @notice
+//  * @dev
+//  * makes the sorts versions
+//  */
+// function pickVersionIndex(CanvasType.Memory memory canvas, ItemType.Memory memory item) internal  returns (uint8) {
+//     require(item.versions.length > 0, 'CALC:PVI:0');
+//     if (item.versions.length == 1) {
+//         return 0;
+//     }
+//     uint8 index = uint8(item.versions.length) - 1;
+
+//     while (index > 0) {
+//         if (checkRluds(item.versions[index].anchor.radii, canvas.receivers[item.feature].radii)) {
+//             return index;
+//         }
+//         index = index - 1;
+//     }
+
+//     return 0;
+// }
 // add parent refs, if any - will use ***REMOVED***s algo only for the canvas
 // the canvas will always be defined as the first, so if it isnt (will not happen for dotnugg), we define the center as all the child refs
 //  pick best version
 // figure out offset
 
-// function merge(Canvas memory canvas, Matrix memory versionMatrix) internal view {
+// function merge(Canvas memory canvas, Matrix memory versionMatrix) internal  {
 //     for (int8 y = (canvas.matrix.data.length / 2) * -1; y <= canvas.matrix.data.length / 2; y++) {
 //         for (int8 x = (canvas.matrix.width / 2) * -1; x <= canvas.matrix[j].width / 2; x++) {
 //             Pixel memory canvas = canvas.matrix.at(x, y);

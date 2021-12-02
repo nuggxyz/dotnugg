@@ -2,12 +2,7 @@
 
 pragma solidity 0.8.4;
 
-import '../interfaces/IDotNugg.sol';
-
-import '../libraries/Bytes.sol';
-import '../libraries/BytesLib.sol';
-import '../libraries/Checksum.sol';
-import '../libraries/Uint.sol';
+import '../libraries/ShiftLib.sol';
 
 import '../types/PalletType.sol';
 import '../types/MatrixType.sol';
@@ -22,12 +17,6 @@ import '../types/ReceiverType.sol';
 import '../test/Event.sol';
 
 library Decoder {
-    using Bytes for bytes;
-    using Bytes for bytes;
-
-    using Checksum for bytes;
-    using BytesLib for bytes;
-
     using Event for uint256;
 
     using ShiftLib for uint256;
@@ -42,6 +31,27 @@ library Decoder {
     using AnchorType for uint256;
     using VersionType for uint256;
     using ReceiverType for uint256;
+
+    uint256 constant MAX_ITEMS = 8;
+    uint256 constant MASK = 0xffffffffff;
+
+    event log_named_address(string key, address val);
+    event log_named_bytes32(string key, bytes32 val);
+    event log_named_decimal_int(string key, int256 val, uint256 decimals);
+    event log_named_decimal_uint(string key, uint256 val, uint256 decimals);
+    event log_named_int(string key, int256 val);
+    event log_named_uint(string key, uint256 val);
+    event log_named_bytes(string key, bytes val);
+    event log_named_string(string key, string val);
+
+    // using Bytes for bytes;
+    // using Bytes for bytes;
+
+    // using Checksum for bytes;
+    // using BytesLib for bytes;
+
+    // using Uint256 for uint256;
+    // using Rgba for IDotNugg.Rgba;
 
     // ┌──────────────────────────────────────────────────────────────┐
     // │                                                              │
@@ -67,16 +77,25 @@ library Decoder {
     // │   └─────┴────────────────────────────────────────────────┘   │
     // │                                                              │
     // └──────────────────────────────────────────────────────────────┘
-    function parseCollection(bytes memory data) internal returns (uint256 res) {
-        res = res.collection_width(data.toUint8(7));
-        res = res.collection_height(data.toUint8(7));
-        res = res.collection_numfeatures(data.toUint8(8));
+
+    function parseCollection(uint256[] memory data) internal returns (uint256 res) {
+        res = res.collection_width(data.rbit(8, 7 * 8));
+        res = res.collection_height(data.rbit(8, 7 * 8));
+        res = res.collection_numfeatures(data.rbit(8, 8 * 8));
+
+        // emit log_named_uint('data[0]', data[0]);
+        // emit log_named_uint('data.rbit(8, 7 * 8)', data.rbit(8, 7 * 8));
+        // emit log_named_uint('HERE', res);
+
+        // emit log_named_uint('width', res.collection_width());
+        // emit log_named_uint('height', res.collection_height());
+        // emit log_named_uint('numfeatures', res.collection_numfeatures());
     }
 
-    function parseItems(bytes[] memory data) internal returns (ItemType.Memory[] memory res) {
-        res = new ItemType.Memory[](data.length);
-        for (uint256 i = 0; i < data.length; i++) {
-            res[i] = parseItem(data[i]);
+    function parseItems(uint256[][] memory items) internal returns (ItemType.Memory[] memory res) {
+        res = new ItemType.Memory[](items.length);
+        for (uint256 i = 0; i < res.length; i++) {
+            res[i] = parseItem(items[i]);
         }
     }
 
@@ -109,32 +128,41 @@ library Decoder {
     // │                                                                   │
     // └───────────────────────────────────────────────────────────────────┘
 
-    function validateItem(bytes memory data) internal view {
-        require(data.length > 13, 'D:VI:0');
-        require(data.slice(0, 7).equal(hex'444f544e554747'), 'D:VI:1');
-        require(data.slice(9, data.length - 9).fletcher16() == data.toUint16(7), 'D:VI:2');
+    function validateItem(uint256[] memory data) internal {
+        // require(data.length > 13, 'D:VI:0');
+
+        // (data[0] >> (25 * 8)).log('yow');
+        // (uint256(0x444f544e554747)).log('yow');
+        require(data[0] >> (25 * 8) == 0x444f544e554747, 'D:VI:1');
+        // require(data.rbit(7 * 8) == 0x444f544e554747, 'D:VI:1');
+
+        // require(data.slice(0, 7).equal(abi.encodePacked('DOTNUGG')), 'D:VI:1');
+        // TODO require(data.slice(9, data.length - 9).fletcher16() == data.rbit(16, 7 * 8), 'D:VI:2');
     }
 
-    function parseItem(bytes memory data) internal returns (ItemType.Memory memory res) {
+    // @note - max feature len is now 8
+    function parseItem(uint256[] memory data) internal returns (ItemType.Memory memory res) {
         validateItem(data);
 
-        uint256 feat = parseItemFeatureId(data);
-        uint16 colorsIndex = data.toUint16(10);
+        uint256 feat = parseItemFeatureId(data[0]);
+        feat.log('feat');
+
+        data.rbit(16, 10 * 8).log('b4');
+        // uint16 colorsIndex = data.toUint16(10);
+        uint256 colorsIndex = data.rbit(16, 10 * 8);
+        colorsIndex.log('colorsIndex');
+
         uint256 versionsLength = (colorsIndex - 12) / 2;
+        versionsLength.log('versionsLength');
 
-        uint16[] memory versionsIndexz = new uint16[](versionsLength);
-        // console.log('yello', versionsIndexz.length);
-
-        for (uint16 i = 0; i < versionsIndexz.length; i++) {
-            versionsIndexz[i] = data.toUint16(12 + i * 2);
-        }
-
+        uint256[] memory versionsIndexz = new uint256[](versionsLength);
         // console.log('yello', versionsIndexz.length);
 
         for (uint256 i = 0; i < versionsLength; i++) {
             // versionsLength.log('testt-1');
+            data[i].log('data[i]');
 
-            versionsIndexz[i] = data.toUint16(12 + i * 2);
+            versionsIndexz[i] = data.rbit(16, 12 + i * 2);
         }
 
         uint256 palletLength = 1 + (versionsIndexz[0] - colorsIndex) / 5;
@@ -144,14 +172,8 @@ library Decoder {
         res.versions = new VersionType.Memory[](versionsLength);
 
         require(res.versions.length > 0, 'DEC:PI:0');
-        uint256 pix0;
-        pix0 = pix0.pixel_r(1);
-        pix0 = pix0.pixel_g(1);
-        pix0 = pix0.pixel_b(1);
-        pix0 = pix0.pixel_a(0);
-        pix0 = pix0.pixel_zindex(0);
-        pix0 = pix0.pixel_exists(false);
-        res.pallet.pixel(0, pix0);
+
+        res.pallet.pixel(0, uint256(0).pixel_r(1).pixel_g(1).pixel_b(1).pixel_a(0).pixel_zindex(0).pixel_exists(false));
 
         for (uint256 i = 1; i < palletLength; i++) {
             res.pallet.pixel(i, parsePixel(data, colorsIndex + 5 * (i - 1)));
@@ -159,13 +181,14 @@ library Decoder {
         }
 
         for (uint256 i = 0; i < versionsLength; i++) {
-            uint256 endIndex = i + 1 == versionsIndexz.length ? data.length : versionsIndexz[i + 1];
-            res.versions[i] = parseVersion(data, versionsIndexz[i], uint16(endIndex), feat);
+            // uint256 endIndex = i + 1 == versionsLength ? MASK : versionsIndexz[i + 1];
+            res.versions[i] = parseVersion(data, versionsIndexz[i], feat);
+            // versionsLength.log('testt1');
         }
     }
 
-    function parseItemFeatureId(bytes memory data) internal view returns (uint256 res) {
-        res = uint256(uint8(data[9]));
+    function parseItemFeatureId(uint256 data) internal returns (uint256 res) {
+        res = data.rbit(8, 9 * 8);
         require(res < 8, 'DE:PI:0');
     }
 
@@ -187,16 +210,16 @@ library Decoder {
     // │   └─────┴────────────────────────────────────────────────┘   │
     // │                                                              │
     // └──────────────────────────────────────────────────────────────┘
-    function parsePixel(bytes memory _bytes, uint256 _start) internal returns (uint256 res) {
-        require(_bytes.length >= _start + 5, 'parsePixel_outOfBounds');
+
+    function parsePixel(uint256[] memory input, uint256 _start) internal returns (uint256 res) {
+        // require(_bytes.length >= _start + 5, 'parsePixel_outOfBounds');
         {
-            int8 zindex = _bytes.toInt8(_start);
-            res = res.pixel_zindex(uint8(7 + zindex));
+            res = res.pixel_zindex(input.rbit(8, _start++ * 8));
             res = res.pixel_exists(true);
-            res = res.pixel_r(uint8(_bytes[_start + 1]));
-            res = res.pixel_g(uint8(_bytes[_start + 2]));
-            res = res.pixel_b(uint8(_bytes[_start + 3]));
-            res = res.pixel_a(uint8(_bytes[_start + 4]));
+            res = res.pixel_r(input.rbit(8, _start++ * 8));
+            res = res.pixel_g(input.rbit(8, _start++ * 8));
+            res = res.pixel_b(input.rbit(8, _start++ * 8));
+            res = res.pixel_a(input.rbit(8, _start++ * 8));
         }
     }
 
@@ -225,15 +248,24 @@ library Decoder {
     // │                                                              │
     // └──────────────────────────────────────────────────────────────┘
 
-    function parseRlud(bytes memory _bytes, uint256 _start) internal returns (uint256 res) {
-        require(_bytes.length >= _start + 5, 'parseRlud_outOfBounds');
-        bool exists = bool(uint8(_bytes[_start + 0]) == 1);
+    // function parseRgba(uint256[] memory _bytes, uint256 _start) internal  returns (IDotNugg.Rgba memory res) {
+    //     require(_bytes.length >= _start + 4, 'parsePixel_outOfBounds');
+    //     res.r = uint8(_bytes[_start + 0]);
+    //     res.g = uint8(_bytes[_start + 1]);
+    //     res.b = uint8(_bytes[_start + 2]);
+    //     res.a = uint8(_bytes[_start + 3]);
+    // }
+
+    function parseRlud(uint256[] memory input, uint256 _start) internal returns (uint256 res) {
+        bool exists = input.rbit(8, _start++ * 8) == 1;
+
         if (exists) {
-            res = res.anchor_rludExists(exists);
-            res = res.rlud_right(uint8(_bytes[_start + 1]));
-            res = res.rlud_left(uint8(_bytes[_start + 2]));
-            res = res.rlud_up(uint8(_bytes[_start + 3]));
-            res = res.rlud_down(uint8(_bytes[_start + 4]));
+            res = res
+                .anchor_rludExists(exists)
+                .rlud_right(input.rbit(8, _start++ * 8))
+                .rlud_left(input.rbit(8, _start++ * 8))
+                .rlud_up(input.rbit(8, _start++ * 8))
+                .rlud_down(input.rbit(8, _start++ * 8)); // // // // // //
         }
     }
 
@@ -264,57 +296,50 @@ library Decoder {
     // │   └─────┴────────────────────────────────────────────────┘   │
     // │                                                              │
     // └──────────────────────────────────────────────────────────────┘
+
     function parseVersion(
-        bytes memory input,
+        uint256[] memory input,
         uint256 _start,
-        uint256 _end,
         uint256 feat
     ) internal returns (VersionType.Memory memory res) {
         // require(_bytes.length >= _end && _start < _end, 'parsePixel_outOfBounds');
 
         // uint256 info;
-        uint256 addr;
+        uint256 addr = 0;
 
-        uint256 info;
-        uint256 anchor;
-        {
-            info = info.version_feature(feat);
-            info = info.version_width(input.toUint8(_start + addr++));
-            info = info.version_height(input.toUint8(_start + addr++));
+        uint256 info = 0;
 
-            anchor = anchor.anchor_x(input.toUint8(_start + addr++));
-            anchor = anchor.anchor_y(input.toUint8(_start + addr++));
+        info = info.version_feature(feat).version_width(input.rbit(8, _start * 8 + addr++ * 8)).version_height(input.rbit(8, _start * 8 + addr++ * 8));
 
-            uint256 _anchor = parseRlud(input, _start + addr++);
-            if (_anchor.anchor_rludExists()) {
-                addr += 4;
-                info = info.version_anchor(_anchor | anchor);
-            }
+        uint256 anchor = uint256(0).anchor_x(input.rbit(8, _start * 8 + addr++ * 8)).anchor_y(input.rbit(8, _start * 8 + addr++ * 8));
 
-            uint256 expanders = parseRlud(input, _start + addr++);
-            if (expanders.anchor_rludExists()) {
-                addr += 4;
-                info = info.version_expanders(expanders);
-            }
+        uint256 _anchor = parseRlud(input, _start * 8 + addr++ * 8);
+        if (_anchor.anchor_rludExists()) {
+            addr += 4;
+            info = info.version_anchor(_anchor | anchor);
         }
-        uint256 groupsIndex = uint256(_start) + input.toUint8(_start + addr++);
+        uint256 expanders = parseRlud(input, _start * 8 + addr++ * 8);
+        if (expanders.anchor_rludExists()) {
+            addr += 4;
+            info = info.version_expanders(expanders);
+        }
+
+        uint256 groupsIndex = _start + input.rbit(8, (_start + addr++) * 8);
 
         uint256 i = _start + addr++;
 
         for (; i < groupsIndex; i += 2) {
-            (uint256 preset, uint256 yoffset, , uint256 feature, bool calculated) = parseReceiver(input, i);
-
-            uint256 receiver;
-            receiver = receiver.receiver_yoffset(yoffset);
-            receiver = receiver.receiver_preset(preset);
-            receiver = receiver.receiver_exists(true);
-
-            if (calculated) res.calcrec(feature, receiver);
-            else res.staticrec(feature, receiver);
+            (uint256 preset, uint256 yoffset, , uint256 feature, bool calculated) = parseReceiver(input, i * 8);
+            groupsIndex.log('groupIndex');
+            if (calculated) {
+                res.calcrec(feature, uint256(0).receiver_yoffset(yoffset).receiver_preset(preset).receiver_exists(true));
+            } else {
+                res.staticrec(feature, uint256(0).receiver_yoffset(yoffset).receiver_preset(preset).receiver_exists(true));
+            }
         }
 
         res.info = info.version_contentStart(groupsIndex);
-        res.content = input.slice(groupsIndex, _end - groupsIndex);
+        res.content = input;
     }
 
     // ┌────────────────────────────────────────────────────────────┐
@@ -334,7 +359,8 @@ library Decoder {
     // │  └─────┴────────────────────────────────────────────────┘  │
     // │                                                            │
     // └────────────────────────────────────────────────────────────┘
-    function parseReceiver(bytes memory input, uint256 _start)
+
+    function parseReceiver(uint256[] memory input, uint256 _start)
         internal
         returns (
             uint256 preset,
@@ -344,19 +370,13 @@ library Decoder {
             bool calculated
         )
     {
-        require(input.length >= _start + 2, 'parseReceiver_outOfBounds');
-        (preset, yoffset) = input.toUint4(_start + 0);
+        // require(_bytes.length >= _start + 2, 'parseReceiver_outOfBounds');
+        // (preset, offset) = _bytes.toUint4(_start + 0);
+        preset = input.rbit(4, _start * 8);
+        yoffset = input.rbit(4, _start * 8 + 4);
         exists = true;
 
-        int8 tmpfeat = input.toInt8(_start + 1);
-
-        if (tmpfeat >= 0) {
-            feature = uint8(tmpfeat);
-        } else {
-            feature = uint8(tmpfeat * -1);
-            calculated = true;
-        }
-
-        if (feature > 7) feature = 7;
+        calculated = input.rbit1(_start * 8 + 8);
+        feature = input.rbit(7, _start * 8 + 9);
     }
 }

@@ -1,51 +1,29 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 pragma solidity 0.8.4;
-
-import '../libraries/Bytes.sol';
-import '../interfaces/IDotNugg.sol';
-import '../test/Console.sol';
+import '../types/PixelType.sol';
 
 library Rgba {
-    using Bytes for bytes;
+    using PixelType for uint256;
 
-    struct RGBA16 {
-        uint16 r;
-        uint16 g;
-        uint16 b;
-        uint16 a;
-    }
-
-    function combine(IDotNugg.Rgba memory base, IDotNugg.Rgba memory mix) internal view {
-        if (mix.a == 255 || base.a == 0) {
-            base.r = mix.r;
-            base.g = mix.g;
-            base.b = mix.b;
-            base.a = mix.a;
-            return;
+    function combine(uint256 base, uint256 mix) internal returns (uint256 res) {
+        if (mix.pixel_a() == 255 || base.pixel_a() == 0) {
+            return mix;
         }
 
-        RGBA16 memory baseRGB = RGBA16({r: uint16(base.r), g: uint16(base.g), b: uint16(base.b), a: uint16(base.a)});
-        RGBA16 memory mixRGB = RGBA16({r: uint16(mix.r), g: uint16(mix.g), b: uint16(mix.b), a: uint16(mix.a)});
-
-        // uint8 alpha = uint8(255 - (((255 - baseRGB.a) * (255 - mixRGB.a)) / 255));
-        base.r = uint8((baseRGB.r * (255 - mixRGB.a) + mixRGB.r * mixRGB.a) / 255);
-        base.g = uint8((baseRGB.g * (255 - mixRGB.a) + mixRGB.g * mixRGB.a) / 255);
-        base.b = uint8((baseRGB.b * (255 - mixRGB.a) + mixRGB.b * mixRGB.a) / 255);
-        base.a = 255;
-        //   return IDotNugg.Rgba({r: r, g: g, b: b, a: 255});
+        unchecked {
+            res = res
+                .pixel_r((base.pixel_r() * (255 - mix.pixel_a()) + mix.pixel_r() * mix.pixel_a()) / 255)
+                .pixel_g((base.pixel_g() * (255 - mix.pixel_a()) + mix.pixel_g() * mix.pixel_a()) / 255)
+                .pixel_b((base.pixel_b() * (255 - mix.pixel_a()) + mix.pixel_b() * mix.pixel_a()) / 255)
+                .pixel_a(255);
+        }
     }
 
-    function toUint64(IDotNugg.Rgba memory base) internal view returns (uint64 res) {
-        bytes memory input = abi.encodePacked(base.r, base.g, base.b, base.a);
-        return input.toUint64(0);
+    function ascii(uint256 base) internal returns (string memory res) {
+        res = string(abi.encodePacked(base.pixel_rgba()));
     }
 
-    function toAscii(IDotNugg.Rgba memory base) internal view returns (string memory res) {
-        bytes memory input = abi.encodePacked(base.r, base.g, base.b, base.a);
-        return input.toAscii();
-    }
-
-    function equalssss(IDotNugg.Rgba memory base, IDotNugg.Rgba memory next) internal view returns (bool res) {
-        res = base.a == next.a && base.r == next.r && base.g == next.g && base.b == next.b;
+    function equals(uint256 base, uint256 next) internal returns (bool res) {
+        res = base.pixel_rgba() == next.pixel_rgba();
     }
 }

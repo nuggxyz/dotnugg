@@ -6,7 +6,11 @@ pragma solidity 0.8.4;
  * @dev Bytes1 operations.
  */
 
+import '../libraries/ShiftLib.sol';
+
 library Checksum {
+    // using ShiftLib for uint256[];
+
     function fletcher16(bytes memory data) internal pure returns (uint16 res) {
         uint16 sum1 = 0;
         uint16 sum2 = 0;
@@ -17,4 +21,10 @@ library Checksum {
 
         res = (sum2 << 8) | sum1;
     }
+
+    // function simpleChecksum(uint256[] memory data)internal pure returns (uint16 res) {
+    //     // remove the checksum
+    //     // keccak whole thing
+    //     // check result
+    // }
 }
