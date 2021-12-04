@@ -14,7 +14,7 @@ import {
     SvgFileResolver__factory,
     SystemTest,
     SystemTest__factory,
-} from '../../types';
+} from '../../typechain';
 import { deployContract, prepareAccounts } from './';
 import { bashit } from './shared/groups';
 
@@ -26,7 +26,7 @@ const {
 
 let loadFixture: ReturnType<typeof createFixtureLoader>;
 let accounts: Record<keyof typeof NamedAccounts, SignerWithAddress>;
-let plain: SystemTest;
+// let plain: SystemTest;
 let nuggin: GroupNuggIn;
 let nugginSVG: SvgFileResolver;
 let nugginDotNugg: DotNuggFileResolver;
@@ -36,11 +36,11 @@ let dotnugg: DotNugg;
 const refresh = async () => {
     accounts = await prepareAccounts();
     loadFixture = createFixtureLoader();
-    plain = await deployContract<SystemTest__factory>({ factory: 'SystemTest', from: accounts.frank, args: [] });
-    nugginDotNugg = await deployContract<DotNuggFileResolver__factory>({ factory: 'DotNuggFileResolver', from: accounts.frank, args: [] });
+    // plain = await deployContract<SystemTest__factory>({ factory: 'SystemTest', from: accounts.frank, args: [] });
+    // nugginDotNugg = await deployContract<DotNuggFileResolver__factory>({ factory: 'DotNuggFileResolver', from: accounts.frank, args: [] });
 
     nugginSVG = await deployContract<SvgFileResolver__factory>({ factory: 'SvgFileResolver', from: accounts.frank, args: [] });
-    nuggin = await deployContract<GroupNuggIn__factory>({ factory: 'GroupNuggIn', from: accounts.frank, args: [] });
+    // nuggin = await deployContract<GroupNuggIn__factory>({ factory: 'GroupNuggIn', from: accounts.frank, args: [] });
     dotnugg = await deployContract<DotNugg__factory>({ factory: 'DotNugg', from: accounts.frank, args: [] });
 };
 
@@ -51,11 +51,10 @@ describe('uint tests', async function () {
 
     describe('internal', async () => {
         it('should not fuck up', async () => {
-            const str = await plain.tfull(dotnugg.address, nugginSVG.address);
-
+            // const str = await plain.tfull(dotnugg.address, nugginSVG.address);
             // console.log(ethers.utils.base64.decode(str));
-            console.log(str);
-            bashit(str, 33, 33);
+            // console.log(str);
+            // bashit(str, 33, 33);
             // expect
             // console.log(a.toString(), b.toString(), c.toString(), d.toString());
             // expect(a).to.be.revertedWith('WE FUCKED UP');

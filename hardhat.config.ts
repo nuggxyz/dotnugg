@@ -13,8 +13,10 @@ import 'hardhat-contract-sizer';
 import '@atixlabs/hardhat-time-n-mine';
 import 'hardhat-storage-layout';
 // NORMAL IMPORTS
-import './tasks/general/accounts';
 import 'hardhat-tracer';
+import 'hardhat-spdx-license-identifier';
+
+import './tasks/middleware';
 
 import { config as dotenvConfig } from 'dotenv';
 import { utils } from 'ethers';
@@ -70,7 +72,6 @@ const DefaultProductionNetworkConfig = {
     ...DefaultNetworkConfig,
     tags: [NetworkTags.PRODUCTION],
 };
-console.log({ whoa: process.env });
 const LocalNetworks: NetworksUserConfig = {
     localhost: {
         ...DefaultLocalNetworkConfig,
@@ -303,6 +304,10 @@ const HardhatConfig: HardhatUserConfig = {
     //     clear: true,
     //     runOnCompile: true,
     // },
+    spdxLicenseIdentifier: {
+        overwrite: true,
+        runOnCompile: true,
+    },
 };
 
 export default HardhatConfig;

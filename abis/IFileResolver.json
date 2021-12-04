@@ -4,81 +4,31 @@
       {
         "components": [
           {
-            "internalType": "uint8",
-            "name": "width",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint8",
-            "name": "height",
-            "type": "uint8"
-          },
-          {
             "components": [
-              {
-                "internalType": "int8",
-                "name": "zindex",
-                "type": "int8"
-              },
               {
                 "components": [
                   {
-                    "internalType": "uint8",
-                    "name": "r",
-                    "type": "uint8"
-                  },
-                  {
-                    "internalType": "uint8",
-                    "name": "g",
-                    "type": "uint8"
-                  },
-                  {
-                    "internalType": "uint8",
-                    "name": "b",
-                    "type": "uint8"
-                  },
-                  {
-                    "internalType": "uint8",
-                    "name": "a",
-                    "type": "uint8"
+                    "internalType": "uint256[]",
+                    "name": "dat",
+                    "type": "uint256[]"
                   }
                 ],
-                "internalType": "struct IDotNugg.Rgba",
-                "name": "rgba",
+                "internalType": "struct MultiSudoArrayType.Memory",
+                "name": "dat",
                 "type": "tuple"
-              },
-              {
-                "internalType": "bool",
-                "name": "exists",
-                "type": "bool"
               }
             ],
-            "internalType": "struct IDotNugg.Pixel[][]",
+            "internalType": "struct PalletType.Memory[]",
+            "name": "pixels",
+            "type": "tuple[]"
+          },
+          {
+            "internalType": "uint256",
             "name": "data",
-            "type": "tuple[][]"
-          },
-          {
-            "internalType": "uint8",
-            "name": "currentUnsetX",
-            "type": "uint8"
-          },
-          {
-            "internalType": "uint8",
-            "name": "currentUnsetY",
-            "type": "uint8"
-          },
-          {
-            "internalType": "bool",
-            "name": "init",
-            "type": "bool"
-          },
-          {
-            "internalType": "uint8",
-            "name": "startX",
-            "type": "uint8"
+            "type": "uint256"
           }
         ],
-        "internalType": "struct IDotNugg.Matrix",
+        "internalType": "struct MatrixType.Memory",
         "name": "matrix",
         "type": "tuple"
       },
@@ -101,7 +51,7 @@
         "type": "string"
       }
     ],
-    "stateMutability": "view",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
