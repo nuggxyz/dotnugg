@@ -32,11 +32,6 @@
         "type": "uint256"
       },
       {
-        "internalType": "bytes32",
-        "name": "seed",
-        "type": "bytes32"
-      },
-      {
         "internalType": "bytes",
         "name": "data",
         "type": "bytes"
@@ -50,7 +45,7 @@
         "type": "string"
       }
     ],
-    "stateMutability": "view",
+    "stateMutability": "nonpayable",
     "type": "function"
   }
 ]

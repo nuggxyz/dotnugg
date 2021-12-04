@@ -1,0 +1,265 @@
+{
+  "_format": "hh-sol-cache-2",
+  "files": {
+    "/Users/***REMOVED***/Developer/nugglabs/github/dotnugg-core/tests/dapptools/src/libraries/Bytes.t.sol": {
+      "lastModificationDate": 1638461420995,
+      "contentHash": "b2c270123bd4af4c2ea56146ad28733a",
+      "sourceName": "src/libraries/Bytes.t.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ]
+            }
+          },
+          "evmVersion": "istanbul"
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.4"
+      ],
+      "artifacts": []
+    },
+    "/Users/***REMOVED***/Developer/nugglabs/github/dotnugg-core/tests/dapptools/src/libraries/ShiftLib.t.sol": {
+      "lastModificationDate": 1638461420995,
+      "contentHash": "85fea04cabf9cf51fbd2636ea3d9373a",
+      "sourceName": "src/libraries/ShiftLib.t.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ]
+            }
+          },
+          "evmVersion": "istanbul"
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.4"
+      ],
+      "artifacts": [
+        "ShiftLibTest"
+      ]
+    },
+    "/Users/***REMOVED***/Developer/nugglabs/github/dotnugg-core/tests/dapptools/src/logic/Anchor.t.sol": {
+      "lastModificationDate": 1638461420996,
+      "contentHash": "ff6d6416937fb29bcf0938e0f9641d7d",
+      "sourceName": "src/logic/Anchor.t.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ]
+            }
+          },
+          "evmVersion": "istanbul"
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.4"
+      ],
+      "artifacts": []
+    },
+    "/Users/***REMOVED***/Developer/nugglabs/github/dotnugg-core/tests/dapptools/src/logic/Calculator.t.sol": {
+      "lastModificationDate": 1638461420997,
+      "contentHash": "c6db342bd08041121779089ac4d7b342",
+      "sourceName": "src/logic/Calculator.t.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ]
+            }
+          },
+          "evmVersion": "istanbul"
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.4"
+      ],
+      "artifacts": []
+    },
+    "/Users/***REMOVED***/Developer/nugglabs/github/dotnugg-core/tests/dapptools/src/logic/Checksum.t.sol": {
+      "lastModificationDate": 1638461420997,
+      "contentHash": "360cb04ea89d83c950291b3bc89ac67a",
+      "sourceName": "src/logic/Checksum.t.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ]
+            }
+          },
+          "evmVersion": "istanbul"
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.4"
+      ],
+      "artifacts": []
+    },
+    "/Users/***REMOVED***/Developer/nugglabs/github/dotnugg-core/tests/dapptools/src/logic/Decoder.t.sol": {
+      "lastModificationDate": 1638461420998,
+      "contentHash": "54a66f68837ddf9f4b284ca4dead7524",
+      "sourceName": "src/logic/Decoder.t.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ]
+            }
+          },
+          "evmVersion": "istanbul"
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.4"
+      ],
+      "artifacts": []
+    },
+    "/Users/***REMOVED***/Developer/nugglabs/github/dotnugg-core/tests/dapptools/src/logic/Matrix.t.sol": {
+      "lastModificationDate": 1638461420998,
+      "contentHash": "905ed3bb988872a6a1d0eb4fb302e85f",
+      "sourceName": "src/logic/Matrix.t.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ]
+            }
+          },
+          "evmVersion": "istanbul"
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.4"
+      ],
+      "artifacts": []
+    },
+    "/Users/***REMOVED***/Developer/nugglabs/github/dotnugg-core/tests/dapptools/src/system/Item.t.sol": {
+      "lastModificationDate": 1638461420999,
+      "contentHash": "4b1e14a90342ad173dc85df6c131abc1",
+      "sourceName": "src/system/Item.t.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ]
+            }
+          },
+          "evmVersion": "istanbul"
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.4"
+      ],
+      "artifacts": [
+        "ItemTest"
+      ]
+    }
+  }
+}

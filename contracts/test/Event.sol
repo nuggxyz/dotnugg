@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 pragma solidity 0.8.10;
 
 // import 'hardhat/console.sol';
@@ -40,6 +42,6 @@ library Event {
     }
 
     function log(uint256 val) internal {
-        log(val, 'unnamed');
+        // log(val, 'unnamed');
     }
 }
