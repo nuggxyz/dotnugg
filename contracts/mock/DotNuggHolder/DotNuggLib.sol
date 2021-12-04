@@ -42,11 +42,11 @@ library DotNuggLib {
         address resolver
     ) internal view returns (string memory) {
         uint256 item_memory = item_storage.tokenData[tokenId];
-        uint256[][] memory data = new uint256[][](1);
+        uint256[][] memory data = new uint256[][](3);
 
         data[0] = loadItem(s, 0, item_memory.base());
-        // data[1] = loadItem(s, 1, item_memory.item(1, 0));
-        // data[2] = loadItem(s, 3, item_memory.item(3, 0));
+        data[1] = loadItem(s, 1, item_memory.item(1, 0));
+        data[2] = loadItem(s, 3, item_memory.item(3, 0));
         // data[3] = loadItem(s, 3, item_memory.item(ItemType.Index.MOUTH, 0));
         // data[4] = loadItem(s, 4, item_memory.item(ItemType.Index.OTHER, 0));
         // data[5] = loadItem(s, 5, item_memory.item(ItemType.Index.SPECIAL, 0));
@@ -68,7 +68,7 @@ library DotNuggLib {
 
         for (uint256 i = 0; i < data.length; i++) {
             uint256 itemType = (data[i][data[i].length - 1] >> 32) & 0x7;
-            // console.log('type:', itemType);
+            console.log('type:', itemType);
             uint256 len = lengths.length(itemType);
 
             uint256 itemtypebytes = uint256(itemType) << 96;
