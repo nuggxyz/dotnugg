@@ -52,13 +52,13 @@ library ItemLib {
         uint256 lendata = dns.lengths;
 
         console.log('item0: ', data.item0(), lendata.length(0), data.item0() % lendata.length(0));
-        console.log('item1: ', data.item1(), lendata.length(1), data.item1() % lendata.length(1));
-        console.log('item3: ', data.item3(), lendata.length(3), data.item3() % lendata.length(3));
+        // console.log('item1: ', data.item1(), lendata.length(1), data.item1() % lendata.length(1));
+        // console.log('item3: ', data.item3(), lendata.length(3), data.item3() % lendata.length(3));
 
         data = data.size(0x0);
         data = OldShiftType.base(data, OldShiftType.base(data) % lendata.length(0));
-        data = data.item(1, 0, data.item1() % lendata.length(1));
-        data = data.item(3, 0, data.item1() % lendata.length(3));
+        // data = data.item(1, 0, data.item1() % lendata.length(1));
+        // data = data.item(3, 0, data.item1() % lendata.length(3));
 
         // .item4(data.item4() % lendata.item4());
 

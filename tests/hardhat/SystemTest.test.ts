@@ -29,15 +29,11 @@ describe('uint tests', async function () {
     beforeEach(async () => {
         await refresh();
     });
-
     describe('internal', async () => {
         it('should not fuck up', async () => {
             const data = fix.hre.dotnugg.map((x) => x.hex);
             console.log(data);
-            await fix.holder.dotNuggUpload(
-                fix.hre.dotnugg.map((x) => x.hex),
-                '0x00',
-            );
+            await fix.holder.dotNuggUpload([fix.hre.dotnugg.map((x) => x.hex)[0]], '0x00');
 
             const res = await fix.holder.tokenUri(0);
             console.log(res);
