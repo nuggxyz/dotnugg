@@ -3,11 +3,14 @@
 pragma solidity 0.8.4;
 
 import '../libraries/ShiftLib.sol';
+import '../libraries/Uint.sol';
+
 import '../../test/Event.sol';
 
 library BitReader {
     using ShiftLib for uint256;
     using Event for uint256;
+    using Uint256 for uint256;
 
     struct Memory {
         uint256[] dat;
@@ -17,7 +20,7 @@ library BitReader {
 
     function init(uint256[] memory input) internal view returns (Memory memory m) {
         m.dat = input;
-        m.moves = 1;
+        m.moves = 2;
         input.length.log('input.length');
 
         m.dat = new uint256[](input[0]);
@@ -33,21 +36,33 @@ library BitReader {
         res = m.dat[0] & ShiftLib.mask(bits);
     }
 
-    function select(Memory memory m, uint256 bits) internal view returns (uint256 res) {
-        m.dat[0].log('m.dat[0]');
+    function select(
+        Memory memory m,
+        uint256 bits,
+        string memory name,
+        uint256 id
+    ) internal view returns (uint256 res) {
+        // m.dat[0].log('m.dat[0]');
         res = m.dat[0] & ShiftLib.mask(bits);
 
         m.dat[0] = m.dat[0] >> bits;
         m.pos += bits;
         if (m.pos >= 128) {
-            uint256 ptr = m.moves / 2;
+            uint256 ptr = (m.moves / 2);
 
-            uint256 move = m.dat[ptr] & ShiftLib.mask(128);
-            m.dat[0] >>= 128;
-            move <<= 128;
-            m.dat[0] & move;
-            m.moves++;
-            m.pos = 0;
+            if (ptr < m.dat.length) {
+                m.dat[0] <<= m.pos - 128;
+                // console.log('ptr', ptr);
+                uint256 move = m.dat[ptr] & ShiftLib.mask(128);
+                m.dat[ptr] >>= 128;
+                m.dat[0] |= (move << 128);
+                m.dat[0] >>= (m.pos - 128);
+                m.moves++;
+                m.pos -= 128;
+            }
         }
+        // console.log(res.toHexString(), m.pos, bits, name);
     }
 }
+
+// 01b0fc3f0fc3f0fc3f0fd630fd5440324d0160
