@@ -24,7 +24,7 @@ library Matrix {
     using PalletType for uint256[];
     using MatrixType for uint256;
 
-    function create(uint256 width, uint256 height) internal returns (MatrixType.Memory memory res) {
+    function create(uint256 width, uint256 height) internal view returns (MatrixType.Memory memory res) {
         require(width % 2 == 1 && height % 2 == 1, 'ML:C:0');
         // emit log_named_uint('HERE333333333', width);
 
@@ -39,17 +39,17 @@ library Matrix {
         uint256 yoffset,
         uint256 width,
         uint256 height
-    ) internal {
+    ) internal view {
         m.data = m.data.matrix_currentUnsetX(xoffset).matrix_currentUnsetY(yoffset).matrix_startX(xoffset).matrix_width(width + xoffset).matrix_height(
             height + yoffset
         );
     }
 
-    function next(MatrixType.Memory memory m) internal returns (bool res) {
+    function next(MatrixType.Memory memory m) internal view returns (bool res) {
         res = next(m, m.data.matrix_width());
     }
 
-    function next(MatrixType.Memory memory m, uint256 width) internal returns (bool res) {
+    function next(MatrixType.Memory memory m, uint256 width) internal view returns (bool res) {
         require(width <= 0xff, 'M2:N:0');
 
         uint256 data = m.data;
@@ -71,21 +71,21 @@ library Matrix {
         m.data = data;
     }
 
-    function current(MatrixType.Memory memory m) internal returns (uint256 res) {
+    function current(MatrixType.Memory memory m) internal view returns (uint256 res) {
         //   console.log('OVERFLOW?', matrix.currentUnsetY, matrix.currentUnsetX);
         //   console.log('MATRIXX', matrix.height, matrix.width);
         res = m.matrix_pixel(m.data.matrix_currentUnsetX(), m.data.matrix_currentUnsetY());
     }
 
-    function setCurrent(MatrixType.Memory memory m, uint256 pix) internal {
+    function setCurrent(MatrixType.Memory memory m, uint256 pix) internal view {
         m.matrix_pixel(m.data.matrix_currentUnsetX(), m.data.matrix_currentUnsetY(), pix);
     }
 
-    function resetIterator(MatrixType.Memory memory m) internal {
+    function resetIterator(MatrixType.Memory memory m) internal view {
         m.data = m.data.matrix_currentUnsetX(0).matrix_currentUnsetY(0).matrix_startX(0).matrix_init(false);
     }
 
-    function moveBack(MatrixType.Memory memory matrix) internal {
+    function moveBack(MatrixType.Memory memory matrix) internal view {
         //       matrix.width = uint8(matrix.data[0].length);
         // matrix.height = uint8(matrix.data.length);
         // matrix.data = .width = uint256(matrix.data[0].length); // TODO
@@ -107,7 +107,7 @@ library Matrix {
         PalletType.Memory memory pallet,
         uint256 groupWidth,
         uint256 groupHeight
-    ) internal {
+    ) internal view {
         uint256 totalLength = 0;
         uint256 matrixData = m.data;
         // uint256 data =

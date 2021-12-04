@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 
 import 'hardhat/console.sol';
+import '../types/ItemType.sol';
+import '../types/LengthType.sol';
+
+import '../types/OldShiftType.sol';
 
 import '../../src/libraries/ShiftLib.sol';
 import './DotNuggLib.sol';
@@ -11,50 +15,59 @@ library ItemLib {
     event PushItem(uint256 tokenId, uint256 itemId);
     event OpenSlot(uint256 tokenId);
 
+    using ItemType for uint256;
+    using LengthType for uint256;
+
     using ShiftLib for uint256;
+    using OldShiftType for uint256;
 
     struct Storage {
         mapping(uint256 => uint256) tokenData;
         mapping(uint256 => uint256) protocolItems;
     }
 
-    // function infoOf(Storage storage s, uint256 tokenId)
-    //     internal
-    //     view
-    //     returns (
-    //         uint256 base,
-    //         uint256 size,
-    //         uint256[] memory items
-    //     )
-    // {
-    //     uint256 data = s.tokenData[tokenId];
-    //     items = data.items();
-    //     size = data.size();
-    //     base = data.base();
-    // }
+    function infoOf(Storage storage s, uint256 tokenId)
+        internal
+        view
+        returns (
+            uint256 base,
+            uint256 size,
+            uint256[] memory items
+        )
+    {
+        uint256 data = s.tokenData[tokenId];
+        items = data.items();
+        size = OldShiftType.size(data);
+        base = OldShiftType.base(data);
+    }
 
-    // function mint(
-    //     Storage storage s,
-    //     DotNuggLib.Storage storage dns,
-    //     uint256 tokenId,
-    //     uint256 data
-    // ) internal returns (uint256[] memory items) {
-    //     require(s.tokenData[tokenId] == 0, 'IL:M:0');
+    function mint(
+        Storage storage s,
+        DotNuggLib.Storage storage dns,
+        uint256 tokenId,
+        uint256 data
+    ) internal returns (uint256[] memory items) {
+        require(s.tokenData[tokenId] == 0, 'IL:M:0');
 
-    //     uint256 lendata = dns.lengths;
+        uint256 lendata = dns.lengths;
 
-    //     // data = data
-    //     //     .size(0x0)
-    //     //     .base(data.base() % 20)
-    //     //     .item1(data.item1() % lendata.item1())
-    //     //     .item2(data.item2() % lendata.item2())
-    //     //     .item3(data.item3() % lendata.item3())
-    //     //     .item4(data.item4() % lendata.item4());
+        console.log('item1: ', data.item1(), lendata.length(0));
+        console.log('item2: ', data.item2(), lendata.length(1));
+        console.log('item3: ', data.item3(), lendata.length(2));
+        console.log('item4: ', data.item4(), lendata.length(2));
+        console.log('item0: ', data.item0(), lendata.length(4));
 
-    //     s.tokenData[tokenId] = data;
+        data = data.size(0x0);
+        data = OldShiftType.base(data, OldShiftType.base(data) % lendata.length(0));
+        data = data.item(1, 0, data.item1() % lendata.length(1));
+        data = data.item(3, 0, data.item1() % lendata.length(1));
 
-    //     return data.items();
-    // }
+        // .item4(data.item4() % lendata.item4());
+
+        s.tokenData[tokenId] = data;
+
+        return data.items();
+    }
 
     // 1/2 byte - size ---- 0-15
     // 1/2 bytes - base -----  0-15
@@ -85,51 +98,51 @@ library ItemLib {
     // 1.5 bytes - other
     // 1.5 bytes - other2 ---- 7.5  32
 
-    // function pop(
-    //     Storage storage s,
-    //     uint256 tokenId,
-    //     uint256 itemId
-    // ) internal {
-    //     uint256 data = s.tokenData[tokenId];
+    function pop(
+        Storage storage s,
+        uint256 tokenId,
+        uint256 itemId
+    ) internal {
+        uint256 data = s.tokenData[tokenId];
 
-    //     require(data != 0, '1155:STF:0');
+        require(data != 0, '1155:STF:0');
 
-    //     (data, , ) = data.popFirstMatch(uint16(itemId));
+        (data, , ) = data.popFirstMatch(uint16(itemId));
 
-    //     s.tokenData[tokenId] = data;
+        s.tokenData[tokenId] = data;
 
-    //     s.protocolItems[itemId]++;
+        s.protocolItems[itemId]++;
 
-    //     emit PushItem(tokenId, itemId);
-    // }
+        emit PushItem(tokenId, itemId);
+    }
 
-    // function push(
-    //     Storage storage s,
-    //     uint256 tokenId,
-    //     uint256 itemId
-    // ) internal {
-    //     uint256 data = s.tokenData[tokenId];
-    //     require(data != 0, '1155:STF:0');
+    function push(
+        Storage storage s,
+        uint256 tokenId,
+        uint256 itemId
+    ) internal {
+        uint256 data = s.tokenData[tokenId];
+        require(data != 0, '1155:STF:0');
 
-    //     require(s.protocolItems[itemId] > 0, '1155:SBTF:1');
+        require(s.protocolItems[itemId] > 0, '1155:SBTF:1');
 
-    //     s.protocolItems[itemId]++;
+        s.protocolItems[itemId]++;
 
-    //     (data, ) = data.pushFirstEmpty(uint16(itemId));
+        (data, ) = data.pushFirstEmpty(uint16(itemId));
 
-    //     s.tokenData[tokenId] = data;
+        s.tokenData[tokenId] = data;
 
-    //     emit PushItem(tokenId, itemId);
-    // }
+        emit PushItem(tokenId, itemId);
+    }
 
-    // function open(Storage storage s, uint256 tokenId) internal {
-    //     uint256 data = s.tokenData[tokenId];
-    //     require(data != 0, '1155:STF:0');
+    function open(Storage storage s, uint256 tokenId) internal {
+        uint256 data = s.tokenData[tokenId];
+        require(data != 0, '1155:STF:0');
 
-    //     data = data.size(data.size() + 1);
+        data = data.size(OldShiftType.size(data) + 1);
 
-    //     s.tokenData[tokenId] = data;
+        s.tokenData[tokenId] = data;
 
-    //     emit OpenSlot(tokenId);
-    // }
+        emit OpenSlot(tokenId);
+    }
 }

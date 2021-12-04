@@ -20,12 +20,12 @@ library PalletType {
         MultiSudoArrayType.Memory dat;
     }
 
-    function load(uint256 l) internal returns (Memory memory m) {
+    function load(uint256 l) internal view returns (Memory memory m) {
         m.dat = MultiSudoArrayType.init(BYTE_LEN, l);
         // emit log_named_uint('AAYYYYYEEEEEE', l);
     }
 
-    function pixel(Memory memory m, uint256 x) internal returns (uint256 pix) {
+    function pixel(Memory memory m, uint256 x) internal view returns (uint256 pix) {
         pix = m.dat.pull(BYTE_LEN, x);
     }
 
@@ -33,7 +33,7 @@ library PalletType {
         Memory memory m,
         uint256 x,
         uint256 update
-    ) internal {
+    ) internal view {
         m.dat.push(BYTE_LEN, x, update);
     }
 }

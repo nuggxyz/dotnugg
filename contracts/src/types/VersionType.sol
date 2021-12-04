@@ -24,51 +24,51 @@ library VersionType {
         SudoArrayType.Memory recs;
     }
 
-    function version_anchor(uint256 input) internal returns (uint256 res) {
+    function version_anchor(uint256 input) internal view returns (uint256 res) {
         res = input.bit(32, 0);
     }
 
-    function version_anchor(uint256 input, uint256 update) internal returns (uint256 res) {
+    function version_anchor(uint256 input, uint256 update) internal view returns (uint256 res) {
         res = input.bit(32, 0, update);
     }
 
-    function version_expanders(uint256 input) internal returns (uint256 res) {
+    function version_expanders(uint256 input) internal view returns (uint256 res) {
         res = input.bit(32, 32);
     }
 
-    function version_expanders(uint256 input, uint256 update) internal returns (uint256 res) {
+    function version_expanders(uint256 input, uint256 update) internal view returns (uint256 res) {
         res = input.bit(32, 32, update);
     }
 
-    function version_width(uint256 input) internal returns (uint256 res) {
+    function version_width(uint256 input) internal view returns (uint256 res) {
         res = input.bit(8, 64);
     }
 
-    function version_width(uint256 input, uint256 update) internal returns (uint256 res) {
+    function version_width(uint256 input, uint256 update) internal view returns (uint256 res) {
         res = input.bit(8, 64, update);
     }
 
-    function version_height(uint256 input) internal returns (uint256 res) {
+    function version_height(uint256 input) internal view returns (uint256 res) {
         res = input.bit(8, 72);
     }
 
-    function version_height(uint256 input, uint256 update) internal returns (uint256 res) {
+    function version_height(uint256 input, uint256 update) internal view returns (uint256 res) {
         res = input.bit(8, 72, update);
     }
 
-    function version_contentStart(uint256 input) internal returns (uint256 res) {
+    function version_contentStart(uint256 input) internal view returns (uint256 res) {
         res = input.bit(16, 80);
     }
 
-    function version_contentStart(uint256 input, uint256 update) internal returns (uint256 res) {
+    function version_contentStart(uint256 input, uint256 update) internal view returns (uint256 res) {
         res = input.bit(16, 80, update);
     }
 
-    function version_feature(uint256 input) internal returns (uint256 res) {
+    function version_feature(uint256 input) internal view returns (uint256 res) {
         res = input.bit(32, 0);
     }
 
-    function version_feature(uint256 input, uint256 update) internal returns (uint256 res) {
+    function version_feature(uint256 input, uint256 update) internal view returns (uint256 res) {
         res = input.bit(32, 0, update);
     }
 
@@ -80,7 +80,7 @@ library VersionType {
     //     res = m.info.bit(16, 96, update);
     // }
 
-    function calcrec(Memory memory m, uint256 index) internal returns (uint256 res) {
+    function calcrec(Memory memory m, uint256 index) internal view returns (uint256 res) {
         require(index < 8, 'VT:CR:0');
         res = m.recs.pull(16, 128, index);
     }
@@ -89,13 +89,13 @@ library VersionType {
         Memory memory m,
         uint256 index,
         uint256 update
-    ) internal {
+    ) internal view {
         index.log('VERSION:INDEX');
         require(index < 8, 'VT:CR:1');
         m.recs.push(16, 128, index, update);
     }
 
-    function staticrec(Memory memory m, uint256 index) internal returns (uint256 res) {
+    function staticrec(Memory memory m, uint256 index) internal view returns (uint256 res) {
         require(index < 8, 'VT:SR:0');
         res = m.recs.pull(16, 0, index);
     }
@@ -104,7 +104,7 @@ library VersionType {
         Memory memory m,
         uint256 index,
         uint256 update
-    ) internal {
+    ) internal view {
         require(index < 8, 'VT:SR:1');
         m.recs.push(16, 0, index, update);
     }

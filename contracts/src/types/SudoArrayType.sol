@@ -17,7 +17,7 @@ library SudoArrayType {
         uint256 offset,
         uint256 index,
         uint256 val
-    ) internal {
+    ) internal view {
         m.dat = m.dat.bit(bit, offset + (bit * index), val);
     }
 
@@ -26,7 +26,7 @@ library SudoArrayType {
         uint256 bit,
         uint256 offset,
         uint256 index
-    ) internal returns (uint256 res) {
+    ) internal view returns (uint256 res) {
         res = m.dat.bit(bit, offset + (bit * index));
     }
 }

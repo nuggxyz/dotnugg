@@ -4,7 +4,7 @@ import './ItemLib.sol';
 import '../../src/libraries/ShiftLib.sol';
 import '../types/ItemType.sol';
 import '../types/LengthType.sol';
-
+import 'hardhat/console.sol';
 import '../../src/interfaces/IDotNugg.sol';
 
 library DotNuggLib {
@@ -24,7 +24,7 @@ library DotNuggLib {
         address dotnugg,
         uint256 tokenId,
         address defaultResolver
-    ) internal returns (string memory) {
+    ) internal view returns (string memory) {
         address res = s.resolvers[tokenId];
         if (res != address(0)) defaultResolver = res;
         return generateTokenURI(s, item_storage, dotnugg, tokenId, defaultResolver);
@@ -39,16 +39,16 @@ library DotNuggLib {
         address dotnugg,
         uint256 tokenId,
         address resolver
-    ) internal returns (string memory) {
+    ) internal view returns (string memory) {
         uint256 item_memory = item_storage.tokenData[tokenId];
         uint256[][] memory data = new uint256[][](6);
 
         data[0] = loadItem(s, 0, item_memory.base());
-        data[1] = loadItem(s, 1, item_memory.item(ItemType.Index.HEAD, 0));
-        data[2] = loadItem(s, 2, item_memory.item(ItemType.Index.EYES, 0));
-        data[3] = loadItem(s, 3, item_memory.item(ItemType.Index.MOUTH, 0));
-        data[4] = loadItem(s, 4, item_memory.item(ItemType.Index.OTHER, 0));
-        data[5] = loadItem(s, 5, item_memory.item(ItemType.Index.SPECIAL, 0));
+        data[1] = loadItem(s, 1, item_memory.item(1, 0));
+        data[2] = loadItem(s, 3, item_memory.item(3, 0));
+        // data[3] = loadItem(s, 3, item_memory.item(ItemType.Index.MOUTH, 0));
+        // data[4] = loadItem(s, 4, item_memory.item(ItemType.Index.OTHER, 0));
+        // data[5] = loadItem(s, 5, item_memory.item(ItemType.Index.SPECIAL, 0));
 
         string memory uriname = 'NuggFT {#}';
         string memory descrription = 'the description';
@@ -62,15 +62,16 @@ library DotNuggLib {
 
     //
 
-    function addItems(
-        Storage storage s,
-        ItemType.Index itemType,
-        uint256[][] calldata data
-    ) internal {
+    function addItems(Storage storage s, uint256[][] calldata data) internal {
         uint256 lengths = s.lengths;
-        uint256 len = s.lengths.length(itemType);
-        uint256 itemtypebytes = uint256(itemType) << 96;
+
         for (uint256 i = 0; i < data.length; i++) {
+            uint256 itemType = (data[i][data[i].length - 1] >> 32) & 0x7;
+            console.log('type:', itemType);
+            uint256 len = lengths.length(itemType);
+            console.log('len:', len);
+
+            uint256 itemtypebytes = uint256(itemType) << 96;
             uint256 check = uint256(data[i][0]);
             assembly {
                 check := and(check, not(0xff))
@@ -79,15 +80,16 @@ library DotNuggLib {
             for (uint256 j = 1; j < data[i].length; j++) {
                 s.items[check | j] = data[i][j];
             }
+            lengths = lengths.length(itemType, len);
         }
-        s.lengths = lengths.length(itemType, len);
+        s.lengths = lengths;
     }
 
     function loadItem(
         Storage storage s,
         uint8 itemType,
         uint256 id
-    ) internal returns (uint256[] memory array) {
+    ) internal view returns (uint256[] memory array) {
         uint256[] memory data = new uint256[](10);
         data[0] = s.items[(uint256(itemType) << 96) | id];
         uint256 tmp = data[0];

@@ -70,13 +70,13 @@ library Decoder {
     // │   └─────┴────────────────────────────────────────────────┘   │
     // │                                                              │
     // └──────────────────────────────────────────────────────────────┘
-    // function parseCollection(bytes memory data) internal returns (uint256 res) {
+    // function parseCollection(bytes memory data) internal view returns (uint256 res) {
     //     res = res.collection_width(data.toUint8(7));
     //     res = res.collection_height(data.toUint8(7));
     //     res = res.collection_numfeatures(data.toUint8(8));
     // }
 
-    function parseItems(uint256[][] memory data) internal returns (ItemType.Memory[] memory res) {
+    function parseItems(uint256[][] memory data) internal view returns (ItemType.Memory[] memory res) {
         res = new ItemType.Memory[](data.length);
         for (uint256 i = 0; i < data.length; i++) {
             res[i] = parseItem(data[i]);
@@ -125,7 +125,7 @@ library Decoder {
     //     require(data.slice(9, data.length - 9).fletcher16() == data.toUint16(7), 'D:VI:2');
     // }
 
-    // function parseItem(uint256[] memory data) internal returns (ItemType.Memory memory res) {
+    // function parseItem(uint256[] memory data) internal view returns (ItemType.Memory memory res) {
     //     BitReaderType.Memory memory reader = BitReaderType.init(data);
 
     //     require(reader.select(4) == hex'4e554747');
@@ -201,7 +201,7 @@ library Decoder {
     // │   └─────┴────────────────────────────────────────────────┘   │
     // │                                                              │
     // └──────────────────────────────────────────────────────────────┘
-    function parsePixel(bytes memory _bytes, uint256 _start) internal returns (uint256 res) {
+    function parsePixel(bytes memory _bytes, uint256 _start) internal view returns (uint256 res) {
         require(_bytes.length >= _start + 5, 'parsePixel_outOfBounds');
         {
             int8 zindex = _bytes.toInt8(_start);
@@ -239,7 +239,7 @@ library Decoder {
     // │                                                              │
     // └──────────────────────────────────────────────────────────────┘
 
-    function parseRlud(bytes memory _bytes, uint256 _start) internal returns (uint256 res) {
+    function parseRlud(bytes memory _bytes, uint256 _start) internal view returns (uint256 res) {
         require(_bytes.length >= _start + 5, 'parseRlud_outOfBounds');
         bool exists = bool(uint8(_bytes[_start + 0]) == 1);
         if (exists) {
@@ -283,7 +283,7 @@ library Decoder {
         uint256 _start,
         uint256 _end,
         uint256 feat
-    ) internal returns (VersionType.Memory memory res) {
+    ) internal view returns (VersionType.Memory memory res) {
         // require(_bytes.length >= _end && _start < _end, 'parsePixel_outOfBounds');
 
         // uint256 info;
@@ -350,6 +350,7 @@ library Decoder {
     // └────────────────────────────────────────────────────────────┘
     function parseReceiver(bytes memory input, uint256 _start)
         internal
+        view
         returns (
             uint256 preset,
             uint256 yoffset,

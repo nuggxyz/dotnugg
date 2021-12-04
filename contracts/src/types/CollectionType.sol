@@ -20,27 +20,27 @@ library CollectionType {
         uint256 info;
     }
 
-    function collection_width(uint256 input) internal returns (uint256 res) {
+    function collection_width(uint256 input) internal view returns (uint256 res) {
         res = input.bit(8, 0);
     }
 
-    function collection_width(uint256 input, uint256 update) internal returns (uint256 res) {
+    function collection_width(uint256 input, uint256 update) internal view returns (uint256 res) {
         res = input.bit(8, 0, update);
     }
 
-    function collection_height(uint256 input) internal returns (uint256 res) {
+    function collection_height(uint256 input) internal view returns (uint256 res) {
         res = input.bit(8, 16);
     }
 
-    function collection_height(uint256 input, uint256 update) internal returns (uint256 res) {
+    function collection_height(uint256 input, uint256 update) internal view returns (uint256 res) {
         res = input.bit(8, 16, update);
     }
 
-    function collection_numfeatures(uint256 input) internal returns (uint256 res) {
+    function collection_numfeatures(uint256 input) internal view returns (uint256 res) {
         res = input.bit(8, 24);
     }
 
-    function collection_numfeatures(uint256 input, uint256 update) internal returns (uint256 res) {
+    function collection_numfeatures(uint256 input, uint256 update) internal view returns (uint256 res) {
         res = input.bit(8, 24, update);
     }
 }
