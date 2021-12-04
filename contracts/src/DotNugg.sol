@@ -33,7 +33,7 @@ contract DotNugg is IDotNugg {
     ) public view override returns (string memory image) {
         IFileResolver fileResolver = IFileResolver(_resolver);
         IColorResolver colorResolver = IColorResolver(_resolver);
-
+        console.log('items.length', _items.length);
         // require(fileResolver.supportsInterface(type(IFileResolver).interfaceId), 'NUG:TURI:2');
 
         // uint256 collection = Decoder.parseCollection(_collection);
