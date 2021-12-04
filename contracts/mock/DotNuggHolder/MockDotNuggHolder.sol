@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 import './IMockDotNuggHolder.sol';
 
 contract MockDotNuggHolder is IMockDotNuggHolder {
