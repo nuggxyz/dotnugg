@@ -89,18 +89,21 @@ library DotNuggLib {
         Storage storage s,
         uint8 itemType,
         uint256 id
-    ) internal view returns (uint256[] memory array) {
-        uint256[] memory data = new uint256[](10);
+    ) internal view returns (uint256[] memory data) {
+        data = new uint256[](10);
         data[0] = s.items[(uint256(itemType) << 96) | id];
         uint256 tmp = data[0];
         uint256 check = uint256(tmp);
         assembly {
             check := and(check, not(0xff))
         }
+
         // res = abi.encodePacked(tmp);
         for (uint256 i = 1; (tmp = s.items[(check) | i]) != 0; i++) {
             // res = abi.encodePacked(res, tmp);
-            array[i] = tmp;
+            console.log(tmp);
+
+            data[i] = tmp;
         }
     }
 }
