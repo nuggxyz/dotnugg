@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.10;
 
-// import 'hardhat/console.sol';
+import 'hardhat/console.sol';
 
 library Event {
     // function chop(
@@ -34,14 +34,10 @@ library Event {
     event log_named_bytes(string key, bytes val);
     event log_named_string(string key, string val);
 
-    function log(uint256 val, string memory name) internal {
-        emit log_string('-----------------------');
-        emit log_string(name);
-        emit log_named_uint('uint256', val);
-        emit log_named_bytes32('bytes32', bytes32(val));
-    }
-
-    function log(uint256 val) internal {
-        // log(val, 'unnamed');
+    function log(uint256 val, string memory name) internal view {
+        console.log('-----------------------');
+        console.log(name);
+        console.log(val);
+        console.logBytes32(bytes32(val));
     }
 }

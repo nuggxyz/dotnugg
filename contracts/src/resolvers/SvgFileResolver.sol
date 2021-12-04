@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.10;
 
-import '.././interfaces/INuggIn.sol';
+import '.././interfaces/IResolver.sol';
 import '.././erc165/IERC165.sol';
 import '../logic/Rgba.sol';
 

@@ -7,35 +7,6 @@ import '../../test/Event.sol';
 library ShiftLib {
     using Event for uint256;
 
-    // function chop(
-    //     uint256[] memory input,
-    //     // uint256 b,
-    //     uint256 bstart,
-    //     uint256 bend
-    // ) internal  returns (uint256[] memory output) {
-    //     // require(pos <= input.length * 256, 'SL:B4:0');
-    //     res = bit(input[pos / 256], b, pos % 256);
-    // }
-
-    // event log(string);
-    // event logs(bytes);
-
-    // event log_address(address);
-    // event log_bytes32(bytes32);
-    // event log_int(int256);
-    // event log_uint(uint256);
-    // event log_bytes(bytes);
-    // event log_string(string);
-
-    // event log_named_address(string key, address val);
-    // event log_named_bytes32(string key, bytes32 val);
-    // event log_named_decimal_int(string key, int256 val, uint256 decimals);
-    // event log_named_decimal_uint(string key, uint256 val, uint256 decimals);
-    // event log_named_int(string key, int256 val);
-    // event log_named_uint(string key, uint256 val);
-    // event log_named_bytes(string key, bytes val);
-    // event log_named_string(string key, string val);
-
     function reverse(uint256 input) internal pure returns (uint256 v) {
         v = input;
 
@@ -71,9 +42,7 @@ library ShiftLib {
         uint256[] memory input,
         uint256 b,
         uint256 pos
-    ) internal returns (uint256 res) {
-        // pos.log('pos');
-        // (input.length * 256).log('input.length');
+    ) internal pure returns (uint256 res) {
         require(pos <= input.length * 256, 'SL:B4:0');
         res = rbit(input[pos / 256], b, pos % 256);
     }
@@ -82,22 +51,21 @@ library ShiftLib {
         uint256 input,
         uint256 b,
         uint256 pos
-    ) internal returns (uint256 res) {
+    ) internal pure returns (uint256 res) {
         input = reverse(input);
         require(pos <= 0xff, 'SL:B4:0');
+        uint256 _mask = mask(b);
         assembly {
-            // res := and(shr(sub(256, add(pos, 8)), input), sub(exp(2, b), 1))
-
-            res := and(shr(pos, input), sub(exp(2, b), 1))
+            res := and(shr(pos, input), _mask)
         }
     }
 
-    function rbit1(uint256[] memory input, uint256 pos) internal returns (bool res) {
+    function rbit1(uint256[] memory input, uint256 pos) internal pure returns (bool res) {
         require(pos <= input.length * 256, 'SL:B4:0');
         res = rbit1(input[pos / 256], pos % 256);
     }
 
-    function rbit1(uint256 input, uint256 pos) internal returns (bool res) {
+    function rbit1(uint256 input, uint256 pos) internal pure returns (bool res) {
         require(pos <= 0xff, 'SL:B4:0');
         input = reverse(input);
 
@@ -110,12 +78,12 @@ library ShiftLib {
         uint256[] memory input,
         uint256 b,
         uint256 pos
-    ) internal returns (uint256 res) {
+    ) internal pure returns (uint256 res) {
         require(pos <= input.length * 256, 'SL:B4:0');
         res = bit(input[pos / 256], b, pos % 256);
     }
 
-    function bit1(uint256[] memory input, uint256 pos) internal returns (bool res) {
+    function bit1(uint256[] memory input, uint256 pos) internal pure returns (bool res) {
         require(pos <= input.length * 256, 'SL:B4:0');
         res = bit1(input[pos / 256], pos % 256);
     }
@@ -125,7 +93,7 @@ library ShiftLib {
         uint256 b,
         uint256 pos,
         uint256 update
-    ) internal returns (uint256 res) {
+    ) internal pure returns (uint256 res) {
         res = bit(input[pos / 256], b, pos % 256, update);
     }
 
@@ -133,23 +101,27 @@ library ShiftLib {
         uint256[] memory input,
         uint256 pos,
         bool update
-    ) internal returns (uint256 res) {
+    ) internal pure returns (uint256 res) {
         res = bit1(input[pos / 256], pos % 256, update);
+    }
+
+    function mask(uint256 bits) internal pure returns (uint256 res) {
+        assembly {
+            res := sub(exp(2, bits), 1)
+        }
     }
 
     function bit(
         uint256 input,
         uint256 b,
         uint256 pos
-    ) internal returns (uint256 res) {
+    ) internal pure returns (uint256 res) {
         require(pos <= 0xff, 'SL:B4:0');
+        uint256 _mask = mask(b);
+
         assembly {
-            // res := and(shr(sub(256, add(pos, 8)), input), sub(exp(2, b), 1))
-
-            res := and(shr(pos, input), sub(exp(2, b), 1))
+            res := and(shr(pos, input), _mask)
         }
-
-        // emit log_named_uint('res', res);
     }
 
     function bit(
@@ -157,17 +129,14 @@ library ShiftLib {
         uint256 b,
         uint256 pos,
         uint256 update
-    ) internal returns (uint256 res) {
-        // input.log('input');
-        // input = reverse(input);
-        // update.log('update');
+    ) internal pure returns (uint256 res) {
         uint256 offset;
-        // b.log('b');
+        uint256 _mask = mask(b);
+
         assembly {
-            offset := sub(exp(2, b), 1)
+            offset := _mask
         }
 
-        // offset.log('offset');
         assembly {
             if gt(update, offset) {
                 revert(0, 0)
@@ -175,14 +144,13 @@ library ShiftLib {
             if gt(pos, 0xff) {
                 revert(0, 0)
             }
-            input := and(not(shl(pos, sub(exp(2, b), 1))), input)
+            input := and(not(shl(pos, _mask)), input)
             res := or(input, shl(pos, update))
         }
     }
 
-    function bit1(uint256 input, uint256 pos) internal returns (bool res) {
+    function bit1(uint256 input, uint256 pos) internal pure returns (bool res) {
         require(pos <= 0xff, 'SL:B4:0');
-
         assembly {
             res := and(shr(pos, input), 0x3)
         }
@@ -192,7 +160,7 @@ library ShiftLib {
         uint256 input,
         uint256 pos,
         bool update
-    ) internal returns (uint256 res) {
+    ) internal pure returns (uint256 res) {
         require(pos <= 0xff, 'SL:B4:0');
         uint256 tu = update ? 0x1 : 0x0;
         assembly {
@@ -201,7 +169,7 @@ library ShiftLib {
         }
     }
 
-    // function bit3(uint256 input, uint256 pos) internal  returns (uint256 res) {
+    // function bit3(uint256 input, uint256 pos) internal pure  returns (uint256 res) {
     //     require(pos <= 0xff, 'SL:B4:0');
 
     //     assembly {
@@ -209,7 +177,7 @@ library ShiftLib {
     //     }
     // }
 
-    // function bit4(uint256 input, uint256 pos) internal  returns (uint256 res) {
+    // function bit4(uint256 input, uint256 pos) internal pure  returns (uint256 res) {
     //     require(pos <= 0xff, 'SL:B4:0');
 
     //     assembly {
@@ -217,7 +185,7 @@ library ShiftLib {
     //     }
     // }
 
-    // function bit6(uint256 input, uint256 pos) internal  returns (uint256 res) {
+    // function bit6(uint256 input, uint256 pos) internal pure  returns (uint256 res) {
     //     require(pos <= 0xff, 'SL:B4:0');
 
     //     assembly {
@@ -225,7 +193,7 @@ library ShiftLib {
     //     }
     // }
 
-    // function bit8(uint256 input, uint256 pos) internal  returns (uint256 res) {
+    // function bit8(uint256 input, uint256 pos) internal pure  returns (uint256 res) {
     //     require(pos <= 0xff, 'SL:B4:0');
 
     //     assembly {
@@ -233,7 +201,7 @@ library ShiftLib {
     //     }
     // }
 
-    // function bit12(uint256 input, uint256 pos) internal  returns (uint16 res) {
+    // function bit12(uint256 input, uint256 pos) internal pure  returns (uint16 res) {
     //     require(pos <= 0xff, 'SL:B4:0');
 
     //     assembly {
@@ -241,7 +209,7 @@ library ShiftLib {
     //     }
     // }
 
-    // function bit16(uint256 input, uint256 pos) internal  returns (uint16 res) {
+    // function bit16(uint256 input, uint256 pos) internal pure  returns (uint16 res) {
     //     require(pos <= 0xff, 'SL:B4:0');
 
     //     assembly {
@@ -249,7 +217,7 @@ library ShiftLib {
     //     }
     // }
 
-    // function bit20(uint256 input, uint256 pos) internal  returns (uint16 res) {
+    // function bit20(uint256 input, uint256 pos) internal pure  returns (uint16 res) {
     //     require(pos <= 0xff, 'SL:B4:0');
 
     //     assembly {
@@ -257,7 +225,7 @@ library ShiftLib {
     //     }
     // }
 
-    // function bit24(uint256 input, uint256 pos) internal  returns (uint16 res) {
+    // function bit24(uint256 input, uint256 pos) internal pure  returns (uint16 res) {
     //     require(pos <= 0xff, 'SL:B4:0');
 
     //     assembly {
@@ -265,7 +233,7 @@ library ShiftLib {
     //     }
     // }
 
-    // function bit28(uint256 input, uint256 pos) internal  returns (uint16 res) {
+    // function bit28(uint256 input, uint256 pos) internal pure  returns (uint16 res) {
     //     require(pos <= 0xff, 'SL:B4:0');
 
     //     assembly {
@@ -273,7 +241,7 @@ library ShiftLib {
     //     }
     // }
 
-    // function bit32(uint256 input, uint256 pos) internal  returns (uint16 res) {
+    // function bit32(uint256 input, uint256 pos) internal pure  returns (uint16 res) {
     //     require(pos <= 0xff, 'SL:B4:0');
 
     //     assembly {
@@ -285,7 +253,7 @@ library ShiftLib {
     //     uint256 input,
     //     uint256 pos,
     //     bool update
-    // ) internal  returns (uint256 res) {
+    // ) internal pure  returns (uint256 res) {
     //     require(pos <= 0xff, 'SL:B4:0');
     //     uint256 tu = update ? 0x1 : 0x0;
     //     assembly {
@@ -298,7 +266,7 @@ library ShiftLib {
     //     uint256 input,
     //     uint256 pos,
     //     uint256 update
-    // ) internal  returns (uint256 res) {
+    // ) internal pure  returns (uint256 res) {
     //     require(update <= 0xb && pos <= 0xff, 'SL:B3:0');
     //     assembly {
     //         input := and(not(shl(pos, 0xb)), input)
@@ -310,7 +278,7 @@ library ShiftLib {
     //     uint256 input,
     //     uint256 pos,
     //     uint256 update
-    // ) internal  returns (uint256 res) {
+    // ) internal pure  returns (uint256 res) {
     //     require(update <= 0xf && pos <= 0xff, 'SL:B4:0');
     //     assembly {
     //         input := and(not(shl(pos, 0xf)), input)
@@ -322,7 +290,7 @@ library ShiftLib {
     //     uint256 input,
     //     uint256 pos,
     //     uint256 update
-    // ) internal  returns (uint256 res) {
+    // ) internal pure  returns (uint256 res) {
     //     require(update <= 0xff && pos <= 0xff, 'SL:B8:0');
     //     assembly {
     //         input := and(not(shl(pos, 0x3f)), input)
@@ -334,7 +302,7 @@ library ShiftLib {
     //     uint256 input,
     //     uint256 pos,
     //     uint256 update
-    // ) internal  returns (uint256 res) {
+    // ) internal pure  returns (uint256 res) {
     //     require(update <= 0xff && pos <= 0xff, 'SL:B8:0');
     //     assembly {
     //         input := and(not(shl(pos, 0xff)), input)
@@ -346,7 +314,7 @@ library ShiftLib {
     //     uint256 input,
     //     uint256 pos,
     //     uint256 update
-    // ) internal  returns (uint256 res) {
+    // ) internal pure  returns (uint256 res) {
     //     require(update <= 0xfff && pos <= 0xff, 'SL:B12:0');
     //     assembly {
     //         input := and(not(shl(pos, 0xfff)), input)
@@ -358,7 +326,7 @@ library ShiftLib {
     //     uint256 input,
     //     uint256 pos,
     //     uint256 update
-    // ) internal  returns (uint256 res) {
+    // ) internal pure  returns (uint256 res) {
     //     require(update <= 0xffff && pos <= 0xff, 'SL:B16:0');
     //     assembly {
     //         input := and(not(shl(pos, 0xffff)), input)
@@ -370,7 +338,7 @@ library ShiftLib {
     //     uint256 input,
     //     uint256 pos,
     //     uint256 update
-    // ) internal  returns (uint256 res) {
+    // ) internal pure  returns (uint256 res) {
     //     require(update <= 0xfffff && pos <= 0xff, 'SL:B16:0');
     //     assembly {
     //         input := and(not(shl(pos, 0xfffff)), input)
@@ -382,7 +350,7 @@ library ShiftLib {
     //     uint256 input,
     //     uint256 pos,
     //     uint256 update
-    // ) internal  returns (uint256 res) {
+    // ) internal pure  returns (uint256 res) {
     //     require(update <= 0xffffff && pos <= 0xff, 'SL:B16:0');
     //     assembly {
     //         input := and(not(shl(pos, 0xffffff)), input)
@@ -394,7 +362,7 @@ library ShiftLib {
     //     uint256 input,
     //     uint256 pos,
     //     uint256 update
-    // ) internal  returns (uint256 res) {
+    // ) internal pure  returns (uint256 res) {
     //     require(update <= 0xfffffff && pos <= 0xff, 'SL:B16:0');
     //     assembly {
     //         input := and(not(shl(pos, 0xfffffff)), input)
@@ -406,7 +374,7 @@ library ShiftLib {
     //     uint256 input,
     //     uint256 pos,
     //     uint256 update
-    // ) internal  returns (uint256 res) {
+    // ) internal pure  returns (uint256 res) {
     //     require(update <= 0xffffffff && pos <= 0xff, 'SL:B16:0');
     //     assembly {
     //         input := and(not(shl(pos, 0xffffffff)), input)

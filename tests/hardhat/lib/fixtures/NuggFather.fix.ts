@@ -6,10 +6,19 @@ import { getHRE } from '../shared/deployment';
 import { deployContractWithSalt } from '../shared';
 
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
+import { MockDotNuggHolder } from '../../../../typechain/MockDotNuggHolder';
+import { MockDotNuggHolder__factory } from '../../../../typechain/factories/MockDotNuggHolder__factory';
+import { DotNugg } from '../../../../typechain/DotNugg';
+import { DotNugg__factory } from '../../../../typechain/factories/DotNugg__factory';
+import { SvgFileResolver, SvgFileResolver__factory } from '../../../../typechain';
 
 export interface NuggFatherFixture {
-    // nuggswap: NuggSwap;
-
+    holder: MockDotNuggHolder;
+    // let nuggin: GroupNuggIn;
+    // let nugginSVG: SvgFileResolver;
+    // let nugginDotNugg: SvgFileResolver;
+    svgResolver: SvgFileResolver;
+    dotnugg: DotNugg;
     owner: string;
     ownerStartBal: BigNumber;
     hre: HardhatRuntimeEnvironment;
@@ -27,11 +36,23 @@ export const NuggFatherFix: Fixture<NuggFatherFixture> = async function (
     const eoaDeployer = provider.getWallets()[16];
     const eoaOwner = provider.getWallets()[17];
 
-    // const xnugg = await deployContractWithSalt<xNUGG__factory>({
-    //     factory: 'xNUGG',
-    //     from: eoaDeployer,
-    //     args: [],
-    // });
+    const dotnugg = await deployContractWithSalt<DotNugg__factory>({
+        factory: 'DotNugg',
+        from: eoaDeployer,
+        args: [],
+    });
+
+    const svgResolver = await deployContractWithSalt<SvgFileResolver__factory>({
+        factory: 'SvgFileResolver',
+        from: eoaDeployer,
+        args: [],
+    });
+
+    const holder = await deployContractWithSalt<MockDotNuggHolder__factory>({
+        factory: 'MockDotNuggHolder',
+        from: eoaDeployer,
+        args: [dotnugg.address, svgResolver.address],
+    });
 
     // const nuggswap = await deployContractWithSalt<NuggSwap__factory>({
     //     factory: 'NuggSwap',
@@ -54,7 +75,7 @@ export const NuggFatherFix: Fixture<NuggFatherFixture> = async function (
 
     const owner = eoaDeployer.address;
 
-    // hre.tracer.nameTags[xnugg.address] = 'xNUGG';
+    hre.tracer.nameTags[holder.address] = 'MockDotNuggHolder';
     // hre.tracer.nameTags[nuggswap.address] = 'NuggSwap';
     hre.tracer.nameTags['0x0000000000000000000000000000000000000000'] = 'BLACK_HOLE';
     hre.tracer.nameTags[owner] = 'Owner';
@@ -65,11 +86,14 @@ export const NuggFatherFix: Fixture<NuggFatherFixture> = async function (
     // }
 
     return {
+        holder,
         // toNuggSwapTokenId,
         // mockERC1155,
         // dotnugg: hre.dotnugg,
         // nuggft,
         // xnugg,
+        svgResolver,
+        dotnugg,
         blockOffset,
         owner,
         // nuggswap,

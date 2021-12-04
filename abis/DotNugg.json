@@ -2,14 +2,19 @@
   {
     "inputs": [
       {
-        "internalType": "bytes",
-        "name": "_collection",
-        "type": "bytes"
+        "internalType": "uint256",
+        "name": "featureLen",
+        "type": "uint256"
       },
       {
-        "internalType": "bytes[]",
+        "internalType": "uint256",
+        "name": "width",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256[][]",
         "name": "_items",
-        "type": "bytes[]"
+        "type": "uint256[][]"
       },
       {
         "internalType": "address",
