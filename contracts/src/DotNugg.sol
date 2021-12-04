@@ -9,7 +9,7 @@ import './libraries/Base64.sol';
 import './libraries/Uint.sol';
 
 import './interfaces/IDotNugg.sol';
-import './interfaces/INuggIn.sol';
+import './interfaces/IResolver.sol';
 
 /**
  * @title DotNugg V1 - onchain encoder/decoder for dotnugg files

@@ -87,6 +87,7 @@ const LocalNetworks: NetworksUserConfig = {
         gas: 10000000000,
         blockGasLimit: 10000000000,
         gasPrice: parseInt(GAS_PRICE.toString(), 10),
+        saveDeployments: false,
     },
 };
 

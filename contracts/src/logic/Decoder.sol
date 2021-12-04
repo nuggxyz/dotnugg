@@ -19,6 +19,8 @@ import '../types/CollectionType.sol';
 import '../types/AnchorType.sol';
 import '../types/PixelType.sol';
 import '../types/ReceiverType.sol';
+import '../types/BitReaderType.sol';
+
 import '../../test/Event.sol';
 
 library Decoder {
@@ -36,6 +38,7 @@ library Decoder {
 
     using PalletType for PalletType.Memory;
     using VersionType for VersionType.Memory;
+    using BitReaderType for BitReaderType.Memory;
 
     using CollectionType for uint256;
     using PixelType for uint256;
@@ -67,17 +70,24 @@ library Decoder {
     // │   └─────┴────────────────────────────────────────────────┘   │
     // │                                                              │
     // └──────────────────────────────────────────────────────────────┘
-    function parseCollection(bytes memory data) internal returns (uint256 res) {
-        res = res.collection_width(data.toUint8(7));
-        res = res.collection_height(data.toUint8(7));
-        res = res.collection_numfeatures(data.toUint8(8));
-    }
+    // function parseCollection(bytes memory data) internal returns (uint256 res) {
+    //     res = res.collection_width(data.toUint8(7));
+    //     res = res.collection_height(data.toUint8(7));
+    //     res = res.collection_numfeatures(data.toUint8(8));
+    // }
 
-    function parseItems(bytes[] memory data) internal returns (ItemType.Memory[] memory res) {
+    function parseItems(uint256[][] memory data) internal returns (ItemType.Memory[] memory res) {
         res = new ItemType.Memory[](data.length);
         for (uint256 i = 0; i < data.length; i++) {
             res[i] = parseItem(data[i]);
         }
+    }
+
+    function parseItem(uint256[] memory data) internal view returns (ItemType.Memory memory res) {
+        BitReaderType.Memory memory reader = BitReaderType.init(data);
+        uint256 check = reader.select(4);
+        check.log('chekkkkkkk');
+        require(check == 0x4e554747);
     }
 
     // ┌───────────────────────────────────────────────────────────────────┐
@@ -109,65 +119,69 @@ library Decoder {
     // │                                                                   │
     // └───────────────────────────────────────────────────────────────────┘
 
-    function validateItem(bytes memory data) internal view {
-        require(data.length > 13, 'D:VI:0');
-        require(data.slice(0, 7).equal(hex'444f544e554747'), 'D:VI:1');
-        require(data.slice(9, data.length - 9).fletcher16() == data.toUint16(7), 'D:VI:2');
-    }
+    // function validateItem(bytes memory data) internal view {
+    //     require(data.length > 13, 'D:VI:0');
+    //     require(data.slice(0, 7).equal(hex'4e554747'), 'D:VI:1');
+    //     require(data.slice(9, data.length - 9).fletcher16() == data.toUint16(7), 'D:VI:2');
+    // }
 
-    function parseItem(bytes memory data) internal returns (ItemType.Memory memory res) {
-        validateItem(data);
+    // function parseItem(uint256[] memory data) internal returns (ItemType.Memory memory res) {
+    //     BitReaderType.Memory memory reader = BitReaderType.init(data);
 
-        uint256 feat = parseItemFeatureId(data);
-        uint16 colorsIndex = data.toUint16(10);
-        uint256 versionsLength = (colorsIndex - 12) / 2;
+    //     require(reader.select(4) == hex'4e554747');
 
-        uint16[] memory versionsIndexz = new uint16[](versionsLength);
-        // console.log('yello', versionsIndexz.length);
+    //     validateItem(data);
 
-        for (uint16 i = 0; i < versionsIndexz.length; i++) {
-            versionsIndexz[i] = data.toUint16(12 + i * 2);
-        }
+    //     uint256 feat = parseItemFeatureId(data);
+    //     uint16 colorsIndex = data.toUint16(10);
+    //     uint256 versionsLength = (colorsIndex - 12) / 2;
 
-        // console.log('yello', versionsIndexz.length);
+    //     uint16[] memory versionsIndexz = new uint16[](versionsLength);
+    //     // console.log('yello', versionsIndexz.length);
 
-        for (uint256 i = 0; i < versionsLength; i++) {
-            // versionsLength.log('testt-1');
+    //     for (uint16 i = 0; i < versionsIndexz.length; i++) {
+    //         versionsIndexz[i] = data.toUint16(12 + i * 2);
+    //     }
 
-            versionsIndexz[i] = data.toUint16(12 + i * 2);
-        }
+    //     // console.log('yello', versionsIndexz.length);
 
-        uint256 palletLength = 1 + (versionsIndexz[0] - colorsIndex) / 5;
+    //     for (uint256 i = 0; i < versionsLength; i++) {
+    //         // versionsLength.log('testt-1');
 
-        res.pallet = PalletType.load(palletLength);
+    //         versionsIndexz[i] = data.toUint16(12 + i * 2);
+    //     }
 
-        res.versions = new VersionType.Memory[](versionsLength);
+    //     uint256 palletLength = 1 + (versionsIndexz[0] - colorsIndex) / 5;
 
-        require(res.versions.length > 0, 'DEC:PI:0');
-        uint256 pix0;
-        pix0 = pix0.pixel_r(1);
-        pix0 = pix0.pixel_g(1);
-        pix0 = pix0.pixel_b(1);
-        pix0 = pix0.pixel_a(0);
-        pix0 = pix0.pixel_zindex(0);
-        pix0 = pix0.pixel_exists(false);
-        res.pallet.pixel(0, pix0);
+    //     res.pallet = PalletType.load(palletLength);
 
-        for (uint256 i = 1; i < palletLength; i++) {
-            res.pallet.pixel(i, parsePixel(data, colorsIndex + 5 * (i - 1)));
-            versionsLength.log('testt0');
-        }
+    //     res.versions = new VersionType.Memory[](versionsLength);
 
-        for (uint256 i = 0; i < versionsLength; i++) {
-            uint256 endIndex = i + 1 == versionsIndexz.length ? data.length : versionsIndexz[i + 1];
-            res.versions[i] = parseVersion(data, versionsIndexz[i], uint16(endIndex), feat);
-        }
-    }
+    //     require(res.versions.length > 0, 'DEC:PI:0');
+    //     uint256 pix0;
+    //     pix0 = pix0.pixel_r(1);
+    //     pix0 = pix0.pixel_g(1);
+    //     pix0 = pix0.pixel_b(1);
+    //     pix0 = pix0.pixel_a(0);
+    //     pix0 = pix0.pixel_zindex(0);
+    //     pix0 = pix0.pixel_exists(false);
+    //     res.pallet.pixel(0, pix0);
 
-    function parseItemFeatureId(bytes memory data) internal view returns (uint256 res) {
-        res = uint256(uint8(data[9]));
-        require(res < 8, 'DE:PI:0');
-    }
+    //     for (uint256 i = 1; i < palletLength; i++) {
+    //         res.pallet.pixel(i, parsePixel(data, colorsIndex + 5 * (i - 1)));
+    //         versionsLength.log('testt0');
+    //     }
+
+    //     for (uint256 i = 0; i < versionsLength; i++) {
+    //         uint256 endIndex = i + 1 == versionsIndexz.length ? data.length : versionsIndexz[i + 1];
+    //         res.versions[i] = parseVersion(data, versionsIndexz[i], uint16(endIndex), feat);
+    //     }
+    // }
+
+    // function parseItemFeatureId(bytes memory data) internal view returns (uint256 res) {
+    //     res = uint256(uint8(data[9]));
+    //     require(res < 8, 'DE:PI:0');
+    // }
 
     // ┌──────────────────────────────────────────────────────────────┐
     // │                                                              │

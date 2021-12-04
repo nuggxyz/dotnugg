@@ -11,6 +11,21 @@
                     "internalType": "uint256[]",
                     "name": "dat",
                     "type": "uint256[]"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "len",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "pos",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "main",
+                    "type": "uint256"
                   }
                 ],
                 "internalType": "struct MultiSudoArrayType.Memory",
