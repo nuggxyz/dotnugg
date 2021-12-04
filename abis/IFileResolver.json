@@ -4,38 +4,19 @@
       {
         "components": [
           {
-            "components": [
-              {
-                "components": [
-                  {
-                    "internalType": "uint256[]",
-                    "name": "dat",
-                    "type": "uint256[]"
-                  },
-                  {
-                    "internalType": "uint256",
-                    "name": "len",
-                    "type": "uint256"
-                  },
-                  {
-                    "internalType": "uint256",
-                    "name": "pos",
-                    "type": "uint256"
-                  },
-                  {
-                    "internalType": "uint256",
-                    "name": "main",
-                    "type": "uint256"
-                  }
-                ],
-                "internalType": "struct MultiSudoArrayType.Memory",
-                "name": "dat",
-                "type": "tuple"
-              }
-            ],
-            "internalType": "struct PalletType.Memory[]",
-            "name": "pixels",
-            "type": "tuple[]"
+            "internalType": "uint256[]",
+            "name": "pallet",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "minimatrix",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256",
+            "name": "receivers",
+            "type": "uint256"
           },
           {
             "internalType": "uint256",
@@ -43,8 +24,8 @@
             "type": "uint256"
           }
         ],
-        "internalType": "struct MatrixType.Memory",
-        "name": "matrix",
+        "internalType": "struct Version.Memory",
+        "name": "version",
         "type": "tuple"
       },
       {

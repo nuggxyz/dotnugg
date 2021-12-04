@@ -2,11 +2,10 @@
 
 pragma solidity 0.8.4;
 
-import './logic/Decoder.sol';
-import './logic/Calculator.sol';
-
 import './libraries/Base64.sol';
 import './libraries/Uint.sol';
+
+import './types/Version.sol';
 
 import './interfaces/IDotNugg.sol';
 import './interfaces/IResolver.sol';
@@ -33,31 +32,12 @@ contract DotNugg is IDotNugg {
     ) public view override returns (string memory image) {
         IFileResolver fileResolver = IFileResolver(_resolver);
         IColorResolver colorResolver = IColorResolver(_resolver);
-        console.log('items.length', _items.length);
-        // require(fileResolver.supportsInterface(type(IFileResolver).interfaceId), 'NUG:TURI:2');
 
-        // uint256 collection = Decoder.parseCollection(_collection);
-        // emit log_named_uint('HERE2', collection);
+        Version.Memory[][] memory versions = Version.parse(_items);
 
-        // bytes[] memory selected = new bytes[](8);
+        // MatrixType.Memory memory matrix = Calculator.combine(featureLen, width, _items);
 
-        // for (uint256 i = 0; i < _items.length; i++) {
-        //     selected[Decoder.parseItemFeatureId(_items[i])] = _items[i];
-        // }
-
-        // for (uint256 i = 0; i < collection.defaults.length; i++) {
-        //     uint8 featureId = Decoder.parseItemFeatureId(collection.defaults[i]);
-        //     if (selected[featureId].length == 0) {
-        //         selected[featureId] = collection.defaults[i];
-        //     }
-        // }
-
-        MatrixType.Memory memory matrix = Calculator.combine(featureLen, width, _items);
-
-        // if (colorResolver.supportsInterface(type(IColorResolver).interfaceId)) {
-        //     colorResolver.resolveColor(matrix, data);
-        // }
-        (bytes memory fileData, string memory fileType) = fileResolver.resolveFile(matrix, data);
+        (bytes memory fileData, string memory fileType) = fileResolver.resolveFile(versions[0][0], data);
 
         image = Base64.encode(
             bytes(
