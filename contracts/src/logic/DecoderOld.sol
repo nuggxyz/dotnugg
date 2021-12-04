@@ -79,7 +79,7 @@
 //     // │                                                              │
 //     // └──────────────────────────────────────────────────────────────┘
 
-//     function parseCollection(uint256[] memory data) internal returns (uint256 res) {
+//     function parseCollection(uint256[] memory data) internal view returns (uint256 res) {
 //         res = res.collection_width(data.rbit(8, 7 * 8));
 //         res = res.collection_height(data.rbit(8, 7 * 8));
 //         res = res.collection_numfeatures(data.rbit(8, 8 * 8));
@@ -93,7 +93,7 @@
 //         // emit log_named_uint('numfeatures', res.collection_numfeatures());
 //     }
 
-//     function parseItems(uint256[][] memory items) internal returns (ItemType.Memory[] memory res) {
+//     function parseItems(uint256[][] memory items) internal view returns (ItemType.Memory[] memory res) {
 //         res = new ItemType.Memory[](items.length);
 //         for (uint256 i = 0; i < res.length; i++) {
 //             res[i] = parseItem(items[i]);
@@ -129,7 +129,7 @@
 //     // │                                                                   │
 //     // └───────────────────────────────────────────────────────────────────┘
 
-//     function validateItem(uint256[] memory data) internal {
+//     function validateItem(uint256[] memory data) internal view {
 //         // require(data.length > 13, 'D:VI:0');
 
 //         // (data[0] >> (25 * 8)).log('yow');
@@ -142,7 +142,7 @@
 //     }
 
 //     // @note - max feature len is now 8
-//     function parseItem(uint256[] memory data) internal returns (ItemType.Memory memory res) {
+//     function parseItem(uint256[] memory data) internal view returns (ItemType.Memory memory res) {
 //         validateItem(data);
 
 //         uint256 feat = parseItemFeatureId(data[0]);
@@ -188,7 +188,7 @@
 //         }
 //     }
 
-//     function parseItemFeatureId(uint256 data) internal returns (uint256 res) {
+//     function parseItemFeatureId(uint256 data) internal view returns (uint256 res) {
 //         res = data.rbit(8, 9 * 8);
 //         require(res < 8, 'DE:PI:0');
 //     }
@@ -212,7 +212,7 @@
 //     // │                                                              │
 //     // └──────────────────────────────────────────────────────────────┘
 
-//     function parsePixel(uint256[] memory input, uint256 _start) internal returns (uint256 res) {
+//     function parsePixel(uint256[] memory input, uint256 _start) internal view returns (uint256 res) {
 //         // require(_bytes.length >= _start + 5, 'parsePixel_outOfBounds');
 //         {
 //             res = res.pixel_zindex(input.rbit(8, _start++ * 8));
@@ -257,7 +257,7 @@
 //     //     res.a = uint8(_bytes[_start + 3]);
 //     // }
 
-//     function parseRlud(uint256[] memory input, uint256 _start) internal returns (uint256 res) {
+//     function parseRlud(uint256[] memory input, uint256 _start) internal view returns (uint256 res) {
 //         bool exists = input.rbit(8, _start++ * 8) == 1;
 
 //         if (exists) {
@@ -302,7 +302,7 @@
 //         uint256[] memory input,
 //         uint256 _start,
 //         uint256 feat
-//     ) internal returns (VersionType.Memory memory res) {
+//     ) internal view returns (VersionType.Memory memory res) {
 //         // require(_bytes.length >= _end && _start < _end, 'parsePixel_outOfBounds');
 
 //         // uint256 info;

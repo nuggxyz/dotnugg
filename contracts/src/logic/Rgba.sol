@@ -6,7 +6,7 @@ import '../types/PixelType.sol';
 library Rgba {
     using PixelType for uint256;
 
-    function combine(uint256 base, uint256 mix) internal returns (uint256 res) {
+    function combine(uint256 base, uint256 mix) internal view returns (uint256 res) {
         if (mix.pixel_a() == 255 || base.pixel_a() == 0) {
             return mix;
         }
@@ -20,11 +20,11 @@ library Rgba {
         }
     }
 
-    function ascii(uint256 base) internal returns (string memory res) {
+    function ascii(uint256 base) internal view returns (string memory res) {
         res = string(abi.encodePacked(base.pixel_rgba()));
     }
 
-    function equals(uint256 base, uint256 next) internal returns (bool res) {
+    function equals(uint256 base, uint256 next) internal view returns (bool res) {
         res = base.pixel_rgba() == next.pixel_rgba();
     }
 }

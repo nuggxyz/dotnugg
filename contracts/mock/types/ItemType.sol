@@ -64,19 +64,19 @@ library ItemType {
 
     uint256 constant OPEN_ITEM = 0x0000;
 
-    function size(uint256 input) internal returns (uint256 res) {
+    function size(uint256 input) internal pure returns (uint256 res) {
         res = input.bit(4, 0);
     }
 
-    function base(uint256 input) internal returns (uint256 res) {
+    function base(uint256 input) internal pure returns (uint256 res) {
         res = input.bit(4, 4);
     }
 
-    function checkSlot(uint256 slot) internal {
+    function checkSlot(uint256 slot) internal pure {
         require(slot < NUM_SLOTS, 'IT:S:0');
     }
 
-    function checkIndex(uint256 index) internal {
+    function checkIndex(uint256 index) internal pure {
         require(index < NUM_ATTRS, 'IT:A:0');
     }
 
@@ -84,7 +84,7 @@ library ItemType {
         uint256 input,
         uint256 index,
         uint256 slot
-    ) internal returns (bool res) {
+    ) internal pure returns (bool res) {
         checkSlot(slot);
         checkIndex(index);
 
@@ -121,9 +121,9 @@ library ItemType {
 
     function item(
         uint256 input,
-        Index index,
+        uint256 index,
         uint256 slot
-    ) internal returns (uint256 res) {
+    ) internal pure returns (uint256 res) {
         if (valid(input, uint256(index), slot)) {
             res = input.bit(12, 16 + (48 * uint256(index)) + (12 * slot));
         } else {
@@ -133,10 +133,10 @@ library ItemType {
 
     function item(
         uint256 input,
-        Index index,
+        uint256 index,
         uint256 slot,
         uint256 update
-    ) internal returns (uint256 res) {
+    ) internal pure returns (uint256 res) {
         res = input.bit(12, 16 + (48 * uint256(index)) + (12 * slot), update);
     }
 
@@ -144,7 +144,7 @@ library ItemType {
     //     uint256 input,
     //     uint256 index,
     //     uint256 slot
-    // ) internal  returns (uint256 res) {
+    // ) internal pure  returns (uint256 res) {
     //     if (valid(input, index, slot)) {
     //         res = input.bit(12,16 + (48 * index) + (12 * slot));
     //     } else {
@@ -157,11 +157,11 @@ library ItemType {
     //     uint256 index,
     //     uint256 slot,
     //     uint256 update
-    // ) internal  returns (uint256 res) {
+    // ) internal pure  returns (uint256 res) {
     //     res = input.bit(12,16 + (48 * index) + (12 * slot), update);
     // }
 
-    // function head(uint256 input, uint8 index) internal  returns (uint256 res) {
+    // function head(uint256 input, uint8 index) internal pure  returns (uint256 res) {
     //     checkSlot(index);
     //     res = item(input, HEAD_INDEX, index);
     // }
@@ -170,12 +170,12 @@ library ItemType {
     //     uint256 input,
     //     uint8 index,
     //     uint256 update
-    // ) internal  returns (uint256 res) {
+    // ) internal pure  returns (uint256 res) {
     //     checkSlot(index);
     //     res = item(input, HEAD_INDEX, index, update);
     // }
 
-    // function eyes(uint256 input, uint8 index) internal  returns (uint256 res) {
+    // function eyes(uint256 input, uint8 index) internal pure  returns (uint256 res) {
     //     checkSlot(index);
     //     res = item(input, EYES_INDEX, index);
     // }
@@ -184,12 +184,12 @@ library ItemType {
     //     uint256 input,
     //     uint8 index,
     //     uint256 update
-    // ) internal  returns (uint256 res) {
+    // ) internal pure  returns (uint256 res) {
     //     checkSlot(index);
     //     res = item(input, EYES_INDEX, index, update);
     // }
 
-    // function mouth(uint256 input, uint8 slot) internal  returns (uint256 res) {
+    // function mouth(uint256 input, uint8 slot) internal pure  returns (uint256 res) {
     //     checkSlot(slot);
     //     res = item(input, MOUTH_INDEX, slot);
     // }
@@ -198,12 +198,12 @@ library ItemType {
     //     uint256 input,
     //     uint8 slot,
     //     uint256 update
-    // ) internal  returns (uint256 res) {
+    // ) internal pure  returns (uint256 res) {
     //     checkSlot(slot);
     //     res = item(input, MOUTH_INDEX, slot, update);
     // }
 
-    // function other(uint256 input, uint8 slot) internal  returns (uint256 res) {
+    // function other(uint256 input, uint8 slot) internal pure  returns (uint256 res) {
     //     checkSlot(slot);
     //     res = item(input, OTHER_INDEX, slot);
     // }
@@ -212,12 +212,12 @@ library ItemType {
     //     uint256 input,
     //     uint8 slot,
     //     uint256 update
-    // ) internal  returns (uint256 res) {
+    // ) internal pure  returns (uint256 res) {
     //     checkSlot(slot);
     //     res = item(input, OTHER_INDEX, slot, update);
     // }
 
-    // function special(uint256 input, uint8 slot) internal  returns (uint256 res) {
+    // function special(uint256 input, uint8 slot) internal pure  returns (uint256 res) {
     //     checkSlot(slot);
     //     res = item(input, SPECIAL_INDEX, slot);
     // }
@@ -226,7 +226,7 @@ library ItemType {
     //     uint256 input,
     //     uint8 slot,
     //     uint256 update
-    // ) internal  returns (uint256 res) {
+    // ) internal pure  returns (uint256 res) {
     //     checkSlot(slot);
     //     res = item(input, SPECIAL_INDEX, slot, update);
     // }

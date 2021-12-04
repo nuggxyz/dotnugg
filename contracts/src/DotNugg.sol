@@ -30,7 +30,7 @@ contract DotNugg is IDotNugg {
         uint256 tokenId,
         // bytes32 seed,
         bytes memory data
-    ) public override returns (string memory image) {
+    ) public view override returns (string memory image) {
         IFileResolver fileResolver = IFileResolver(_resolver);
         IColorResolver colorResolver = IColorResolver(_resolver);
 

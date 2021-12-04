@@ -12,7 +12,7 @@ interface IDotNugg {
         string memory description,
         uint256 tokenId,
         bytes memory data
-    ) external returns (string memory image);
+    ) external view returns (string memory image);
 
     // struct Rlud {
     //     bool exists;

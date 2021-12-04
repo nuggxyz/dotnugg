@@ -21,7 +21,7 @@ library CanvasType {
         SudoArrayType.Memory recs;
     }
 
-    function canvas_receivers(Memory memory m, uint256 index) internal returns (uint256 res) {
+    function canvas_receivers(Memory memory m, uint256 index) internal view returns (uint256 res) {
         require(index < 8, 'CT:R:0');
         res = m.recs.pull(16, 0, index);
     }
@@ -30,7 +30,7 @@ library CanvasType {
         Memory memory m,
         uint256 index,
         uint256 update
-    ) internal {
+    ) internal view {
         index.log('canvas_receivers:index');
         require(index < 8, 'CT:R:1');
         m.recs.push(16, 0, index, update);

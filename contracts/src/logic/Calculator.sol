@@ -50,7 +50,7 @@ library Calculator {
         uint256 numfeatures,
         uint256 width,
         uint256[][] memory inputs
-    ) internal returns (MatrixType.Memory memory resa) {
+    ) internal view returns (MatrixType.Memory memory resa) {
         CanvasType.Memory memory canvas;
         MixType.Memory memory mix;
 
@@ -116,7 +116,7 @@ library Calculator {
      * @notice
      * @devg
      */
-    function postionForCanvas(CanvasType.Memory memory canvas, MixType.Memory memory mix) internal {
+    function postionForCanvas(CanvasType.Memory memory canvas, MixType.Memory memory mix) internal view {
         uint256 receiver = canvas.canvas_receivers(mix.version.info.version_feature());
         uint256 anchor = canvas.canvas_receivers(mix.version.info.version_anchor());
 
@@ -129,7 +129,7 @@ library Calculator {
         yoffset.log('yoffset');
     }
 
-    // function checkRluds(IDotNugg.Rlud memory r1, IDotNugg.Rlud memory r2) internal  returns (bool) {
+    // function checkRluds(IDotNugg.Rlud memory r1, IDotNugg.Rlud memory r2) internal view  returns (bool) {
     //     return (r1.r <= r2.r && r1.l <= r2.l) || (r1.u <= r2.u && r1.d <= r2.d);
     // }
 
@@ -142,7 +142,7 @@ library Calculator {
         MixType.Memory memory res,
         ItemType.Memory memory item,
         uint256 versionIndex
-    ) internal {
+    ) internal view {
         res.version = item.versions[versionIndex];
         res.canvas.matrix.set(res.version.content, item.pallet, res.version.info.version_width(), res.version.info.version_height());
     }
@@ -151,7 +151,7 @@ library Calculator {
      * @notice done
      * @dev
      */
-    function updateReceivers(CanvasType.Memory memory canvas, MixType.Memory memory mix) internal {
+    function updateReceivers(CanvasType.Memory memory canvas, MixType.Memory memory mix) internal view {
         for (uint8 i = 0; i < 8; i++) {
             if (mix.canvas.canvas_receivers(i).anchor_coordExists()) {
                 canvas.canvas_receivers(i, mix.canvas.canvas_receivers(i));
@@ -163,7 +163,7 @@ library Calculator {
      * @notice done
      * @dev
      */
-    function mergeToCanvas(CanvasType.Memory memory canvas, MixType.Memory memory mix) internal {
+    function mergeToCanvas(CanvasType.Memory memory canvas, MixType.Memory memory mix) internal view {
         while (canvas.matrix.next() && mix.canvas.matrix.next()) {
             uint256 mixActive = mix.canvas.matrix.matrix_active_pixel();
             uint256 canActive = canvas.matrix.matrix_active_pixel();
@@ -180,7 +180,7 @@ library Calculator {
     //  * @notice poop
     //  * @dev
     //  */
-    // function calculateReceivers(MixType.Memory memory mix) internal  {
+    // function calculateReceivers(MixType.Memory memory mix) internal view  {
     //     Anchor.convertReceiversToAnchors(mix);
     // }
 
@@ -193,7 +193,7 @@ library Calculator {
 //  * @notice expansion
 //  * @dev
 //  */
-// function formatForCanvas(CanvasType.Memory memory canvas, MixType.Memory memory mix) internal  {
+// function formatForCanvas(CanvasType.Memory memory canvas, MixType.Memory memory mix) internal view  {
 //     uint256 receiver = canvas.canvas_receivers(mix.version.version_feature());
 //     uint256 anchor = canvas.canvas_receivers(mix.version.version_anchor());
 
@@ -222,7 +222,7 @@ library Calculator {
 //  * @dev
 //  * makes the sorts versions
 //  */
-// function pickVersionIndex(CanvasType.Memory memory canvas, ItemType.Memory memory item) internal  returns (uint8) {
+// function pickVersionIndex(CanvasType.Memory memory canvas, ItemType.Memory memory item) internal view  returns (uint8) {
 //     require(item.versions.length > 0, 'CALC:PVI:0');
 //     if (item.versions.length == 1) {
 //         return 0;
@@ -243,7 +243,7 @@ library Calculator {
 //  pick best version
 // figure out offset
 
-// function merge(Canvas memory canvas, Matrix memory versionMatrix) internal  {
+// function merge(Canvas memory canvas, Matrix memory versionMatrix) internal view  {
 //     for (int8 y = (canvas.matrix.data.length / 2) * -1; y <= canvas.matrix.data.length / 2; y++) {
 //         for (int8 x = (canvas.matrix.width / 2) * -1; x <= canvas.matrix[j].width / 2; x++) {
 //             Pixel memory canvas = canvas.matrix.at(x, y);

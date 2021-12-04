@@ -32,7 +32,7 @@ contract SvgFileResolver is IFileResolver {
         return interfaceId == type(IFileResolver).interfaceId || interfaceId == type(IERC165).interfaceId;
     }
 
-    function resolveFile(MatrixType.Memory memory matrix, bytes memory data) public override returns (bytes memory res, string memory fileType) {
+    function resolveFile(MatrixType.Memory memory matrix, bytes memory data) public view override returns (bytes memory res, string memory fileType) {
         uint256 svgWidth = uint256(matrix.data.matrix_width()) * 10;
 
         bytes memory header = abi.encodePacked(
@@ -51,7 +51,7 @@ contract SvgFileResolver is IFileResolver {
         return (abi.encodePacked(header, rects, hex'3c2f7376673e'), 'svg');
     }
 
-    function getSvgRects(MatrixType.Memory memory matrix, uint256 pixelWidth) internal returns (bytes memory res) {
+    function getSvgRects(MatrixType.Memory memory matrix, uint256 pixelWidth) internal view returns (bytes memory res) {
         uint256 lastX;
         uint256 lastPixel;
         //   uint256 xtracker;
@@ -86,7 +86,7 @@ contract SvgFileResolver is IFileResolver {
         uint256 y,
         uint256 xlen,
         uint256 ylen
-    ) internal returns (bytes memory res) {
+    ) internal view returns (bytes memory res) {
         if (pixel.pixel_a() == 0) return '';
         res = abi.encodePacked(
             hex'5c743c726563742066696c6c3d2723', // "\t<rect fill='#",

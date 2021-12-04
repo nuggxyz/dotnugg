@@ -36,6 +36,9 @@ describe('uint tests', async function () {
                 fix.hre.dotnugg.map((x) => x.hex),
                 '0x00',
             );
+
+            const res = await fix.holder.tokenUri(0);
+            console.log(res);
         });
     });
 });
