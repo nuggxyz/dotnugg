@@ -21,7 +21,7 @@ contract MockDotNuggHolder is IMockDotNuggHolder {
         svgResolver = IFileResolver(_dotnuggFileResolver);
     }
 
-    function dotNuggUpload(uint256[][] calldata items, bytes memory) external {
+    function dotNuggUpload(uint256[][] calldata items, bytes memory) external override {
         dotnugg_storage.addItems(items);
 
         ItemLib.mint(item_storage, dotnugg_storage, 0, uint256(blockhash(block.number - 1)));
