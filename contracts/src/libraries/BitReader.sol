@@ -2,12 +2,10 @@
 
 pragma solidity 0.8.4;
 
-import '../libraries/Bytes.sol';
-import '../interfaces/IDotNugg.sol';
 import '../libraries/ShiftLib.sol';
 import '../../test/Event.sol';
 
-library BitReaderType {
+library BitReader {
     using ShiftLib for uint256;
     using Event for uint256;
 
@@ -23,6 +21,7 @@ library BitReaderType {
         input.length.log('input.length');
 
         m.dat = new uint256[](input[0]);
+        console.log('m.data.length', m.dat.length, input[0]);
         for (uint256 i = 1; i < input[0] + 1; i++) {
             input[i].log('input[i]');
             m.dat[input[0] - i] = input[i];
@@ -30,7 +29,7 @@ library BitReaderType {
         }
     }
 
-    function peek(Memory memory m, uint256 bits) internal view returns (uint256 res) {
+    function peek(Memory memory m, uint256 bits) internal pure returns (uint256 res) {
         res = m.dat[0] & ShiftLib.mask(bits);
     }
 

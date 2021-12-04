@@ -10,6 +10,7 @@ import '../../src/interfaces/IDotNugg.sol';
 library DotNuggLib {
     using ItemType for uint256;
     using LengthType for uint256;
+    using Event for uint256;
 
     struct Storage {
         uint256[] collection;
@@ -67,9 +68,8 @@ library DotNuggLib {
 
         for (uint256 i = 0; i < data.length; i++) {
             uint256 itemType = (data[i][data[i].length - 1] >> 32) & 0x7;
-            console.log('type:', itemType);
+            // console.log('type:', itemType);
             uint256 len = lengths.length(itemType);
-            console.log('len:', len);
 
             uint256 itemtypebytes = uint256(itemType) << 96;
             uint256 check = uint256(data[i][0]);
@@ -90,19 +90,18 @@ library DotNuggLib {
         uint8 itemType,
         uint256 id
     ) internal view returns (uint256[] memory data) {
+        console.log('here', id);
+
         data = new uint256[](10);
         data[1] = s.items[(uint256(itemType) << 96) | id];
-        uint256 tmp = data[0];
+        uint256 tmp = data[1];
         uint256 check = uint256(tmp);
         assembly {
             check := and(check, not(0xff))
         }
         uint256 i;
-        // res = abi.encodePacked(tmp);
-        for (i = 1; (tmp = s.items[(check) | i]) != 0; i++) {
-            // res = abi.encodePacked(res, tmp);
-            console.log(tmp);
 
+        for (i = 1; (tmp = s.items[(check) | i]) != 0; i++) {
             data[i + 1] = tmp;
         }
         data[0] = i;
