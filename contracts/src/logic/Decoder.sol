@@ -85,9 +85,9 @@ library Decoder {
 
     function parseItem(uint256[] memory data) internal view returns (ItemType.Memory memory res) {
         BitReaderType.Memory memory reader = BitReaderType.init(data);
-        uint256 check = reader.select(4);
+        uint256 check = reader.select(32);
         check.log('chekkkkkkk');
-        require(check == 0x4e554747);
+        require(check == 0x4e554747, 'DEC:PI:0');
     }
 
     // ┌───────────────────────────────────────────────────────────────────┐

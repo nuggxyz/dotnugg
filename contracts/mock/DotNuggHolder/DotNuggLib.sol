@@ -41,7 +41,7 @@ library DotNuggLib {
         address resolver
     ) internal view returns (string memory) {
         uint256 item_memory = item_storage.tokenData[tokenId];
-        uint256[][] memory data = new uint256[][](6);
+        uint256[][] memory data = new uint256[][](3);
 
         data[0] = loadItem(s, 0, item_memory.base());
         data[1] = loadItem(s, 1, item_memory.item(1, 0));
@@ -91,19 +91,20 @@ library DotNuggLib {
         uint256 id
     ) internal view returns (uint256[] memory data) {
         data = new uint256[](10);
-        data[0] = s.items[(uint256(itemType) << 96) | id];
+        data[1] = s.items[(uint256(itemType) << 96) | id];
         uint256 tmp = data[0];
         uint256 check = uint256(tmp);
         assembly {
             check := and(check, not(0xff))
         }
-
+        uint256 i;
         // res = abi.encodePacked(tmp);
-        for (uint256 i = 1; (tmp = s.items[(check) | i]) != 0; i++) {
+        for (i = 1; (tmp = s.items[(check) | i]) != 0; i++) {
             // res = abi.encodePacked(res, tmp);
             console.log(tmp);
 
-            data[i] = tmp;
+            data[i + 1] = tmp;
         }
+        data[0] = i;
     }
 }
