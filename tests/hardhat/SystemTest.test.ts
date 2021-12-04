@@ -1,12 +1,11 @@
 import { ethers, waffle } from 'hardhat';
-
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/dist/src/signers';
 
 import { NamedAccounts } from '../../hardhat.config';
 
-import { deployContract, prepareAccounts } from './';
-import { bashit } from './shared/groups';
 import { NuggFatherFix, NuggFatherFixture } from './lib/fixtures/NuggFather.fix';
+
+import { prepareAccounts } from './';
 
 // import { getHRE } from './shared/deployment';
 const createFixtureLoader = waffle.createFixtureLoader;

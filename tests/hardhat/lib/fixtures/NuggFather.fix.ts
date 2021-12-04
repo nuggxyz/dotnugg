@@ -40,7 +40,7 @@ export const NuggFatherFix: Fixture<NuggFatherFixture> = async function (
         factory: 'DotNugg',
         from: eoaDeployer,
         args: [],
-    });
+    }); 
 
     const svgResolver = await deployContractWithSalt<SvgFileResolver__factory>({
         factory: 'SvgFileResolver',
