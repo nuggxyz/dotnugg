@@ -15,14 +15,11 @@ contract VersionTest_getWidth is DSTest {
     }
 
     function test_getWidth_b() public {
-        // Version.Memory memory m;
-        // m.pallet = new uint256[](2);
-        // m.pallet[0] = pallet;
-        // m.pallet[1] = pallet;
-        // uint256 pallet = 0x00000000005616134e55636336e55666662e55666639e55666639e55656538e5;
-        // (uint256 res, uint256 color, uint256 z) = Version.getWidth(m, 10);
-        // assertEq(res, 0x5666662e5, 'res');
-        // assertEq(color, 0x666662e5, 'color');
-        // assertEq(z, 0x5, 'z');
+        Version.Memory memory m;
+        m.data = 0x0000000000000000000000000000000000000000000009658231248000c30000;
+
+        (uint256 width, uint256 height) = Version.getWidth(m);
+        assertEq(width, 11, 'width');
+        assertEq(height, 11, 'height');
     }
 }
