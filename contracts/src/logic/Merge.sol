@@ -5,7 +5,7 @@ import '../types/Version.sol';
 library Merge {
     using Version for Version.Memory;
 
-    function begin(Version.Memory[][] memory versions) internal pure returns (Version.Memory memory res) {
+    function begin(Version.Memory[][] memory versions) internal view returns (Version.Memory memory res) {
         // figure out the order  - loop theorugh them "backwards" pixel by pixel, we can reduce the amount of times we have to loop through everything
 
         // finalize receivers
@@ -21,10 +21,10 @@ library Merge {
 
         // calculate offset, sort values values by z, and determine if we need to
         // going deeper as far as a color is conserned is only doable when we are looping thorough
-        for (uint256 i = 0; i < versions.length; i++) {
-            (uint256 x, uint256 y, uint256 z, ) = versions[i][0].getAnchor();
-            //
-        }
+        // for (uint256 i = 0; i < versions.length; i++) {
+        //     (uint256 x, uint256 y, uint256 z, ) = versions[i][0].getAnchor();
+        //     //
+        // }
 
         // TODO decide if we want to use multiple versions, and then what to do about it
 

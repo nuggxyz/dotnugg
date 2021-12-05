@@ -110,7 +110,7 @@ library Version {
     ) internal view returns (uint256[] memory res) {
         uint256 groupsLength = reader.select(1) == 0x1 ? reader.select(8) + 1 : reader.select(16) + 1;
 
-        res = new uint256[]((height * width) / 64);
+        res = new uint256[]((height * width) / 64 + 1);
 
         uint256 index = 0;
 
@@ -134,7 +134,7 @@ library Version {
         bool calculated
     )
         internal
-        pure
+        view
         returns (
             uint256 data,
             uint256 x,
@@ -149,7 +149,7 @@ library Version {
         x = data & ShiftLib.mask(6);
         y = data >> 6;
 
-        (, , zindex) = getPixelAt(m, x, y);
+        (, , zindex) = getPalletColorAt(m, getPixelAt(m, x, y));
     }
 
     function setReceiverAt(
@@ -158,7 +158,7 @@ library Version {
         bool calculated,
         uint256 x,
         uint256 y
-    ) internal pure returns (uint256 res) {
+    ) internal view returns (uint256 res) {
         // yOrYOffset
         res |= y << 6;
 
@@ -168,31 +168,27 @@ library Version {
         m.receivers |= res << ((index * 8) + (calculated ? 128 : 0));
     }
 
-    function getWidth(Memory memory m) internal pure returns (uint256 width, uint256 height) {
+    function getWidth(Memory memory m) internal view returns (uint256 width, uint256 height) {
         // yOrYOffset
         width = (m.data >> 63) & ShiftLib.mask(6);
         height = (m.data >> 69) & ShiftLib.mask(6);
+    }
+
+    function getAnchor(Memory memory m) internal view returns (uint256 x, uint256 y) {
+        // yOrYOffset
+        x = (m.data >> 51) & ShiftLib.mask(6);
+        y = (m.data >> 57) & ShiftLib.mask(6);
     }
 
     function getPixelAt(
         Memory memory m,
         uint256 x,
         uint256 y
-    )
-        internal
-        pure
-        returns (
-            uint256 palletKey,
-            uint256 color,
-            uint256 zindex
-        )
-    {
-        (uint256 width, ) = getWidth(m);
-        uint256 index = x + y * width;
-
+    ) internal view returns (uint256 palletKey) {
+        (uint256 width, uint256 height) = getWidth(m);
+        uint256 index = x + (y * width);
+        width.log('width', height, 'height', index, 'index');
         palletKey = (m.minimatrix[index / 64] >> (4 * (index % 64))) & 0xf;
-
-        (, color, zindex) = getPalletColorAt(m, palletKey);
     }
 
     function getPalletColorAt(Memory memory m, uint256 index)
@@ -211,23 +207,7 @@ library Version {
         zindex = (res >> 32) & 0xf;
     }
 
-    function getAnchor(Memory memory m)
-        internal
-        pure
-        returns (
-            uint256 x,
-            uint256 y,
-            uint256 zindex,
-            uint256 color
-        )
-    {
-        uint256 anchor = (m.data >> 51) & ShiftLib.mask(12);
-        x = anchor & ShiftLib.mask(6);
-        y = anchor >> 6;
-        (, color, zindex) = getPixelAt(m, x, y);
-    }
-
-    function getDiffFromReceiverAt(Memory memory m, uint256 receiverIndex) internal pure returns (uint256 diffX, uint256 diffY) {
+    function getDiffFromReceiverAt(Memory memory m, uint256 receiverIndex) internal view returns (uint256 diffX, uint256 diffY) {
         (, uint256 recX, uint256 recY, ) = getReceiverAt(m, receiverIndex, false);
     }
 }
