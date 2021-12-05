@@ -11,6 +11,11 @@ library Merge {
     function begin(Version.Memory[][] memory versions, uint256 width) internal view returns (Version.Memory memory res) {
         // figure out the order  - loop theorugh them "backwards" pixel by pixel, we can reduce the amount of times we have to loop through everything
 
+        for (uint256 i = 0; i < 8; i++) {
+            uint256 num = width / 2 + 1;
+            res.setReceiverAt(i, false, num, num);
+        }
+
         uint256 sorter;
         uint256 zcheck;
         // TODO flip these loops - will be able to set receivers here
@@ -39,6 +44,10 @@ library Merge {
 
         for (uint256 i = 0; i < versions.length; i++) {
             (bool negX, uint256 diffX, bool negY, uint256 diffY) = res.getDiffOfReceiverAt(versions[i][0]);
+            // negX.log('negX', diffX, 'diffX', i, 'i');
+            // negY.log('negY', diffY, 'diffY', i, 'i');
+            diffX.log('diffX');
+            diffX.log('diffY');
 
             versions[i][0].setOffset(negX, diffX, negY, diffY);
         }
@@ -49,9 +58,10 @@ library Merge {
             uint256 workingColor;
 
             for (uint256 j = 0; j < versions.length; j++) {
-                (bool exists1, uint256 feature, ) = selectFromSorter(sorter, j);
+                // sorter.log('sorter', i, 'i', j, 'j');
+                (bool exists1, uint256 feature, ) = getFromSorter(sorter, j);
                 if (!exists1) break;
-
+                // if (i > 200) assert(false);
                 (bool exists2, uint256 key) = versions[feature][0].getPixelAtPositionWithOffset(i);
                 if (!exists2) continue;
 
@@ -62,13 +72,14 @@ library Merge {
                 }
 
                 workingColor = color;
-
-                if (color & 0xff == 0xff) break;
+                // workingColor.log('workingColor', feature, 'feature', key, 'key');
+                if (workingColor & 0xff == 0xff) break;
 
                 continue;
             }
 
             res.setBigMatrixPixelAt(i, workingColor);
+            // assert(false);
         }
 
         res.bigmatrix.log('bigmatrix');
@@ -100,7 +111,7 @@ library Merge {
         // for (uint256 )
     }
 
-    function selectFromSorter(uint256 input, uint256 index)
+    function getFromSorter(uint256 input, uint256 index)
         internal
         pure
         returns (
@@ -111,7 +122,7 @@ library Merge {
     {
         uint256 curr = (input >> (index * 9)) & ShiftLib.mask(9);
 
-        exists = (curr >> 8) == 0x1;
+        exists = (curr >> 8) & 0x1 == 0x1;
 
         if (exists) {
             feature = (curr >> 4) & 0xf;
@@ -123,12 +134,12 @@ library Merge {
         uint256 input,
         uint256 inFeature,
         uint256 inZ
-    ) internal pure returns (uint256 res) {
+    ) internal view returns (uint256 res) {
         res = input;
         // 1 bit exists
         // 4 bit feature
         // 4 bit z
-
+        // console.log('add to sort', input, inFeature, inZ);
         uint256 i;
         for (i = 0; i < 8; i++) {
             uint256 curr = (res >> (i * 9)) & ShiftLib.mask(9);
@@ -137,7 +148,7 @@ library Merge {
                 uint256 z = curr & 0xf;
 
                 if (z <= inZ) {
-                    res = ((res << 9) & ~ShiftLib.mask(9 * i)) | (input & ShiftLib.mask(9 * i));
+                    res = ((res << 9) & ~ShiftLib.mask(9 * i)) | (input & ShiftLib.mask(9 * (i)));
                     res |= ((0x1 << 8) | (inFeature << 4) | inZ) << (9 * i);
 
                     break;
@@ -147,5 +158,7 @@ library Merge {
                 break;
             }
         }
+
+        // console.log('add to sort end', res);
     }
 }

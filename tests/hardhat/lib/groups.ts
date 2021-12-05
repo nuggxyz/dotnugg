@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+import { ethers, BigNumber } from 'ethers';
 
 // const Box = '⬆︎';
 const Box7 = '░';
@@ -141,4 +141,31 @@ export const bashit = (input: string, width: number, height: number) => {
     output.forEach((x) => {
         console.log(x);
     });
+};
+
+export const bashit2 = (input: BigNumber[], width: number, height: number): string[] => {
+    const res: string[] = [];
+    res.push(CreateNumberedRow(width));
+    let index = 0;
+    const mapper = {};
+    for (let y = 0; y < height; y++) {
+        let tmp = '';
+        for (let x = 0; x < width; x++) {
+            const color = input[Math.floor(index / 8)].shr(32 * (index % 8)).and(0xffffffff)._hex;
+            if (!mapper[color]) mapper[color] = colorLookup[Object.keys(mapper).length];
+            tmp += mapper[color] + mapper[color];
+            index++;
+            if (x + 1 < width) {
+                tmp += ' ';
+            }
+            //add the color to the map if
+        }
+        res.push(y.toString().padEnd(2) + ' ' + tmp + ' ' + y.toString().padStart(2));
+    }
+    res.push(CreateNumberedRow(width));
+
+    res.forEach((x) => {
+        console.log(x);
+    });
+    return res;
 };
