@@ -49,7 +49,7 @@ contract DSTest {
         _;
     }
 
-    function fail() internal view {
+    function fail() internal {
         failed = true;
     }
 
@@ -60,14 +60,14 @@ contract DSTest {
         emit log_named_uint('gas', startGas - endGas);
     }
 
-    function assertTrue(bool condition) internal view {
+    function assertTrue(bool condition) internal {
         if (!condition) {
             emit log('Error: Assertion Failed');
             fail();
         }
     }
 
-    function assertTrue(bool condition, string memory err) internal view {
+    function assertTrue(bool condition, string memory err) internal {
         if (!condition) {
             emit log_named_string('Error', err);
             assertTrue(condition);
@@ -76,7 +76,7 @@ contract DSTest {
 
     // IDOTNUGG EQ ASSERTS
 
-    // function assertEq(IDotNugg.Matrix memory m1, IDotNugg.Matrix memory m2) internal view {
+    // function assertEq(IDotNugg.Matrix memory m1, IDotNugg.Matrix memory m2) internal  {
     //     if (m1.init != m2.init
     //     || m1.width != m2.width
     //     || m1.currentUnsetX != m2.currentUnsetX
@@ -94,7 +94,7 @@ contract DSTest {
     //     }
     // }
 
-    // function assertEq(IDotNugg.Pixel memory p1, IDotNugg.Pixel memory p2) internal view {
+    // function assertEq(IDotNugg.Pixel memory p1, IDotNugg.Pixel memory p2) internal  {
     //     assertEq(p1.rgba, p2.rgba);
     //     if (p1.zindex != p2.zindex
     //     || p1.exists != p2.exists) {
@@ -103,7 +103,7 @@ contract DSTest {
     //     }
     // }
 
-    // function assertEq(IDotNugg.Rgba memory r1, IDotNugg.Rgba memory r2) internal view {
+    // function assertEq(IDotNugg.Rgba memory r1, IDotNugg.Rgba memory r2) internal  {
     //     if (r1.r != r2.r
     //     || r1.g != r2.g
     //     || r1.b != r2.b
@@ -113,7 +113,7 @@ contract DSTest {
     //     }
     // }
 
-    // function assertEq(IDotNugg.Rlud memory r1, IDotNugg.Rlud memory r2) internal view {
+    // function assertEq(IDotNugg.Rlud memory r1, IDotNugg.Rlud memory r2) internal  {
     //     if (r1.r != r2.r
     //     || r1.l != r2.l
     //     || r1.u != r2.u
@@ -123,7 +123,7 @@ contract DSTest {
     //     }
     // }
 
-    // function assertEq(IDotNugg.Coordinate memory c1, IDotNugg.Coordinate memory c2) internal view {
+    // function assertEq(IDotNugg.Coordinate memory c1, IDotNugg.Coordinate memory c2) internal  {
     //     if (c1.a != c2.a
     //     || c1.b != c2.b) {
     //         emit log("Coordinates are not equal");
@@ -131,12 +131,12 @@ contract DSTest {
     //     }
     // }
 
-    // function assertEq(IDotNugg.Anchor memory a1, IDotNugg.Anchor memory a2) internal view {
+    // function assertEq(IDotNugg.Anchor memory a1, IDotNugg.Anchor memory a2) internal  {
     //     assertEq(a1.coordinate, a2.coordinate);
     //     assertEq(a1.radii, a2.radii);
     // }
 
-    // function assertEq(IDotNugg.Version memory v1, IDotNugg.Version memory v2) internal view {
+    // function assertEq(IDotNugg.Version memory v1, IDotNugg.Version memory v2) internal  {
     //     if (v1.width != v2.width
     //     || v1.calculatedReceivers.length != v2.calculatedReceivers.length
     //     || v1.staticReceivers.length != v2.staticReceivers.length
@@ -171,7 +171,7 @@ contract DSTest {
     // // │                                                 │
     // // └─────────────────────────────────────────────────┘
 
-    //     function assertEq(IDotNugg.Canvas memory c1, IDotNugg.Canvas memory c2) internal view {
+    //     function assertEq(IDotNugg.Canvas memory c1, IDotNugg.Canvas memory c2) internal  {
     //         if (c1.receivers.length != c2.receivers.length) {
     //             emit log("Canvases are not equal");
     //             fail();
@@ -182,7 +182,7 @@ contract DSTest {
     //         }
     //     }
 
-    //     function assertEq(IDotNugg.Mix memory m1, IDotNugg.Mix memory m2) internal view {
+    //     function assertEq(IDotNugg.Mix memory m1, IDotNugg.Mix memory m2) internal  {
     //         if (m1.feature != m2.feature) {
     //             emit log("Mixes are not equal");
     //             fail();
@@ -191,7 +191,7 @@ contract DSTest {
     //         assertEq(m1.matrix, m2.matrix);
     //     }
 
-    //     function assertEq(IDotNugg.Item memory i1, IDotNugg.Item memory i2) internal view {
+    //     function assertEq(IDotNugg.Item memory i1, IDotNugg.Item memory i2) internal  {
     //         if (i1.feature != i2.feature
     //         || i1.pallet.length != i2.pallet.length
     //         || i1.versions.length != i2.versions.length) {
@@ -206,7 +206,7 @@ contract DSTest {
     //         }
     //     }
 
-    //     function assertEq(IDotNugg.Collection memory c1, IDotNugg.Collection memory c2) internal view {
+    //     function assertEq(IDotNugg.Collection memory c1, IDotNugg.Collection memory c2) internal  {
     //         if (c1.width != c2.width
     //         || c1.height != c2.height
     //         || c1.numFeatures != c2.numFeatures
@@ -218,7 +218,7 @@ contract DSTest {
     //             assertEq(c1.defaults[i], c2.defaults[i]);
     //         }
     //     }
-    function assertEq(address a, address b) internal view {
+    function assertEq(address a, address b) internal {
         if (a != b) {
             emit log('Error: a == b not satisfied [address]');
             emit log_named_address('  Expected', b);
@@ -231,14 +231,14 @@ contract DSTest {
         address a,
         address b,
         string memory err
-    ) internal view {
+    ) internal {
         if (a != b) {
             emit log_named_string('Error', err);
             assertEq(a, b);
         }
     }
 
-    function assertEq(bytes32 a, bytes32 b) internal view {
+    function assertEq(bytes32 a, bytes32 b) internal {
         if (a != b) {
             emit log('Error: a == b not satisfied [bytes32]');
             emit log_named_bytes32('  Expected', b);
@@ -247,7 +247,7 @@ contract DSTest {
         }
     }
 
-    function assertEq(bytes memory a, bytes memory b) internal view {
+    function assertEq(bytes memory a, bytes memory b) internal {
         if (a.length != b.length) {
             emit log('Error: a == b not satisfied [bytes]');
             fail();
@@ -261,14 +261,14 @@ contract DSTest {
         bytes32 a,
         bytes32 b,
         string memory err
-    ) internal view {
+    ) internal {
         if (a != b) {
             emit log_named_string('Error', err);
             assertEq(a, b);
         }
     }
 
-    function assertEq32(bytes32 a, bytes32 b) internal view {
+    function assertEq32(bytes32 a, bytes32 b) internal {
         assertEq(a, b);
     }
 
@@ -276,11 +276,11 @@ contract DSTest {
         bytes32 a,
         bytes32 b,
         string memory err
-    ) internal view {
+    ) internal {
         assertEq(a, b, err);
     }
 
-    function assertEq(int256 a, int256 b) internal view {
+    function assertEq(int256 a, int256 b) internal {
         if (a != b) {
             emit log('Error: a == b not satisfied [int]');
             emit log_named_int('  Expected', b);
@@ -293,14 +293,14 @@ contract DSTest {
         int256 a,
         int256 b,
         string memory err
-    ) internal view {
+    ) internal {
         if (a != b) {
             emit log_named_string('Error', err);
             assertEq(a, b);
         }
     }
 
-    function assertEq(uint256 a, uint256 b) internal view {
+    function assertEq(uint256 a, uint256 b) internal {
         if (a != b) {
             emit log('Error: a == b not satisfied [uint]');
             emit log_named_uint('  Expected', b);
@@ -313,7 +313,7 @@ contract DSTest {
         uint256 a,
         uint256 b,
         string memory err
-    ) internal view {
+    ) internal {
         if (a != b) {
             emit log_named_string('Error', err);
             assertEq(a, b);
@@ -324,7 +324,7 @@ contract DSTest {
         int256 a,
         int256 b,
         uint256 decimals
-    ) internal view {
+    ) internal {
         if (a != b) {
             emit log('Error: a == b not satisfied [decimal int]');
             emit log_named_decimal_int('  Expected', b, decimals);
@@ -338,7 +338,7 @@ contract DSTest {
         int256 b,
         uint256 decimals,
         string memory err
-    ) internal view {
+    ) internal {
         if (a != b) {
             emit log_named_string('Error', err);
             assertEqDecimal(a, b, decimals);
@@ -349,7 +349,7 @@ contract DSTest {
         uint256 a,
         uint256 b,
         uint256 decimals
-    ) internal view {
+    ) internal {
         if (a != b) {
             emit log('Error: a == b not satisfied [decimal uint]');
             emit log_named_decimal_uint('  Expected', b, decimals);
@@ -363,14 +363,14 @@ contract DSTest {
         uint256 b,
         uint256 decimals,
         string memory err
-    ) internal view {
+    ) internal {
         if (a != b) {
             emit log_named_string('Error', err);
             assertEqDecimal(a, b, decimals);
         }
     }
 
-    function assertGt(uint256 a, uint256 b) internal view {
+    function assertGt(uint256 a, uint256 b) internal {
         if (a <= b) {
             emit log('Error: a > b not satisfied [uint]');
             emit log_named_uint('  Value a', a);
@@ -383,14 +383,14 @@ contract DSTest {
         uint256 a,
         uint256 b,
         string memory err
-    ) internal view {
+    ) internal {
         if (a <= b) {
             emit log_named_string('Error', err);
             assertGt(a, b);
         }
     }
 
-    function assertGt(int256 a, int256 b) internal view {
+    function assertGt(int256 a, int256 b) internal {
         if (a <= b) {
             emit log('Error: a > b not satisfied [int]');
             emit log_named_int('  Value a', a);
@@ -403,7 +403,7 @@ contract DSTest {
         int256 a,
         int256 b,
         string memory err
-    ) internal view {
+    ) internal {
         if (a <= b) {
             emit log_named_string('Error', err);
             assertGt(a, b);
@@ -414,7 +414,7 @@ contract DSTest {
         int256 a,
         int256 b,
         uint256 decimals
-    ) internal view {
+    ) internal {
         if (a <= b) {
             emit log('Error: a > b not satisfied [decimal int]');
             emit log_named_decimal_int('  Value a', a, decimals);
@@ -428,7 +428,7 @@ contract DSTest {
         int256 b,
         uint256 decimals,
         string memory err
-    ) internal view {
+    ) internal {
         if (a <= b) {
             emit log_named_string('Error', err);
             assertGtDecimal(a, b, decimals);
@@ -439,7 +439,7 @@ contract DSTest {
         uint256 a,
         uint256 b,
         uint256 decimals
-    ) internal view {
+    ) internal {
         if (a <= b) {
             emit log('Error: a > b not satisfied [decimal uint]');
             emit log_named_decimal_uint('  Value a', a, decimals);
@@ -453,14 +453,14 @@ contract DSTest {
         uint256 b,
         uint256 decimals,
         string memory err
-    ) internal view {
+    ) internal {
         if (a <= b) {
             emit log_named_string('Error', err);
             assertGtDecimal(a, b, decimals);
         }
     }
 
-    function assertGe(uint256 a, uint256 b) internal view {
+    function assertGe(uint256 a, uint256 b) internal {
         if (a < b) {
             emit log('Error: a >= b not satisfied [uint]');
             emit log_named_uint('  Value a', a);
@@ -473,14 +473,14 @@ contract DSTest {
         uint256 a,
         uint256 b,
         string memory err
-    ) internal view {
+    ) internal {
         if (a < b) {
             emit log_named_string('Error', err);
             assertGe(a, b);
         }
     }
 
-    function assertGe(int256 a, int256 b) internal view {
+    function assertGe(int256 a, int256 b) internal {
         if (a < b) {
             emit log('Error: a >= b not satisfied [int]');
             emit log_named_int('  Value a', a);
@@ -493,7 +493,7 @@ contract DSTest {
         int256 a,
         int256 b,
         string memory err
-    ) internal view {
+    ) internal {
         if (a < b) {
             emit log_named_string('Error', err);
             assertGe(a, b);
@@ -504,7 +504,7 @@ contract DSTest {
         int256 a,
         int256 b,
         uint256 decimals
-    ) internal view {
+    ) internal {
         if (a < b) {
             emit log('Error: a >= b not satisfied [decimal int]');
             emit log_named_decimal_int('  Value a', a, decimals);
@@ -518,7 +518,7 @@ contract DSTest {
         int256 b,
         uint256 decimals,
         string memory err
-    ) internal view {
+    ) internal {
         if (a < b) {
             emit log_named_string('Error', err);
             assertGeDecimal(a, b, decimals);
@@ -529,7 +529,7 @@ contract DSTest {
         uint256 a,
         uint256 b,
         uint256 decimals
-    ) internal view {
+    ) internal {
         if (a < b) {
             emit log('Error: a >= b not satisfied [decimal uint]');
             emit log_named_decimal_uint('  Value a', a, decimals);
@@ -543,14 +543,14 @@ contract DSTest {
         uint256 b,
         uint256 decimals,
         string memory err
-    ) internal view {
+    ) internal {
         if (a < b) {
             emit log_named_string('Error', err);
             assertGeDecimal(a, b, decimals);
         }
     }
 
-    function assertLt(uint256 a, uint256 b) internal view {
+    function assertLt(uint256 a, uint256 b) internal {
         if (a >= b) {
             emit log('Error: a < b not satisfied [uint]');
             emit log_named_uint('  Value a', a);
@@ -563,14 +563,14 @@ contract DSTest {
         uint256 a,
         uint256 b,
         string memory err
-    ) internal view {
+    ) internal {
         if (a >= b) {
             emit log_named_string('Error', err);
             assertLt(a, b);
         }
     }
 
-    function assertLt(int256 a, int256 b) internal view {
+    function assertLt(int256 a, int256 b) internal {
         if (a >= b) {
             emit log('Error: a < b not satisfied [int]');
             emit log_named_int('  Value a', a);
@@ -583,7 +583,7 @@ contract DSTest {
         int256 a,
         int256 b,
         string memory err
-    ) internal view {
+    ) internal {
         if (a >= b) {
             emit log_named_string('Error', err);
             assertLt(a, b);
@@ -594,7 +594,7 @@ contract DSTest {
         int256 a,
         int256 b,
         uint256 decimals
-    ) internal view {
+    ) internal {
         if (a >= b) {
             emit log('Error: a < b not satisfied [decimal int]');
             emit log_named_decimal_int('  Value a', a, decimals);
@@ -608,7 +608,7 @@ contract DSTest {
         int256 b,
         uint256 decimals,
         string memory err
-    ) internal view {
+    ) internal {
         if (a >= b) {
             emit log_named_string('Error', err);
             assertLtDecimal(a, b, decimals);
@@ -619,7 +619,7 @@ contract DSTest {
         uint256 a,
         uint256 b,
         uint256 decimals
-    ) internal view {
+    ) internal {
         if (a >= b) {
             emit log('Error: a < b not satisfied [decimal uint]');
             emit log_named_decimal_uint('  Value a', a, decimals);
@@ -633,14 +633,14 @@ contract DSTest {
         uint256 b,
         uint256 decimals,
         string memory err
-    ) internal view {
+    ) internal {
         if (a >= b) {
             emit log_named_string('Error', err);
             assertLtDecimal(a, b, decimals);
         }
     }
 
-    function assertLe(uint256 a, uint256 b) internal view {
+    function assertLe(uint256 a, uint256 b) internal {
         if (a > b) {
             emit log('Error: a <= b not satisfied [uint]');
             emit log_named_uint('  Value a', a);
@@ -653,14 +653,14 @@ contract DSTest {
         uint256 a,
         uint256 b,
         string memory err
-    ) internal view {
+    ) internal {
         if (a > b) {
             emit log_named_string('Error', err);
             assertLe(a, b);
         }
     }
 
-    function assertLe(int256 a, int256 b) internal view {
+    function assertLe(int256 a, int256 b) internal {
         if (a > b) {
             emit log('Error: a <= b not satisfied [int]');
             emit log_named_int('  Value a', a);
@@ -673,7 +673,7 @@ contract DSTest {
         int256 a,
         int256 b,
         string memory err
-    ) internal view {
+    ) internal {
         if (a > b) {
             emit log_named_string('Error', err);
             assertLe(a, b);
@@ -684,7 +684,7 @@ contract DSTest {
         int256 a,
         int256 b,
         uint256 decimals
-    ) internal view {
+    ) internal {
         if (a > b) {
             emit log('Error: a <= b not satisfied [decimal int]');
             emit log_named_decimal_int('  Value a', a, decimals);
@@ -698,7 +698,7 @@ contract DSTest {
         int256 b,
         uint256 decimals,
         string memory err
-    ) internal view {
+    ) internal {
         if (a > b) {
             emit log_named_string('Error', err);
             assertLeDecimal(a, b, decimals);
@@ -709,7 +709,7 @@ contract DSTest {
         uint256 a,
         uint256 b,
         uint256 decimals
-    ) internal view {
+    ) internal {
         if (a > b) {
             emit log('Error: a <= b not satisfied [decimal uint]');
             emit log_named_decimal_uint('  Value a', a, decimals);
@@ -723,14 +723,14 @@ contract DSTest {
         uint256 b,
         uint256 decimals,
         string memory err
-    ) internal view {
+    ) internal {
         if (a > b) {
             emit log_named_string('Error', err);
             assertGeDecimal(a, b, decimals);
         }
     }
 
-    function assertEq(string memory a, string memory b) internal view {
+    function assertEq(string memory a, string memory b) internal {
         if (keccak256(abi.encodePacked(a)) != keccak256(abi.encodePacked(b))) {
             emit log('Error: a == b not satisfied [string]');
             emit log_named_string('  Value a', a);
@@ -743,7 +743,7 @@ contract DSTest {
         string memory a,
         string memory b,
         string memory err
-    ) internal view {
+    ) internal {
         if (keccak256(abi.encodePacked(a)) != keccak256(abi.encodePacked(b))) {
             emit log_named_string('Error', err);
             assertEq(a, b);
@@ -763,7 +763,7 @@ contract DSTest {
         }
     }
 
-    function assertEq0(bytes memory a, bytes memory b) internal view {
+    function assertEq0(bytes memory a, bytes memory b) internal {
         if (!checkEq0(a, b)) {
             emit log('Error: a == b not satisfied [bytes]');
             emit log_named_bytes('  Expected', a);
@@ -776,7 +776,7 @@ contract DSTest {
         bytes memory a,
         bytes memory b,
         string memory err
-    ) internal view {
+    ) internal {
         if (!checkEq0(a, b)) {
             emit log_named_string('Error', err);
             assertEq0(a, b);

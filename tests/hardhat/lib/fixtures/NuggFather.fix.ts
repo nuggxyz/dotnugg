@@ -1,11 +1,9 @@
 import { Fixture, MockProvider } from 'ethereum-waffle';
-import { ethers } from 'hardhat';
-import { BigNumber, Wallet, Contract, BigNumberish } from 'ethers';
+import { BigNumber, Wallet } from 'ethers';
+import { HardhatRuntimeEnvironment } from 'hardhat/types';
 
 import { getHRE } from '../shared/deployment';
 import { deployContractWithSalt } from '../shared';
-
-import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { MockDotNuggHolder } from '../../../../typechain/MockDotNuggHolder';
 import { MockDotNuggHolder__factory } from '../../../../typechain/factories/MockDotNuggHolder__factory';
 import { DotNugg } from '../../../../typechain/DotNugg';
@@ -40,7 +38,7 @@ export const NuggFatherFix: Fixture<NuggFatherFixture> = async function (
         factory: 'DotNugg',
         from: eoaDeployer,
         args: [],
-    }); 
+    });
 
     const svgResolver = await deployContractWithSalt<SvgFileResolver__factory>({
         factory: 'SvgFileResolver',
