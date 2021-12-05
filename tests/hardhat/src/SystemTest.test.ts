@@ -1,9 +1,8 @@
 import { ethers, waffle } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/dist/src/signers';
 
-import { NamedAccounts } from '../../hardhat.config';
-
-import { NuggFatherFix, NuggFatherFixture } from './lib/fixtures/NuggFather.fix';
+import { NamedAccounts } from '../../../hardhat.config';
+import { NuggFatherFix, NuggFatherFixture } from '../lib/fixtures/NuggFather.fix';
 
 import { prepareAccounts } from './';
 

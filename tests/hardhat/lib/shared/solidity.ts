@@ -1,5 +1,4 @@
 import { getAddress } from '@ethersproject/address';
-import { ethers } from 'hardhat';
 
 /**
  * Validates an address and returns the parsed (checksummed) version of that address

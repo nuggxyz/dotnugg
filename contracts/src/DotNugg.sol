@@ -6,6 +6,7 @@ import './libraries/Base64.sol';
 import './libraries/Uint.sol';
 
 import './types/Version.sol';
+import './logic/Merge.sol';
 
 import './interfaces/IDotNugg.sol';
 import './interfaces/IResolver.sol';
@@ -34,6 +35,8 @@ contract DotNugg is IDotNugg {
         IColorResolver colorResolver = IColorResolver(_resolver);
 
         Version.Memory[][] memory versions = Version.parse(_items);
+
+        Merge.begin(versions);
 
         // MatrixType.Memory memory matrix = Calculator.combine(featureLen, width, _items);
 

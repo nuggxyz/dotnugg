@@ -78,7 +78,7 @@ function DecodeBytesToGroups(data: Uint8Array): Group[] {
     // if len(data) != 1 {
     // 	log.Fatal("trying to decode row not of length 2" + string(data))
     // }
-    let res: Group[] = [];
+    const res: Group[] = [];
     for (let i = 0; i < data.length; i += 2) {
         res.push(DecodeByteToGroup(data[i], data[i + 1]));
     }
@@ -90,7 +90,7 @@ function toUint4(c: number): [number, number] {
 }
 
 function EncodeToText(arr: Group[], width: number, height: number): string[] {
-    let res: string[] = [];
+    const res: string[] = [];
     let i = 0;
 
     res.push(CreateNumberedRow(width));
@@ -126,7 +126,7 @@ function EncodeToText(arr: Group[], width: number, height: number): string[] {
 
 function CreateNumberedRow(num: number): string {
     let res = '   ';
-    for (var i = 0; i < num; i++) {
+    for (let i = 0; i < num; i++) {
         res += (i % 10).toString() + '  ';
     }
     return res;
