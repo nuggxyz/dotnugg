@@ -10,6 +10,7 @@ library Version {
     struct Memory {
         uint256[] pallet;
         uint256[] minimatrix;
+        uint256[] bigmatrix;
         uint256 receivers;
         uint256 data;
     }
@@ -34,13 +35,18 @@ library Version {
             for (uint256 i = 0; i < versionLength; i++) {
                 m[j][i].data = parseData(reader, feature);
 
-                m[j][i].data.log('m[j][i].data');
                 m[j][i].receivers = parseReceivers(reader);
 
                 (uint256 width, uint256 height) = getWidth(m[j][i]);
 
                 m[j][i].minimatrix = parseMiniMatrix(reader, width, height);
+
                 m[j][i].pallet = pallet;
+
+                (uint256 ancX, uint256 ancY) = getAnchor(m[j][i]);
+                (, , uint256 ancZ) = getPalletColorAt(m[j][i], getPixelAt(m[j][i], ancX, ancY));
+
+                setZ(m[j][i], ancZ);
             }
         }
     }
@@ -84,7 +90,7 @@ library Version {
         res |= (reader.select(1) == 0x1 ? 0x000000 : reader.select(24)) << 3;
     }
 
-    function parseReceivers(BitReader.Memory memory reader) internal pure returns (uint256 res) {
+    function parseReceivers(BitReader.Memory memory reader) internal view returns (uint256 res) {
         uint256 receiversLength = reader.select(1) == 0x1 ? 0x1 : reader.select(3);
 
         for (uint256 j = 0; j < receiversLength; j++) {
@@ -101,6 +107,8 @@ library Version {
 
             res |= receiver << (rFeature * 8);
         }
+
+        res.log('parseReceivers res');
     }
 
     function parseMiniMatrix(
@@ -136,20 +144,21 @@ library Version {
         internal
         view
         returns (
-            uint256 data,
             uint256 x,
             uint256 y,
-            uint256 zindex
+            bool exists
         )
     {
-        data = m.receivers >> (index * 8 + (calculated ? 128 : 0));
+        uint256 data = m.receivers >> (index * 12 + (calculated ? 128 : 0));
 
         data &= ShiftLib.mask(12);
 
         x = data & ShiftLib.mask(6);
         y = data >> 6;
 
-        (, , zindex) = getPalletColorAt(m, getPixelAt(m, x, y));
+        exists = x != 0 && y != 0;
+
+        // (, , zindex) = getPalletColorAt(m, getPixelAt(m, x, y));
     }
 
     function setReceiverAt(
@@ -166,6 +175,43 @@ library Version {
         res |= x;
 
         m.receivers |= res << ((index * 8) + (calculated ? 128 : 0));
+    }
+
+    function setOffset(
+        Memory memory m,
+        bool negX,
+        uint256 diffX,
+        bool negY,
+        uint256 diffY
+    ) internal view {
+        m.data |= ((diffX & 0xff) << 1) | (((negX ? 0x1 : 0x0)) << 85);
+        m.data |= ((diffY & 0xff) << 1) | (((negY ? 0x1 : 0x0)) << 92);
+    }
+
+    function getOffset(Memory memory m)
+        internal
+        view
+        returns (
+            bool negX,
+            uint256 diffX,
+            bool negY,
+            uint256 diffY
+        )
+    {
+        uint256 data = m.data;
+        negX = (m.data >> 85) & 0x1 == 1;
+        diffX = (m.data >> 86) & 0xff;
+        negY = (m.data >> 92) & 0x1 == 1;
+        diffY = (m.data >> 93) & 0xff;
+    }
+
+    function setZ(Memory memory m, uint256 z) internal view {
+        require(z <= 0xf, 'VERS:SETZ:0');
+        m.data |= z << 78;
+    }
+
+    function getZ(Memory memory m) internal view returns (uint256 res) {
+        res = (m.data >> 78) & 0xf;
     }
 
     function getWidth(Memory memory m) internal view returns (uint256 width, uint256 height) {
@@ -207,7 +253,59 @@ library Version {
         zindex = (res >> 32) & 0xf;
     }
 
-    function getDiffFromReceiverAt(Memory memory m, uint256 receiverIndex) internal view returns (uint256 diffX, uint256 diffY) {
-        (, uint256 recX, uint256 recY, ) = getReceiverAt(m, receiverIndex, false);
+    function getDiffOfReceiverAt(Memory memory base, Memory memory mix)
+        internal
+        view
+        returns (
+            bool negX,
+            uint256 diffX,
+            bool negY,
+            uint256 diffY
+        )
+    {
+        (uint256 recX, uint256 recY, ) = getReceiverAt(base, (mix.data >> 75) & ShiftLib.mask(3), false);
+        (uint256 ancX, uint256 ancY) = getAnchor(mix);
+        negX = recX < ancX;
+        diffX = negX ? ancX - recX : recX - ancX;
+        negY = recY < ancY;
+        diffY = negY ? ancY - recY : recY - ancY;
+    }
+
+    function getPixelAtPositionWithOffset(Memory memory m, uint256 index) internal view returns (bool exists, uint256 palletKey) {
+        (uint256 width, uint256 height) = getWidth(m);
+
+        uint256 indexY = index / 64;
+        uint256 indexX = index % 64;
+
+        (, uint256 diffX, , uint256 diffY) = getOffset(m);
+
+        require(indexX >= diffX, 'VERS:GPAP:0');
+        uint256 realX = indexX - diffX;
+
+        require(indexY >= diffY, 'VERS:GPAP:1');
+        uint256 realY = indexY - diffY;
+
+        if (realX >= width || realY >= height) return (false, 0);
+
+        // realX.log('realX', diffX, 'diffX', indexX, 'indexX');
+        // realY.log('realY', diffY, 'diffY', indexY, 'indexY');
+
+        uint256 realIndex = realY * width + realX;
+        exists = true;
+        palletKey = (m.minimatrix[realIndex / 64] >> (4 * (realIndex % 64))) & 0xf;
+    }
+
+    function initBigMatrix(Memory memory m, uint256 width) internal pure {
+        m.bigmatrix = new uint256[]((width * width) / 8 + 1);
+    }
+
+    function setBigMatrixPixelAt(
+        Memory memory m,
+        uint256 index,
+        uint256 color
+    ) internal pure {
+        require(m.bigmatrix.length > index / 8, 'VERS:SBM:0');
+
+        m.bigmatrix[index / 8] |= color << (32 * (index % 8));
     }
 }
