@@ -164,6 +164,10 @@ export const bashit2 = (input: BigNumber[], width: number, height: number): stri
     }
     res.push(CreateNumberedRow(width));
 
+    Object.entries(mapper).map(([k, v]) => {
+        console.log(k, '-', v);
+    });
+
     res.forEach((x) => {
         console.log(x);
     });
