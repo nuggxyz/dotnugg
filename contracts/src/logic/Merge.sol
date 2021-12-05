@@ -25,9 +25,6 @@ library Merge {
 
                 if (!exists) continue;
 
-                // (, uint256 curX, uint256 curY) = res.getReceiverAt(j, false);
-
-                // (, , uint256 curZ) = versions[i][0].getPalletColorAt(versions[i][0].getPixelAt(curX, curY));
                 zcheck.log('zcheck');
 
                 if (z > (zcheck >> (j * 3)) & ShiftLib.mask(3)) {

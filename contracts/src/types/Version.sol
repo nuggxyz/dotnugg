@@ -97,18 +97,20 @@ library Version {
             uint256 receiver = 0;
 
             // yOrYOffset
-            receiver |= reader.select(6) << 6;
-
-            //xOrPreset
             receiver |= reader.select(6);
 
+            //xOrPreset
+            receiver |= reader.select(6) << 6;
+
             // rFeature
-            uint256 rFeature = reader.select(3) + reader.select(1) == 0x1 ? 128 : 0;
+            uint256 rFeature = reader.select(3);
 
-            res |= receiver << (rFeature * 8);
+            receiver <<= (rFeature * 12) + (reader.select(1) == 0x1 ? 128 : 0);
+            rFeature.log('rFeature', receiver, 'receiver', receiver, 'receiver222');
+
+            res |= receiver;
+            res.log('parseReceivers res');
         }
-
-        res.log('parseReceivers res');
     }
 
     function parseMiniMatrix(
