@@ -18,11 +18,12 @@ import 'hardhat-spdx-license-identifier';
 
 import './tasks/middleware';
 
+import { resolve } from 'path';
+
 import { config as dotenvConfig } from 'dotenv';
 import { utils } from 'ethers';
 import { removeConsoleLog } from 'hardhat-preprocessor';
 import { HardhatUserConfig, NetworksUserConfig, NetworkUserConfig } from 'hardhat/types';
-import { resolve } from 'path';
 
 dotenvConfig({ path: resolve(__dirname, '.env') });
 
@@ -226,7 +227,7 @@ const HardhatConfig: HardhatUserConfig = {
         target: 'ethers-v5',
     },
     mocha: {
-        timeout: 20000,
+        timeout: 20000 * 6,
     },
     paths: {
         artifacts: 'artifacts',

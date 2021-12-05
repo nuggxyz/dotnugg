@@ -36,7 +36,7 @@ contract DotNugg is IDotNugg {
 
         Version.Memory[][] memory versions = Version.parse(_items);
 
-        Merge.begin(versions);
+        Merge.begin(versions, width);
 
         // MatrixType.Memory memory matrix = Calculator.combine(featureLen, width, _items);
 

@@ -1,7 +1,7 @@
 import '../../lib/DSTest.sol';
 import '../../../../contracts/src/types/Version.sol';
 
-contract VersionGetPalletColorAtTest is DSTest {
+contract VersionTest_getPalletColorAt is DSTest {
     function setUp() public {}
 
     function test_getPalletColorAt_a() public {
