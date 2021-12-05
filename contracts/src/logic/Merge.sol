@@ -69,6 +69,7 @@ library Merge {
 
                 if (workingColor > 0) {
                     // mix set with color
+                    break;
                 }
 
                 workingColor = color;
