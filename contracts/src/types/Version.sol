@@ -176,7 +176,7 @@ library Version {
         //xOrPreset
         res |= x;
 
-        m.receivers |= res << ((index * 8) + (calculated ? 128 : 0));
+        m.receivers |= res << ((index * 12) + (calculated ? 128 : 0));
     }
 
     function setOffset(
@@ -271,6 +271,9 @@ library Version {
         diffX = negX ? ancX - recX : recX - ancX;
         negY = recY < ancY;
         diffY = negY ? ancY - recY : recY - ancY;
+
+        ancX.log('ancX', diffX, 'diffX', recX, 'recX');
+        ancY.log('ancY', diffY, 'diffY', recY, 'recY');
     }
 
     function getPixelAtPositionWithOffset(Memory memory m, uint256 index) internal view returns (bool exists, uint256 palletKey) {
@@ -288,9 +291,6 @@ library Version {
         uint256 realY = indexY - diffY;
 
         if (realX >= width || realY >= height) return (false, 0);
-
-        // realX.log('realX', diffX, 'diffX', indexX, 'indexX');
-        // realY.log('realY', diffY, 'diffY', indexY, 'indexY');
 
         uint256 realIndex = realY * width + realX;
         exists = true;

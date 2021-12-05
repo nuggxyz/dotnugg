@@ -13,6 +13,7 @@ library Merge {
 
         uint256 sorter;
         uint256 zcheck;
+        // TODO flip these loops - will be able to set receivers here
         // finalize receivers
         for (uint256 i = 0; i < versions.length; i++) {
             uint256 z = versions[i][0].getZ();
