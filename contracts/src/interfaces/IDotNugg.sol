@@ -3,8 +3,30 @@
 pragma solidity 0.8.4;
 
 interface IDotNugg {
+    // function nuggify(
+    //     uint256 featureLen,
+    //     uint256 width,
+    //     uint256[][] memory _items,
+    //     address _resolver,
+    //     string memory name,
+    //     string memory description,
+    //     uint256 tokenId,
+    //     bytes memory data
+    // ) external view returns (string memory image);
+
+    // function nuggifyTest(
+    //     uint256 featureLen,
+    //     uint256 width,
+    //     uint256[][] memory _items,
+    //     address _resolver,
+    //     string memory name,
+    //     string memory description,
+    //     uint256 tokenId,
+    //     bytes memory data
+    // ) external view returns (uint256[] memory res);
+
     function nuggify(
-        uint256 featureLen,
+        // uint256 featureLen,
         uint256 width,
         uint256[][] memory _items,
         address _resolver,
@@ -15,7 +37,7 @@ interface IDotNugg {
     ) external view returns (string memory image);
 
     function nuggifyTest(
-        uint256 featureLen,
+        // uint256 featureLen,
         uint256 width,
         uint256[][] memory _items,
         address _resolver,

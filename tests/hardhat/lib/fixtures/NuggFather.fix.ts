@@ -8,7 +8,8 @@ import { MockDotNuggHolder } from '../../../../typechain/MockDotNuggHolder';
 import { MockDotNuggHolder__factory } from '../../../../typechain/factories/MockDotNuggHolder__factory';
 import { DotNugg } from '../../../../typechain/DotNugg';
 import { DotNugg__factory } from '../../../../typechain/factories/DotNugg__factory';
-import { SvgFileResolver, SvgFileResolver__factory } from '../../../../typechain';
+import { DotNugg2ElectricBoogaloo__factory, SvgFileResolver, SvgFileResolver__factory } from '../../../../typechain';
+import { DotNugg2ElectricBoogaloo } from '../../../../typechain/DotNugg2ElectricBoogaloo';
 
 export interface NuggFatherFixture {
     holder: MockDotNuggHolder;
@@ -17,6 +18,8 @@ export interface NuggFatherFixture {
     // let nugginDotNugg: SvgFileResolver;
     svgResolver: SvgFileResolver;
     dotnugg: DotNugg;
+    dotnugg2eb: DotNugg2ElectricBoogaloo;
+
     owner: string;
     ownerStartBal: BigNumber;
     hre: HardhatRuntimeEnvironment;
@@ -40,6 +43,12 @@ export const NuggFatherFix: Fixture<NuggFatherFixture> = async function (
         args: [],
     });
 
+    const dotnugg2eb = await deployContractWithSalt<DotNugg2ElectricBoogaloo__factory>({
+        factory: 'DotNugg2ElectricBoogaloo',
+        from: eoaDeployer,
+        args: [],
+    });
+
     const svgResolver = await deployContractWithSalt<SvgFileResolver__factory>({
         factory: 'SvgFileResolver',
         from: eoaDeployer,
@@ -49,7 +58,7 @@ export const NuggFatherFix: Fixture<NuggFatherFixture> = async function (
     const holder = await deployContractWithSalt<MockDotNuggHolder__factory>({
         factory: 'MockDotNuggHolder',
         from: eoaDeployer,
-        args: [dotnugg.address, svgResolver.address],
+        args: [dotnugg2eb.address, svgResolver.address],
     });
 
     // const nuggswap = await deployContractWithSalt<NuggSwap__factory>({
@@ -90,6 +99,7 @@ export const NuggFatherFix: Fixture<NuggFatherFixture> = async function (
         // dotnugg: hre.dotnugg,
         // nuggft,
         // xnugg,
+        dotnugg2eb,
         svgResolver,
         dotnugg,
         blockOffset,

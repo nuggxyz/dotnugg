@@ -4,33 +4,82 @@
       {
         "components": [
           {
-            "internalType": "uint256[]",
-            "name": "pallet",
-            "type": "uint256[]"
+            "internalType": "uint8",
+            "name": "width",
+            "type": "uint8"
           },
           {
-            "internalType": "uint256[]",
-            "name": "minimatrix",
-            "type": "uint256[]"
+            "internalType": "uint8",
+            "name": "height",
+            "type": "uint8"
           },
           {
-            "internalType": "uint256[]",
-            "name": "bigmatrix",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "uint256",
-            "name": "receivers",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
+            "components": [
+              {
+                "internalType": "int8",
+                "name": "zindex",
+                "type": "int8"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "uint8",
+                    "name": "r",
+                    "type": "uint8"
+                  },
+                  {
+                    "internalType": "uint8",
+                    "name": "g",
+                    "type": "uint8"
+                  },
+                  {
+                    "internalType": "uint8",
+                    "name": "b",
+                    "type": "uint8"
+                  },
+                  {
+                    "internalType": "uint8",
+                    "name": "a",
+                    "type": "uint8"
+                  }
+                ],
+                "internalType": "struct IDotNugg.Rgba",
+                "name": "rgba",
+                "type": "tuple"
+              },
+              {
+                "internalType": "bool",
+                "name": "exists",
+                "type": "bool"
+              }
+            ],
+            "internalType": "struct IDotNugg.Pixel[][]",
             "name": "data",
-            "type": "uint256"
+            "type": "tuple[][]"
+          },
+          {
+            "internalType": "uint8",
+            "name": "currentUnsetX",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint8",
+            "name": "currentUnsetY",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bool",
+            "name": "init",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint8",
+            "name": "startX",
+            "type": "uint8"
           }
         ],
-        "internalType": "struct Version.Memory",
-        "name": "version",
+        "internalType": "struct IDotNugg.Matrix",
+        "name": "matrix",
         "type": "tuple"
       },
       {

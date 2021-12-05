@@ -54,7 +54,7 @@ library DotNuggLib {
         string memory uriname = 'NuggFT {#}';
         string memory descrription = 'the description';
 
-        return IDotNugg(dotnugg).nuggify(8, 33, data, resolver, uriname, descrription, tokenId, '');
+        return IDotNugg(dotnugg).nuggify(33, data, resolver, uriname, descrription, tokenId, '');
     }
 
     function generateTokenURITest(
@@ -77,7 +77,7 @@ library DotNuggLib {
         string memory uriname = 'NuggFT {#}';
         string memory descrription = 'the description';
 
-        return IDotNugg(dotnugg).nuggifyTest(8, 33, data, resolver, uriname, descrription, tokenId, '');
+        return IDotNugg(dotnugg).nuggifyTest(33, data, resolver, uriname, descrription, tokenId, '');
     }
 
     // 50/50 chance of main  being 0

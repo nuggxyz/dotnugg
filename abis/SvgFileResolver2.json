@@ -88,15 +88,20 @@
         "type": "bytes"
       }
     ],
-    "name": "resolveColor",
+    "name": "resolveFile",
     "outputs": [
       {
         "internalType": "bytes",
         "name": "res",
         "type": "bytes"
+      },
+      {
+        "internalType": "string",
+        "name": "fileType",
+        "type": "string"
       }
     ],
-    "stateMutability": "pure",
+    "stateMutability": "view",
     "type": "function"
   },
   {
