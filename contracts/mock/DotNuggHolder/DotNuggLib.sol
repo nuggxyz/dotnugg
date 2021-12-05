@@ -57,6 +57,29 @@ library DotNuggLib {
         return IDotNugg(dotnugg).nuggify(8, 33, data, resolver, uriname, descrription, tokenId, '');
     }
 
+    function generateTokenURITest(
+        Storage storage s,
+        ItemLib.Storage storage item_storage,
+        address dotnugg,
+        uint256 tokenId,
+        address resolver
+    ) internal view returns (uint256[] memory res) {
+        uint256 item_memory = item_storage.tokenData[tokenId];
+        uint256[][] memory data = new uint256[][](3);
+
+        data[0] = loadItem(s, 0, item_memory.base());
+        data[1] = loadItem(s, 1, item_memory.item(1, 0));
+        data[2] = loadItem(s, 3, item_memory.item(3, 0));
+        // data[3] = loadItem(s, 3, item_memory.item(ItemType.Index.MOUTH, 0));
+        // data[4] = loadItem(s, 4, item_memory.item(ItemType.Index.OTHER, 0));
+        // data[5] = loadItem(s, 5, item_memory.item(ItemType.Index.SPECIAL, 0));
+
+        string memory uriname = 'NuggFT {#}';
+        string memory descrription = 'the description';
+
+        return IDotNugg(dotnugg).nuggifyTest(8, 33, data, resolver, uriname, descrription, tokenId, '');
+    }
+
     // 50/50 chance of main  being 0
 
     // 5 le

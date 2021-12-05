@@ -30,4 +30,8 @@ contract MockDotNuggHolder is IMockDotNuggHolder {
     function tokenUri(uint256 tokenId) external view returns (string memory res) {
         dotnugg_storage.generateTokenURI(item_storage, address(dotnugg), tokenId, address(svgResolver));
     }
+
+    function tokenUriTest(uint256 tokenId) external view returns (uint256[] memory res) {
+        res = dotnugg_storage.generateTokenURITest(item_storage, address(dotnugg), tokenId, address(svgResolver));
+    }
 }

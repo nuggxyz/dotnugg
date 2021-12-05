@@ -56,7 +56,7 @@ library Version {
 
         res = new uint256[]((palletLength) / 7 + 1);
 
-        for (uint256 i = 0; i < palletLength; i++) {
+        for (uint256 i = 1; i < palletLength + 1; i++) {
             uint256 working = 0;
             // 4 bits: zindex
             working |= reader.select(4) << 32;
@@ -186,8 +186,8 @@ library Version {
         bool negY,
         uint256 diffY
     ) internal view {
-        m.data |= ((diffX & 0xff) << 1) | (((negX ? 0x1 : 0x0)) << 85);
-        m.data |= ((diffY & 0xff) << 1) | (((negY ? 0x1 : 0x0)) << 92);
+        m.data |= ((((diffX & 0xff) << 1) | (((negX ? 0x1 : 0x0)))) << 85);
+        m.data |= ((((diffY & 0xff) << 1) | ((((negY ? 0x1 : 0x0))))) << 94);
     }
 
     function getOffset(Memory memory m)
@@ -201,10 +201,10 @@ library Version {
         )
     {
         uint256 data = m.data;
-        negX = (m.data >> 85) & 0x1 == 1;
-        diffX = (m.data >> 86) & 0xff;
-        negY = (m.data >> 92) & 0x1 == 1;
-        diffY = (m.data >> 93) & 0xff;
+        negX = (data >> 85) & 0x1 == 1;
+        diffX = (data >> 86) & 0xff;
+        negY = (data >> 94) & 0x1 == 1;
+        diffY = (data >> 95) & 0xff;
     }
 
     function setZ(Memory memory m, uint256 z) internal view {
@@ -236,6 +236,7 @@ library Version {
         (uint256 width, uint256 height) = getWidth(m);
         uint256 index = x + (y * width);
         width.log('width', height, 'height', index, 'index');
+
         palletKey = (m.minimatrix[index / 64] >> (4 * (index % 64))) & 0xf;
     }
 
@@ -267,6 +268,7 @@ library Version {
     {
         (uint256 recX, uint256 recY, ) = getReceiverAt(base, (mix.data >> 75) & ShiftLib.mask(3), false);
         (uint256 ancX, uint256 ancY) = getAnchor(mix);
+
         negX = recX < ancX;
         diffX = negX ? ancX - recX : recX - ancX;
         negY = recY < ancY;
@@ -279,26 +281,41 @@ library Version {
     function getPixelAtPositionWithOffset(Memory memory m, uint256 index) internal view returns (bool exists, uint256 palletKey) {
         (uint256 width, uint256 height) = getWidth(m);
 
-        uint256 indexY = index / 64;
-        uint256 indexX = index % 64;
+        uint256 indexY = index / 33;
+        uint256 indexX = index % 33;
 
         (, uint256 diffX, , uint256 diffY) = getOffset(m);
 
-        require(indexX >= diffX, 'VERS:GPAP:0');
+        // indexX.log('indexX', diffX, 'diffX', width, 'width');
+        // indexY.log('indexY', diffY, 'diffY', height, 'height');
+
+        if (indexX < diffX) return (false, 0);
         uint256 realX = indexX - diffX;
 
-        require(indexY >= diffY, 'VERS:GPAP:1');
+        if (indexY < diffY) return (false, 0);
         uint256 realY = indexY - diffY;
 
-        if (realX >= width || realY >= height) return (false, 0);
+        // require(indexX >= diffX, 'VERS:GPAP:0');
+        // uint256 realX = indexX - diffX;
 
-        uint256 realIndex = realY * width + realX;
+        // require(indexY >= diffY, 'VERS:GPAP:1');
+        // uint256 realY = indexY - diffY;
+
+        // if (realX >= width || realY >= height) return (false, 0);
+
+        // indexX.log('indexX', diffX, 'diffX', realX, 'realX');
+        // indexY.log('indexY', diffY, 'diffY', realY, 'realY');
+
+        uint256 realIndex = realY * 33 + realX;
+
+        if (realIndex / 64 >= m.minimatrix.length) return (false, 0);
         exists = true;
+
         palletKey = (m.minimatrix[realIndex / 64] >> (4 * (realIndex % 64))) & 0xf;
     }
 
     function initBigMatrix(Memory memory m, uint256 width) internal pure {
-        m.bigmatrix = new uint256[]((width * width) / 8 + 1);
+        m.bigmatrix = new uint256[](((width * width) / 8) + 1);
     }
 
     function setBigMatrixPixelAt(
@@ -308,6 +325,6 @@ library Version {
     ) internal pure {
         require(m.bigmatrix.length > index / 8, 'VERS:SBM:0');
 
-        m.bigmatrix[index / 8] |= color << (32 * (index % 8));
+        m.bigmatrix[index / 8] |= (color << (32 * (index % 8)));
     }
 }
