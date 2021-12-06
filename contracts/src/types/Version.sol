@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: MIT
+
 pragma solidity 0.8.4;
 
 import '../libraries/BitReader.sol';
 
 library Version {
     using BitReader for BitReader.Memory;
-    using Event for uint256[];
     using Event for uint256;
+    using Event for uint256[];
 
     struct Memory {
         uint256[] pallet;
@@ -48,6 +49,8 @@ library Version {
                 (, , uint256 ancZ) = getPalletColorAt(m[j][i], getPixelAt(m[j][i], ancX, ancY));
 
                 setZ(m[j][i], ancZ);
+
+                // m[j][i].minimatrix.log('minimatrix');
             }
         }
     }
@@ -57,18 +60,35 @@ library Version {
 
         res = new uint256[]((palletLength) / 7 + 1);
 
-        for (uint256 i = 1; i < palletLength + 1; i++) {
+        res = new uint256[](palletLength + 1);
+
+        for (uint256 i = 0; i < palletLength; i++) {
             uint256 working = 0;
             // 4 bits: zindex
-            working |= reader.select(4) << 32;
+            working |= (reader.select(4) << 32);
 
-            // 1 or 25 bits: rgb
-            working |= (reader.select(1) == 0x1 ? 0x000000 : reader.select(24)) << 8;
+            uint256 color;
+            uint256 selecta = reader.select(1);
+            if (selecta == 1) {
+                color = 0x000000;
+            } else {
+                uint256 r = reader.select(8);
+                uint256 g = reader.select(8);
+                uint256 b = reader.select(8);
 
-            // 1 or 8 bits: a
-            working |= reader.select(1) == 0x1 ? 0xff : reader.select(8);
+                color = (r << 16) | (g << 8) | b;
+            }
 
-            res[i / 7] |= (working << (36 * (i % 7)));
+            // // uint256 color = ((reader.select(1) == 0x1 ? 0x000000 : reader.select(24)) << 8);
+            // // 1 or 25 bits: rgb
+            working |= color << 8;
+
+            // // 1 or 8 bits: a
+            working |= (reader.select(1) == 0x1 ? 0xff : reader.select(8));
+
+            // res[i / 7] |= (working << (36 * (i % 7)));
+
+            res[i + 1] = working;
         }
     }
 
@@ -77,8 +97,11 @@ library Version {
 
         res |= feature << 75;
 
-        res |= reader.select(6) << 69; // heighth and width
-        res |= reader.select(6) << 63;
+        uint256 width = reader.select(6);
+        uint256 height = reader.select(6);
+
+        res |= height << 69; // heighth and width
+        res |= width << 63;
 
         // 12 bits: coordinate - anchor x and y
         res |= reader.select(6) << 51;
@@ -92,25 +115,27 @@ library Version {
     }
 
     function parseReceivers(BitReader.Memory memory reader) internal view returns (uint256 res) {
-        uint256 receiversLength = reader.select(1) == 0x1 ? 0x1 : reader.select(3);
+        uint256 receiversLength = reader.select(1) == 0x1 ? 0x1 : reader.select(4);
 
         for (uint256 j = 0; j < receiversLength; j++) {
             uint256 receiver = 0;
 
+            uint256 xOrPreset = reader.select(6);
+
+            uint256 yOrYOffset = reader.select(6);
+
             // yOrYOffset
-            receiver |= reader.select(6) << 6;
+            receiver |= yOrYOffset << 6;
 
             //xOrPreset
-            receiver |= reader.select(6);
+            receiver |= xOrPreset;
 
             // rFeature
             uint256 rFeature = reader.select(3);
 
-            receiver <<= (rFeature * 12) + (reader.select(1) == 0x1 ? 128 : 0);
-            rFeature.log('rFeature', receiver, 'receiver', receiver, 'receiver222');
+            receiver <<= ((rFeature * 12) + (reader.select(1) == 0x1 ? 128 : 0));
 
             res |= receiver;
-            res.log('parseReceivers res');
         }
     }
 
@@ -132,11 +157,11 @@ library Version {
 
             uint256 key = reader.select(4);
 
-            for (uint256 i = 0; i < len; i++) res[index / 64] |= key << (4 * (index++ % 64));
+            for (uint256 i = 0; i < len; i++) {
+                res[index / 64] |= (key << (4 * (index % 64)));
+                index++;
+            }
         }
-
-        groupsLength.log('groupsLength');
-        res.log('minimatrix');
     }
 
     function getReceiverAt(
@@ -159,9 +184,7 @@ library Version {
         x = data & ShiftLib.mask(6);
         y = data >> 6;
 
-        exists = x != 0 && y != 0;
-
-        // (, , zindex) = getPalletColorAt(m, getPixelAt(m, x, y));
+        exists = x != 0 || y != 0;
     }
 
     function setReceiverAt(
@@ -236,21 +259,21 @@ library Version {
     ) internal view returns (uint256 palletKey) {
         (uint256 width, uint256 height) = getWidth(m);
         uint256 index = x + (y * width);
-        width.log('width', height, 'height', index, 'index');
 
         palletKey = (m.minimatrix[index / 64] >> (4 * (index % 64))) & 0xf;
     }
 
     function getPalletColorAt(Memory memory m, uint256 index)
         internal
-        pure
+        view
         returns (
             uint256 res,
             uint256 color,
             uint256 zindex
         )
     {
-        res = (m.pallet[index / 7] >> (36 * (index % 7))) & ShiftLib.mask(36);
+        // res = (m.pallet[index / 7] >> (36 * (index % 7))) & ShiftLib.mask(36);
+        res = m.pallet[index];
 
         color = res & 0xffffffff;
 
@@ -274,9 +297,6 @@ library Version {
         diffX = negX ? ancX - recX : recX - ancX;
         negY = recY < ancY;
         diffY = negY ? ancY - recY : recY - ancY;
-
-        ancX.log('ancX', diffX, 'diffX', recX, 'recX');
-        ancY.log('ancY', diffY, 'diffY', recY, 'recY');
     }
 
     function getPixelAtPositionWithOffset(Memory memory m, uint256 index) internal view returns (bool exists, uint256 palletKey) {
@@ -287,14 +307,15 @@ library Version {
 
         (, uint256 diffX, , uint256 diffY) = getOffset(m);
 
-        // indexX.log('indexX', diffX, 'diffX', width, 'width');
-        // indexY.log('indexY', diffY, 'diffY', height, 'height');
+        if (width != 33) {}
 
         if (indexX < diffX) return (false, 0);
         uint256 realX = indexX - diffX;
 
         if (indexY < diffY) return (false, 0);
         uint256 realY = indexY - diffY;
+
+        if (width != 33) {}
 
         // require(indexX >= diffX, 'VERS:GPAP:0');
         // uint256 realX = indexX - diffX;
@@ -304,10 +325,7 @@ library Version {
 
         // if (realX >= width || realY >= height) return (false, 0);
 
-        // indexX.log('indexX', diffX, 'diffX', realX, 'realX');
-        // indexY.log('indexY', diffY, 'diffY', realY, 'realY');
-
-        uint256 realIndex = realX * width + realY;
+        uint256 realIndex = realY * width + realX;
 
         if (realIndex / 64 >= m.minimatrix.length) return (false, 0);
         exists = true;
