@@ -4,16 +4,24 @@ pragma solidity 0.8.4;
 
 import '../erc165/IERC165.sol';
 
-import '../types/Version.sol';
-
-interface IColorResolver is IERC165 {
-    function resolveColor(Version.Memory memory version, bytes memory data) external view returns (bytes memory res);
+interface IPreProcessResolver is IERC165 {
+    function resolvePreProcess(
+        uint256 tokenId,
+        uint256[][] memory file,
+        bytes memory data
+    ) external pure returns (uint256[][] memory res);
 
     function supportsInterface(bytes4 interfaceId) external view override returns (bool);
 }
 
-interface IFileResolver is IERC165 {
-    function resolveFile(Version.Memory memory version, bytes memory data) external view returns (bytes memory, string memory fileType);
+interface IPostProcessResolver is IERC165 {
+    function resolvePostProcess(
+        uint256 tokenId,
+        uint256 width,
+        uint256 height,
+        uint256[] memory file,
+        bytes memory data
+    ) external view returns (string memory res);
 
     function supportsInterface(bytes4 interfaceId) external view override returns (bool);
 }

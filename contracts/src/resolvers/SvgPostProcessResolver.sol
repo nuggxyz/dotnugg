@@ -78,7 +78,6 @@ contract SvgPostProcessResolver is IPostProcessResolver {
 
         uint256 last = getPixelAt(file, 0, 0, width);
         uint256 count = 1;
-        uint256 index = 0;
 
         // bytes[] memory rects = new bytes[](35);
         bytes memory body;
@@ -116,7 +115,6 @@ contract SvgPostProcessResolver is IPostProcessResolver {
         if (pixel & 0xff == 0) return '';
 
         res = abi.encodePacked(
-            // hex'5c743c726563742066696c6c3d2723',
             "\t<rect fill='#",
             pixel.toHexStringNoPrefix(4),
             hex'2720783d27',
@@ -127,51 +125,7 @@ contract SvgPostProcessResolver is IPostProcessResolver {
             xlen.toAscii(),
             hex'272077696474683d27',
             ylen.toAscii(),
-            // hex'272f3e5c6e'
             "'/>\n"
         );
     }
 }
-
-// res = abi.encodePacked(
-//     hex'5c743c726563742066696c6c3d2723', // "\t<rect fill='#",
-//     pixel.ascii(),
-//     hex'2720783d27', // "' x='",
-//     x.toString(),
-//     hex'2720793d27', // "' y='",
-//     y.toString(),
-//     hex'27206865696768743d27', // "' height='",
-//     xlen.toString(),
-//     hex'272077696474683d27', // "' width='",
-//     ylen.toString(),
-//     hex'272f3e5c6e' // "'/>\n"
-// );
-
-// function getSvgRects(MatrixType.Memory memory matrix, uint256 pixelWidth) internal view returns (bytes memory res) {
-//     uint256 lastX;
-//     uint256 lastPixel;
-//     //   uint256 xtracker;
-//     uint256 count = 1;
-//     while (matrix.next()) {
-//         if ((lastPixel.equals(matrix.current().pixel_rgba()) && matrix.data.matrix_currentUnsetX() < matrix.data.matrix_width())) {
-//             //  lastPixel = matrix.current().rgba;
-//             count++;
-//             continue;
-//         }
-//         if (lastPixel.pixel_a() != 0) {
-//             res = abi.encodePacked(
-//                 res,
-//                 getRekt(lastPixel, lastX * pixelWidth, matrix.data.matrix_currentUnsetY() * pixelWidth, pixelWidth, count * pixelWidth)
-//             );
-//         }
-//         lastPixel = matrix.current().pixel_rgba();
-//         lastX = matrix.data.matrix_currentUnsetX();
-//         // xtracker = 0;
-//         count = 1;
-//     }
-
-//     res = abi.encodePacked(
-//         res,
-//         getRekt(matrix.current().pixel_rgba(), lastX * pixelWidth, matrix.data.matrix_currentUnsetY() * pixelWidth, pixelWidth, count * pixelWidth)
-//     );
-// }
