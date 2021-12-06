@@ -268,6 +268,8 @@ library OldShiftType {
         }
     }
 
+
+
     function item(uint256 input, uint8 id) internal pure returns (uint16 res) {
         assembly {
             res := shr(mul(16, id), input)

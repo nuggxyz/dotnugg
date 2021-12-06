@@ -65,11 +65,11 @@ library DotNuggLib {
         address resolver
     ) internal view returns (uint256[] memory res) {
         uint256 item_memory = item_storage.tokenData[tokenId];
-        uint256[][] memory data = new uint256[][](3);
+        uint256[][] memory data = new uint256[][](2);
 
         data[0] = loadItem(s, 0, item_memory.base());
+        // data[1] = loadItem(s, 5, item_memory.item(5, 0));
         data[1] = loadItem(s, 1, item_memory.item(1, 0));
-        data[2] = loadItem(s, 3, item_memory.item(3, 0));
         // data[3] = loadItem(s, 3, item_memory.item(ItemType.Index.MOUTH, 0));
         // data[4] = loadItem(s, 4, item_memory.item(ItemType.Index.OTHER, 0));
         // data[5] = loadItem(s, 5, item_memory.item(ItemType.Index.SPECIAL, 0));

@@ -54,6 +54,8 @@ library Version {
 
         res = new uint256[]((palletLength) / 7 + 1);
 
+        res = new uint256[](palletLength + 1);
+
         for (uint256 i = 0; i < palletLength; i++) {
             uint256 working = 0;
             // 4 bits: zindex
@@ -70,19 +72,21 @@ library Version {
 
                 color = (r << 16) | (g << 8) | b;
             }
-            console.log('here11111', selecta, Uint256.toHexString(color, 3));
+            // console.log('here11111', selecta, Uint256.toHexString(color, 3));
 
-            // uint256 color = ((reader.select(1) == 0x1 ? 0x000000 : reader.select(24)) << 8);
-            // color.log('color here');
-            console.log('working before color', Uint256.toHexString(working, 6));
-            // 1 or 25 bits: rgb
+            // // uint256 color = ((reader.select(1) == 0x1 ? 0x000000 : reader.select(24)) << 8);
+            // // color.log('color here');
+            // console.log('working before color', Uint256.toHexString(working, 6));
+            // // 1 or 25 bits: rgb
             working |= color << 8;
-            console.log('working after color', Uint256.toHexString(working, 6));
+            // console.log('working after color', Uint256.toHexString(working, 6));
 
-            // 1 or 8 bits: a
+            // // 1 or 8 bits: a
             working |= (reader.select(1) == 0x1 ? 0xff : reader.select(8));
 
-            res[i / 7] |= (working << (36 * (i % 7)));
+            // res[i / 7] |= (working << (36 * (i % 7)));
+
+            res[i + 1] = working;
         }
     }
 
@@ -112,10 +116,10 @@ library Version {
             uint256 receiver = 0;
 
             // yOrYOffset
-            receiver |= reader.select(6);
+            receiver |= reader.select(6) << 6;
 
             //xOrPreset
-            receiver |= reader.select(6) << 6;
+            receiver |= reader.select(6);
 
             // rFeature
             uint256 rFeature = reader.select(3);
@@ -257,7 +261,8 @@ library Version {
             uint256 zindex
         )
     {
-        res = (m.pallet[index / 7] >> (36 * (index % 7))) & ShiftLib.mask(36);
+        // res = (m.pallet[index / 7] >> (36 * (index % 7))) & ShiftLib.mask(36);
+        res = m.pallet[index];
 
         color = res & 0xffffffff;
 
