@@ -11,20 +11,24 @@ import '../types/Version.sol';
 library Matrix {
     using Bytes for bytes;
     using Rgba for IDotNugg.Rgba;
+    using Event for uint256;
 
     function update(IDotNugg.Matrix memory matrix) internal view returns (Version.Memory memory m) {
         Version.initBigMatrix(m, matrix.width);
 
-        for (uint256 index = 0; index < matrix.width * matrix.height; index++) {
+        resetIterator(matrix);
+
+        for (uint256 index = 0; index < uint256(matrix.width) * uint256(matrix.height); index++) {
             Matrix.next(matrix);
             IDotNugg.Pixel memory pix = Matrix.current(matrix);
-            if (pix.rgba.a > 0) {
-                uint256 color = pix.rgba.r << 24;
-                color |= pix.rgba.g << 16;
-                color |= pix.rgba.b << 8;
-                color |= pix.rgba.a;
-                Version.setBigMatrixPixelAt(m, color, index);
-            }
+
+            // if (pix.exists) {
+            uint256 color = (uint256(pix.rgba.r) << 24);
+            color |= (uint256(pix.rgba.g) << 16);
+            color |= (uint256(pix.rgba.b) << 8);
+            color |= (uint256(pix.rgba.a));
+            Version.setBigMatrixPixelAt(m, index, color);
+            // }
         }
     }
 
@@ -108,30 +112,36 @@ library Matrix {
         uint256 totalLength = 0;
         matrix.height = uint8(groupHeight);
         for (uint256 y = 0; y < groupHeight; y++) {
-            for (uint256 x = 0; x < groupHeight; x++) {
+            for (uint256 x = 0; x < groupWidth; x++) {
                 next(matrix, uint8(groupWidth));
+                uint256 col = Version.getPixelAt(data, x, y);
+                if (col != 0) {
+                    // IDotNugg.Pixel memory p;
+                    // p.exists = true;
 
-                (, uint256 color, uint256 zindex) = Version.getPalletColorAt(data, Version.getPixelAt(data, x, y));
-                setCurrent(
-                    matrix,
-                    IDotNugg.Pixel({
-                        rgba: IDotNugg.Rgba({
-                            r: uint8(color >> 24) & 0xff,
-                            g: uint8(color >> 16) & 0xff,
-                            b: uint8(color >> 8) & 0xff,
-                            a: uint8(color >> 0) & 0xff
-                        }),
-                        zindex: int8(uint8(zindex)) - 3,
-                        exists: true
-                    })
-                );
+                    (, uint256 color, uint256 zindex) = Version.getPalletColorAt(data, col);
+                    // color.log('color');
+                    setCurrent(
+                        matrix,
+                        IDotNugg.Pixel({
+                            rgba: IDotNugg.Rgba({
+                                r: uint8(color >> 24) & 0xff,
+                                g: uint8(color >> 16) & 0xff,
+                                b: uint8(color >> 8) & 0xff,
+                                a: uint8(color) & 0xff
+                            }),
+                            zindex: int8(uint8(zindex)) + 7,
+                            exists: true
+                        })
+                    );
+                }
             }
         }
 
         // require(totalLength % groupWidth == 0, 'MTRX:SET:0');
         // require(totalLength / groupWidth == groupHeight, 'MTRX:SET:1');
 
-        // // matrix.width = uint256(groupWidth);
+        matrix.width = uint8(groupWidth);
         // // matrix.height = uint8(totalLength / groupWidth);
 
         resetIterator(matrix);

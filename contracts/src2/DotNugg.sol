@@ -5,6 +5,8 @@ pragma solidity 0.8.4;
 import './logic/Calculator.sol';
 import {Matrix as MatrixLib} from './logic/Matrix.sol';
 
+import '../test/Event.sol';
+
 import './libraries/Base64.sol';
 import './interfaces/IDotNugg.sol';
 import './interfaces/INuggIn.sol';
@@ -19,6 +21,7 @@ import {Version as Vers} from './types/Version.sol';
 contract DotNugg2ElectricBoogaloo is IDotNugg {
     using Bytes for bytes;
     using Uint256 for uint256;
+    using Event for uint256[];
 
     function nuggify(
         uint256 width,
@@ -78,6 +81,8 @@ contract DotNugg2ElectricBoogaloo is IDotNugg {
         IDotNugg.Matrix memory old = Calculator.combine(8, uint8(width), versions);
 
         Vers.Memory memory result = MatrixLib.update(old);
+
+        result.bigmatrix.log('result');
 
         return result.bigmatrix;
 

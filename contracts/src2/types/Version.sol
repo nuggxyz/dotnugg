@@ -4,7 +4,7 @@ import '../libraries/BitReader.sol';
 
 library Version {
     using BitReader for BitReader.Memory;
-
+    using Event for uint256;
     struct Memory {
         uint256[] pallet;
         uint256[] minimatrix;
@@ -54,16 +54,33 @@ library Version {
 
         res = new uint256[]((palletLength) / 7 + 1);
 
-        for (uint256 i = 1; i < palletLength + 1; i++) {
+        for (uint256 i = 0; i < palletLength; i++) {
             uint256 working = 0;
             // 4 bits: zindex
-            working |= reader.select(4) << 32;
+            working |= (reader.select(4) << 32);
 
+            uint256 color;
+            uint256 selecta = reader.select(1);
+            if (selecta == 1) {
+                color = 0x000000;
+            } else {
+                uint256 r = reader.select(8);
+                uint256 g = reader.select(8);
+                uint256 b = reader.select(8);
+
+                color = (r << 16) | (g << 8) | b;
+            }
+            console.log('here11111', selecta, Uint256.toHexString(color, 3));
+
+            // uint256 color = ((reader.select(1) == 0x1 ? 0x000000 : reader.select(24)) << 8);
+            // color.log('color here');
+            console.log('working before color', Uint256.toHexString(working, 6));
             // 1 or 25 bits: rgb
-            working |= (reader.select(1) == 0x1 ? 0x000000 : reader.select(24)) << 8;
+            working |= color << 8;
+            console.log('working after color', Uint256.toHexString(working, 6));
 
             // 1 or 8 bits: a
-            working |= reader.select(1) == 0x1 ? 0xff : reader.select(8);
+            working |= (reader.select(1) == 0x1 ? 0xff : reader.select(8));
 
             res[i / 7] |= (working << (36 * (i % 7)));
         }
@@ -233,7 +250,7 @@ library Version {
 
     function getPalletColorAt(Memory memory m, uint256 index)
         internal
-        pure
+        view
         returns (
             uint256 res,
             uint256 color,
@@ -243,6 +260,8 @@ library Version {
         res = (m.pallet[index / 7] >> (36 * (index % 7))) & ShiftLib.mask(36);
 
         color = res & 0xffffffff;
+
+        console.log('COLOR', Uint256.toHexString(color));
 
         zindex = (res >> 32) & 0xf;
     }
