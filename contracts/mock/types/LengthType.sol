@@ -2,7 +2,6 @@
 
 pragma solidity 0.8.4;
 
-import 'hardhat/console.sol';
 import '../../src/libraries/ShiftLib.sol';
 import './ItemType.sol';
 

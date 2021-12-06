@@ -23,3 +23,4 @@ coverage.json
 */out
 /tests/dapptools/out
 typechain
+out

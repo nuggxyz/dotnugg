@@ -2,88 +2,176 @@
 
 pragma solidity 0.8.4;
 
-// import '.././interfaces/IDotNugg.sol';
-import '.././interfaces/INuggIn.sol';
+import '.././interfaces/IResolver.sol';
+import '../libraries/Base64.sol';
+import '../libraries/Uint.sol';
 
-// import '.././erc165/IERC165.sol';
-// import '../logic/Rgba.sol';
-// import '../logic/Matrix.sol';
-// import '../libraries/Uint.sol';
-
-// import '../erc165/ERC165.sol';
-
-// /**
-//  * @dev Bytes1 operations.
-//  */
-contract SvgFileResolver2 is IFileResolver {
+contract SvgPostProcessResolver is IPostProcessResolver {
     // using Rgba for IDotNugg.Rgba;
-    // using Uint256 for uint256;
-    // using Matrix for IDotNugg.Matrix;
+    using Uint256 for uint256;
+
     // /**
     //  * @dev See {IERC165-supportsInterface}.
     //  */
-    function supportsInterface(bytes4 interfaceId) public view override(IFileResolver) returns (bool) {
-        return interfaceId == type(IFileResolver).interfaceId || interfaceId == type(IERC165).interfaceId;
+    function supportsInterface(bytes4 interfaceId) public pure override(IPostProcessResolver) returns (bool) {
+        return interfaceId == type(IPostProcessResolver).interfaceId || interfaceId == type(IERC165).interfaceId;
     }
 
-    function resolveFile(IDotNugg.Matrix memory matrix, bytes memory data) public view override returns (bytes memory res, string memory fileType) {
-        // uint256 svgWidth = uint256(matrix.width) * 10;
-        // bytes memory header = abi.encodePacked(
-        //     "<svg viewBox='0 0 ",
-        //     svgWidth.toString(),
-        //     ' ',
-        //     svgWidth.toString(),
-        //     "' width='",
-        //     svgWidth.toString(),
-        //     "' height='",
-        //     svgWidth.toString(),
-        //     "' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>\n"
+    function resolvePostProcess(
+        uint256 tokenId,
+        uint256 width,
+        uint256 height,
+        uint256[] memory file,
+        bytes memory data
+    ) public pure override returns (string memory res) {
+        // // bytes memory rects = getSvgRects(matrix, 10);
+        // // '</svg>'
+        // res = Base64.encode(
+        //     bytes(
+        //         abi.encodePacked(
+        //             '{"name":"',
+        //             'NuggFT',
+        //             '","tokenId":"',
+        //             tokenId.toString(),
+        //             '","description":"',
+        //             'The Nuggiest FT',
+        //             '", "image": "',
+        //             Base64.encode(buildSvg(file, width, height), 'svg'),
+        //             '"}'
+        //         )
+        //     ),
+        //     'json'
         // );
-        // bytes memory rects = getSvgRects(matrix, 10);
-        return (abi.encodePacked('', '', '</svg>'), 'svg');
+
+        return Base64.encode(buildSvg(file, width, height), 'svg');
     }
-    // function getSvgRects(IDotNugg.Matrix memory matrix, uint256 pixelWidth) internal view returns (bytes memory res) {
-    //     IDotNugg.Rgba memory lastRgba;
-    //     uint8 lastX;
-    //     //   uint256 xtracker;
-    //     uint256 count = 1;
-    //     while (matrix.next()) {
-    //         if ((lastRgba.equalssss(matrix.current().rgba) && matrix.currentUnsetX < matrix.data[matrix.currentUnsetY].length)) {
-    //             //  lastRgba = matrix.current().rgba;
-    //             count++;
-    //             continue;
-    //         }
-    //         if (lastRgba.a != 0) {
-    //             res = abi.encodePacked(res, getRekt(lastRgba, lastX * pixelWidth, matrix.currentUnsetY * pixelWidth, pixelWidth, count * pixelWidth));
-    //         }
-    //         lastRgba = matrix.current().rgba;
-    //         lastX = matrix.currentUnsetX;
-    //         // xtracker = 0;
-    //         count = 1;
-    //     }
-    //     res = abi.encodePacked(res, getRekt(matrix.current().rgba, lastX * pixelWidth, matrix.currentUnsetY * pixelWidth, pixelWidth, count * pixelWidth));
-    // }
-    // function getRekt(
-    //     IDotNugg.Rgba memory rgba,
-    //     uint256 x,
-    //     uint256 y,
-    //     uint256 xlen,
-    //     uint256 ylen
-    // ) internal view returns (bytes memory res) {
-    //     if (rgba.a == 0) return '';
-    //     //   (rgba, ) = rgba.combine(IDotNugg.Rgba({r: 0, g: 255, b: 0, a: 99}));
-    //     res = abi.encodePacked(
-    //         "\t<rect fill='#",
-    //         rgba.toAscii(),
-    //         "' x='",
-    //         x.toString(),
-    //         "' y='",
-    //         y.toString(),
-    //         "' height='",
-    //         xlen.toString(),
-    //         "' width='",
-    //         ylen.toString(),
-    //         "'/>\n"
-    //     );
-    // }
+
+    function getPixelAt(
+        uint256[] memory file,
+        uint256 x,
+        uint256 y,
+        uint256 width
+    ) internal pure returns (uint256 res) {
+        uint256 index = x + (y * width);
+
+        res = (file[index / 8] >> (32 * (index % 8))) & 0xffffffff;
+    }
+
+    function buildSvg(
+        uint256[] memory file,
+        uint256 width,
+        uint256 height
+    ) internal pure returns (bytes memory res) {
+        bytes memory header = abi.encodePacked(
+            hex'3c7376672076696577426f783d2730203020', //"<svg Box='0 0 ",
+            (10 * width).toString(),
+            hex'20', // ' ',
+            (10 * width).toString(),
+            hex'20272077696474683d27', //"' width='",
+            (10 * width).toString(),
+            hex'27206865696768743d27', //  "' height='",
+            (10 * width).toString(),
+            hex'2720786d6c6e733d27687474703a2f2f7777772e77332e6f72672f323030302f7376672720786d6c6e733a786c696e6b3d27687474703a2f2f7777772e77332e6f72672f313939392f786c696e6b273e5c6e' // "' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>\n"
+        );
+
+        bytes memory footer = hex'3c2f7376673e';
+
+        uint256 last = getPixelAt(file, 0, 0, width);
+        uint256 count = 1;
+        uint256 index = 0;
+
+        // bytes[] memory rects = new bytes[](35);
+        bytes memory body;
+
+        for (uint256 y = 0; y < height; y++) {
+            for (uint256 x = 0; x < height; x++) {
+                if (y == 0 && x == 0) x++;
+                uint256 curr = getPixelAt(file, x, y, width);
+                if (curr == last) {
+                    count++;
+                    continue;
+                } else {
+                    // rects[index++] = getRekt(last, x - count, y, count, 1);
+                    body = abi.encodePacked(body, getRekt(last, (x - count) * 10, y * 10, 1 * 10, count * 10));
+                    last = curr;
+                    count = 1;
+                }
+            }
+            // rects[index++] = getRekt(last, 33 - count, y, count, 1);
+            body = abi.encodePacked(body, getRekt(last, (33 - count) * 10, y * 10, 1 * 10, count * 10));
+            last = 0;
+            count = 0;
+        }
+
+        res = abi.encodePacked(header, body, footer);
+    }
+
+    function getRekt(
+        uint256 pixel,
+        uint256 x,
+        uint256 y,
+        uint256 xlen,
+        uint256 ylen
+    ) internal pure returns (bytes memory res) {
+        if (pixel & 0xff == 0) return '';
+
+        res = abi.encodePacked(
+            // hex'5c743c726563742066696c6c3d2723',
+            "\t<rect fill='#",
+            pixel.toHexStringNoPrefix(4),
+            hex'2720783d27',
+            x.toAscii(),
+            hex'2720793d27',
+            y.toAscii(),
+            hex'27206865696768743d27',
+            xlen.toAscii(),
+            hex'272077696474683d27',
+            ylen.toAscii(),
+            // hex'272f3e5c6e'
+            "'/>\n"
+        );
+    }
 }
+
+// res = abi.encodePacked(
+//     hex'5c743c726563742066696c6c3d2723', // "\t<rect fill='#",
+//     pixel.ascii(),
+//     hex'2720783d27', // "' x='",
+//     x.toString(),
+//     hex'2720793d27', // "' y='",
+//     y.toString(),
+//     hex'27206865696768743d27', // "' height='",
+//     xlen.toString(),
+//     hex'272077696474683d27', // "' width='",
+//     ylen.toString(),
+//     hex'272f3e5c6e' // "'/>\n"
+// );
+
+// function getSvgRects(MatrixType.Memory memory matrix, uint256 pixelWidth) internal view returns (bytes memory res) {
+//     uint256 lastX;
+//     uint256 lastPixel;
+//     //   uint256 xtracker;
+//     uint256 count = 1;
+//     while (matrix.next()) {
+//         if ((lastPixel.equals(matrix.current().pixel_rgba()) && matrix.data.matrix_currentUnsetX() < matrix.data.matrix_width())) {
+//             //  lastPixel = matrix.current().rgba;
+//             count++;
+//             continue;
+//         }
+//         if (lastPixel.pixel_a() != 0) {
+//             res = abi.encodePacked(
+//                 res,
+//                 getRekt(lastPixel, lastX * pixelWidth, matrix.data.matrix_currentUnsetY() * pixelWidth, pixelWidth, count * pixelWidth)
+//             );
+//         }
+//         lastPixel = matrix.current().pixel_rgba();
+//         lastX = matrix.data.matrix_currentUnsetX();
+//         // xtracker = 0;
+//         count = 1;
+//     }
+
+//     res = abi.encodePacked(
+//         res,
+//         getRekt(matrix.current().pixel_rgba(), lastX * pixelWidth, matrix.data.matrix_currentUnsetY() * pixelWidth, pixelWidth, count * pixelWidth)
+//     );
+// }

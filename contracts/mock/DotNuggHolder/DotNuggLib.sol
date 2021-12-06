@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
+pragma solidity 0.8.4;
 
 import './ItemLib.sol';
 import '../../src/libraries/ShiftLib.sol';
 import '../types/ItemType.sol';
 import '../types/LengthType.sol';
-import 'hardhat/console.sol';
+// import '../../test/Console.sol';
 import '../../src/interfaces/IDotNugg.sol';
 
 library DotNuggLib {
@@ -91,7 +92,7 @@ library DotNuggLib {
 
         for (uint256 i = 0; i < data.length; i++) {
             uint256 itemType = (data[i][data[i].length - 1] >> 32) & 0x7;
-            console.log('type:', itemType);
+            // console.log('type:', itemType);
             uint256 len = lengths.length(itemType);
 
             uint256 itemtypebytes = uint256(itemType) << 96;
@@ -113,7 +114,7 @@ library DotNuggLib {
         uint8 itemType,
         uint256 id
     ) internal view returns (uint256[] memory data) {
-        console.log('here', id);
+        // console.log('here', id);
 
         data = new uint256[](10);
         data[1] = s.items[(uint256(itemType) << 96) | id];

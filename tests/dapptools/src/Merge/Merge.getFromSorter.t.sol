@@ -1,3 +1,5 @@
+pragma solidity 0.8.4;
+
 import '../../lib/DSTest.sol';
 import '../../../../contracts/src/logic/Merge.sol';
 
