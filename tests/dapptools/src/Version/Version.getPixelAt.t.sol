@@ -32,9 +32,9 @@ contract VersionGetPixelAtTest is DSTest {
 
         m.data = 0x000000000000000000000000000000000000000000000430a288000000000000;
 
-        uint256 got_res = Version.getPixelAt(m, 17, 17);
+        uint256 got_res = Version.getPixelAt(m, 4, 7);
 
-        assertEq(got_res, 2, 'res');
+        assertEq(got_res, 5, 'res');
     }
 
     function test_getPixelAt_b() public {

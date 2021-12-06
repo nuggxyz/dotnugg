@@ -120,7 +120,6 @@ library Matrix {
                     // p.exists = true;
 
                     (, uint256 color, uint256 zindex) = Version.getPalletColorAt(data, col);
-                    // color.log('color');
                     setCurrent(
                         matrix,
                         IDotNugg.Pixel({

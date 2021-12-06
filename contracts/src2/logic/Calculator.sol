@@ -69,8 +69,6 @@ library Calculator {
         IDotNugg.Anchor memory receiver = canvas.receivers[mix.feature];
         IDotNugg.Anchor memory anchor = mix.version.anchor;
 
-        console.log('rca', receiver.coordinate.a, anchor.coordinate.a);
-
         uint8 xoffset = receiver.coordinate.a - anchor.coordinate.a;
         uint8 yoffset = receiver.coordinate.b - anchor.coordinate.b;
 
@@ -204,7 +202,6 @@ library Calculator {
 
         res.receivers = new IDotNugg.Anchor[](res.receivers.length);
         res.feature = uint8((versions[versionIndex].data >> 75) & ShiftLib.mask(3));
-        console.log('feauture---------', res.feature);
         res.matrix.set(versions[versionIndex], width, height);
     }
 
