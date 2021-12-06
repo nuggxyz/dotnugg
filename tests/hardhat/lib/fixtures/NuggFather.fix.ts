@@ -8,8 +8,7 @@ import { MockDotNuggHolder } from '../../../../typechain/MockDotNuggHolder';
 import { MockDotNuggHolder__factory } from '../../../../typechain/factories/MockDotNuggHolder__factory';
 import { DotNugg } from '../../../../typechain/DotNugg';
 import { DotNugg__factory } from '../../../../typechain/factories/DotNugg__factory';
-import { DotNugg2ElectricBoogaloo__factory, SvgPostProcessResolver, SvgPostProcessResolver__factory } from '../../../../typechain';
-import { DotNugg2ElectricBoogaloo } from '../../../../typechain/DotNugg2ElectricBoogaloo';
+import { SvgPostProcessResolver, SvgPostProcessResolver__factory } from '../../../../typechain';
 
 export interface NuggFatherFixture {
     holder: MockDotNuggHolder;
@@ -18,7 +17,6 @@ export interface NuggFatherFixture {
     // let nugginDotNugg: SvgPostProcessResolver;
     svgResolver: SvgPostProcessResolver;
     dotnugg: DotNugg;
-    dotnugg2eb: DotNugg2ElectricBoogaloo;
 
     owner: string;
     ownerStartBal: BigNumber;
@@ -39,12 +37,6 @@ export const NuggFatherFix: Fixture<NuggFatherFixture> = async function (
 
     const dotnugg = await deployContractWithSalt<DotNugg__factory>({
         factory: 'DotNugg',
-        from: eoaDeployer,
-        args: [],
-    });
-
-    const dotnugg2eb = await deployContractWithSalt<DotNugg2ElectricBoogaloo__factory>({
-        factory: 'DotNugg2ElectricBoogaloo',
         from: eoaDeployer,
         args: [],
     });
@@ -99,7 +91,6 @@ export const NuggFatherFix: Fixture<NuggFatherFixture> = async function (
         // dotnugg: hre.dotnugg,
         // nuggft,
         // xnugg,
-        dotnugg2eb,
         svgResolver,
         dotnugg,
         blockOffset,

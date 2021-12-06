@@ -2,14 +2,16 @@
 
 pragma solidity 0.8.4;
 
+import './logic/Calculator.sol';
+import {Matrix as MatrixLib} from './logic/Matrix.sol';
+
+import './v2/Merge.sol';
+import '../test/Event.sol';
+
 import './libraries/Base64.sol';
-import './libraries/Uint.sol';
-
-import './types/Version.sol';
-import './logic/Merge.sol';
-
 import './interfaces/IDotNugg.sol';
-import '../src2/interfaces/IResolver.sol';
+import './interfaces/IResolver.sol';
+import {Version as Vers} from './types/Version.sol';
 
 /**
  * @title DotNugg V1 - onchain encoder/decoder for dotnugg files
@@ -18,7 +20,9 @@ import '../src2/interfaces/IResolver.sol';
  * @dev hold my margarita
  */
 contract DotNugg is IDotNugg {
+    using Bytes for bytes;
     using Uint256 for uint256;
+    using Event for uint256[];
 
     function nuggify(
         uint256 width,
@@ -30,34 +34,17 @@ contract DotNugg is IDotNugg {
         // bytes32 seed,
         bytes memory data
     ) public view override returns (string memory image) {
-        // IFileResolver fileResolver = IFileResolver(_resolver);
-        // IColorResolver colorResolver = IColorResolver(_resolver);
+        // IPreProcessResolver colorResolver = IPreProcessResolver(_resolver);
 
-        Version.Memory[][] memory versions = Version.parse(_items);
+        IPostProcessResolver postProcesser = IPostProcessResolver(_resolver);
 
-        Merge.begin(versions, width);
+        Vers.Memory[][] memory versions = Vers.parse(_items);
 
-        // MatrixType.Memory memory matrix = Calculator.combine(featureLen, width, _items);
+        IDotNugg.Matrix memory old = Calculator.combine(8, uint8(width), versions);
 
-        // (bytes memory fileData, string memory fileType) = fileResolver.resolveFile(versions[0][0], data);
+        Vers.Memory memory result = MatrixLib.update(old);
 
-        // image = Base64.encode(
-        //     bytes(
-        //         abi.encodePacked(
-        //             '{"name":"',
-        //             name,
-        //             '","tokenId":"',
-        //             tokenId.toString(),
-        //             '","description":"',
-        //             desc,
-        //             '", "image": "',
-        //             Base64.encode(fileData, fileType),
-        //             '"}'
-        //         )
-        //     ),
-        //     'json'
-        // );
-        //   image = fileData.toAscii();
+        return postProcesser.resolvePostProcess(tokenId, old.width, old.height, result.bigmatrix, data);
     }
 
     function nuggifyTest(
@@ -73,30 +60,53 @@ contract DotNugg is IDotNugg {
         // IFileResolver fileResolver = IFileResolver(_resolver);
         // IColorResolver colorResolver = IColorResolver(_resolver);
 
-        Version.Memory[][] memory versions = Version.parse(_items);
+        Vers.Memory[][] memory versions = Vers.parse(_items);
 
-        return Merge.begin(versions, width).bigmatrix;
+        IDotNugg.Matrix memory old = Calculator.combine(8, uint8(width), versions);
 
-        // MatrixType.Memory memory matrix = Calculator.combine(featureLen, width, _items);
+        Vers.Memory memory result = MatrixLib.update(old);
 
-        // (bytes memory fileData, string memory fileType) = fileResolver.resolveFile(versions[0][0], data);
+        return result.bigmatrix;
+    }
 
-        // image = Base64.encode(
-        //     bytes(
-        //         abi.encodePacked(
-        //             '{"name":"',
-        //             name,
-        //             '","tokenId":"',
-        //             tokenId.toString(),
-        //             '","description":"',
-        //             desc,
-        //             '", "image": "',
-        //             Base64.encode(fileData, fileType),
-        //             '"}'
-        //         )
-        //     ),
-        //     'json'
-        // );
-        //   image = fileData.toAscii();
+    function nuggify2(
+        uint256 width,
+        uint256[][] memory _items,
+        address _resolver,
+        string memory name,
+        string memory desc,
+        uint256 tokenId,
+        // bytes32 seed,
+        bytes memory data
+    ) public view override returns (string memory image) {
+        // IPreProcessResolver colorResolver = IPreProcessResolver(_resolver);
+
+        IPostProcessResolver postProcesser = IPostProcessResolver(_resolver);
+
+        Vers.Memory[][] memory versions = Vers.parse(_items);
+
+        Vers.Memory memory result = Merge.begin(versions, width);
+
+        return postProcesser.resolvePostProcess(tokenId, width, width, result.bigmatrix, data);
+    }
+
+    function nuggifyTest2(
+        uint256 width,
+        uint256[][] memory _items,
+        address _resolver,
+        string memory name,
+        string memory desc,
+        uint256 tokenId,
+        // bytes32 seed,
+        bytes memory data
+    ) public view override returns (uint256[] memory image) {
+        // IFileResolver fileResolver = IFileResolver(_resolver);
+        // IColorResolver colorResolver = IColorResolver(_resolver);
+
+        Vers.Memory[][] memory versions = Vers.parse(_items);
+
+        Vers.Memory memory result = Merge.begin(versions, width);
+
+        return result.bigmatrix;
     }
 }

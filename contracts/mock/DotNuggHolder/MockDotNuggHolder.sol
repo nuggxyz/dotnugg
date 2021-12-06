@@ -13,14 +13,14 @@ contract MockDotNuggHolder is IMockDotNuggHolder {
     using DotNuggLib for DotNuggLib.Storage;
 
     IDotNugg dotnugg;
-    IFileResolver svgResolver;
+    IPostProcessResolver svgResolver;
 
     DotNuggLib.Storage dotnugg_storage;
     ItemLib.Storage item_storage;
 
     constructor(address _dotnugg, address _dotnuggFileResolver) {
         dotnugg = IDotNugg(_dotnugg);
-        svgResolver = IFileResolver(_dotnuggFileResolver);
+        svgResolver = IPostProcessResolver(_dotnuggFileResolver);
     }
 
     function dotNuggUpload(uint256[][] calldata items, bytes memory) external override {
@@ -35,5 +35,13 @@ contract MockDotNuggHolder is IMockDotNuggHolder {
 
     function tokenUriTest(uint256 tokenId) external view returns (uint256[] memory res) {
         res = dotnugg_storage.generateTokenURITest(item_storage, address(dotnugg), tokenId, address(svgResolver));
+    }
+
+    function tokenUri2(uint256 tokenId) external view returns (string memory res) {
+        res = dotnugg_storage.generateTokenURI2(item_storage, address(dotnugg), tokenId, address(svgResolver));
+    }
+
+    function tokenUriTest2(uint256 tokenId) external view returns (uint256[] memory res) {
+        res = dotnugg_storage.generateTokenURITest2(item_storage, address(dotnugg), tokenId, address(svgResolver));
     }
 }
