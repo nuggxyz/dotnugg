@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
+pragma solidity 0.8.4;
 
-import 'hardhat/console.sol';
 import '../types/ItemType.sol';
 import '../types/LengthType.sol';
 
@@ -51,7 +51,7 @@ library ItemLib {
 
         uint256 lendata = dns.lengths;
 
-        console.log('item0: ', data.item0(), lendata.length(0), data.item0() % lendata.length(0));
+        // console.log('item0: ', data.item0(), lendata.length(0), data.item0() % lendata.length(0));
         // console.log('item1: ', data.item1(), lendata.length(1), data.item1() % lendata.length(1));
         // console.log('item3: ', data.item3(), lendata.length(3), data.item3() % lendata.length(3));
 

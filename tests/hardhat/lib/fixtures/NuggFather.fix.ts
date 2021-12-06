@@ -8,15 +8,15 @@ import { MockDotNuggHolder } from '../../../../typechain/MockDotNuggHolder';
 import { MockDotNuggHolder__factory } from '../../../../typechain/factories/MockDotNuggHolder__factory';
 import { DotNugg } from '../../../../typechain/DotNugg';
 import { DotNugg__factory } from '../../../../typechain/factories/DotNugg__factory';
-import { DotNugg2ElectricBoogaloo__factory, SvgFileResolver, SvgFileResolver__factory } from '../../../../typechain';
+import { DotNugg2ElectricBoogaloo__factory, SvgPostProcessResolver, SvgPostProcessResolver__factory } from '../../../../typechain';
 import { DotNugg2ElectricBoogaloo } from '../../../../typechain/DotNugg2ElectricBoogaloo';
 
 export interface NuggFatherFixture {
     holder: MockDotNuggHolder;
     // let nuggin: GroupNuggIn;
-    // let nugginSVG: SvgFileResolver;
-    // let nugginDotNugg: SvgFileResolver;
-    svgResolver: SvgFileResolver;
+    // let nugginSVG: SvgPostProcessResolver;
+    // let nugginDotNugg: SvgPostProcessResolver;
+    svgResolver: SvgPostProcessResolver;
     dotnugg: DotNugg;
     dotnugg2eb: DotNugg2ElectricBoogaloo;
 
@@ -49,8 +49,8 @@ export const NuggFatherFix: Fixture<NuggFatherFixture> = async function (
         args: [],
     });
 
-    const svgResolver = await deployContractWithSalt<SvgFileResolver__factory>({
-        factory: 'SvgFileResolver',
+    const svgResolver = await deployContractWithSalt<SvgPostProcessResolver__factory>({
+        factory: 'SvgPostProcessResolver',
         from: eoaDeployer,
         args: [],
     });

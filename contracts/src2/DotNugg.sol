@@ -9,7 +9,7 @@ import '../test/Event.sol';
 
 import './libraries/Base64.sol';
 import './interfaces/IDotNugg.sol';
-import './interfaces/INuggIn.sol';
+import './interfaces/IResolver.sol';
 import {Version as Vers} from './types/Version.sol';
 
 /**
@@ -33,34 +33,17 @@ contract DotNugg2ElectricBoogaloo is IDotNugg {
         // bytes32 seed,
         bytes memory data
     ) public view override returns (string memory image) {
-        IFileResolver fileResolver = IFileResolver(_resolver);
-        IColorResolver colorResolver = IColorResolver(_resolver);
+        // IPreProcessResolver colorResolver = IPreProcessResolver(_resolver);
+
+        IPostProcessResolver postProcesser = IPostProcessResolver(_resolver);
 
         Vers.Memory[][] memory versions = Vers.parse(_items);
 
-        // Calculator.combine(versions, width);
+        IDotNugg.Matrix memory old = Calculator.combine(8, uint8(width), versions);
 
-        // MatrixType.Memory memory matrix = Calculator.combine(featureLen, width, _items);
+        Vers.Memory memory result = MatrixLib.update(old);
 
-        // (bytes memory fileData, string memory fileType) = fileResolver.resolveFile(versions[0][0], data);
-
-        // image = Base64.encode(
-        //     bytes(
-        //         abi.encodePacked(
-        //             '{"name":"',
-        //             name,
-        //             '","tokenId":"',
-        //             tokenId.toString(),
-        //             '","description":"',
-        //             desc,
-        //             '", "image": "',
-        //             Base64.encode(fileData, fileType),
-        //             '"}'
-        //         )
-        //     ),
-        //     'json'
-        // );
-        //   image = fileData.toAscii();
+        return postProcesser.resolvePostProcess(tokenId, old.width, old.height, result.bigmatrix, data);
     }
 
     function nuggifyTest(
@@ -73,8 +56,8 @@ contract DotNugg2ElectricBoogaloo is IDotNugg {
         // bytes32 seed,
         bytes memory data
     ) public view override returns (uint256[] memory image) {
-        IFileResolver fileResolver = IFileResolver(_resolver);
-        IColorResolver colorResolver = IColorResolver(_resolver);
+        // IFileResolver fileResolver = IFileResolver(_resolver);
+        // IColorResolver colorResolver = IColorResolver(_resolver);
 
         Vers.Memory[][] memory versions = Vers.parse(_items);
 
@@ -83,8 +66,6 @@ contract DotNugg2ElectricBoogaloo is IDotNugg {
         Vers.Memory memory result = MatrixLib.update(old);
 
         result.bigmatrix.log('result');
-
-        return result.bigmatrix;
 
         // MatrixType.Memory memory matrix = Calculator.combine(featureLen, width, _items);
 

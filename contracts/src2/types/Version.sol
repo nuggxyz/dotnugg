@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+pragma solidity 0.8.4;
 
 import '../libraries/BitReader.sol';
 
@@ -113,7 +114,7 @@ library Version {
     }
 
     function parseReceivers(BitReader.Memory memory reader) internal view returns (uint256 res) {
-        uint256 receiversLength = reader.select(1) == 0x1 ? 0x1 : reader.select(3);
+        uint256 receiversLength = reader.select(1) == 0x1 ? 0x1 : reader.select(4);
 
         for (uint256 j = 0; j < receiversLength; j++) {
             uint256 receiver = 0;
