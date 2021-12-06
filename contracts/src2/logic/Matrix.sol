@@ -134,6 +134,8 @@ library Matrix {
                             exists: true
                         })
                     );
+                } else {
+                    setCurrent(matrix, IDotNugg.Pixel({rgba: IDotNugg.Rgba({r: 0, g: 0, b: 0, a: 0}), zindex: 0, exists: false}));
                 }
             }
         }
