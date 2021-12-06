@@ -178,6 +178,7 @@ library Calculator {
             d: uint8((expanderBits >> 0) & ShiftLib.mask(6)),
             exists: true
         });
+        res.version.calculatedReceivers = new IDotNugg.Coordinate[](8);
 
         res.version.staticReceivers = new IDotNugg.Coordinate[](8);
 
@@ -190,11 +191,20 @@ library Calculator {
             }
         }
 
+        for (uint256 i = 0; i < 8; i++) {
+            (uint256 _x, uint256 _y, bool exists) = Version.getReceiverAt(versions[versionIndex], i, true);
+            if (exists) {
+                res.version.calculatedReceivers[i].a = uint8(_x);
+                res.version.calculatedReceivers[i].b = uint8(_y);
+                res.version.calculatedReceivers[i].exists = true;
+            }
+        }
+
         // TODO - receivers?
 
         res.receivers = new IDotNugg.Anchor[](res.receivers.length);
         res.feature = uint8((versions[versionIndex].data >> 75) & ShiftLib.mask(3));
-
+        console.log('feauture---------', res.feature);
         res.matrix.set(versions[versionIndex], width, height);
     }
 

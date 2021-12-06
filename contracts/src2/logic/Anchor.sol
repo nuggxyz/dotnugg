@@ -18,11 +18,14 @@ library Anchor {
         uint8 stat = 0;
         uint8 cal = 0;
 
-        for (uint8 i = 0; i < mix.version.calculatedReceivers.length; i++) {
+        for (uint8 i = 0; i < mix.version.staticReceivers.length; i++) {
             IDotNugg.Coordinate memory coordinate;
             if (mix.version.staticReceivers[i].exists) {
                 stat++;
                 coordinate = mix.version.staticReceivers[i];
+                mix.receivers[i].coordinate.a = coordinate.b;
+                mix.receivers[i].coordinate.b = coordinate.a;
+                mix.receivers[i].coordinate.exists = true;
             } else if (mix.version.calculatedReceivers[i].exists) {
                 cal++;
                 if (anchors.length == 0) anchors = getAnchors(mix.matrix);
