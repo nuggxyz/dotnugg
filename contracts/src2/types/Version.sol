@@ -24,6 +24,8 @@ library Version {
 
             uint256 feature = reader.select(3);
 
+            console.log('feature', feature);
+
             uint256[] memory pallet = parsePallet(reader);
 
             uint256 versionLength = reader.select(2) + 1;
@@ -120,16 +122,24 @@ library Version {
         for (uint256 j = 0; j < receiversLength; j++) {
             uint256 receiver = 0;
 
+            uint256 xOrPreset = reader.select(6);
+
+            uint256 yOrYOffset = reader.select(6);
+
+            console.log('xOrPreset - yOrYOffset', xOrPreset, yOrYOffset);
+
             // yOrYOffset
-            receiver |= reader.select(6) << 6;
+            receiver |= yOrYOffset << 6;
 
             //xOrPreset
-            receiver |= reader.select(6);
+            receiver |= xOrPreset;
 
             // rFeature
             uint256 rFeature = reader.select(3);
 
-            receiver <<= (rFeature * 12) + (reader.select(1) == 0x1 ? 128 : 0);
+            console.log('rFeature', rFeature);
+
+            receiver <<= ((rFeature * 12) + (reader.select(1) == 0x1 ? 128 : 0));
 
             res |= receiver;
         }
@@ -177,7 +187,10 @@ library Version {
         x = data & ShiftLib.mask(6);
         y = data >> 6;
 
-        exists = x != 0 && y != 0;
+        exists = x != 0 || y != 0;
+
+        console.log('getReceiverAt: ', index, x, y);
+        console.log('exists: ', exists);
     }
 
     function setReceiverAt(
