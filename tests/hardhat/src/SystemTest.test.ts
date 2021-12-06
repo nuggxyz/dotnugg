@@ -3,6 +3,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/dist/src/signers';
 
 import { NamedAccounts } from '../../../hardhat.config';
 import { NuggFatherFix, NuggFatherFixture } from '../lib/fixtures/NuggFather.fix';
+import { bashit2 } from '../lib/groups';
 
 import { prepareAccounts } from './';
 
@@ -37,9 +38,9 @@ describe('uint tests', async function () {
                 '0x00',
             );
 
-            const res = await fix.holder.tokenUri(0);
-            console.log(res);
-            // bashit2(res, 33, 33);
+            const res = await fix.holder.tokenUriTest(0);
+            // console.log(res);
+            bashit2(res, 33, 33);
         });
     });
 });

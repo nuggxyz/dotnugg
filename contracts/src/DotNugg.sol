@@ -9,7 +9,7 @@ import './types/Version.sol';
 import './logic/Merge.sol';
 
 import './interfaces/IDotNugg.sol';
-import './interfaces/IResolver.sol';
+import '../src2/interfaces/IResolver.sol';
 
 /**
  * @title DotNugg V1 - onchain encoder/decoder for dotnugg files
@@ -30,8 +30,8 @@ contract DotNugg is IDotNugg {
         // bytes32 seed,
         bytes memory data
     ) public view override returns (string memory image) {
-        IFileResolver fileResolver = IFileResolver(_resolver);
-        IColorResolver colorResolver = IColorResolver(_resolver);
+        // IFileResolver fileResolver = IFileResolver(_resolver);
+        // IColorResolver colorResolver = IColorResolver(_resolver);
 
         Version.Memory[][] memory versions = Version.parse(_items);
 
@@ -39,24 +39,24 @@ contract DotNugg is IDotNugg {
 
         // MatrixType.Memory memory matrix = Calculator.combine(featureLen, width, _items);
 
-        (bytes memory fileData, string memory fileType) = fileResolver.resolveFile(versions[0][0], data);
+        // (bytes memory fileData, string memory fileType) = fileResolver.resolveFile(versions[0][0], data);
 
-        image = Base64.encode(
-            bytes(
-                abi.encodePacked(
-                    '{"name":"',
-                    name,
-                    '","tokenId":"',
-                    tokenId.toString(),
-                    '","description":"',
-                    desc,
-                    '", "image": "',
-                    Base64.encode(fileData, fileType),
-                    '"}'
-                )
-            ),
-            'json'
-        );
+        // image = Base64.encode(
+        //     bytes(
+        //         abi.encodePacked(
+        //             '{"name":"',
+        //             name,
+        //             '","tokenId":"',
+        //             tokenId.toString(),
+        //             '","description":"',
+        //             desc,
+        //             '", "image": "',
+        //             Base64.encode(fileData, fileType),
+        //             '"}'
+        //         )
+        //     ),
+        //     'json'
+        // );
         //   image = fileData.toAscii();
     }
 
@@ -70,8 +70,8 @@ contract DotNugg is IDotNugg {
         // bytes32 seed,
         bytes memory data
     ) public view override returns (uint256[] memory image) {
-        IFileResolver fileResolver = IFileResolver(_resolver);
-        IColorResolver colorResolver = IColorResolver(_resolver);
+        // IFileResolver fileResolver = IFileResolver(_resolver);
+        // IColorResolver colorResolver = IColorResolver(_resolver);
 
         Version.Memory[][] memory versions = Version.parse(_items);
 

@@ -72,19 +72,20 @@ pragma solidity 0.8.4;
 
 import '../lib/DSTest.sol';
 
-import '../../../contracts/src2/DotNugg.sol';
+import '../../../contracts/src/DotNugg.sol';
 
 // import '../../../contracts/src2/resolvers/SvgFileResolver.sol';
 
 contract SystemTest is DSTest {
     uint256[][] items;
 
-    DotNugg2ElectricBoogaloo dotnugg;
+    DotNugg dotnugg;
 
     // SvgPostProcessResolver resolver;
 
     function setUp() public {
-        dotnugg = new DotNugg2ElectricBoogaloo();
+        dotnugg = new DotNugg();
+
         // resolver = new SvgPostProcessResolver();
 
         uint256[] memory a = new uint256[](9);
@@ -102,12 +103,17 @@ contract SystemTest is DSTest {
 
     function testSystem() public {
         // uint256 pallet = 0x00000000005616134e55636336e55666662e55666639e55666639e55656538e5;
+
         // Version.Memory memory m;
         // m.pallet = new uint256[](1);
         // m.pallet[0] = pallet;
-        // uint256[] memory res = dotnugg.nuggifyTest(33, items, address(this), '', '', 0, '');
-        // for (uint256 i = 0; i < res.length; i++) {
-        //     emit log_named_uint('i', res[i]);
-        // }
+
+        uint256[] memory res = dotnugg.nuggifyTest(33, items, address(this), '', '', 0, '');
+
+        for (uint256 i = 0; i < res.length; i++) {
+            emit log_named_uint('i', res[i]);
+        }
+
+        assertTrue(false);
     }
 }
