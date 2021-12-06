@@ -5,6 +5,8 @@ import '../libraries/BitReader.sol';
 library Version {
     using BitReader for BitReader.Memory;
     using Event for uint256;
+    using Event for uint256[];
+
     struct Memory {
         uint256[] pallet;
         uint256[] minimatrix;
@@ -23,8 +25,6 @@ library Version {
             require(reader.select(32) == 0x4e554747, 'DEC:PI:0');
 
             uint256 feature = reader.select(3);
-
-            console.log('feature', feature);
 
             uint256[] memory pallet = parsePallet(reader);
 
@@ -47,6 +47,8 @@ library Version {
                 (, , uint256 ancZ) = getPalletColorAt(m[j][i], getPixelAt(m[j][i], ancX, ancY));
 
                 setZ(m[j][i], ancZ);
+
+                // m[j][i].minimatrix.log('minimatrix');
             }
         }
     }
@@ -74,14 +76,10 @@ library Version {
 
                 color = (r << 16) | (g << 8) | b;
             }
-            // console.log('here11111', selecta, Uint256.toHexString(color, 3));
 
             // // uint256 color = ((reader.select(1) == 0x1 ? 0x000000 : reader.select(24)) << 8);
-            // // color.log('color here');
-            // console.log('working before color', Uint256.toHexString(working, 6));
             // // 1 or 25 bits: rgb
             working |= color << 8;
-            // console.log('working after color', Uint256.toHexString(working, 6));
 
             // // 1 or 8 bits: a
             working |= (reader.select(1) == 0x1 ? 0xff : reader.select(8));
@@ -99,8 +97,6 @@ library Version {
 
         uint256 width = reader.select(6);
         uint256 height = reader.select(6);
-
-        console.log('h - w', height, width);
 
         res |= height << 69; // heighth and width
         res |= width << 63;
@@ -126,8 +122,6 @@ library Version {
 
             uint256 yOrYOffset = reader.select(6);
 
-            console.log('xOrPreset - yOrYOffset', xOrPreset, yOrYOffset);
-
             // yOrYOffset
             receiver |= yOrYOffset << 6;
 
@@ -136,8 +130,6 @@ library Version {
 
             // rFeature
             uint256 rFeature = reader.select(3);
-
-            console.log('rFeature', rFeature);
 
             receiver <<= ((rFeature * 12) + (reader.select(1) == 0x1 ? 128 : 0));
 
@@ -163,7 +155,10 @@ library Version {
 
             uint256 key = reader.select(4);
 
-            for (uint256 i = 0; i < len; i++) res[index / 64] |= key << (4 * (index++ % 64));
+            for (uint256 i = 0; i < len; i++) {
+                res[index / 64] |= (key << (4 * (index % 64)));
+                index++;
+            }
         }
     }
 
@@ -188,9 +183,6 @@ library Version {
         y = data >> 6;
 
         exists = x != 0 || y != 0;
-
-        console.log('getReceiverAt: ', index, x, y);
-        console.log('exists: ', exists);
     }
 
     function setReceiverAt(
@@ -265,7 +257,6 @@ library Version {
     ) internal view returns (uint256 palletKey) {
         (uint256 width, uint256 height) = getWidth(m);
         uint256 index = x + (y * width);
-        // width.log('width', height, 'height', index, 'index');
 
         palletKey = (m.minimatrix[index / 64] >> (4 * (index % 64))) & 0xf;
     }
@@ -283,8 +274,6 @@ library Version {
         res = m.pallet[index];
 
         color = res & 0xffffffff;
-
-        // console.log('COLOR', Uint256.toHexString(color));
 
         zindex = (res >> 32) & 0xf;
     }
@@ -306,9 +295,6 @@ library Version {
         diffX = negX ? ancX - recX : recX - ancX;
         negY = recY < ancY;
         diffY = negY ? ancY - recY : recY - ancY;
-
-        // ancX.log('ancX', diffX, 'diffX', recX, 'recX');
-        // ancY.log('ancY', diffY, 'diffY', recY, 'recY');
     }
 
     function getPixelAtPositionWithOffset(Memory memory m, uint256 index) internal view returns (bool exists, uint256 palletKey) {
@@ -319,13 +305,7 @@ library Version {
 
         (, uint256 diffX, , uint256 diffY) = getOffset(m);
 
-        if (width != 33) {
-            indexX.log('indexX', diffX, 'diffX', width, 'width');
-            indexY.log('indexY', diffY, 'diffY', height, 'height');
-        }
-
-        // indexX.log('indexX', diffX, 'diffX', width, 'width');
-        // indexY.log('indexY', diffY, 'diffY', height, 'height');
+        if (width != 33) {}
 
         if (indexX < diffX) return (false, 0);
         uint256 realX = indexX - diffX;
@@ -333,10 +313,7 @@ library Version {
         if (indexY < diffY) return (false, 0);
         uint256 realY = indexY - diffY;
 
-        if (width != 33) {
-            indexX.log('indexX', diffX, 'diffX', realX, 'realX');
-            indexY.log('indexY', diffY, 'diffY', realY, 'realY');
-        }
+        if (width != 33) {}
 
         // require(indexX >= diffX, 'VERS:GPAP:0');
         // uint256 realX = indexX - diffX;
@@ -345,9 +322,6 @@ library Version {
         // uint256 realY = indexY - diffY;
 
         // if (realX >= width || realY >= height) return (false, 0);
-
-        // indexX.log('indexX', diffX, 'diffX', realX, 'realX');
-        // indexY.log('indexY', diffY, 'diffY', realY, 'realY');
 
         uint256 realIndex = realY * width + realX;
 
