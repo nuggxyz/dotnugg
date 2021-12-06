@@ -95,8 +95,13 @@ library Version {
 
         res |= feature << 75;
 
-        res |= reader.select(6) << 69; // heighth and width
-        res |= reader.select(6) << 63;
+        uint256 width = reader.select(6);
+        uint256 height = reader.select(6);
+
+        console.log('h - w', height, width);
+
+        res |= height << 69; // heighth and width
+        res |= width << 63;
 
         // 12 bits: coordinate - anchor x and y
         res |= reader.select(6) << 51;
@@ -266,7 +271,7 @@ library Version {
 
         color = res & 0xffffffff;
 
-        console.log('COLOR', Uint256.toHexString(color));
+        // console.log('COLOR', Uint256.toHexString(color));
 
         zindex = (res >> 32) & 0xf;
     }
@@ -301,6 +306,11 @@ library Version {
 
         (, uint256 diffX, , uint256 diffY) = getOffset(m);
 
+        if (width != 33) {
+            indexX.log('indexX', diffX, 'diffX', width, 'width');
+            indexY.log('indexY', diffY, 'diffY', height, 'height');
+        }
+
         // indexX.log('indexX', diffX, 'diffX', width, 'width');
         // indexY.log('indexY', diffY, 'diffY', height, 'height');
 
@@ -309,6 +319,11 @@ library Version {
 
         if (indexY < diffY) return (false, 0);
         uint256 realY = indexY - diffY;
+
+        if (width != 33) {
+            indexX.log('indexX', diffX, 'diffX', realX, 'realX');
+            indexY.log('indexY', diffY, 'diffY', realY, 'realY');
+        }
 
         // require(indexX >= diffX, 'VERS:GPAP:0');
         // uint256 realX = indexX - diffX;
