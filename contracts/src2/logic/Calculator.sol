@@ -26,8 +26,8 @@ library Calculator {
         canvas.matrix = Matrix.create(width, width);
         canvas.receivers = new IDotNugg.Anchor[](featureLen);
         IDotNugg.Coordinate memory coord;
-        coord.a = width / 2;
-        coord.b = width / 2;
+        coord.a = width / 2 + 1;
+        coord.b = width / 2 + 1;
         coord.exists = true;
         IDotNugg.Rlud memory r;
         for (uint8 i = 0; i < featureLen; i++) {
@@ -43,19 +43,19 @@ library Calculator {
         // IDotNugg.Item[] memory items = Decoder.parseItems(inputs, featureLen);
 
         for (uint8 i = 0; i < versions.length; i++) {
-            // if (items[i].versions.length > 0) {
-            setMix(mix, versions[i], pickVersionIndex(canvas, versions[i]));
+            if (versions[i].length > 0) {
+                setMix(mix, versions[i], pickVersionIndex(canvas, versions[i]));
 
-            formatForCanvas(canvas, mix);
+                formatForCanvas(canvas, mix);
 
-            postionForCanvas(canvas, mix);
+                postionForCanvas(canvas, mix);
 
-            mergeToCanvas(canvas, mix);
+                mergeToCanvas(canvas, mix);
 
-            calculateReceivers(mix);
+                calculateReceivers(mix);
 
-            updateReceivers(canvas, mix);
-            // }
+                updateReceivers(canvas, mix);
+            }
         }
 
         return canvas.matrix;
@@ -69,8 +69,11 @@ library Calculator {
         IDotNugg.Anchor memory receiver = canvas.receivers[mix.feature];
         IDotNugg.Anchor memory anchor = mix.version.anchor;
 
+        console.log('rca', receiver.coordinate.a, anchor.coordinate.a);
+
         uint8 xoffset = receiver.coordinate.a - anchor.coordinate.a;
         uint8 yoffset = receiver.coordinate.b - anchor.coordinate.b;
+
         canvas.matrix.moveTo(xoffset, yoffset, mix.matrix.width, mix.matrix.height);
     }
 
@@ -122,7 +125,7 @@ library Calculator {
                 r: uint8((bits >> 18) & ShiftLib.mask(6)),
                 l: uint8((bits >> 12) & ShiftLib.mask(6)),
                 u: uint8((bits >> 6) & ShiftLib.mask(6)),
-                d: uint8((bits >> 0) & ShiftLib.mask(6)),
+                d: uint8((bits) & ShiftLib.mask(6)),
                 exists: true
             });
 
@@ -213,9 +216,11 @@ library Calculator {
      * @dev
      */
     function mergeToCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal view {
+        uint256 count;
         while (canvas.matrix.next() && mix.matrix.next()) {
             IDotNugg.Pixel memory canvasPixel = canvas.matrix.current();
             IDotNugg.Pixel memory mixPixel = mix.matrix.current();
+
             if (mixPixel.exists && mixPixel.zindex >= canvasPixel.zindex) {
                 canvasPixel.zindex = mixPixel.zindex;
                 canvasPixel.rgba.combine(mixPixel.rgba);

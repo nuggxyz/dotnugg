@@ -306,7 +306,7 @@ library Version {
         // indexX.log('indexX', diffX, 'diffX', realX, 'realX');
         // indexY.log('indexY', diffY, 'diffY', realY, 'realY');
 
-        uint256 realIndex = realY * width + realX;
+        uint256 realIndex = realX * width + realY;
 
         if (realIndex / 64 >= m.minimatrix.length) return (false, 0);
         exists = true;

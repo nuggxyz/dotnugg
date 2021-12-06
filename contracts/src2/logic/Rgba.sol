@@ -16,7 +16,8 @@ library Rgba {
     }
 
     function combine(IDotNugg.Rgba memory base, IDotNugg.Rgba memory mix) internal view {
-        if (mix.a == 255 || base.a == 0) {
+        // if (mix.a == 255 || base.a == 0) {
+        if (true) {
             base.r = mix.r;
             base.g = mix.g;
             base.b = mix.b;
