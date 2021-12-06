@@ -57,8 +57,8 @@ library ItemLib {
 
         data = data.size(0x0);
         data = OldShiftType.base(data, OldShiftType.base(data) % lendata.length(0));
+        // data = data.item(5, 0, data.item(5) % lendata.length(1));
         data = data.item(1, 0, data.item1() % lendata.length(1));
-        data = data.item(3, 0, data.item1() % lendata.length(3));
 
         // .item4(data.item4() % lendata.item4());
 

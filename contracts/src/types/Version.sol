@@ -97,10 +97,10 @@ library Version {
             uint256 receiver = 0;
 
             // yOrYOffset
-            receiver |= reader.select(6);
+            receiver |= reader.select(6) << 6;
 
             //xOrPreset
-            receiver |= reader.select(6) << 6;
+            receiver |= reader.select(6);
 
             // rFeature
             uint256 rFeature = reader.select(3);
