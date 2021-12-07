@@ -3,12 +3,7 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_dotnugg",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_dotnuggFileResolver",
+        "name": "_defaultResolver",
         "type": "address"
       }
     ],
@@ -58,52 +53,29 @@
         "internalType": "uint256",
         "name": "tokenId",
         "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "resolver",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "preResolver",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "postResolver",
+        "type": "address"
       }
     ],
-    "name": "tokenUri2",
+    "name": "tokenUri",
     "outputs": [
       {
-        "internalType": "string",
+        "internalType": "bytes",
         "name": "res",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "tokenUriTest",
-    "outputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "res",
-        "type": "uint256[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "tokenUriTest2",
-    "outputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "res",
-        "type": "uint256[]"
+        "type": "bytes"
       }
     ],
     "stateMutability": "view",

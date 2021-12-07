@@ -12,15 +12,13 @@ import './../../src/interfaces/IResolver.sol';
 contract MockDotNuggHolder is IMockDotNuggHolder {
     using DotNuggLib for DotNuggLib.Storage;
 
-    IDotNugg dotnugg;
-    IPostProcessResolver svgResolver;
+    address defaultResolver;
 
     DotNuggLib.Storage dotnugg_storage;
     ItemLib.Storage item_storage;
 
-    constructor(address _dotnugg, address _dotnuggFileResolver) {
-        dotnugg = IDotNugg(_dotnugg);
-        svgResolver = IPostProcessResolver(_dotnuggFileResolver);
+    constructor(address _defaultResolver) {
+        defaultResolver = _defaultResolver;
     }
 
     function dotNuggUpload(uint256[][] calldata items, bytes memory) external override {
@@ -30,18 +28,35 @@ contract MockDotNuggHolder is IMockDotNuggHolder {
     }
 
     function tokenUri(uint256 tokenId) external view returns (string memory res) {
-        res = dotnugg_storage.generateTokenURI(item_storage, address(dotnugg), tokenId, address(svgResolver));
+        return string(tokenUri(tokenId, address(0), address(0), address(0)));
     }
 
-    function tokenUriTest(uint256 tokenId) external view returns (uint256[] memory res) {
-        res = dotnugg_storage.generateTokenURITest(item_storage, address(dotnugg), tokenId, address(svgResolver));
+    function tokenUri(
+        uint256 tokenId,
+        address resolver,
+        address preResolver,
+        address postResolver
+    ) public view returns (bytes memory res) {
+        resolver = resolver == address(0) ? defaultResolver : resolver;
+        preResolver = preResolver == address(0) ? defaultResolver : preResolver;
+        postResolver = postResolver == address(0) ? defaultResolver : postResolver;
+
+        res = abi.encode(dotnugg_storage.generateTokenURI(item_storage, tokenId, resolver, preResolver, postResolver));
+
+        res = IPreProcessResolver(preResolver).preProcess(res);
+        res = IProcessResolver(resolver).process(res);
+        res = IPostProcessResolver(postResolver).postProcess(res);
     }
 
-    function tokenUri2(uint256 tokenId) external view returns (string memory res) {
-        res = dotnugg_storage.generateTokenURI2(item_storage, address(dotnugg), tokenId, address(svgResolver));
-    }
+    // function tokenUriTest(uint256 tokenId) external view returns (uint256[] memory res) {
+    //     res = dotnugg_storage.generateTokenURITest(item_storage, address(dotnugg), tokenId, address(svgResolver));
+    // }
 
-    function tokenUriTest2(uint256 tokenId) external view returns (uint256[] memory res) {
-        res = dotnugg_storage.generateTokenURITest2(item_storage, address(dotnugg), tokenId, address(svgResolver));
-    }
+    // function tokenUri2(uint256 tokenId) external view returns (string memory res) {
+    //     res = dotnugg_storage.generateTokenURI2(item_storage, address(dotnugg), tokenId, address(svgResolver));
+    // }
+
+    // function tokenUriTest2(uint256 tokenId) external view returns (uint256[] memory res) {
+    //     res = dotnugg_storage.generateTokenURITest2(item_storage, address(dotnugg), tokenId, address(svgResolver));
+    // }
 }

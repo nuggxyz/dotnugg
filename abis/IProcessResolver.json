@@ -7,7 +7,7 @@
         "type": "bytes"
       }
     ],
-    "name": "preProcess",
+    "name": "process",
     "outputs": [
       {
         "internalType": "bytes",
@@ -15,7 +15,7 @@
         "type": "bytes"
       }
     ],
-    "stateMutability": "pure",
+    "stateMutability": "view",
     "type": "function"
   },
   {

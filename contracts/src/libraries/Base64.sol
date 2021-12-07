@@ -29,7 +29,7 @@ library Base64 {
      * @dev Credit to Brecht Devos - <brecht@loopring.org> - under MIT license https://github.com/Brechtpd/base64/blob/main/base64.sol
      * @dev modified for solidity v8
      */
-    function _encode(bytes memory data) private pure returns (string memory) {
+    function _encode(bytes memory data) internal pure returns (bytes memory) {
         if (data.length == 0) return '';
 
         // load the table into memory
@@ -39,7 +39,7 @@ library Base64 {
         uint256 encodedLen = 4 * ((data.length + 2) / 3);
 
         // add some extra buffer at the end required for the writing
-        string memory result = new string(encodedLen + 32);
+        bytes memory result = new bytes(encodedLen + 32);
 
         assembly {
             // set the actual output length

@@ -2,37 +2,17 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "width",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "height",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "file",
-        "type": "uint256[]"
-      },
-      {
         "internalType": "bytes",
         "name": "data",
         "type": "bytes"
       }
     ],
-    "name": "resolvePostProcess",
+    "name": "postProcess",
     "outputs": [
       {
-        "internalType": "string",
+        "internalType": "bytes",
         "name": "res",
-        "type": "string"
+        "type": "bytes"
       }
     ],
     "stateMutability": "view",
