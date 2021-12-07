@@ -143,7 +143,14 @@ export const bashit = (input: string, width: number, height: number) => {
     });
 };
 
-export const bashit2 = (input: BigNumber[], width: number, height: number): string[] => {
+export const bashit2 = (input: BigNumber[]): string[] => {
+    const tmp = input[input.length - 1];
+    const tmp2 = input[input.length - 1];
+    const width = tmp.shr(63).and(0x3f).toNumber();
+    const height = tmp2.shr(69).and(0x3f).toNumber();
+
+    console.log(width, height, input[input.length - 1], tmp, tmp2);
+
     const res: string[] = [];
     res.push(CreateNumberedRow(width));
     let index = 0;

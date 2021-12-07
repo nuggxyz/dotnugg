@@ -15,7 +15,7 @@ library Rgba {
         uint16 a;
     }
 
-    function combine(IDotNugg.Rgba memory base, IDotNugg.Rgba memory mix) internal view {
+    function combine(IDotNugg.Rgba memory base, IDotNugg.Rgba memory mix) internal pure {
         // if (mix.a == 255 || base.a == 0) {
         if (true) {
             base.r = mix.r;
@@ -36,17 +36,17 @@ library Rgba {
         //   return IDotNugg.Rgba({r: r, g: g, b: b, a: 255});
     }
 
-    function toUint64(IDotNugg.Rgba memory base) internal view returns (uint64 res) {
+    function toUint64(IDotNugg.Rgba memory base) internal pure returns (uint64 res) {
         bytes memory input = abi.encodePacked(base.r, base.g, base.b, base.a);
         return input.toUint64(0);
     }
 
-    function toAscii(IDotNugg.Rgba memory base) internal view returns (string memory res) {
+    function toAscii(IDotNugg.Rgba memory base) internal pure returns (string memory res) {
         bytes memory input = abi.encodePacked(base.r, base.g, base.b, base.a);
         return input.toAscii();
     }
 
-    function equalssss(IDotNugg.Rgba memory base, IDotNugg.Rgba memory next) internal view returns (bool res) {
+    function equalssss(IDotNugg.Rgba memory base, IDotNugg.Rgba memory next) internal pure returns (bool res) {
         res = base.a == next.a && base.r == next.r && base.g == next.g && base.b == next.b;
     }
 }

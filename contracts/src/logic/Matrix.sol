@@ -13,7 +13,7 @@ library Matrix {
     using Rgba for IDotNugg.Rgba;
     using Event for uint256;
 
-    function update(IDotNugg.Matrix memory matrix) internal view returns (Version.Memory memory m) {
+    function update(IDotNugg.Matrix memory matrix) internal pure returns (Version.Memory memory m) {
         Version.initBigMatrix(m, matrix.width);
 
         resetIterator(matrix);
@@ -30,9 +30,12 @@ library Matrix {
             Version.setBigMatrixPixelAt(m, index, color);
             // }
         }
+
+        m.data |= (uint256(matrix.width) << 63);
+        m.data |= (uint256(matrix.height) << 69);
     }
 
-    function create(uint8 width, uint8 height) internal view returns (IDotNugg.Matrix memory res) {
+    function create(uint8 width, uint8 height) internal pure returns (IDotNugg.Matrix memory res) {
         require(width % 2 == 1 && height % 2 == 1, 'ML:C:0');
 
         res.data = new IDotNugg.Pixel[][](height);
@@ -47,7 +50,7 @@ library Matrix {
         uint8 yoffset,
         uint8 width,
         uint8 height
-    ) internal view {
+    ) internal pure {
         matrix.currentUnsetX = xoffset;
         matrix.currentUnsetY = yoffset;
         matrix.startX = xoffset;
@@ -55,11 +58,11 @@ library Matrix {
         matrix.height = height + yoffset;
     }
 
-    function next(IDotNugg.Matrix memory matrix) internal view returns (bool res) {
+    function next(IDotNugg.Matrix memory matrix) internal pure returns (bool res) {
         res = next(matrix, matrix.width);
     }
 
-    function next(IDotNugg.Matrix memory matrix, uint8 width) internal view returns (bool res) {
+    function next(IDotNugg.Matrix memory matrix, uint8 width) internal pure returns (bool res) {
         if (matrix.init) {
             if (width <= matrix.currentUnsetX + 1) {
                 if (matrix.height == matrix.currentUnsetY + 1) {
@@ -76,27 +79,27 @@ library Matrix {
         res = true;
     }
 
-    function current(IDotNugg.Matrix memory matrix) internal view returns (IDotNugg.Pixel memory res) {
+    function current(IDotNugg.Matrix memory matrix) internal pure returns (IDotNugg.Pixel memory res) {
         res = matrix.data[matrix.currentUnsetY][matrix.currentUnsetX];
     }
 
-    function setCurrent(IDotNugg.Matrix memory matrix, IDotNugg.Pixel memory pix) internal view {
+    function setCurrent(IDotNugg.Matrix memory matrix, IDotNugg.Pixel memory pix) internal pure {
         matrix.data[matrix.currentUnsetY][matrix.currentUnsetX] = pix;
     }
 
-    function resetIterator(IDotNugg.Matrix memory matrix) internal view {
+    function resetIterator(IDotNugg.Matrix memory matrix) internal pure {
         matrix.currentUnsetX = 0;
         matrix.currentUnsetY = 0;
         matrix.startX = 0;
         matrix.init = false;
     }
 
-    function moveBack(IDotNugg.Matrix memory matrix) internal view {
+    function moveBack(IDotNugg.Matrix memory matrix) internal pure {
         matrix.width = uint8(matrix.data[0].length);
         matrix.height = uint8(matrix.data.length);
     }
 
-    function reset(IDotNugg.Matrix memory matrix) internal view {
+    function reset(IDotNugg.Matrix memory matrix) internal pure {
         for (; next(matrix); ) if (current(matrix).exists) delete matrix.data[matrix.currentUnsetY][matrix.currentUnsetX];
         matrix.width = 0;
         matrix.height = 0;
@@ -108,17 +111,13 @@ library Matrix {
         Version.Memory memory data,
         uint256 groupWidth,
         uint256 groupHeight
-    ) internal view {
-        uint256 totalLength = 0;
+    ) internal pure {
         matrix.height = uint8(groupHeight);
         for (uint256 y = 0; y < groupHeight; y++) {
             for (uint256 x = 0; x < groupWidth; x++) {
                 next(matrix, uint8(groupWidth));
                 uint256 col = Version.getPixelAt(data, x, y);
                 if (col != 0) {
-                    // IDotNugg.Pixel memory p;
-                    // p.exists = true;
-
                     (, uint256 color, uint256 zindex) = Version.getPalletColorAt(data, col);
                     setCurrent(
                         matrix,
@@ -152,7 +151,7 @@ library Matrix {
         IDotNugg.Matrix memory matrix,
         uint8 index,
         uint8 amount
-    ) internal view {
+    ) internal pure {
         require(index < matrix.data.length, 'MAT:ARA:0');
         for (uint256 j = matrix.width; j > index; j--) {
             if (j < index) break;
@@ -170,7 +169,7 @@ library Matrix {
         IDotNugg.Matrix memory matrix, /// cowboy hat
         uint8 index,
         uint8 amount
-    ) internal view {
+    ) internal pure {
         require(index < matrix.data[0].length, 'MAT:ACA:0');
         for (uint256 i = 0; i < matrix.width; i++) {
             for (uint256 j = matrix.width; j > index; j--) {

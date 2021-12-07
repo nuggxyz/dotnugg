@@ -13,7 +13,7 @@ library Anchor {
      * @dev this is where we implement the logic you wrote in go
      */
 
-    function convertReceiversToAnchors(IDotNugg.Mix memory mix) internal view {
+    function convertReceiversToAnchors(IDotNugg.Mix memory mix) internal pure {
         IDotNugg.Coordinate[] memory anchors;
         uint8 stat = 0;
         uint8 cal = 0;
@@ -51,7 +51,7 @@ library Anchor {
         IDotNugg.Mix memory mix,
         IDotNugg.Coordinate memory coordinate,
         uint8 index
-    ) internal view {
+    ) internal pure {
         IDotNugg.Rlud memory radii;
         while (coordinate.a < mix.matrix.width - 1 && mix.matrix.data[coordinate.b][coordinate.a + (radii.r + 1)].exists) {
             radii.r++;
@@ -79,7 +79,7 @@ library Anchor {
         IDotNugg.Mix memory mix,
         IDotNugg.Coordinate memory calculatedReceiver,
         IDotNugg.Coordinate[] memory anchors
-    ) internal view returns (IDotNugg.Coordinate memory coordinate) {
+    ) internal pure returns (IDotNugg.Coordinate memory coordinate) {
         coordinate.a = anchors[calculatedReceiver.a].a;
         coordinate.b = anchors[calculatedReceiver.a].b;
         coordinate.exists = true;
@@ -100,7 +100,7 @@ library Anchor {
         return coordinate;
     }
 
-    function getAnchors(IDotNugg.Matrix memory matrix) internal view returns (IDotNugg.Coordinate[] memory anchors) {
+    function getAnchors(IDotNugg.Matrix memory matrix) internal pure returns (IDotNugg.Coordinate[] memory anchors) {
         (uint8 topOffset, uint8 bottomOffset, IDotNugg.Coordinate memory center) = getBox(matrix);
 
         anchors = new IDotNugg.Coordinate[](5);
@@ -126,7 +126,7 @@ library Anchor {
 
     function getBox(IDotNugg.Matrix memory matrix)
         internal
-        view
+        pure
         returns (
             uint8 topOffset,
             uint8 bottomOffset,

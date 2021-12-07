@@ -9,9 +9,9 @@ pragma solidity 0.8.4;
  */
 library Base64 {
     string internal constant _TABLE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-    string internal constant _BASE64_PREFIX_JSON = 'data:application/json;base64,';
-    string internal constant _BASE64_PREFIX_DOTNUGG = 'data:image/dotnugg;base64,';
-    string internal constant _BASE64_PREFIX_SVGs = 'data:image/svg+xml;base64,';
+    string internal constant PREFIX_JSON = 'data:application/json;base64,';
+    string internal constant PREFIX_DOTNUGG = 'data:image/dotnugg;base64,';
+    string internal constant PREFIX_SVG = 'data:image/svg+xml;base64,';
 
     /**
      * @notice wrapper for _encode for svg data

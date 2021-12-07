@@ -2,17 +2,27 @@
   {
     "inputs": [
       {
+        "internalType": "uint256[][]",
+        "name": "files",
+        "type": "uint256[][]"
+      },
+      {
         "internalType": "bytes",
         "name": "data",
+        "type": "bytes"
+      },
+      {
+        "internalType": "bytes",
+        "name": "preProcessData",
         "type": "bytes"
       }
     ],
     "name": "process",
     "outputs": [
       {
-        "internalType": "bytes",
-        "name": "res",
-        "type": "bytes"
+        "internalType": "uint256[]",
+        "name": "file",
+        "type": "uint256[]"
       }
     ],
     "stateMutability": "view",

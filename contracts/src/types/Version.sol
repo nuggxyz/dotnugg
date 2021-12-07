@@ -17,7 +17,7 @@ library Version {
         uint256 data;
     }
 
-    function parse(uint256[][] memory data) internal view returns (Memory[][] memory m) {
+    function parse(uint256[][] memory data) internal pure returns (Memory[][] memory m) {
         m = new Memory[][](data.length);
 
         for (uint256 j = 0; j < data.length; j++) {
@@ -55,7 +55,7 @@ library Version {
         }
     }
 
-    function parsePallet(BitReader.Memory memory reader) internal view returns (uint256[] memory res) {
+    function parsePallet(BitReader.Memory memory reader) internal pure returns (uint256[] memory res) {
         uint256 palletLength = reader.select(4) + 1;
 
         res = new uint256[]((palletLength) / 7 + 1);
@@ -92,7 +92,7 @@ library Version {
         }
     }
 
-    function parseData(BitReader.Memory memory reader, uint256 feature) internal view returns (uint256 res) {
+    function parseData(BitReader.Memory memory reader, uint256 feature) internal pure returns (uint256 res) {
         // 12 bits: coordinate - anchor x and y
 
         res |= feature << 75;
@@ -114,7 +114,7 @@ library Version {
         res |= (reader.select(1) == 0x1 ? 0x000000 : reader.select(24)) << 3;
     }
 
-    function parseReceivers(BitReader.Memory memory reader) internal view returns (uint256 res) {
+    function parseReceivers(BitReader.Memory memory reader) internal pure returns (uint256 res) {
         uint256 receiversLength = reader.select(1) == 0x1 ? 0x1 : reader.select(4);
 
         for (uint256 j = 0; j < receiversLength; j++) {
@@ -143,7 +143,7 @@ library Version {
         BitReader.Memory memory reader,
         uint256 height,
         uint256 width
-    ) internal view returns (uint256[] memory res) {
+    ) internal pure returns (uint256[] memory res) {
         uint256 groupsLength = reader.select(1) == 0x1 ? reader.select(8) + 1 : reader.select(16) + 1;
 
         res = new uint256[]((height * width) / 64 + 1);
@@ -170,7 +170,7 @@ library Version {
         bool calculated
     )
         internal
-        view
+        pure
         returns (
             uint256 x,
             uint256 y,
@@ -193,7 +193,7 @@ library Version {
         bool calculated,
         uint256 x,
         uint256 y
-    ) internal view returns (uint256 res) {
+    ) internal pure returns (uint256 res) {
         // yOrYOffset
         res |= y << 6;
 
@@ -209,14 +209,14 @@ library Version {
         uint256 diffX,
         bool negY,
         uint256 diffY
-    ) internal view {
+    ) internal pure {
         m.data |= ((((diffX & 0xff) << 1) | (((negX ? 0x1 : 0x0)))) << 85);
         m.data |= ((((diffY & 0xff) << 1) | ((((negY ? 0x1 : 0x0))))) << 94);
     }
 
     function getOffset(Memory memory m)
         internal
-        view
+        pure
         returns (
             bool negX,
             uint256 diffX,
@@ -231,22 +231,22 @@ library Version {
         diffY = (data >> 95) & 0xff;
     }
 
-    function setZ(Memory memory m, uint256 z) internal view {
+    function setZ(Memory memory m, uint256 z) internal pure {
         require(z <= 0xf, 'VERS:SETZ:0');
         m.data |= z << 78;
     }
 
-    function getZ(Memory memory m) internal view returns (uint256 res) {
+    function getZ(Memory memory m) internal pure returns (uint256 res) {
         res = (m.data >> 78) & 0xf;
     }
 
-    function getWidth(Memory memory m) internal view returns (uint256 width, uint256 height) {
+    function getWidth(Memory memory m) internal pure returns (uint256 width, uint256 height) {
         // yOrYOffset
         width = (m.data >> 63) & ShiftLib.mask(6);
         height = (m.data >> 69) & ShiftLib.mask(6);
     }
 
-    function getAnchor(Memory memory m) internal view returns (uint256 x, uint256 y) {
+    function getAnchor(Memory memory m) internal pure returns (uint256 x, uint256 y) {
         // yOrYOffset
         x = (m.data >> 51) & ShiftLib.mask(6);
         y = (m.data >> 57) & ShiftLib.mask(6);
@@ -256,8 +256,8 @@ library Version {
         Memory memory m,
         uint256 x,
         uint256 y
-    ) internal view returns (uint256 palletKey) {
-        (uint256 width, uint256 height) = getWidth(m);
+    ) internal pure returns (uint256 palletKey) {
+        (uint256 width, ) = getWidth(m);
         uint256 index = x + (y * width);
 
         palletKey = (m.minimatrix[index / 64] >> (4 * (index % 64))) & 0xf;
@@ -265,7 +265,7 @@ library Version {
 
     function getPalletColorAt(Memory memory m, uint256 index)
         internal
-        view
+        pure
         returns (
             uint256 res,
             uint256 color,
@@ -282,7 +282,7 @@ library Version {
 
     function getDiffOfReceiverAt(Memory memory base, Memory memory mix)
         internal
-        view
+        pure
         returns (
             bool negX,
             uint256 diffX,
@@ -299,8 +299,8 @@ library Version {
         diffY = negY ? ancY - recY : recY - ancY;
     }
 
-    function getPixelAtPositionWithOffset(Memory memory m, uint256 index) internal view returns (bool exists, uint256 palletKey) {
-        (uint256 width, uint256 height) = getWidth(m);
+    function getPixelAtPositionWithOffset(Memory memory m, uint256 index) internal pure returns (bool exists, uint256 palletKey) {
+        (uint256 width, ) = getWidth(m);
 
         uint256 indexY = index / 33;
         uint256 indexX = index % 33;
@@ -334,7 +334,7 @@ library Version {
     }
 
     function initBigMatrix(Memory memory m, uint256 width) internal pure {
-        m.bigmatrix = new uint256[](((width * width) / 8) + 1);
+        m.bigmatrix = new uint256[](((width * width) / 8) + 2);
     }
 
     function setBigMatrixPixelAt(
@@ -345,5 +345,10 @@ library Version {
         require(m.bigmatrix.length > index / 8, 'VERS:SBM:0');
 
         m.bigmatrix[index / 8] |= (color << (32 * (index % 8)));
+    }
+
+    function bigMatrixWithData(Memory memory m) internal pure returns (uint256[] memory res) {
+        res = m.bigmatrix;
+        res[res.length - 1] = m.data;
     }
 }

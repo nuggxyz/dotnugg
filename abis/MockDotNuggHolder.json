@@ -3,12 +3,31 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_defaultResolver",
+        "name": "defaultResolver_",
         "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "defaultResolver",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "res",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [
@@ -57,16 +76,6 @@
       {
         "internalType": "address",
         "name": "resolver",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "preResolver",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "postResolver",
         "type": "address"
       }
     ],
