@@ -2,8 +2,18 @@
   {
     "inputs": [
       {
+        "internalType": "uint256[]",
+        "name": "file",
+        "type": "uint256[]"
+      },
+      {
         "internalType": "bytes",
         "name": "data",
+        "type": "bytes"
+      },
+      {
+        "internalType": "bytes",
+        "name": "preProcessData",
         "type": "bytes"
       }
     ],

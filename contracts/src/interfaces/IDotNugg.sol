@@ -3,46 +3,6 @@
 pragma solidity 0.8.4;
 
 interface IDotNugg {
-    function nuggify(
-        uint256 width,
-        uint256[][] memory _items,
-        address _resolver,
-        string memory name,
-        string memory description,
-        uint256 tokenId,
-        bytes memory data
-    ) external view returns (string memory image);
-
-    function nuggifyTest(
-        uint256 width,
-        uint256[][] memory _items,
-        address _resolver,
-        string memory name,
-        string memory description,
-        uint256 tokenId,
-        bytes memory data
-    ) external view returns (uint256[] memory res);
-
-    function nuggify2(
-        uint256 width,
-        uint256[][] memory _items,
-        address _resolver,
-        string memory name,
-        string memory description,
-        uint256 tokenId,
-        bytes memory data
-    ) external view returns (string memory image);
-
-    function nuggifyTest2(
-        uint256 width,
-        uint256[][] memory _items,
-        address _resolver,
-        string memory name,
-        string memory description,
-        uint256 tokenId,
-        bytes memory data
-    ) external view returns (uint256[] memory res);
-
     struct Rlud {
         bool exists;
         uint8 r;

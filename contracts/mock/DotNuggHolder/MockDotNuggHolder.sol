@@ -12,13 +12,13 @@ import './../../src/interfaces/IResolver.sol';
 contract MockDotNuggHolder is IMockDotNuggHolder {
     using DotNuggLib for DotNuggLib.Storage;
 
-    address defaultResolver;
+    address _defaultResolver;
 
     DotNuggLib.Storage dotnugg_storage;
     ItemLib.Storage item_storage;
 
-    constructor(address _defaultResolver) {
-        defaultResolver = _defaultResolver;
+    constructor(address defaultResolver_) {
+        _defaultResolver = defaultResolver_;
     }
 
     function dotNuggUpload(uint256[][] calldata items, bytes memory) external override {
@@ -28,24 +28,23 @@ contract MockDotNuggHolder is IMockDotNuggHolder {
     }
 
     function tokenUri(uint256 tokenId) external view returns (string memory res) {
-        return string(tokenUri(tokenId, address(0), address(0), address(0)));
+        return string(tokenUri(tokenId, defaultResolver(tokenId)));
     }
 
-    function tokenUri(
-        uint256 tokenId,
-        address resolver,
-        address preResolver,
-        address postResolver
-    ) public view returns (bytes memory res) {
-        resolver = resolver == address(0) ? defaultResolver : resolver;
-        preResolver = preResolver == address(0) ? defaultResolver : preResolver;
-        postResolver = postResolver == address(0) ? defaultResolver : postResolver;
+    function defaultResolver(uint256) public view returns (address res) {
+        return _defaultResolver;
+    }
 
-        res = abi.encode(dotnugg_storage.generateTokenURI(item_storage, tokenId, resolver, preResolver, postResolver));
+    function tokenUri(uint256 tokenId, address resolver) public view returns (bytes memory res) {
+        (uint256[][] memory files, uint256 itemData) = dotnugg_storage.getData(item_storage, tokenId);
 
-        res = IPreProcessResolver(preResolver).preProcess(res);
-        res = IProcessResolver(resolver).process(res);
-        res = IPostProcessResolver(postResolver).postProcess(res);
+        bytes memory data = abi.encode(tokenId, itemData, address(this));
+
+        bytes memory customData = IPreProcessResolver(resolver).preProcess(data);
+
+        uint256[] memory processedFile = IProcessResolver(resolver).process(files, data, customData);
+
+        return IPostProcessResolver(resolver).postProcess(processedFile, data, customData);
     }
 
     // function tokenUriTest(uint256 tokenId) external view returns (uint256[] memory res) {

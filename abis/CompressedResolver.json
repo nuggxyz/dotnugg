@@ -1,6 +1,17 @@
 [
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_preProcessor",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_processor",
+        "type": "address"
+      }
+    ],
     "stateMutability": "nonpayable",
     "type": "constructor"
   },
@@ -13,7 +24,7 @@
       },
       {
         "internalType": "bytes",
-        "name": "data",
+        "name": "",
         "type": "bytes"
       },
       {
@@ -50,7 +61,7 @@
     "inputs": [
       {
         "internalType": "bytes",
-        "name": "",
+        "name": "data",
         "type": "bytes"
       }
     ],
@@ -62,7 +73,7 @@
         "type": "bytes"
       }
     ],
-    "stateMutability": "pure",
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -87,12 +98,12 @@
       },
       {
         "internalType": "bytes",
-        "name": "",
+        "name": "data",
         "type": "bytes"
       },
       {
         "internalType": "bytes",
-        "name": "",
+        "name": "preProcessorData",
         "type": "bytes"
       }
     ],
@@ -104,7 +115,7 @@
         "type": "uint256[]"
       }
     ],
-    "stateMutability": "pure",
+    "stateMutability": "view",
     "type": "function"
   },
   {

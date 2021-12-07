@@ -11,11 +11,6 @@ import '../../src/libraries/ShiftLib.sol';
 import './DotNuggLib.sol';
 
 library ItemLib {
-    event PreMint(uint256 tokenId, uint256[] items);
-    event PopItem(uint256 tokenId, uint256 itemId);
-    event PushItem(uint256 tokenId, uint256 itemId);
-    event OpenSlot(uint256 tokenId);
-
     using ItemType for uint256;
     using LengthType for uint256;
 
@@ -27,20 +22,10 @@ library ItemLib {
         mapping(uint256 => uint256) protocolItems;
     }
 
-    function infoOf(Storage storage s, uint256 tokenId)
-        internal
-        view
-        returns (
-            uint256 base,
-            uint256 size,
-            uint256[] memory items
-        )
-    {
-        uint256 data = s.tokenData[tokenId];
-        items = data.items();
-        size = OldShiftType.size(data);
-        base = OldShiftType.base(data);
-    }
+    event PreMint(uint256 tokenId, uint256[] items);
+    event PopItem(uint256 tokenId, uint256 itemId);
+    event PushItem(uint256 tokenId, uint256 itemId);
+    event OpenSlot(uint256 tokenId);
 
     function mint(
         Storage storage s,
@@ -67,35 +52,6 @@ library ItemLib {
 
         return data.items();
     }
-
-    // 1/2 byte - size ---- 0-15
-    // 1/2 bytes - base -----  0-15
-    // 1/2 byte - traits 0-3
-    // 1/2 byte - traits 4-7 --- 2
-
-    // 1.5 bytes - head
-    // 1.5 bytes - eyes
-    // 1.5 bytes - mouth
-    // 1.5 bytes - other
-    // 1.5 bytes - other2 ---- 7.5  9.5
-
-    // 1.5 bytes - head
-    // 1.5 bytes - eyes
-    // 1.5 bytes - mouth
-    // 1.5 bytes - other
-    // 1.5 bytes - other2 ---- 7.5  17
-
-    // 1.5 bytes - head
-    // 1.5 bytes - eyes
-    // 1.5 bytes - mouth
-    // 1.5 bytes - other
-    // 1.5 bytes - other2 ---- 7.5  24.5
-
-    // 1.5 bytes - head
-    // 1.5 bytes - eyes
-    // 1.5 bytes - mouth
-    // 1.5 bytes - other
-    // 1.5 bytes - other2 ---- 7.5  32
 
     function pop(
         Storage storage s,
@@ -144,4 +100,48 @@ library ItemLib {
 
         emit OpenSlot(tokenId);
     }
+
+    function infoOf(Storage storage s, uint256 tokenId)
+        internal
+        view
+        returns (
+            uint256 base,
+            uint256 size,
+            uint256[] memory items
+        )
+    {
+        uint256 data = s.tokenData[tokenId];
+        items = data.items();
+        size = OldShiftType.size(data);
+        base = OldShiftType.base(data);
+    }
+
+    // 1/2 byte - size ---- 0-15
+    // 1/2 bytes - base -----  0-15
+    // 1/2 byte - traits 0-3
+    // 1/2 byte - traits 4-7 --- 2
+
+    // 1.5 bytes - head
+    // 1.5 bytes - eyes
+    // 1.5 bytes - mouth
+    // 1.5 bytes - other
+    // 1.5 bytes - other2 ---- 7.5  9.5
+
+    // 1.5 bytes - head
+    // 1.5 bytes - eyes
+    // 1.5 bytes - mouth
+    // 1.5 bytes - other
+    // 1.5 bytes - other2 ---- 7.5  17
+
+    // 1.5 bytes - head
+    // 1.5 bytes - eyes
+    // 1.5 bytes - mouth
+    // 1.5 bytes - other
+    // 1.5 bytes - other2 ---- 7.5  24.5
+
+    // 1.5 bytes - head
+    // 1.5 bytes - eyes
+    // 1.5 bytes - mouth
+    // 1.5 bytes - other
+    // 1.5 bytes - other2 ---- 7.5  32
 }

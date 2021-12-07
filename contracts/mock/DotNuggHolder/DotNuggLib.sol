@@ -33,31 +33,6 @@ library DotNuggLib {
     //     return generateTokenURI(s, item_storage, dotnugg, tokenId, defaultResolver);
     // }
 
-    /**
-     * @notice calcualtes the token uri for a given epoch
-     */
-    function generateTokenURI(
-        Storage storage s,
-        ItemLib.Storage storage item_storage,
-        uint256 tokenId,
-        address processor,
-        address preproccessor,
-        address postprocessor
-    ) internal view returns (uint256[][] memory res) {
-        uint256 itemData = item_storage.tokenData[tokenId];
-        res = new uint256[][](3);
-
-        res[0] = loadItem(s, 0, itemData.base());
-        res[1] = loadItem(s, 1, itemData.item(1, 0));
-        res[2] = loadItem(s, 3, itemData.item(3, 0));
-        // data[3] = loadItem(s, 3, item_memory.item(ItemType.Index.MOUTH, 0));
-        // data[4] = loadItem(s, 4, item_memory.item(ItemType.Index.OTHER, 0));
-        // data[5] = loadItem(s, 5, item_memory.item(ItemType.Index.SPECIAL, 0));
-        // IDotNugg(dotnugg).nuggify(33, data, resolver, uriname, descrription, tokenId, '');
-        string memory uriname = 'NuggFT {#}';
-        string memory descrription = 'the description';
-    }
-
     function addItems(Storage storage s, uint256[][] calldata data) internal {
         uint256 lengths = s.lengths;
 
@@ -78,6 +53,28 @@ library DotNuggLib {
             lengths = lengths.length(itemType, len);
         }
         s.lengths = lengths;
+    }
+
+    /**
+     * @notice calcualtes the token uri for a given epoch
+     */
+    function getData(
+        Storage storage s,
+        ItemLib.Storage storage item_storage,
+        uint256 tokenId
+    ) internal view returns (uint256[][] memory res, uint256 itemData) {
+        itemData = item_storage.tokenData[tokenId];
+        res = new uint256[][](3);
+
+        res[0] = loadItem(s, 0, itemData.base());
+        res[1] = loadItem(s, 1, itemData.item(1, 0));
+        res[2] = loadItem(s, 3, itemData.item(3, 0));
+        // data[3] = loadItem(s, 3, item_memory.item(ItemType.Index.MOUTH, 0));
+        // data[4] = loadItem(s, 4, item_memory.item(ItemType.Index.OTHER, 0));
+        // data[5] = loadItem(s, 5, item_memory.item(ItemType.Index.SPECIAL, 0));
+        // IDotNugg(dotnugg).nuggify(33, data, resolver, uriname, descrription, tokenId, '');
+        // string memory uriname = 'NuggFT {#}';
+        // string memory descrription = 'the description';
     }
 
     function loadItem(

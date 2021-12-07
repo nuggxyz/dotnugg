@@ -137,7 +137,7 @@ library Merge {
         uint256 input,
         uint256 inFeature,
         uint256 inZ
-    ) internal view returns (uint256 res) {
+    ) internal pure returns (uint256 res) {
         res = input;
         // 1 bit exists
         // 4 bit feature

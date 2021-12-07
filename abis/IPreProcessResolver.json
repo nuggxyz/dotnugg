@@ -11,11 +11,11 @@
     "outputs": [
       {
         "internalType": "bytes",
-        "name": "res",
+        "name": "preProcessData",
         "type": "bytes"
       }
     ],
-    "stateMutability": "pure",
+    "stateMutability": "view",
     "type": "function"
   },
   {

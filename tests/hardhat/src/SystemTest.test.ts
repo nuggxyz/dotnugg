@@ -39,19 +39,15 @@ describe('uint tests', async function () {
                 '0x00',
             );
 
-            const res = await fix.holder['tokenUri(uint256,address,address,address)'](
-                0,
-                '0x0000000000000000000000000000000000000000',
-                '0x0000000000000000000000000000000000000000',
-                '0x0000000000000000000000000000000000000000',
-            );
+            const res = await fix.holder['tokenUri(uint256,address)'](0, fix.compressedResolver.address);
+            // const res = await fix.holder['tokenUri(uint256)'](0);
 
             console.log({ res });
             console.log(res);
             const decode = new ethers.utils.AbiCoder().decode(['uint[]'], res) as BigNumber[][];
             console.log({ decode });
             console.log(decode);
-            bashit2(decode[0], 33, 33);
+            bashit2(decode[0]);
         });
     });
 });
