@@ -13,10 +13,11 @@ library DotNuggLib {
     using ItemType for uint256;
     using LengthType for uint256;
     using Event for uint256;
+    using Event for uint256[];
 
     struct Storage {
         uint256[] collection;
-        mapping(uint256 => uint256) items;
+        mapping(uint256 => mapping(uint256 => mapping(uint256 => uint256))) items;
         uint256 lengths;
         mapping(uint256 => address) resolvers;
     }
@@ -38,18 +39,16 @@ library DotNuggLib {
 
         for (uint256 i = 0; i < data.length; i++) {
             uint256 itemType = (data[i][data[i].length - 1] >> 32) & 0x7;
-            // console.log('type:', itemType);
+
+            itemType.log('itemType');
+
             uint256 len = lengths.length(itemType);
 
-            uint256 itemtypebytes = uint256(itemType) << 96;
-            uint256 check = uint256(data[i][0]);
-            assembly {
-                check := and(check, not(0xff))
+            for (uint256 j = 0; j < data[i].length; j++) {
+                s.items[itemType][len][j] = data[i][j];
             }
-            s.items[itemtypebytes | len++] = data[i][0];
-            for (uint256 j = 1; j < data[i].length; j++) {
-                s.items[check | j] = data[i][j];
-            }
+            len++;
+
             lengths = lengths.length(itemType, len);
         }
         s.lengths = lengths;
@@ -64,11 +63,12 @@ library DotNuggLib {
         uint256 tokenId
     ) internal view returns (uint256[][] memory res, uint256 itemData) {
         itemData = item_storage.tokenData[tokenId];
+
         res = new uint256[][](3);
 
         res[0] = loadItem(s, 0, itemData.base());
         res[1] = loadItem(s, 1, itemData.item(1, 0));
-        res[2] = loadItem(s, 3, itemData.item(3, 0));
+        res[2] = loadItem(s, 4, itemData.item(4, 0));
         // data[3] = loadItem(s, 3, item_memory.item(ItemType.Index.MOUTH, 0));
         // data[4] = loadItem(s, 4, item_memory.item(ItemType.Index.OTHER, 0));
         // data[5] = loadItem(s, 5, item_memory.item(ItemType.Index.SPECIAL, 0));
@@ -82,20 +82,17 @@ library DotNuggLib {
         uint8 itemType,
         uint256 id
     ) internal view returns (uint256[] memory data) {
-        // console.log('here', id);
-
         data = new uint256[](10);
-        data[1] = s.items[(uint256(itemType) << 96) | id];
-        uint256 tmp = data[1];
-        uint256 check = uint256(tmp);
-        assembly {
-            check := and(check, not(0xff))
-        }
-        uint256 i;
 
-        for (i = 1; (tmp = s.items[(check) | i]) != 0; i++) {
+        uint256 i;
+        uint256 tmp;
+
+        for (i = 0; (tmp = s.items[itemType][id][i]) != 0; i++) {
             data[i + 1] = tmp;
         }
+
         data[0] = i;
+
+        data.log('data');
     }
 }
