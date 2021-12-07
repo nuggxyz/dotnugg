@@ -6,17 +6,14 @@ import { getHRE } from '../shared/deployment';
 import { deployContractWithSalt } from '../shared';
 import { MockDotNuggHolder } from '../../../../typechain/MockDotNuggHolder';
 import { MockDotNuggHolder__factory } from '../../../../typechain/factories/MockDotNuggHolder__factory';
-import { DotNugg } from '../../../../typechain/DotNugg';
-import { DotNugg__factory } from '../../../../typechain/factories/DotNugg__factory';
-import { SvgPostProcessResolver, SvgPostProcessResolver__factory } from '../../../../typechain';
+import { DefaultResolver, DefaultResolver__factory } from '../../../../typechain';
 
 export interface NuggFatherFixture {
     holder: MockDotNuggHolder;
     // let nuggin: GroupNuggIn;
-    // let nugginSVG: SvgPostProcessResolver;
-    // let nugginDotNugg: SvgPostProcessResolver;
-    svgResolver: SvgPostProcessResolver;
-    dotnugg: DotNugg;
+    // let nugginSVG: DefaultResolver;
+    // let nugginDotNugg: DefaultResolver;
+    defaultResolver: DefaultResolver;
 
     owner: string;
     ownerStartBal: BigNumber;
@@ -35,14 +32,14 @@ export const NuggFatherFix: Fixture<NuggFatherFixture> = async function (
     const eoaDeployer = provider.getWallets()[16];
     const eoaOwner = provider.getWallets()[17];
 
-    const dotnugg = await deployContractWithSalt<DotNugg__factory>({
-        factory: 'DotNugg',
-        from: eoaDeployer,
-        args: [],
-    });
+    // const dotnugg = await deployContractWithSalt<DotNugg__factory>({
+    //     factory: 'DotNugg',
+    //     from: eoaDeployer,
+    //     args: [],
+    // });
 
-    const svgResolver = await deployContractWithSalt<SvgPostProcessResolver__factory>({
-        factory: 'SvgPostProcessResolver',
+    const defaultResolver = await deployContractWithSalt<DefaultResolver__factory>({
+        factory: 'DefaultResolver',
         from: eoaDeployer,
         args: [],
     });
@@ -50,7 +47,7 @@ export const NuggFatherFix: Fixture<NuggFatherFixture> = async function (
     const holder = await deployContractWithSalt<MockDotNuggHolder__factory>({
         factory: 'MockDotNuggHolder',
         from: eoaDeployer,
-        args: [dotnugg.address, svgResolver.address],
+        args: [defaultResolver.address],
     });
 
     // const nuggswap = await deployContractWithSalt<NuggSwap__factory>({
@@ -91,8 +88,7 @@ export const NuggFatherFix: Fixture<NuggFatherFixture> = async function (
         // dotnugg: hre.dotnugg,
         // nuggft,
         // xnugg,
-        svgResolver,
-        dotnugg,
+        defaultResolver,
         blockOffset,
         owner,
         // nuggswap,

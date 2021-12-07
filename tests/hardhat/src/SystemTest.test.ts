@@ -1,5 +1,6 @@
 import { ethers, waffle } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/dist/src/signers';
+import { BigNumber } from 'ethers';
 
 import { NamedAccounts } from '../../../hardhat.config';
 import { NuggFatherFix, NuggFatherFixture } from '../lib/fixtures/NuggFather.fix';
@@ -38,9 +39,19 @@ describe('uint tests', async function () {
                 '0x00',
             );
 
-            const res = await fix.holder.tokenUriTest(0);
-            // console.log(res);
-            bashit2(res, 33, 33);
+            const res = await fix.holder['tokenUri(uint256,address,address,address)'](
+                0,
+                '0x0000000000000000000000000000000000000000',
+                '0x0000000000000000000000000000000000000000',
+                '0x0000000000000000000000000000000000000000',
+            );
+
+            console.log({ res });
+            console.log(res);
+            const decode = new ethers.utils.AbiCoder().decode(['uint[]'], res) as BigNumber[][];
+            console.log({ decode });
+            console.log(decode);
+            bashit2(decode[0], 33, 33);
         });
     });
 });
