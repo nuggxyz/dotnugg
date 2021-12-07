@@ -17,14 +17,17 @@ library Version {
         uint256 data;
     }
 
-    function parse(uint256[][] memory data) internal pure returns (Memory[][] memory m) {
+    function parse(uint256[][] memory data) internal view returns (Memory[][] memory m) {
         m = new Memory[][](data.length);
 
         for (uint256 j = 0; j < data.length; j++) {
             BitReader.Memory memory reader = BitReader.init(data[j]);
 
+            uint256 check = reader.select(32);
+            check.log('reader');
+
             // 32 bits: NUGG
-            require(reader.select(32) == 0x4e554747, 'DEC:PI:0');
+            require(check == 0x4e554747, 'DEC:PI:0');
 
             uint256 feature = reader.select(3);
 
