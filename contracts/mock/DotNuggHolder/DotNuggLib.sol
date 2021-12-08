@@ -64,11 +64,14 @@ library DotNuggLib {
     ) internal view returns (uint256[][] memory res, uint256 itemData) {
         itemData = item_storage.tokenData[tokenId];
 
-        res = new uint256[][](3);
+        res = new uint256[][](5);
 
         res[0] = loadItem(s, 0, itemData.base());
         res[1] = loadItem(s, 1, itemData.item(1, 0));
-        res[2] = loadItem(s, 4, itemData.item(4, 0));
+        res[2] = loadItem(s, 2, itemData.item(2, 0));
+        res[4] = loadItem(s, 4, itemData.item(4, 0));
+        // res[5] = loadItem(s, 5, itemData.item(5, 0));
+
         // data[3] = loadItem(s, 3, item_memory.item(ItemType.Index.MOUTH, 0));
         // data[4] = loadItem(s, 4, item_memory.item(ItemType.Index.OTHER, 0));
         // data[5] = loadItem(s, 5, item_memory.item(ItemType.Index.SPECIAL, 0));
