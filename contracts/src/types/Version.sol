@@ -21,12 +21,9 @@ library Version {
         m = new Memory[][](data.length);
 
         for (uint256 j = 0; j < data.length; j++) {
-            (bool ok, BitReader.Memory memory reader) = BitReader.init(data[j]);
+            (bool empty, BitReader.Memory memory reader) = BitReader.init(data[j]);
 
-            if (ok) continue;
-
-            // uint256 check = reader.select(32);
-            // check.log('reader');
+            if (empty) continue;
 
             // 32 bits: NUGG
             require(reader.select(32) == 0x4e554747, 'DEC:PI:0');
