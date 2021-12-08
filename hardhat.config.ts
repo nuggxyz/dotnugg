@@ -15,7 +15,7 @@ import 'hardhat-storage-layout';
 // NORMAL IMPORTS
 import 'hardhat-tracer';
 import 'hardhat-spdx-license-identifier';
-
+import '../dotnugg-hardhat/src';
 import './tasks/middleware';
 
 import { resolve } from 'path';
@@ -309,6 +309,9 @@ const HardhatConfig: HardhatUserConfig = {
     spdxLicenseIdentifier: {
         overwrite: true,
         runOnCompile: true,
+    },
+    dotnugg: {
+        art: '../nuggft-art',
     },
 };
 
