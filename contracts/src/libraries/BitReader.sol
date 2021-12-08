@@ -15,7 +15,9 @@ library BitReader {
         uint256 pos;
     }
 
-    function init(uint256[] memory input) internal pure returns (Memory memory m) {
+    function init(uint256[] memory input) internal pure returns (bool err, Memory memory m) {
+        if (input.length == 0) return (true, m);
+
         m.dat = input;
 
         m.moves = 2;
