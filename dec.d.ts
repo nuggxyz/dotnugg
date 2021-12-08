@@ -1,4 +1,4 @@
-/// <reference types="../dotnugg-compiler-2/src/types" />
+// / <reference types="../dotnugg-compiler-2/src/types" />
 
 import 'hardhat/types/config';
 import 'hardhat/types/runtime';
@@ -8,10 +8,10 @@ declare module 'hardhat/types/runtime' {
         middleware: {
             test: string;
         };
-        dotnugg: {
-            feature: number;
-            bits: Byter[];
-            hex: import('ethers').BigNumber[];
-        }[];
+        // dotnugg: {
+        //     feature: number;
+        //     bits: Byter[];
+        //     hex: import('ethers').BigNumber[];
+        // }[];
     }
 }
