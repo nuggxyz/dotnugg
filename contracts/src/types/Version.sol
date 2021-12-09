@@ -24,6 +24,7 @@ library Version {
             (bool empty, BitReader.Memory memory reader) = BitReader.init(data[j]);
 
             if (empty) continue;
+            ShiftLib.fullsubmask(12, 160).log('ShiftLib.fullsubmask(3,75)');
 
             // 32 bits: NUGG
             require(reader.select(32) == 0x4e554747, 'DEC:PI:0');
@@ -57,10 +58,10 @@ library Version {
         }
     }
 
-    function parsePallet(BitReader.Memory memory reader) internal pure returns (uint256[] memory res) {
+    function parsePallet(BitReader.Memory memory reader) internal view returns (uint256[] memory res) {
         uint256 palletLength = reader.select(4) + 1;
 
-        res = new uint256[]((palletLength) / 7 + 1);
+        // res = new uint256[]((palletLength) / 7 + 1);
 
         res = new uint256[](palletLength + 1);
 
@@ -68,6 +69,8 @@ library Version {
             uint256 working = 0;
             // 4 bits: zindex
             working |= (reader.select(4) << 32);
+
+            working.log('working');
 
             uint256 color;
             uint256 selecta = reader.select(1);
@@ -242,10 +245,35 @@ library Version {
         res = (m.data >> 78) & 0xf;
     }
 
+    function setFeature(Memory memory m, uint256 z) internal view {
+        require(z <= ShiftLib.mask(3), 'VERS:SETF:0');
+        m.data &= ShiftLib.fullsubmask(3, 75);
+        ShiftLib.fullsubmask(3, 75).log('ShiftLib.fullsubmask(3,75)');
+        m.data |= (z << 75);
+    }
+
+    function getFeature(Memory memory m) internal pure returns (uint256 res) {
+        res = (m.data >> 75) & ShiftLib.mask(3);
+    }
+
     function getWidth(Memory memory m) internal pure returns (uint256 width, uint256 height) {
         // yOrYOffset
         width = (m.data >> 63) & ShiftLib.mask(6);
         height = (m.data >> 69) & ShiftLib.mask(6);
+    }
+
+    function setWidth(
+        Memory memory m,
+        uint256 w,
+        uint256 h
+    ) internal pure {
+        require(w <= ShiftLib.mask(6), 'VERS:SETW:0');
+        require(h <= ShiftLib.mask(6), 'VERS:SETW:1');
+
+        m.data &= ShiftLib.fullsubmask(12, 63);
+
+        m.data |= (w << 63);
+        m.data |= (h << 69);
     }
 
     function getAnchor(Memory memory m) internal pure returns (uint256 x, uint256 y) {
@@ -336,7 +364,22 @@ library Version {
     }
 
     function initBigMatrix(Memory memory m, uint256 width) internal pure {
-        m.bigmatrix = new uint256[](((width * width) / 8) + 2);
+        m.bigmatrix = new uint256[](((width * width) / 6) + 2);
+    }
+
+    function setBigMatrixPixelAt(
+        Memory memory m,
+        uint256 x,
+        uint256 y,
+        uint256 color
+    ) internal pure {
+        (uint256 width, ) = getWidth(m);
+
+        uint256 index = x + (y * width);
+
+        // m.bigmatrix[index / 6] |= (color << (40 * (index % 6)));
+
+        setBigMatrixPixelAt(m, index, color);
     }
 
     function setBigMatrixPixelAt(
@@ -344,9 +387,32 @@ library Version {
         uint256 index,
         uint256 color
     ) internal pure {
-        require(m.bigmatrix.length > index / 8, 'VERS:SBM:0');
+        require(m.bigmatrix.length > index / 6, 'VERS:SBM:0');
+        uint256 offset = (40 * (index % 6));
+        m.bigmatrix[index / 6] &= ShiftLib.fullsubmask(40, offset);
+        m.bigmatrix[index / 6] |= (color << offset);
+    }
 
-        m.bigmatrix[index / 8] |= (color << (32 * (index % 8)));
+    function getBigMatrixPixelAt(
+        Memory memory m,
+        uint256 x,
+        uint256 y
+    ) internal pure returns (uint256 res) {
+        (uint256 width, ) = getWidth(m);
+
+        uint256 index = x + (y * width);
+
+        res = (m.bigmatrix[index / 6] >> (40 * (index % 6))) & 0xffffffffff;
+    }
+
+    function bigMatrixHasPixelAt(
+        Memory memory m,
+        uint256 x,
+        uint256 y
+    ) internal pure returns (bool res) {
+        uint256 pix = getBigMatrixPixelAt(m, x, y);
+
+        res = pix & 0xff != 0x00;
     }
 
     function bigMatrixWithData(Memory memory m) internal pure returns (uint256[] memory res) {

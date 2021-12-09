@@ -7,6 +7,7 @@ import './Matrix.sol';
 
 library Anchor {
     using Matrix for IDotNugg.Matrix;
+    using Version for Version.Memory;
 
     /*
      * @notice AKA fuck
@@ -53,16 +54,17 @@ library Anchor {
         uint8 index
     ) internal pure {
         IDotNugg.Rlud memory radii;
-        while (coordinate.a < mix.matrix.width - 1 && mix.matrix.data[coordinate.b][coordinate.a + (radii.r + 1)].exists) {
+
+        while (coordinate.a < mix.matrix.width - 1 && mix.matrix.version.bigMatrixHasPixelAt(coordinate.a + (radii.r + 1), coordinate.b)) {
             radii.r++;
         }
-        while (coordinate.a != 0 && mix.matrix.data[coordinate.b][coordinate.a - (radii.l + 1)].exists) {
+        while (coordinate.a != 0 && mix.matrix.version.bigMatrixHasPixelAt(coordinate.a - (radii.l + 1), coordinate.b)) {
             radii.l++;
         }
-        while (coordinate.b != 0 && mix.matrix.data[coordinate.b - (radii.u + 1)][coordinate.a].exists) {
+        while (coordinate.b != 0 && mix.matrix.version.bigMatrixHasPixelAt(coordinate.a, coordinate.b - (radii.u + 1))) {
             radii.u++;
         }
-        while (coordinate.b < mix.matrix.height - 1 && mix.matrix.data[coordinate.b + (radii.d + 1)][coordinate.a].exists) {
+        while (coordinate.b < mix.matrix.height - 1 && mix.matrix.version.bigMatrixHasPixelAt(coordinate.a, coordinate.b + (radii.d + 1))) {
             radii.d++;
         }
 
@@ -90,7 +92,7 @@ library Anchor {
             coordinate.b = coordinate.b + (8 - calculatedReceiver.b);
         }
 
-        while (!mix.matrix.data[coordinate.b][coordinate.a].exists) {
+        while (!mix.matrix.version.bigMatrixHasPixelAt(coordinate.a, coordinate.b)) {
             if (anchors[0].b > coordinate.b) {
                 coordinate.b++;
             } else {
@@ -151,10 +153,14 @@ library Anchor {
         while (!allFound) {
             if (shouldExpandSide = !shouldExpandSide && !sideFound) {
                 if (
-                    matrix.data[center.b - topOffset][center.a - (sideOffset + 1)].exists && // potential top left
-                    matrix.data[center.b - topOffset][center.a + (sideOffset + 1)].exists && // potential top right
-                    matrix.data[center.b + bottomOffset][center.a - (sideOffset + 1)].exists && // potential bot left
-                    matrix.data[center.b + bottomOffset][center.a + (sideOffset + 1)].exists // potential bot right
+                    matrix.version.bigMatrixHasPixelAt(center.a - (sideOffset + 1), center.b - topOffset) &&
+                    // potential top left
+                    matrix.version.bigMatrixHasPixelAt(center.a + (sideOffset + 1), center.b - topOffset) &&
+                    // potential top right
+                    matrix.version.bigMatrixHasPixelAt(center.a - (sideOffset + 1), center.b + bottomOffset) &&
+                    // potential bot left
+                    matrix.version.bigMatrixHasPixelAt(center.a + (sideOffset + 1), center.b + bottomOffset)
+                    // potential bot right
                 ) {
                     sideOffset++;
                 } else {
@@ -164,8 +170,10 @@ library Anchor {
             if (!topFound) {
                 if (
                     center.b - topOffset > 0 &&
-                    matrix.data[center.b - (topOffset + 1)][center.a - sideOffset].exists && // potential top left
-                    matrix.data[center.b - (topOffset + 1)][center.a + sideOffset].exists // potential top right
+                    matrix.version.bigMatrixHasPixelAt(center.a - sideOffset, center.b - (topOffset + 1)) &&
+                    // potential top left
+                    matrix.version.bigMatrixHasPixelAt(center.a + sideOffset, center.b - (topOffset + 1))
+                    // potential top right
                 ) {
                     topOffset++;
                 } else {
@@ -175,8 +183,10 @@ library Anchor {
             if (!bottomFound) {
                 if (
                     center.b + bottomOffset < matrix.height - 1 &&
-                    matrix.data[center.b + (bottomOffset + 1)][center.a - sideOffset].exists && // potential bot left
-                    matrix.data[center.b + (bottomOffset + 1)][center.a + sideOffset].exists // potenetial bot right
+                    matrix.version.bigMatrixHasPixelAt(center.a - sideOffset, center.b + (bottomOffset + 1)) &&
+                    // potential bot left
+                    matrix.version.bigMatrixHasPixelAt(center.a + sideOffset, center.b + (bottomOffset + 1))
+                    // potenetial bot right
                 ) {
                     bottomOffset++;
                 } else {

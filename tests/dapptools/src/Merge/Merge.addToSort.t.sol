@@ -1,7 +1,7 @@
 pragma solidity 0.8.4;
 
 import '../../lib/DSTest.sol';
-import '../../../../contracts/src/logic/Merge.sol';
+import '../../../../contracts/src/v2/Merge.sol';
 
 contract MergeTest_addToSort is DSTest {
     function setUp() public {}

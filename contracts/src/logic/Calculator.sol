@@ -7,11 +7,15 @@ import './Rgba.sol';
 import './Anchor.sol';
 
 import '../types/Version.sol';
+import '../types/Pixel.sol';
+
 import '../interfaces/IDotNugg.sol';
 
 library Calculator {
     using Rgba for IDotNugg.Rgba;
     using Matrix for IDotNugg.Matrix;
+    using Pixel for uint256;
+    using Event for uint256;
 
     /**
      * @notice
@@ -21,7 +25,7 @@ library Calculator {
         uint256 featureLen,
         uint8 width,
         Version.Memory[][] memory versions
-    ) internal pure returns (IDotNugg.Matrix memory resa) {
+    ) internal view returns (IDotNugg.Matrix memory resa) {
         IDotNugg.Canvas memory canvas;
         canvas.matrix = Matrix.create(width, width);
         canvas.receivers = new IDotNugg.Anchor[](featureLen);
@@ -149,7 +153,7 @@ library Calculator {
         IDotNugg.Mix memory res,
         Version.Memory[] memory versions,
         uint8 versionIndex
-    ) internal pure {
+    ) internal view {
         uint256 radiiBits = (versions[versionIndex].data >> 27) & ShiftLib.mask(24);
         uint256 expanderBits = (versions[versionIndex].data >> 3) & ShiftLib.mask(24);
 
@@ -222,15 +226,23 @@ library Calculator {
      * @notice done
      * @dev
      */
-    function mergeToCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal pure {
+    function mergeToCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal view {
         // uint256 count;
+        uint256 count;
         while (canvas.matrix.next() && mix.matrix.next()) {
-            IDotNugg.Pixel memory canvasPixel = canvas.matrix.current();
-            IDotNugg.Pixel memory mixPixel = mix.matrix.current();
+            uint256 canvasPixel = canvas.matrix.current();
+            uint256 mixPixel = mix.matrix.current();
 
-            if (mixPixel.exists && mixPixel.zindex >= canvasPixel.zindex) {
-                canvasPixel.zindex = mixPixel.zindex;
-                canvasPixel.rgba.combine(mixPixel.rgba);
+            if (mixPixel != 0 || canvasPixel != 0) {
+                // assert(count++ < 100);
+                // mixPixel.log('mixPixel', mixPixel.z(), 'mixPixel.z()', canvasPixel.z(), 'canvasPixel.z()');
+                // canvasPixel.log('canvasPixel');
+            }
+
+            if (mixPixel.e() && mixPixel.z() >= canvasPixel.z()) {
+                // canvasPixel.z() = mixPixel.z();
+
+                canvas.matrix.setCurrent(Rgba.combine(canvasPixel, mixPixel));
             }
         }
         canvas.matrix.moveBack();
