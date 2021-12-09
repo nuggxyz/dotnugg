@@ -3,7 +3,6 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/dist/src/signers';
 
 import { NamedAccounts } from '../../../hardhat.config';
 import { NuggFatherFix, NuggFatherFixture } from '../lib/fixtures/NuggFather.fix';
-import { dotnugg } from '../../../../dotnugg-sdk/src';
 
 import { prepareAccounts } from './';
 
@@ -40,12 +39,12 @@ describe('uint tests', async function () {
                 '0x00',
             );
 
-            const res = await fix.holder['tokenUri(uint256,address)'](0, fix.compressedResolver.address);
+            const res = await fix.holder['tokenUri(uint256)'](0);
 
             console.log({ res });
             console.log(res);
 
-            dotnugg.log.Console.drawOutput(res);
+            // dotnugg.log.Console.drawOutput(res);
         });
     });
 });
