@@ -51,7 +51,7 @@ contract DefaultResolver is INuggFtProcessor {
         // if (old) {
         IDotNugg.Matrix memory old = Calculator.combine(8, 33, versions);
 
-        resp = Version.bigMatrixWithData(Matrix.update(old));
+        resp = Version.bigMatrixWithData(old.version);
 
         // return abi.encode(mat.width, mat.height, result.bigmatrix);
         // } else {

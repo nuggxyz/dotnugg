@@ -105,6 +105,16 @@ library ShiftLib {
         res = bit1(input[pos / 256], pos % 256, update);
     }
 
+    function submask(uint256 bits, uint256 offset) internal pure returns (uint256 res) {
+        assembly {
+            res := shl(not(sub(exp(2, bits), 1)), offset)
+        }
+    }
+
+    function fullsubmask(uint256 bits, uint256 offset) internal pure returns (uint256 res) {
+        res = ~(mask(bits) << offset);
+    }
+
     function mask(uint256 bits) internal pure returns (uint256 res) {
         assembly {
             res := sub(exp(2, bits), 1)

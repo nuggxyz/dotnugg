@@ -72,19 +72,21 @@ pragma solidity 0.8.4;
 
 import '../lib/DSTest.sol';
 
-import '../../../contracts/src/DotNugg.sol';
+import '../../../contracts/src/CompressedResolver.sol';
+import '../../../contracts/src/DefaultResolver.sol';
 
 // import '../../../contracts/src2/resolvers/SvgFileResolver.sol';
 
 contract SystemTest is DSTest {
     uint256[][] items;
 
-    DotNugg dotnugg;
+    CompressedResolver dotnugg;
 
     // SvgPostProcessResolver resolver;
 
     function setUp() public {
-        dotnugg = new DotNugg();
+        address tmp = address(new DefaultResolver());
+        dotnugg = new CompressedResolver(tmp, tmp);
         // resolver = new SvgPostProcessResolver();
 
         uint256[] memory a = new uint256[](9);
@@ -98,6 +100,7 @@ contract SystemTest is DSTest {
         a[8] = 0xaa68a30c26bffffff2d010100bca128aeb2f28d67fd0bca2593f12a84e554747;
         a[0] = 8;
         items.push(a);
+        items.push(a);
     }
 
     function testSystem() public {
@@ -105,30 +108,30 @@ contract SystemTest is DSTest {
 
         // Version.Memory memory m;
         // m.pallet = new uint256[](1);
-        // m.pallet[0] = pallet;
+        // m.pallet[0] = a;
 
-        uint256[] memory res = dotnugg.nuggifyTest(33, items, address(this), '', '', 0, '');
+        uint256[] memory res = dotnugg.process(items, '', '');
 
-        for (uint256 i = 0; i < res.length; i++) {
-            emit log_named_uint('i', res[i]);
-        }
+        // for (uint256 i = 0; i < res.length; i++) {
+        //     emit log_named_uint('i', res[i]);
+        // }
 
-        assertTrue(false);
+        assertTrue(true);
     }
 
-    function testSystem2() public {
-        // uint256 pallet = 0x00000000005616134e55636336e55666662e55666639e55666639e55656538e5;
+    // function testSystem2() public {
+    //     // uint256 pallet = 0x00000000005616134e55636336e55666662e55666639e55666639e55656538e5;
 
-        // Version.Memory memory m;
-        // m.pallet = new uint256[](1);
-        // m.pallet[0] = pallet;
+    //     // Version.Memory memory m;
+    //     // m.pallet = new uint256[](1);
+    //     // m.pallet[0] = pallet;
 
-        uint256[] memory res = dotnugg.nuggifyTest2(33, items, address(this), '', '', 0, '');
+    //     uint256[] memory res = dotnugg.nuggifyTest2(33, items, address(this), '', '', 0, '');
 
-        for (uint256 i = 0; i < res.length; i++) {
-            emit log_named_uint('i', res[i]);
-        }
+    //     for (uint256 i = 0; i < res.length; i++) {
+    //         emit log_named_uint('i', res[i]);
+    //     }
 
-        assertTrue(false);
-    }
+    //     assertTrue(false);
+    // }
 }

@@ -2,6 +2,8 @@
 
 pragma solidity 0.8.4;
 
+import {Version as V} from '../types/Version.sol';
+
 interface IDotNugg {
     struct Rlud {
         bool exists;
@@ -59,20 +61,21 @@ interface IDotNugg {
         Anchor[] receivers;
     }
 
-    struct Pixel {
-        int8 zindex;
-        Rgba rgba;
-        bool exists;
-    }
+    // struct Pixel {
+    //     int8 zindex;
+    //     Rgba rgba;
+    //     bool exists;
+    // }
 
-    struct Pallet {
-        Pixel[] pixels;
-    }
+    // struct Pallet {
+    //     Pixel[] pixels;
+    // }
 
     struct Matrix {
         uint8 width;
         uint8 height;
-        Pixel[][] data;
+        // Pixel[][] data;
+        V.Memory version;
         uint8 currentUnsetX;
         uint8 currentUnsetY;
         bool init;

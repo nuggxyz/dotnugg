@@ -3,7 +3,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/dist/src/signers';
 
 import { NamedAccounts } from '../../../hardhat.config';
 import { NuggFatherFix, NuggFatherFixture } from '../lib/fixtures/NuggFather.fix';
-import { bashit2 } from '../lib/groups';
+import { dotnugg } from '../../../../dotnugg-sdk/src';
 
 import { prepareAccounts } from './';
 
@@ -45,7 +45,7 @@ describe('uint tests', async function () {
             console.log({ res });
             console.log(res);
 
-            bashit2(res);
+            dotnugg.log.Console.drawOutput(res);
         });
     });
 });
