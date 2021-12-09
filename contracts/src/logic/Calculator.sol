@@ -233,11 +233,12 @@ library Calculator {
             uint256 canvasPixel = canvas.matrix.current();
             uint256 mixPixel = mix.matrix.current();
 
-            if (mixPixel != 0 || canvasPixel != 0) {
-                // assert(count++ < 100);
-                // mixPixel.log('mixPixel', mixPixel.z(), 'mixPixel.z()', canvasPixel.z(), 'canvasPixel.z()');
-                // canvasPixel.log('canvasPixel');
-            }
+            // if (mixPixel != 0 || canvasPixel != 0) {
+            //     // assert(count++ < 100);
+            //     // mixPixel.log('mixPixel', mixPixel.z(), 'mixPixel.z()', canvasPixel.z(), 'canvasPixel.z()');
+            //     // canvasPixel.log('canvasPixel');
+            // }
+            // assert(mixPixel.e() && mixPixel.z() >= canvasPixel.z());
 
             if (mixPixel.e() && mixPixel.z() >= canvasPixel.z()) {
                 // canvasPixel.z() = mixPixel.z();

@@ -3,9 +3,11 @@
 pragma solidity 0.8.4;
 
 import '../libraries/Uint.sol';
+import '../../test/Event.sol';
 
 library Svg {
     using Uint256 for uint256;
+    using Event for uint256;
 
     function getPixelAt(
         uint256[] memory file,
@@ -15,14 +17,14 @@ library Svg {
     ) internal pure returns (uint256 res) {
         uint256 index = x + (y * width);
 
-        res = (file[index / 8] >> (32 * (index % 8))) & 0xffffffff;
+        res = (file[index / 6] >> (40 * (index % 6))) & 0xffffffff;
     }
 
     function buildSvg(
         uint256[] memory file,
         uint256 width,
         uint256 height
-    ) internal pure returns (bytes memory res) {
+    ) internal view returns (bytes memory res) {
         bytes memory header = abi.encodePacked(
             hex'3c7376672076696577426f783d2730203020', //"<svg Box='0 0 ",
             (10 * width).toString(),
@@ -51,6 +53,7 @@ library Svg {
                     count++;
                     continue;
                 } else {
+                    // curr.log('yup');
                     // rects[index++] = getRekt(last, x - count, y, count, 1);
                     body = abi.encodePacked(body, getRekt(last, (x - count) * 10, y * 10, 1 * 10, count * 10));
                     last = curr;

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity 0.8.4;
-
+import 'hardhat/console.sol';
 import './interfaces/IDotNugg.sol';
 import './interfaces/IResolver.sol';
 
@@ -67,11 +67,13 @@ contract DefaultResolver is INuggFtProcessor {
         uint256[] memory file,
         bytes memory data,
         bytes memory
-    ) public pure override returns (bytes memory res) {
+    ) public view override returns (bytes memory res) {
         (uint256 tokenId, uint256 itemData, address owner) = abi.decode(data, (uint256, uint256, address));
 
         uint256 width = (file[file.length - 1] >> 63) & ShiftLib.mask(6);
         uint256 height = (file[file.length - 1] >> 69) & ShiftLib.mask(6);
+
+        console.log(width, height);
 
         res = Base64._encode(Svg.buildSvg(file, width, height));
 
