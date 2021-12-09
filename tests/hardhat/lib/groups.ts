@@ -1,4 +1,5 @@
 import { ethers, BigNumber } from 'ethers';
+import { BytesLike } from '@ethersproject/bytes';
 
 // const Box = '⬆︎';
 const Box7 = '░';
@@ -143,13 +144,18 @@ export const bashit = (input: string, width: number, height: number) => {
     });
 };
 
-export const bashit2 = (input: BigNumber[]): string[] => {
-    const tmp = input[input.length - 1];
-    const tmp2 = input[input.length - 1];
+export const bashit2 = (input: BytesLike): string[] => {
+    const decode = (new ethers.utils.AbiCoder().decode(['uint[]'], input) as BigNumber[][])[0];
+
+    console.log({ decode });
+    console.log(decode);
+
+    const tmp = decode[decode.length - 1];
+    const tmp2 = decode[decode.length - 1];
     const width = tmp.shr(63).and(0x3f).toNumber();
     const height = tmp2.shr(69).and(0x3f).toNumber();
 
-    console.log(width, height, input[input.length - 1], tmp, tmp2);
+    console.log(width, height, decode[decode.length - 1], tmp, tmp2);
 
     const res: string[] = [];
     res.push(CreateNumberedRow(width));
@@ -158,7 +164,7 @@ export const bashit2 = (input: BigNumber[]): string[] => {
     for (let y = 0; y < height; y++) {
         let tmp = '';
         for (let x = 0; x < width; x++) {
-            const color = input[Math.floor(index / 8)].shr(32 * (index % 8)).and(0xffffffff)._hex;
+            const color = decode[Math.floor(index / 8)].shr(32 * (index % 8)).and(0xffffffff)._hex;
             if (!mapper[color]) mapper[color] = colorLookup[Object.keys(mapper).length];
             tmp += mapper[color] + mapper[color];
             index++;
