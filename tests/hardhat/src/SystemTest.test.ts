@@ -32,7 +32,7 @@ describe('uint tests', async function () {
         it('should not fuck up', async () => {
             const data = fix.hre.dotnugg.items;
 
-            console.log(data);
+            console.log({ data });
 
             await fix.holder.dotNuggUpload(
                 data.map((x) => x.hex),
