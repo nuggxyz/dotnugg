@@ -69,14 +69,24 @@ library Calculator {
      * @notice
      * @devg
      */
-    function postionForCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal pure {
+    function postionForCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal view {
         IDotNugg.Anchor memory receiver = canvas.receivers[mix.feature];
         IDotNugg.Anchor memory anchor = mix.version.anchor;
+        uint256(mix.feature).log('mix.feature');
+        uint256(anchor.coordinate.a).log(
+            'anchor.coordinate.a',
+            anchor.coordinate.b,
+            'anchor.coordinate.b',
+            receiver.coordinate.a,
+            'receiver.coordinate.a',
+            receiver.coordinate.b,
+            'receiver.coordinate.b'
+        );
 
-        uint8 xoffset = receiver.coordinate.a - anchor.coordinate.a;
-        uint8 yoffset = receiver.coordinate.b - anchor.coordinate.b;
+        mix.xoffset = receiver.coordinate.a - anchor.coordinate.a;
+        mix.yoffset = receiver.coordinate.b - anchor.coordinate.b;
 
-        canvas.matrix.moveTo(xoffset, yoffset, mix.matrix.width, mix.matrix.height);
+        canvas.matrix.moveTo(mix.xoffset, mix.yoffset, mix.matrix.width, mix.matrix.height);
     }
 
     /**
@@ -203,7 +213,8 @@ library Calculator {
         }
 
         // TODO - receivers?
-
+        res.xoffset = 0;
+        res.yoffset = 0;
         res.receivers = new IDotNugg.Anchor[](res.receivers.length);
         res.feature = uint8((versions[versionIndex].data >> 75) & ShiftLib.mask(3));
         res.matrix.set(versions[versionIndex], width, height);
@@ -217,6 +228,8 @@ library Calculator {
         for (uint8 i = 0; i < mix.receivers.length; i++) {
             IDotNugg.Anchor memory m = mix.receivers[i];
             if (m.coordinate.exists) {
+                m.coordinate.a += mix.xoffset;
+                m.coordinate.b += mix.yoffset;
                 canvas.receivers[i] = m;
             }
         }
