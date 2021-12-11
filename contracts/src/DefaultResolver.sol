@@ -75,7 +75,9 @@ contract DefaultResolver is INuggFtProcessor {
 
         console.log(width, height);
 
-        res = Base64._encode(Svg.buildSvg(file, width, height));
+        res = Svg.buildSvg(file, width, height);
+
+        res = Base64._encode(res);
 
         res = abi.encodePacked(
             Base64.PREFIX_JSON,
