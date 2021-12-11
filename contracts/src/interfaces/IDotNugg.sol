@@ -31,12 +31,12 @@ interface IDotNugg {
         bool exists;
     }
 
-    struct Collection {
-        uint8 width;
-        uint8 height;
-        uint8 numFeatures;
-        bytes[] defaults;
-    }
+    // struct Collection {
+    //     uint8 width;
+    //     uint8 height;
+    //     uint8 numFeatures;
+    //     bytes[] defaults;
+    // }
 
     struct Version {
         uint8 width;
