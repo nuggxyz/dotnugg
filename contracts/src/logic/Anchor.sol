@@ -36,9 +36,6 @@ library Anchor {
                 fledgeOutTheRluds(mix, coordinate, i);
             }
         }
-
-        // console.log("static receivers", stat);
-        // console.log("calc receivers", cal);
     }
 
     // receiver := { feature: EYES, zindex: 2, yoffset: +2 }
@@ -73,10 +70,6 @@ library Anchor {
         if (!mix.receivers[index].coordinate.exists) {
             mix.receivers[index] = IDotNugg.Anchor({radii: radii, coordinate: coordinate});
         }
-        // console.log("x:",coordinate.a, ", y:", coordinate.b);
-        // console.log("radii");
-        // console.log(radii.l, radii.r, radii.u, radii.d);
-        // console.log("---------");
     }
 
     function calculateReceiverCoordinate(
@@ -88,10 +81,10 @@ library Anchor {
         coordinate.b = anchors[calculatedReceiver.a].b;
         coordinate.exists = true;
 
-        if (calculatedReceiver.b < 8) {
+        if (calculatedReceiver.b < 32) {
             coordinate.b = coordinate.b - calculatedReceiver.b;
         } else {
-            coordinate.b = coordinate.b + (8 - calculatedReceiver.b);
+            coordinate.b = coordinate.b + (calculatedReceiver.b - 32);
         }
 
         while (!mix.matrix.version.bigMatrixHasPixelAt(coordinate.a, coordinate.b)) {
@@ -125,7 +118,7 @@ library Anchor {
         }
         anchors[3] = IDotNugg.Coordinate({a: center.a, b: center.b + (lowerOffset / 2), exists: true}); // inner bottom
 
-        anchors[4] = IDotNugg.Coordinate({a: center.a, b: center.b + bottomOffset, exists: true}); // inner bottom
+        anchors[4] = IDotNugg.Coordinate({a: center.a, b: center.b + bottomOffset, exists: true}); // bottom
     }
 
     function getBox(IDotNugg.Matrix memory matrix)
