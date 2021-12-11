@@ -120,9 +120,9 @@ library Version {
         for (uint256 j = 0; j < receiversLength; j++) {
             uint256 receiver = 0;
 
-            uint256 xOrPreset = reader.select(6);
-
             uint256 yOrYOffset = reader.select(6);
+
+            uint256 xOrPreset = reader.select(6);
 
             // yOrYOffset
             receiver |= yOrYOffset << 6;
