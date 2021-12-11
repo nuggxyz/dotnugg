@@ -24,7 +24,6 @@ library Version {
             (bool empty, BitReader.Memory memory reader) = BitReader.init(data[j]);
 
             if (empty) continue;
-            ShiftLib.fullsubmask(12, 160).log('ShiftLib.fullsubmask(3,75)');
 
             // 32 bits: NUGG
             require(reader.select(32) == 0x4e554747, 'DEC:PI:0');
@@ -52,8 +51,6 @@ library Version {
                 (, , uint256 ancZ) = getPalletColorAt(m[j][i], getPixelAt(m[j][i], ancX, ancY));
 
                 setZ(m[j][i], ancZ);
-
-                // m[j][i].minimatrix.log('minimatrix');
             }
         }
     }
@@ -69,8 +66,6 @@ library Version {
             uint256 working = 0;
             // 4 bits: zindex
             working |= (reader.select(4) << 32);
-
-            working.log('working');
 
             uint256 color;
             uint256 selecta = reader.select(1);
@@ -248,7 +243,6 @@ library Version {
     function setFeature(Memory memory m, uint256 z) internal view {
         require(z <= ShiftLib.mask(3), 'VERS:SETF:0');
         m.data &= ShiftLib.fullsubmask(3, 75);
-        ShiftLib.fullsubmask(3, 75).log('ShiftLib.fullsubmask(3,75)');
         m.data |= (z << 75);
     }
 

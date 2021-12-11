@@ -59,6 +59,8 @@ interface IDotNugg {
         Version version;
         Matrix matrix;
         Anchor[] receivers;
+        uint8 yoffset;
+        uint8 xoffset;
     }
 
     // struct Pixel {

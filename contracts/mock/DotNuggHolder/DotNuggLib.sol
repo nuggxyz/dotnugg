@@ -69,8 +69,8 @@ library DotNuggLib {
         res[0] = loadItem(s, 0, itemData.base());
         res[1] = loadItem(s, 1, itemData.item(1, 0));
         res[2] = loadItem(s, 2, itemData.item(2, 0));
+        res[3] = loadItem(s, 3, itemData.item(3, 0));
         res[4] = loadItem(s, 4, itemData.item(4, 0));
-        // res[5] = loadItem(s, 5, itemData.item(5, 0));
 
         // data[3] = loadItem(s, 3, item_memory.item(ItemType.Index.MOUTH, 0));
         // data[4] = loadItem(s, 4, item_memory.item(ItemType.Index.OTHER, 0));
@@ -85,7 +85,7 @@ library DotNuggLib {
         uint8 itemType,
         uint256 id
     ) internal view returns (uint256[] memory data) {
-        data = new uint256[](10);
+        data = new uint256[](15);
 
         uint256 i;
         uint256 tmp;

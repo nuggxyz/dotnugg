@@ -28,6 +28,8 @@ library Anchor {
                 mix.receivers[i].coordinate.b = coordinate.a;
                 mix.receivers[i].coordinate.exists = true;
             } else if (mix.version.calculatedReceivers[i].exists) {
+                // if (mix.feature != 0) continue;
+
                 cal++;
                 if (anchors.length == 0) anchors = getAnchors(mix.matrix);
                 coordinate = calculateReceiverCoordinate(mix, mix.version.calculatedReceivers[i], anchors);
@@ -58,10 +60,10 @@ library Anchor {
         while (coordinate.a < mix.matrix.width - 1 && mix.matrix.version.bigMatrixHasPixelAt(coordinate.a + (radii.r + 1), coordinate.b)) {
             radii.r++;
         }
-        while (coordinate.a != 0 && mix.matrix.version.bigMatrixHasPixelAt(coordinate.a - (radii.l + 1), coordinate.b)) {
+        while (coordinate.a != 0 && coordinate.a >= (radii.l + 1) && mix.matrix.version.bigMatrixHasPixelAt(coordinate.a - (radii.l + 1), coordinate.b)) {
             radii.l++;
         }
-        while (coordinate.b != 0 && mix.matrix.version.bigMatrixHasPixelAt(coordinate.a, coordinate.b - (radii.u + 1))) {
+        while (coordinate.b != 0 && coordinate.b >= (radii.u + 1) && mix.matrix.version.bigMatrixHasPixelAt(coordinate.a, coordinate.b - (radii.u + 1))) {
             radii.u++;
         }
         while (coordinate.b < mix.matrix.height - 1 && mix.matrix.version.bigMatrixHasPixelAt(coordinate.a, coordinate.b + (radii.d + 1))) {

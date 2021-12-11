@@ -3,6 +3,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/dist/src/signers';
 
 import { NamedAccounts } from '../../../hardhat.config';
 import { NuggFatherFix, NuggFatherFixture } from '../lib/fixtures/NuggFather.fix';
+import { dotnugg } from '../../../../dotnugg-sdk/src';
 
 import { prepareAccounts } from './';
 
@@ -32,19 +33,21 @@ describe('uint tests', async function () {
         it('should not fuck up', async () => {
             const data = fix.hre.dotnugg.items;
 
-            console.log({ data });
+            // console.log({ data });
 
             await fix.holder.dotNuggUpload(
                 data.map((x) => x.hex),
                 '0x00',
             );
+            console.log(data[0].hex);
+            // const res = await fix.compressedResolver.process([ethers.BigNumber.from(data[0].length), ...data[0].hex], '0x00', '0x00');
 
-            const res = await fix.holder['tokenUri(uint256)'](0);
+            const res = await fix.holder['tokenUri(uint256,address)'](0, fix.compressedResolver.address);
+            // const res = await fix.holder['tokenUri(uint256)'](0);
 
-            console.log({ res });
             console.log(res);
 
-            // dotnugg.log.Console.drawOutput(res);
+            dotnugg.log.Console.drawOutput(res);
         });
     });
 });

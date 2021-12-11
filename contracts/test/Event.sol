@@ -28,6 +28,34 @@ library Event {
         console.log(name2, val2, '|', Uint256.toHexString(val2, 32));
     }
 
+    function log(
+        uint256 val0,
+        string memory name0,
+        uint256 val1,
+        string memory name1
+    ) internal view {
+        console.log('-----------------------');
+        console.log(name0, val0, '|', Uint256.toHexString(val0, 32));
+        console.log(name1, val1, '|', Uint256.toHexString(val1, 32));
+    }
+
+    function log(
+        uint256 val0,
+        string memory name0,
+        uint256 val1,
+        string memory name1,
+        uint256 val2,
+        string memory name2,
+        uint256 val3,
+        string memory name3
+    ) internal view {
+        console.log('-----------------------');
+        console.log(name0, val0, '|', Uint256.toHexString(val0, 32));
+        console.log(name1, val1, '|', Uint256.toHexString(val1, 32));
+        console.log(name2, val2, '|', Uint256.toHexString(val2, 32));
+        console.log(name3, val3, '|', Uint256.toHexString(val3, 32));
+    }
+
     function log(uint256[] memory arr, string memory name) internal view {
         console.log('--------------------');
         console.log('array: ', name);
