@@ -44,7 +44,7 @@ contract DefaultResolver is INuggFtProcessor {
         bytes memory,
         bytes memory
     ) public view override returns (uint256[] memory resp) {
-        // (uint256[][] memory files) = abi.decode(data, ( uint256[][]));
+        // (uint256 tokenId, uint256 data) = abi.decode(data, ( uint256[][]));
         //
         Version.Memory[][] memory versions = Version.parse(files);
 

@@ -124,16 +124,30 @@ library Version {
 
             uint256 xOrPreset = reader.select(6);
 
-            // yOrYOffset
-            receiver |= yOrYOffset << 6;
+            // // yOrYOffset
+            // receiver |= yOrYOffset << 6;
 
-            //xOrPreset
-            receiver |= xOrPreset;
+            // //xOrPreset
+            // receiver |= xOrPreset;
 
             // rFeature
             uint256 rFeature = reader.select(3);
 
-            receiver <<= ((rFeature * 12) + (reader.select(1) == 0x1 ? 128 : 0));
+            uint256 calculated = reader.select(1);
+
+            if (calculated == 0x1) {
+                receiver |= yOrYOffset << 6;
+
+                //xOrPreset
+                receiver |= xOrPreset;
+            } else {
+                receiver |= xOrPreset << 6;
+
+                //xOrPreset
+                receiver |= yOrYOffset;
+            }
+
+            receiver <<= ((rFeature * 12) + (calculated == 0x1 ? 128 : 0));
 
             res |= receiver;
         }

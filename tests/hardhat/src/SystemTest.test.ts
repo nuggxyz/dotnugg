@@ -83,7 +83,7 @@ describe('uint tests', async function () {
             console.log(RAND_INDEXS);
             const res = await fix.defaultResolver.process(
                 [
-                    fix.hre.dotnugg.itemsByFeatureById[Features.BASE][0].hexMocked,
+                    fix.hre.dotnugg.itemsByFeatureById[Features.BASE][1].hexMocked,
                     // fix.hre.dotnugg.itemsByFeatureById[Features.BACK][RAND_INDEXS.BACK].hexMocked,
                     fix.hre.dotnugg.itemsByFeatureById[Features.EYES][RAND_INDEXS.EYES].hexMocked,
                     fix.hre.dotnugg.itemsByFeatureById[Features.MOUT][RAND_INDEXS.MOUT].hexMocked,
