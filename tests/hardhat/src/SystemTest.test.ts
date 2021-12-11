@@ -24,7 +24,7 @@ enum Features {
     HAIR,
     HEAD,
     EYES,
-    MOUTH,
+    MOUT,
     BACK,
     NECK,
 }
@@ -41,35 +41,43 @@ describe('uint tests', async function () {
     });
     describe('internal', async () => {
         it('should not fuck up', async () => {
+            const RAND_INDEXS = {
+                BACK: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.BACK].amount),
+                EYES: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.EYES].amount),
+                MOUT: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.MOUT].amount),
+                HEAD: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.HEAD].amount),
+                HAIR: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.HAIR].amount),
+                NECK: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.NECK].amount),
+            };
+
+            // const RAND_INDEXS = {
+            //     BACK: 6,
+            //     EYES: 7,
+            //     MOUT: 10,
+            //     HEAD: 2,
+            //     HAIR: 5,
+            //     NECK: 6,
+            // };
+
+            console.log(RAND_INDEXS);
+
             const res = await fix.defaultResolver.process(
                 [
                     fix.hre.dotnugg.itemsByFeatureById[Features.BASE][0].hexMocked,
-                    fix.hre.dotnugg.itemsByFeatureById[Features.BACK][0].hexMocked,
-                    fix.hre.dotnugg.itemsByFeatureById[Features.EYES][2].hexMocked,
-                    fix.hre.dotnugg.itemsByFeatureById[Features.MOUTH][3].hexMocked,
-                    fix.hre.dotnugg.itemsByFeatureById[Features.HEAD][2].hexMocked,
-                    fix.hre.dotnugg.itemsByFeatureById[Features.HAIR][6].hexMocked,
+                    fix.hre.dotnugg.itemsByFeatureById[Features.BACK][RAND_INDEXS.BACK].hexMocked,
+                    fix.hre.dotnugg.itemsByFeatureById[Features.EYES][RAND_INDEXS.EYES].hexMocked,
+                    fix.hre.dotnugg.itemsByFeatureById[Features.MOUT][RAND_INDEXS.MOUT].hexMocked,
+                    fix.hre.dotnugg.itemsByFeatureById[Features.HEAD][RAND_INDEXS.HEAD].hexMocked,
+                    fix.hre.dotnugg.itemsByFeatureById[Features.HAIR][RAND_INDEXS.HAIR].hexMocked,
+                    fix.hre.dotnugg.itemsByFeatureById[Features.NECK][RAND_INDEXS.NECK].hexMocked,
                 ],
                 '0x00',
                 '0x00',
             );
+
+            dotnugg.log.Console.drawConsole(res);
+
             dotnugg.log.Console.drawSvg(res, 10);
-
-            // const res2 = await fix.defaultResolver.postProcess(
-            //     res,
-            //     new ethers.utils.AbiCoder().encode(['uint256', 'uint256', 'address'], [0, 0, fix.defaultResolver.address]),
-            //     '0x00',
-            // );
-
-            // const b64 = ethers.utils.toUtf8String(res2);
-
-            // console.log(b64);
-
-            // const tokenUri = JSON.parse(ethers.utils.toUtf8String(ethers.utils.base64.decode(b64)));
-
-            // const svg = ethers.utils.toUtf8String(ethers.utils.base64.decode(tokenUri.image));
-
-            // console.log(svg);
         });
     });
 });
