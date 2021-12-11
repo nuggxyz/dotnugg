@@ -381,10 +381,13 @@ library Version {
         uint256 index,
         uint256 color
     ) internal pure {
-        require(m.bigmatrix.length > index / 6, 'VERS:SBM:0');
-        uint256 offset = (40 * (index % 6));
-        m.bigmatrix[index / 6] &= ShiftLib.fullsubmask(40, offset);
-        m.bigmatrix[index / 6] |= (color << offset);
+        // require(m.bigmatrix.length > index / 6, 'VERS:SBM:0');
+
+        if (m.bigmatrix.length > index / 6) {
+            uint256 offset = (40 * (index % 6));
+            m.bigmatrix[index / 6] &= ShiftLib.fullsubmask(40, offset);
+            m.bigmatrix[index / 6] |= (color << offset);
+        }
     }
 
     function getBigMatrixPixelAt(
@@ -395,6 +398,8 @@ library Version {
         (uint256 width, ) = getWidth(m);
 
         uint256 index = x + (y * width);
+
+        if (index / 6 >= m.bigmatrix.length) return 0x0000000000;
 
         res = (m.bigmatrix[index / 6] >> (40 * (index % 6))) & 0xffffffffff;
     }
