@@ -61,7 +61,7 @@ library Svg {
                 }
             }
             // rects[index++] = getRekt(last, 33 - count, y, count, 1);
-            body = abi.encodePacked(body, getRekt(last, (33 - count) * 10, y * 10, 1 * 10, count * 10));
+            body = abi.encodePacked(body, getRekt(last, (width - count) * 10, y * 10, 1 * 10, count * 10));
             last = 0;
             count = 0;
         }

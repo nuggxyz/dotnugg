@@ -21,10 +21,10 @@ let fix: NuggFatherFixture;
 
 enum Features {
     BASE,
-    HAIR,
-    HEAD,
     EYES,
     MOUT,
+    HAIR,
+    HEAD,
     BACK,
     NECK,
 }
@@ -41,14 +41,14 @@ describe('uint tests', async function () {
     });
     describe('internal', async () => {
         it('should not fuck up', async () => {
-            const RAND_INDEXS = {
-                BACK: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.BACK].amount),
-                EYES: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.EYES].amount),
-                MOUT: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.MOUT].amount),
-                HEAD: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.HEAD].amount),
-                HAIR: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.HAIR].amount),
-                NECK: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.NECK].amount),
-            };
+            // const RAND_INDEXS = {
+            //     BACK: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.BACK].amount),
+            //     EYES: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.EYES].amount),
+            //     MOUT: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.MOUT].amount),
+            //     HEAD: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.HEAD].amount),
+            //     HAIR: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.HAIR].amount),
+            //     NECK: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.NECK].amount),
+            // };
 
             // const RAND_INDEXS = {
             //     BACK: 6,
@@ -59,16 +59,36 @@ describe('uint tests', async function () {
             //     NECK: 6,
             // };
 
-            console.log(RAND_INDEXS);
+            // const RAND_INDEXS = { BACK: 0, EYES: 4, MOUT: 10, HEAD: 7, HAIR: 8, NECK: 22 };
 
+            // pretty boy
+            // const RAND_INDEXS = { BACK: 4, EYES: 14, MOUT: 9, HEAD: 10, HAIR: 9, NECK: 19 };
+
+            // foot mounty (hat does not appear to be offset)
+            // const RAND_INDEXS = { BACK: 2, EYES: 12, MOUT: 3, HEAD: 5, HAIR: 15, NECK: 5 };
+
+            //
+            // const RAND_INDEXS = { BACK: 0, EYES: 14, MOUT: 3, HEAD: 1, HAIR: 13, NECK: 20 };
+
+            // const RAND_INDEXS = { BACK: 1, EYES: 19, MOUT: 11, HEAD: 3, HAIR: 2, NECK: 8 };
+
+            // // another keran
+            // const RAND_INDEXS = { BACK: 5, EYES: 24, MOUT: 5, HEAD: 8, HAIR: 2, NECK: 0 };
+
+            // const RAND_INDEXS = { BACK: 0, EYES: 2, MOUT: 10, HEAD: 11, HAIR: 15, NECK: 1 };
+
+            const RAND_INDEXS = { BACK: 1, EYES: 1, MOUT: 8, HEAD: 3, HAIR: 15, NECK: 3 };
+
+            console.log('const RAND_INDEXS = ');
+            console.log(RAND_INDEXS);
             const res = await fix.defaultResolver.process(
                 [
                     fix.hre.dotnugg.itemsByFeatureById[Features.BASE][0].hexMocked,
-                    fix.hre.dotnugg.itemsByFeatureById[Features.BACK][RAND_INDEXS.BACK].hexMocked,
+                    // fix.hre.dotnugg.itemsByFeatureById[Features.BACK][RAND_INDEXS.BACK].hexMocked,
                     fix.hre.dotnugg.itemsByFeatureById[Features.EYES][RAND_INDEXS.EYES].hexMocked,
                     fix.hre.dotnugg.itemsByFeatureById[Features.MOUT][RAND_INDEXS.MOUT].hexMocked,
-                    fix.hre.dotnugg.itemsByFeatureById[Features.HEAD][RAND_INDEXS.HEAD].hexMocked,
                     fix.hre.dotnugg.itemsByFeatureById[Features.HAIR][RAND_INDEXS.HAIR].hexMocked,
+                    fix.hre.dotnugg.itemsByFeatureById[Features.HEAD][RAND_INDEXS.HEAD].hexMocked,
                     fix.hre.dotnugg.itemsByFeatureById[Features.NECK][RAND_INDEXS.NECK].hexMocked,
                 ],
                 '0x00',

@@ -49,7 +49,7 @@ contract DefaultResolver is INuggFtProcessor {
         Version.Memory[][] memory versions = Version.parse(files);
 
         // if (old) {
-        IDotNugg.Matrix memory old = Calculator.combine(8, 33, versions);
+        IDotNugg.Matrix memory old = Calculator.combine(8, 63, uint256(0), versions);
 
         resp = Version.bigMatrixWithData(old.version);
 

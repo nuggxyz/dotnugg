@@ -284,6 +284,8 @@ library Version {
         (uint256 width, ) = getWidth(m);
         uint256 index = x + (y * width);
 
+        if (index / 64 >= m.minimatrix.length) return 0x0;
+
         palletKey = (m.minimatrix[index / 64] >> (4 * (index % 64))) & 0xf;
     }
 
@@ -323,39 +325,39 @@ library Version {
         diffY = negY ? ancY - recY : recY - ancY;
     }
 
-    function getPixelAtPositionWithOffset(Memory memory m, uint256 index) internal pure returns (bool exists, uint256 palletKey) {
-        (uint256 width, ) = getWidth(m);
+    // function getPixelAtPositionWithOffset(Memory memory m, uint256 index) internal pure returns (bool exists, uint256 palletKey) {
+    //     (uint256 width, ) = getWidth(m);
 
-        uint256 indexY = index / 33;
-        uint256 indexX = index % 33;
+    //     uint256 indexY = index / 33;
+    //     uint256 indexX = index % 33;
 
-        (, uint256 diffX, , uint256 diffY) = getOffset(m);
+    //     (, uint256 diffX, , uint256 diffY) = getOffset(m);
 
-        if (width != 33) {}
+    //     if (width != 33) {}
 
-        if (indexX < diffX) return (false, 0);
-        uint256 realX = indexX - diffX;
+    //     if (indexX < diffX) return (false, 0);
+    //     uint256 realX = indexX - diffX;
 
-        if (indexY < diffY) return (false, 0);
-        uint256 realY = indexY - diffY;
+    //     if (indexY < diffY) return (false, 0);
+    //     uint256 realY = indexY - diffY;
 
-        if (width != 33) {}
+    //     if (width != 33) {}
 
-        // require(indexX >= diffX, 'VERS:GPAP:0');
-        // uint256 realX = indexX - diffX;
+    //     // require(indexX >= diffX, 'VERS:GPAP:0');
+    //     // uint256 realX = indexX - diffX;
 
-        // require(indexY >= diffY, 'VERS:GPAP:1');
-        // uint256 realY = indexY - diffY;
+    //     // require(indexY >= diffY, 'VERS:GPAP:1');
+    //     // uint256 realY = indexY - diffY;
 
-        // if (realX >= width || realY >= height) return (false, 0);
+    //     // if (realX >= width || realY >= height) return (false, 0);
 
-        uint256 realIndex = realY * width + realX;
+    //     uint256 realIndex = realY * width + realX;
 
-        if (realIndex / 64 >= m.minimatrix.length) return (false, 0);
-        exists = true;
+    //     if (realIndex / 64 >= m.minimatrix.length) return (false, 0);
+    //     exists = true;
 
-        palletKey = (m.minimatrix[realIndex / 64] >> (4 * (realIndex % 64))) & 0xf;
-    }
+    //     palletKey = (m.minimatrix[realIndex / 64] >> (4 * (realIndex % 64))) & 0xf;
+    // }
 
     function initBigMatrix(Memory memory m, uint256 width) internal pure {
         m.bigmatrix = new uint256[](((width * width) / 6) + 2);

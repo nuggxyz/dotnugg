@@ -6,6 +6,7 @@ import './Matrix.sol';
 import './Rgba.sol';
 import './Anchor.sol';
 
+import '../types/Descriptor.sol';
 import '../types/Version.sol';
 import '../types/Pixel.sol';
 
@@ -24,6 +25,7 @@ library Calculator {
     function combine(
         uint256 featureLen,
         uint8 width,
+        uint256 descriptor,
         Version.Memory[][] memory versions
     ) internal view returns (IDotNugg.Matrix memory resa) {
         IDotNugg.Canvas memory canvas;
@@ -52,7 +54,7 @@ library Calculator {
 
                 formatForCanvas(canvas, mix);
 
-                postionForCanvas(canvas, mix);
+                postionForCanvas(canvas, mix, descriptor);
 
                 mergeToCanvas(canvas, mix);
 
@@ -69,10 +71,23 @@ library Calculator {
      * @notice
      * @devg
      */
-    function postionForCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal view {
+    function postionForCanvas(
+        IDotNugg.Canvas memory canvas,
+        IDotNugg.Mix memory mix,
+        uint256 descriptor
+    ) internal view {
         IDotNugg.Anchor memory receiver = canvas.receivers[mix.feature];
         IDotNugg.Anchor memory anchor = mix.version.anchor;
+
+        (bool overExists, uint256 overX, uint256 overY) = Descriptor.receiverOverride(descriptor, mix.feature);
+
+        if (overExists) {
+            receiver.coordinate.a = uint8(overX);
+            receiver.coordinate.b = uint8(overY);
+        }
+
         uint256(mix.feature).log('mix.feature');
+
         uint256(anchor.coordinate.a).log(
             'anchor.coordinate.a',
             anchor.coordinate.b,
@@ -82,9 +97,8 @@ library Calculator {
             receiver.coordinate.b,
             'receiver.coordinate.b'
         );
-
-        mix.xoffset = receiver.coordinate.a - anchor.coordinate.a;
-        mix.yoffset = receiver.coordinate.b - anchor.coordinate.b;
+        mix.xoffset = receiver.coordinate.a > anchor.coordinate.a ? receiver.coordinate.a - anchor.coordinate.a : 0;
+        mix.yoffset = receiver.coordinate.b > anchor.coordinate.b ? receiver.coordinate.b - anchor.coordinate.b : 0;
 
         canvas.matrix.moveTo(mix.xoffset, mix.yoffset, mix.matrix.width, mix.matrix.height);
     }
