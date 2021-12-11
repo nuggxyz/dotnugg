@@ -72,7 +72,9 @@ library Calculator {
     function postionForCanvas(IDotNugg.Canvas memory canvas, IDotNugg.Mix memory mix) internal view {
         IDotNugg.Anchor memory receiver = canvas.receivers[mix.feature];
         IDotNugg.Anchor memory anchor = mix.version.anchor;
+
         uint256(mix.feature).log('mix.feature');
+
         uint256(anchor.coordinate.a).log(
             'anchor.coordinate.a',
             anchor.coordinate.b,
@@ -82,9 +84,8 @@ library Calculator {
             receiver.coordinate.b,
             'receiver.coordinate.b'
         );
-
-        mix.xoffset = receiver.coordinate.a - anchor.coordinate.a;
-        mix.yoffset = receiver.coordinate.b - anchor.coordinate.b;
+        mix.xoffset = receiver.coordinate.a > anchor.coordinate.a ? receiver.coordinate.a - anchor.coordinate.a : 0;
+        mix.yoffset = receiver.coordinate.b > anchor.coordinate.b ? receiver.coordinate.b - anchor.coordinate.b : 0;
 
         canvas.matrix.moveTo(mix.xoffset, mix.yoffset, mix.matrix.width, mix.matrix.height);
     }
