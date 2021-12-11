@@ -79,12 +79,12 @@ library Calculator {
         IDotNugg.Anchor memory receiver = canvas.receivers[mix.feature];
         IDotNugg.Anchor memory anchor = mix.version.anchor;
 
-        (bool overExists, uint256 overX, uint256 overY) = Descriptor.receiverOverride(descriptor, mix.feature);
+        // (bool overExists, uint256 overX, uint256 overY) = Descriptor.receiverOverride(descriptor, mix.feature);
 
-        if (overExists) {
-            receiver.coordinate.a = uint8(overX);
-            receiver.coordinate.b = uint8(overY);
-        }
+        // if (overExists) {
+        //     receiver.coordinate.a = uint8(overX);
+        //     receiver.coordinate.b = uint8(overY);
+        // }
 
         uint256(mix.feature).log('mix.feature');
 
