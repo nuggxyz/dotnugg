@@ -1,4 +1,3 @@
-import { ethers } from 'hardhat';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 
 import { NamedAccounts } from '../hardhat.config';
@@ -6,9 +5,6 @@ import { NamedAccounts } from '../hardhat.config';
 // import { NuggFT } from '../typechain/NuggFT.d';
 // import { fromEth, toEth } from '../tests/hardhat/lib/shared/conversion';
 // import { NuggSwap } from '../typechain';
-import { DotNugg } from '../types';
-import { DotNuggFileResolver } from '../types/DotNuggFileResolver';
-import { SvgFileResolver } from '../types/SvgFileResolver';
 
 const deployment = async (hre: HardhatRuntimeEnvironment) => {
     const chainID = await hre.getChainId();
