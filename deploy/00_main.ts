@@ -1,4 +1,3 @@
-import { ethers } from 'ethers';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 
 // import { NamedAccounts } from '../hardhat.config';
