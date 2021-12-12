@@ -41,26 +41,16 @@ contract DefaultResolver is INuggFtProcessor {
 
     function process(
         uint256[][] memory files,
-        bytes memory,
+        bytes memory data,
         bytes memory
     ) public view override returns (uint256[] memory resp) {
-        // (uint256 tokenId, uint256 data) = abi.decode(data, ( uint256[][]));
-        //
+        (address nft, uint256 tokenId, uint256 itemData, address owner) = abi.decode(data, (address, uint256, uint256, address));
+
         Version.Memory[][] memory versions = Version.parse(files);
 
-        // if (old) {
-        IDotNugg.Matrix memory old = Calculator.combine(8, 63, uint256(0), versions);
+        IDotNugg.Matrix memory old = Calculator.combine(8, 63, itemData, versions);
 
         resp = Version.bigMatrixWithData(old.version);
-
-        // return abi.encode(mat.width, mat.height, result.bigmatrix);
-        // } else {
-        //     Version.Memory memory result = Merge.begin(versions, 33);
-        //     (uint256 width, uint256 height) = Version.getWidth(result);
-        //     // return abi.encode(width, height, result.bigmatrix);
-        //                 return abi.encode( result.bigmatrix);
-
-        // // }
     }
 
     function postProcess(
