@@ -17,7 +17,7 @@ library Version {
         uint256 data;
     }
 
-    function parse(uint256[][] memory data) internal view returns (Memory[][] memory m) {
+    function parse(uint256[][] memory data) internal pure returns (Memory[][] memory m) {
         m = new Memory[][](data.length);
 
         for (uint256 j = 0; j < data.length; j++) {
@@ -55,10 +55,8 @@ library Version {
         }
     }
 
-    function parsePallet(BitReader.Memory memory reader) internal view returns (uint256[] memory res) {
+    function parsePallet(BitReader.Memory memory reader) internal pure returns (uint256[] memory res) {
         uint256 palletLength = reader.select(4) + 1;
-
-        // res = new uint256[]((palletLength) / 7 + 1);
 
         res = new uint256[](palletLength + 1);
 
@@ -79,14 +77,11 @@ library Version {
                 color = (r << 16) | (g << 8) | b;
             }
 
-            // // uint256 color = ((reader.select(1) == 0x1 ? 0x000000 : reader.select(24)) << 8);
             // // 1 or 25 bits: rgb
             working |= color << 8;
 
             // // 1 or 8 bits: a
             working |= (reader.select(1) == 0x1 ? 0xff : reader.select(8));
-
-            // res[i / 7] |= (working << (36 * (i % 7)));
 
             res[i + 1] = working;
         }
@@ -124,12 +119,6 @@ library Version {
 
             uint256 xOrPreset = reader.select(6);
 
-            // // yOrYOffset
-            // receiver |= yOrYOffset << 6;
-
-            // //xOrPreset
-            // receiver |= xOrPreset;
-
             // rFeature
             uint256 rFeature = reader.select(3);
 
@@ -137,13 +126,9 @@ library Version {
 
             if (calculated == 0x1) {
                 receiver |= yOrYOffset << 6;
-
-                //xOrPreset
                 receiver |= xOrPreset;
             } else {
                 receiver |= xOrPreset << 6;
-
-                //xOrPreset
                 receiver |= yOrYOffset;
             }
 
@@ -254,7 +239,7 @@ library Version {
         res = (m.data >> 78) & 0xf;
     }
 
-    function setFeature(Memory memory m, uint256 z) internal view {
+    function setFeature(Memory memory m, uint256 z) internal pure {
         require(z <= ShiftLib.mask(3), 'VERS:SETF:0');
         m.data &= ShiftLib.fullsubmask(3, 75);
         m.data |= (z << 75);
