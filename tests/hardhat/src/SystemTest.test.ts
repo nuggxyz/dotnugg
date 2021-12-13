@@ -83,13 +83,13 @@ describe('uint tests', async function () {
             console.log(RAND_INDEXS);
             const res = await fix.defaultResolver.process(
                 [
-                    fix.hre.dotnugg.itemsByFeatureById[Features.BASE][1].hexMocked,
-                    // fix.hre.dotnugg.itemsByFeatureById[Features.BACK][RAND_INDEXS.BACK].hexMocked,
-                    fix.hre.dotnugg.itemsByFeatureById[Features.EYES][RAND_INDEXS.EYES].hexMocked,
-                    fix.hre.dotnugg.itemsByFeatureById[Features.MOUT][RAND_INDEXS.MOUT].hexMocked,
-                    // fix.hre.dotnugg.itemsByFeatureById[Features.HAIR][RAND_INDEXS.HAIR].hexMocked,
-                    fix.hre.dotnugg.itemsByFeatureById[Features.HEAD][RAND_INDEXS.HEAD].hexMocked,
-                    // fix.hre.dotnugg.itemsByFeatureById[Features.NECK][RAND_INDEXS.NECK].hexMocked,
+                    fix.hre.dotnugg.itemsByFeatureById[Features.BASE][1].hex,
+                    // fix.hre.dotnugg.itemsByFeatureById[Features.BACK][RAND_INDEXS.BACK].hex,
+                    fix.hre.dotnugg.itemsByFeatureById[Features.EYES][RAND_INDEXS.EYES].hex,
+                    fix.hre.dotnugg.itemsByFeatureById[Features.MOUT][RAND_INDEXS.MOUT].hex,
+                    // fix.hre.dotnugg.itemsByFeatureById[Features.HAIR][RAND_INDEXS.HAIR].hex,
+                    fix.hre.dotnugg.itemsByFeatureById[Features.HEAD][RAND_INDEXS.HEAD].hex,
+                    // fix.hre.dotnugg.itemsByFeatureById[Features.NECK][RAND_INDEXS.NECK].hex,
                 ],
                 new ethers.utils.AbiCoder().encode(
                     ['address', 'uint256', 'uint256', 'address'],

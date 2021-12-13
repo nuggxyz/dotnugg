@@ -17,7 +17,7 @@ library Version {
         uint256 data;
     }
 
-    function parse(uint256[][] memory data) internal pure returns (Memory[][] memory m) {
+    function parse(uint256[][] memory data) internal view returns (Memory[][] memory m) {
         m = new Memory[][](data.length);
 
         for (uint256 j = 0; j < data.length; j++) {

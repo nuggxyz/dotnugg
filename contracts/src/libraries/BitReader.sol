@@ -15,18 +15,24 @@ library BitReader {
         uint256 pos;
     }
 
-    function init(uint256[] memory input) internal pure returns (bool err, Memory memory m) {
+    function init(uint256[] memory input) internal view returns (bool err, Memory memory m) {
         if (input.length == 0) return (true, m);
 
         m.dat = input;
 
         m.moves = 2;
 
-        m.dat = new uint256[](input[0]);
+        m.dat = new uint256[](input.length);
 
-        for (uint256 i = 1; i < input[0] + 1; i++) {
-            m.dat[input[0] - i] = input[i];
+        Event.log(input.length, 'input.length');
+
+        for (uint256 i = input.length; i > 0; i--) {
+            m.dat[i - 1] = input[input.length - i];
         }
+
+        // for (uint256 i = 1; i < input[0] + 1; i++) {
+        //     m.dat[input[0] - i] = input[i];
+        // }
     }
 
     function peek(Memory memory m, uint256 bits) internal pure returns (uint256 res) {
