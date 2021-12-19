@@ -1,4 +1,4 @@
-pragma solidity 0.8.4;
+pragma solidity 0.8.9;
 
 import '../../lib/DSTest.sol';
 import '../../../../contracts/src/libraries/ShiftLib.sol';
