@@ -20,7 +20,6 @@ library Calculator {
     function combine(
         uint256 featureLen,
         uint8 width,
-        uint256 descriptor,
         Version.Memory[][] memory versions
     ) internal view returns (Types.Matrix memory resa) {
         Types.Canvas memory canvas;
@@ -49,7 +48,7 @@ library Calculator {
 
                 formatForCanvas(canvas, mix);
 
-                postionForCanvas(canvas, mix, descriptor);
+                postionForCanvas(canvas, mix);
 
                 mergeToCanvas(canvas, mix);
 
@@ -66,11 +65,7 @@ library Calculator {
      * @notice
      * @devg
      */
-    function postionForCanvas(
-        Types.Canvas memory canvas,
-        Types.Mix memory mix,
-        uint256 descriptor
-    ) internal view {
+    function postionForCanvas(Types.Canvas memory canvas, Types.Mix memory mix) internal view {
         Types.Anchor memory receiver = canvas.receivers[mix.feature];
         Types.Anchor memory anchor = mix.version.anchor;
 
