@@ -3,11 +3,9 @@
 pragma solidity 0.8.9;
 
 import '../libraries/Uint.sol';
-import '../../test/Event.sol';
 
 library Svg {
     using Uint256 for uint256;
-    using Event for uint256;
 
     function getPixelAt(
         uint256[] memory file,
@@ -24,7 +22,7 @@ library Svg {
         uint256[] memory file,
         uint256 width,
         uint256 height
-    ) internal view returns (bytes memory res) {
+    ) internal pure returns (bytes memory res) {
         bytes memory header = abi.encodePacked(
             hex'3c7376672076696577426f783d2730203020', //"<svg Box='0 0 ",
             (10 * width).toString(),

@@ -231,13 +231,13 @@ const HardhatConfig: HardhatUserConfig = {
     paths: {
         artifacts: 'artifacts',
         cache: 'cache',
-        sources: 'contracts',
+        sources: 'src',
         tests: 'tests',
     },
     solidity: {
         compilers: [
             {
-                version: '0.8.4',
+                version: '0.8.9',
                 settings: {
                     optimizer: {
                         enabled: true,

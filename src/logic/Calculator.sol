@@ -16,7 +16,6 @@ library Calculator {
     using Rgba for Types.Rgba;
     using Matrix for Types.Matrix;
     using Pixel for uint256;
-    using Event for uint256;
 
     function combine(
         uint256 featureLen,
@@ -253,8 +252,8 @@ library Calculator {
         // uint256 count;
         // uint256 count;
         while (canvas.matrix.next() && mix.matrix.next()) {
-            uint32 canvasPixel = canvas.matrix.current();
-            uint32 mixPixel = mix.matrix.current();
+            uint256 canvasPixel = canvas.matrix.current();
+            uint256 mixPixel = mix.matrix.current();
 
             // if (mixPixel != 0 || canvasPixel != 0) {
             //     // assert(count++ < 100);
