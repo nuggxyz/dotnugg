@@ -16,24 +16,31 @@ import './types/Version.sol';
 /// @author nugg.xyz - danny7even & dub6ix
 /// @notice yoU CAN'T HaVe ImAgES oN THe BlOCkcHAIn
 /// @dev hold my margarita
-contract dotnuggV1Processer is IdotnuggV1Processer {
+contract dotnuggV1Processor is IdotnuggV1Processor {
     function process(
         address implementer,
         uint256 tokenId,
         uint8 width
     ) public view override returns (uint256[] memory resp, IdotnuggV1Data.Data memory dat) {
         (uint256[][] memory files, IdotnuggV1Data.Data memory data) = IdotnuggV1Implementer(implementer).prepareFiles(tokenId);
+        dat = data;
+        resp = processCore(files, data, width);
+    }
 
+    function processCore(
+        uint256[][] memory files,
+        IdotnuggV1Data.Data memory data,
+        uint8 width
+    ) public view override returns (uint256[] memory resp) {
         require(data.version == 1, 'V1');
 
-        require(width < 64 && width % 2 == 0, 'V1:SIZE');
+        require(width < 64 && width % 2 == 1, 'V1:SIZE');
 
         Version.Memory[][] memory versions = Version.parse(files, data.xovers, data.yovers);
 
         Types.Matrix memory old = Calculator.combine(8, width, versions);
 
         resp = Version.bigMatrixWithData(old.version);
-        dat = data;
     }
 
     function resolveRaw(
@@ -111,7 +118,7 @@ contract dotnuggV1Processer is IdotnuggV1Processer {
         (uint256[] memory file, IdotnuggV1Data.Data memory data) = process(implementer, tokenId, width);
 
         if (resolver != address(0)) {
-            res = IdotnuggV1Processer(resolver).resolveRaw(res, data, zoom);
+            res = IdotnuggV1Processor(resolver).resolveRaw(res, data, zoom);
         } else {
             res = file;
         }
@@ -126,7 +133,7 @@ contract dotnuggV1Processer is IdotnuggV1Processer {
     ) public view override returns (bytes memory res) {
         (uint256[] memory file, IdotnuggV1Data.Data memory data) = process(implementer, tokenId, width);
 
-        res = IdotnuggV1Processer(resolver).resolveBytes(file, data, zoom);
+        res = IdotnuggV1Processor(resolver).resolveBytes(file, data, zoom);
     }
 
     function dotnuggToString(
@@ -138,7 +145,7 @@ contract dotnuggV1Processer is IdotnuggV1Processer {
     ) public view override returns (string memory res) {
         (uint256[] memory file, IdotnuggV1Data.Data memory data) = process(implementer, tokenId, width);
 
-        res = IdotnuggV1Processer(resolver).resolveString(file, data, zoom);
+        res = IdotnuggV1Processor(resolver).resolveString(file, data, zoom);
     }
 
     function dotnuggToData(
@@ -150,6 +157,6 @@ contract dotnuggV1Processer is IdotnuggV1Processer {
     ) public view override returns (IdotnuggV1Data.Data memory res) {
         (uint256[] memory file, IdotnuggV1Data.Data memory data) = process(implementer, tokenId, width);
 
-        res = IdotnuggV1Processer(resolver).resolveData(file, data, zoom);
+        res = IdotnuggV1Processor(resolver).resolveData(file, data, zoom);
     }
 }
