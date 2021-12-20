@@ -21,17 +21,18 @@ library Svg {
     function buildSvg(
         uint256[] memory file,
         uint256 width,
-        uint256 height
+        uint256 height,
+        uint8 zoom
     ) internal pure returns (bytes memory res) {
         bytes memory header = abi.encodePacked(
             hex'3c7376672076696577426f783d2730203020', //"<svg Box='0 0 ",
-            (10 * width).toString(),
+            (zoom * width).toString(),
             hex'20', // ' ',
-            (10 * width).toString(),
+            (zoom * width).toString(),
             hex'20272077696474683d27', //"' width='",
-            (10 * width).toString(),
+            (zoom * width).toString(),
             hex'27206865696768743d27', //  "' height='",
-            (10 * width).toString(),
+            (zoom * width).toString(),
             hex'2720786d6c6e733d27687474703a2f2f7777772e77332e6f72672f323030302f7376672720786d6c6e733a786c696e6b3d27687474703a2f2f7777772e77332e6f72672f313939392f786c696e6b273e5c6e' // "' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>\n"
         );
 
@@ -53,13 +54,13 @@ library Svg {
                 } else {
                     // curr.log('yup');
                     // rects[index++] = getRekt(last, x - count, y, count, 1);
-                    body = abi.encodePacked(body, getRekt(last, (x - count) * 10, y * 10, 1 * 10, count * 10));
+                    body = abi.encodePacked(body, getRekt(last, (x - count) * zoom, y * zoom, 1 * zoom, count * zoom));
                     last = curr;
                     count = 1;
                 }
             }
             // rects[index++] = getRekt(last, 33 - count, y, count, 1);
-            body = abi.encodePacked(body, getRekt(last, (width - count) * 10, y * 10, 1 * 10, count * 10));
+            body = abi.encodePacked(body, getRekt(last, (width - count) * zoom, y * zoom, 1 * zoom, count * zoom));
             last = 0;
             count = 0;
         }

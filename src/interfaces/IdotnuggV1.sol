@@ -5,6 +5,7 @@ pragma solidity 0.8.9;
 interface IdotnuggV1Data {
     struct Data {
         uint256 version;
+        uint256 renderedAt;
         string name;
         string desc;
         address owner;
@@ -17,22 +18,76 @@ interface IdotnuggV1Data {
     }
 }
 
-interface IdotnuggV1BytesResolver {
-    function resolveBytes(uint256[] memory file, IdotnuggV1Data.Data memory data) external view returns (bytes memory res);
+interface IdotnuggV1Resolver {
+    function resolveBytes(
+        uint256[] memory file,
+        IdotnuggV1Data.Data memory data,
+        uint8 zoom
+    ) external view returns (bytes memory res);
+
+    function resolveRaw(
+        uint256[] memory file,
+        IdotnuggV1Data.Data memory data,
+        uint8 zoom
+    ) external view returns (uint256[] memory res);
+
+    function resolveData(
+        uint256[] memory file,
+        IdotnuggV1Data.Data memory data,
+        uint8 zoom
+    ) external view returns (IdotnuggV1Data.Data memory res);
+
+    function resolveString(
+        uint256[] memory file,
+        IdotnuggV1Data.Data memory data,
+        uint8 zoom
+    ) external view returns (string memory res);
 }
 
-interface IdotnuggV1RawResolver {
-    function resolveRaw(uint256[] memory file, IdotnuggV1Data.Data memory data) external view returns (uint256[] memory res);
+interface IdotnuggV1Processer is IdotnuggV1Resolver {
+    function dotnuggToBytes(
+        address implementer,
+        uint256 tokenId,
+        address resolver,
+        uint8 width,
+        uint8 zoom
+    ) external view returns (bytes memory res);
+
+    function dotnuggToRaw(
+        address implementer,
+        uint256 tokenId,
+        address resolver,
+        uint8 width,
+        uint8 zoom
+    ) external view returns (uint256[] memory res);
+
+    function dotnuggToData(
+        address implementer,
+        uint256 tokenId,
+        address resolver,
+        uint8 width,
+        uint8 zoom
+    ) external view returns (IdotnuggV1Data.Data memory res);
+
+    function dotnuggToString(
+        address implementer,
+        uint256 tokenId,
+        address resolver,
+        uint8 width,
+        uint8 zoom
+    ) external view returns (string memory res);
+
+    function process(
+        address implementer,
+        uint256 tokenId,
+        uint8 width
+    ) external view returns (uint256[] memory file, IdotnuggV1Data.Data memory dat);
 }
 
-interface IdotnuggV1DataResolver {
-    function resolveData(uint256[] memory file, IdotnuggV1Data.Data memory data) external view returns (IdotnuggV1Data.Data memory res);
-}
+interface IdotnuggV1Implementer {
+    function setResolver(uint256 tokenId, address to) external;
 
-interface IdotnuggV1StringResolver {
-    function resolveString(uint256[] memory file, IdotnuggV1Data.Data memory data) external view returns (string memory res);
-}
+    function resolverOf(uint256 tokenId) external view returns (address);
 
-interface IdotnuggV1Processer is IdotnuggV1BytesResolver, IdotnuggV1RawResolver, IdotnuggV1StringResolver, IdotnuggV1DataResolver {
-    function process(uint256[][] memory files, IdotnuggV1Data.Data memory data) external view returns (uint256[] memory file);
+    function prepareFiles(uint256 tokenId) external view returns (uint256[][] memory file, IdotnuggV1Data.Data memory data);
 }
