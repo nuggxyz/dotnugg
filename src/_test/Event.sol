@@ -2,8 +2,7 @@
 
 pragma solidity 0.8.9;
 
-import '../src/libraries/Uint.sol';
-import '../../contracts/src/libraries/Uint.sol';
+import '../libraries/Uint.sol';
 
 import 'hardhat/console.sol';
 

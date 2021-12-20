@@ -4,38 +4,13 @@ pragma solidity 0.8.9;
 
 import {Types} from '../types/Types.sol';
 
-import '../libraries/Bytes.sol';
 import '../logic/Rgba.sol';
 
 import '../types/Version.sol';
 
 library Matrix {
-    using Bytes for bytes;
     using Rgba for Types.Rgba;
-    using Event for uint256;
     using Version for Version.Memory;
-
-    // function update(Types.Matrix memory matrix) internal pure returns (Version.Memory memory m) {
-    //     Version.initBigMatrix(m, matrix.width);
-
-    //     resetIterator(matrix);
-
-    //     for (uint256 index = 0; index < uint256(matrix.width) * uint256(matrix.height); index++) {
-    //         Matrix.next(matrix);
-    //         Types.Pixel memory pix = Matrix.current(matrix);
-
-    //         // if (pix.exists) {
-    //         uint256 color = (uint256(pix.rgba.r) << 24);
-    //         color |= (uint256(pix.rgba.g) << 16);
-    //         color |= (uint256(pix.rgba.b) << 8);
-    //         color |= (uint256(pix.rgba.a));
-    //         Version.setBigMatrixPixelAt(m, index, color);
-    //         // }
-    //     }
-
-    //     m.data |= (uint256(matrix.width) << 63);
-    //     m.data |= (uint256(matrix.height) << 69);
-    // }
 
     function create(uint8 width, uint8 height) internal pure returns (Types.Matrix memory res) {
         require(width % 2 == 1 && height % 2 == 1, 'ML:C:0');
