@@ -35,4 +35,9 @@ library SafeCastLib {
         require(x <= type(uint8).max);
         y = uint8(x);
     }
+
+    function safe6(uint256 x) internal pure returns (uint8 y) {
+        require(x <= 0xf7);
+        y = uint8(x);
+    }
 }

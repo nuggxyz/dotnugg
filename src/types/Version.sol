@@ -2,12 +2,13 @@
 
 pragma solidity 0.8.9;
 
-import '../libraries/BitReader.sol';
+import {ShiftLib} from '../libraries/ShiftLib.sol';
+import {BitReader} from '../libraries/BitReader.sol';
+import {SafeCastLib} from '../libraries/SafeCastLib.sol';
 
 library Version {
     using BitReader for BitReader.Memory;
-    using Event for uint256;
-    using Event for uint256[];
+    using SafeCastLib for uint256;
 
     struct Memory {
         uint256[] pallet;
@@ -17,7 +18,11 @@ library Version {
         uint256 data;
     }
 
-    function parse(uint256[][] memory data) internal view returns (Memory[][] memory m) {
+    function parse(
+        uint256[][] memory data,
+        uint8[] memory xovers,
+        uint8[] memory yovers
+    ) internal view returns (Memory[][] memory m) {
         m = new Memory[][](data.length);
 
         for (uint256 j = 0; j < data.length; j++) {
@@ -37,7 +42,7 @@ library Version {
             m[j] = new Memory[](versionLength);
 
             for (uint256 i = 0; i < versionLength; i++) {
-                m[j][i].data = parseData(reader, feature);
+                m[j][i].data = parseData(reader, feature, xovers, yovers);
 
                 m[j][i].receivers = parseReceivers(reader);
 
@@ -87,7 +92,12 @@ library Version {
         }
     }
 
-    function parseData(BitReader.Memory memory reader, uint256 feature) internal pure returns (uint256 res) {
+    function parseData(
+        BitReader.Memory memory reader,
+        uint256 feature,
+        uint8[] memory xovers,
+        uint8[] memory yovers
+    ) internal pure returns (uint256 res) {
         // 12 bits: coordinate - anchor x and y
 
         res |= feature << 75;
@@ -95,8 +105,13 @@ library Version {
         uint256 width = reader.select(6);
         uint256 height = reader.select(6);
 
-        res |= height << 69; // heighth and width
-        res |= width << 63;
+        if (xovers[feature] != 0 || yovers[feature] != 0) {
+            res |= uint256(yovers[feature]) << 69;
+            res |= uint256(xovers[feature]) << 63;
+        } else {
+            res |= height << 69; // heighth and width
+            res |= width << 63;
+        }
 
         // 12 bits: coordinate - anchor x and y
         res |= reader.select(6) << 51;
@@ -324,40 +339,6 @@ library Version {
         diffY = negY ? ancY - recY : recY - ancY;
     }
 
-    // function getPixelAtPositionWithOffset(Memory memory m, uint256 index) internal pure returns (bool exists, uint256 palletKey) {
-    //     (uint256 width, ) = getWidth(m);
-
-    //     uint256 indexY = index / 33;
-    //     uint256 indexX = index % 33;
-
-    //     (, uint256 diffX, , uint256 diffY) = getOffset(m);
-
-    //     if (width != 33) {}
-
-    //     if (indexX < diffX) return (false, 0);
-    //     uint256 realX = indexX - diffX;
-
-    //     if (indexY < diffY) return (false, 0);
-    //     uint256 realY = indexY - diffY;
-
-    //     if (width != 33) {}
-
-    //     // require(indexX >= diffX, 'VERS:GPAP:0');
-    //     // uint256 realX = indexX - diffX;
-
-    //     // require(indexY >= diffY, 'VERS:GPAP:1');
-    //     // uint256 realY = indexY - diffY;
-
-    //     // if (realX >= width || realY >= height) return (false, 0);
-
-    //     uint256 realIndex = realY * width + realX;
-
-    //     if (realIndex / 64 >= m.minimatrix.length) return (false, 0);
-    //     exists = true;
-
-    //     palletKey = (m.minimatrix[realIndex / 64] >> (4 * (realIndex % 64))) & 0xf;
-    // }
-
     function initBigMatrix(Memory memory m, uint256 width) internal pure {
         m.bigmatrix = new uint256[](((width * width) / 6) + 2);
     }
@@ -385,7 +366,7 @@ library Version {
         // require(m.bigmatrix.length > index / 6, 'VERS:SBM:0');
 
         if (m.bigmatrix.length > index / 6) {
-            uint256 offset = (40 * (index % 6));
+            uint8 offset = (40 * (index % 6)).safe8();
             m.bigmatrix[index / 6] &= ShiftLib.fullsubmask(40, offset);
             m.bigmatrix[index / 6] |= (color << offset);
         }
