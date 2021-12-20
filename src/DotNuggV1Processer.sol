@@ -16,22 +16,15 @@ import './types/Version.sol';
 /// @author nugg.xyz - danny7even & dub6ix
 /// @notice yoU CAN'T HaVe ImAgES oN THe BlOCkcHAIn
 /// @dev hold my margarita
-contract DotNuggV1Processer is IdotnuggV1Processer {
+contract dotnuggV1Processer is IdotnuggV1Processer {
     function process(uint256[][] memory files, bytes memory data) public view override returns (uint256[] memory resp) {
-        (
-            uint256 version,
-            address sender,
-            uint256 tokenId,
-            uint256 proof,
-            uint8[] memory ids,
-            uint8[] memory extras,
-            uint8[] memory xovers,
-            uint8[] memory yovers
-        ) = abi.decode(data, (address, uint256, uint256, address));
+        (uint256 version, , , , , , uint8[] memory xovers, uint8[] memory yovers) = parseData(data);
+
+        require(version == 1, 'V1');
 
         Version.Memory[][] memory versions = Version.parse(files);
 
-        IDotNugg.Matrix memory old = Calculator.combine(8, 63, itemData, versions);
+        Types.Matrix memory old = Calculator.combine(8, 63, itemData, versions, xovers, yovers);
 
         resp = Version.bigMatrixWithData(old.version);
     }
@@ -45,7 +38,7 @@ contract DotNuggV1Processer is IdotnuggV1Processer {
     }
 
     function resolveString(uint256[] memory file, bytes memory data) public pure override returns (string memory res) {
-        (uint256 tokenId, uint256 itemData, address owner) = abi.decode(data, (uint256, uint256, address));
+        (uint256 version, , , , , , uint8[] memory xovers, uint8[] memory yovers) = parseData(data);
 
         uint256 width = (file[file.length - 1] >> 63) & ShiftLib.mask(6);
         uint256 height = (file[file.length - 1] >> 69) & ShiftLib.mask(6);
@@ -78,6 +71,25 @@ contract DotNuggV1Processer is IdotnuggV1Processer {
                     )
                 )
             )
+        );
+    }
+
+    function parseData(bytes memory data)
+        internal
+        returns (
+            uint256 version,
+            address sender,
+            uint256 tokenId,
+            uint256 proof,
+            uint8[] memory ids,
+            uint8[] memory extras,
+            uint8[] memory xovers,
+            uint8[] memory yovers
+        )
+    {
+        (version, sender, tokenId, proof, ids, extras, xovers, yovers) = abi.decode(
+            data,
+            (uint256, address, uint256, uint256, uint8[], uint8[], uint8[], uint8[])
         );
     }
 }
