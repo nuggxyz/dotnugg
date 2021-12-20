@@ -2,15 +2,28 @@
   {
     "inputs": [
       {
-        "internalType": "uint256[]",
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "prepareFiles",
+    "outputs": [
+      {
+        "internalType": "uint256[][]",
         "name": "file",
-        "type": "uint256[]"
+        "type": "uint256[][]"
       },
       {
         "components": [
           {
             "internalType": "uint256",
             "name": "version",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "renderedAt",
             "type": "uint256"
           },
           {
@@ -64,15 +77,44 @@
         "type": "tuple"
       }
     ],
-    "name": "resolveString",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "resolverOf",
     "outputs": [
       {
-        "internalType": "string",
-        "name": "res",
-        "type": "string"
+        "internalType": "address",
+        "name": "resolver",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      }
+    ],
+    "name": "setResolver",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   }
 ]

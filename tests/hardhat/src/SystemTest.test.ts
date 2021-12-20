@@ -83,7 +83,7 @@ describe('uint tests', async function () {
 
             console.log('const RAND_INDEXS = ');
             console.log(RAND_INDEXS);
-            const res = await fix.processer.process(
+            const res = await fix.processor.processCore(
                 [
                     fix.hre.dotnugg.itemsByFeatureById[Features.BASE][1].hex,
                     // fix.hre.dotnugg.itemsByFeatureById[Features.BACK][RAND_INDEXS.BACK].hex,
@@ -97,6 +97,7 @@ describe('uint tests', async function () {
                     version: 1,
                     name: 'test',
                     desc: 'desc',
+                    renderedAt: 0,
                     owner: ethers.constants.AddressZero,
                     tokenId: 0,
                     proof: 0,
@@ -105,6 +106,7 @@ describe('uint tests', async function () {
                     xovers: [0, 0, 0, 0, 9, 0, 0, 0],
                     yovers: [0, 0, 0, 0, 12, 0, 0, 0],
                 },
+                45,
             );
 
             dotnugg.log.Console.drawConsole(res);
