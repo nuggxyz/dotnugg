@@ -49,19 +49,19 @@ const deployment = async (hre: HardhatRuntimeEnvironment) => {
         //     // deterministicDeployment: salts[1],
         // });
 
-        const defaultDeployment = await hre.deployments.deploy('DefaultResolver', {
+        const dotnuggV1Processor = await hre.deployments.deploy('dotnuggV1Processor', {
             from: eoaDeployer,
             log: true,
             args: [],
             // deterministicDeployment: salts[2],
         });
 
-        const compressedDeployment = await hre.deployments.deploy('CompressedResolver', {
-            from: eoaDeployer,
-            log: true,
-            args: [defaultDeployment.address, defaultDeployment.address],
-            // deterministicDeployment: salts[6],
-        });
+        // const compressedDeployment = await hre.deployments.deploy('CompressedResolver', {
+        //     from: eoaDeployer,
+        //     log: true,
+        //     args: [dotnuggV1Processor.address, dotnuggV1Processor.address],
+        //     // deterministicDeployment: salts[6],
+        // });
 
         // const fileDotnuggDeployment = await hre.deployments.deploy('SvgFileResolver', {
         //     from: eoaDeployer,
@@ -87,9 +87,9 @@ const deployment = async (hre: HardhatRuntimeEnvironment) => {
         // hre.deployments.log('NuggFT Deployment Complete at address: ', nuggFTDeployement.address);
         // hre.deployments.log('xNUGG Deployment Complete at address: ', xnuggDeployement.address);
         // hre.deployments.log('NuggSwap Deployment Complete at address: ', nuggswapDeployment.address);
-        hre.deployments.log('DefaultResolver Deployment Complete at address: ', defaultDeployment.address);
+        hre.deployments.log('DefaultResolver Deployment Complete at address: ', dotnuggV1Processor.address);
         // hre.deployments.log('DotNuggFileResolver Deployment Complete at address: ', fileDotnuggDeployment.address);
-        hre.deployments.log('CompressedResolver Deployment Complete at address: ', compressedDeployment.address);
+        // hre.deployments.log('CompressedResolver Deployment Complete at address: ', compressedDeployment.address);
 
         // const father = await hre.ethers.getContractAt<NuggFather>('NuggFather', fatherDeployment.address);
         //
@@ -99,7 +99,7 @@ const deployment = async (hre: HardhatRuntimeEnvironment) => {
         // const xnugg = await hre.ethers.getContractAt<xNUGG>('xNUGG', xnuggDeployement.address);
         // //
 
-        // const default = await hre.ethers.getContractAt<DotNugg>('DotNugg', defaultDeployment.address);
+        // const default = await hre.ethers.getContractAt<DotNugg>('DotNugg', dotnuggV1Processor.address);
         // const nuggin = await hre.ethers.getContractAt<SvgFileResolver>('SvgFileResolver', fileDotnugg.address);
         // const testNuggin = await hre.ethers.getContractAt<DotNuggFileResolver>('DotNuggFileResolver', compressedDeployment.address);
 
