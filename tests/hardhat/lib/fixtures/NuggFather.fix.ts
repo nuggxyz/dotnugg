@@ -4,18 +4,14 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types';
 
 import { getHRE } from '../shared/deployment';
 import { deployContractWithSalt } from '../shared';
-import { MockDotNuggHolder } from '../../../../typechain/MockDotNuggHolder';
-import { MockDotNuggHolder__factory } from '../../../../typechain/factories/MockDotNuggHolder__factory';
-import { CompressedResolver__factory, DefaultResolver, DefaultResolver__factory } from '../../../../typechain';
-import { CompressedResolver } from '../../../../typechain/CompressedResolver';
+import { DotnuggV1Processer, DotnuggV1Processer__factory } from '../../../../typechain';
 
 export interface NuggFatherFixture {
-    holder: MockDotNuggHolder;
+    // holder: MockDotNuggHolder;
     // let nuggin: GroupNuggIn;
-    // let nugginSVG: DefaultResolver;
-    // let nugginDotNugg: DefaultResolver;
-    defaultResolver: DefaultResolver;
-    compressedResolver: CompressedResolver;
+    // let nugginSVG: DotnuggV1Processer;
+    // let nugginDotNugg: DotnuggV1Processer;
+    processer: DotnuggV1Processer;
     owner: string;
     ownerStartBal: BigNumber;
     hre: HardhatRuntimeEnvironment;
@@ -39,23 +35,17 @@ export const NuggFatherFix: Fixture<NuggFatherFixture> = async function (
     //     args: [],
     // });
 
-    const defaultResolver = await deployContractWithSalt<DefaultResolver__factory>({
-        factory: 'DefaultResolver',
+    const processer = await deployContractWithSalt<DotnuggV1Processer__factory>({
+        factory: 'dotnuggV1Processer',
         from: eoaDeployer,
         args: [],
     });
 
-    const compressedResolver = await deployContractWithSalt<CompressedResolver__factory>({
-        factory: 'CompressedResolver',
-        from: eoaDeployer,
-        args: [defaultResolver.address, defaultResolver.address],
-    });
-
-    const holder = await deployContractWithSalt<MockDotNuggHolder__factory>({
-        factory: 'MockDotNuggHolder',
-        from: eoaDeployer,
-        args: [defaultResolver.address],
-    });
+    // const holder = await deployContractWithSalt<MockDotNuggHolder__factory>({
+    //     factory: 'MockDotNuggHolder',
+    //     from: eoaDeployer,
+    //     args: [processer.address],
+    // });
 
     // const nuggswap = await deployContractWithSalt<NuggSwap__factory>({
     //     factory: 'NuggSwap',
@@ -78,8 +68,8 @@ export const NuggFatherFix: Fixture<NuggFatherFixture> = async function (
 
     const owner = eoaDeployer.address;
 
-    hre.tracer.nameTags[holder.address] = 'MockDotNuggHolder';
-    // hre.tracer.nameTags[nuggswap.address] = 'NuggSwap';
+    // hre.tracer.nameTags[holder.address] = 'MockDotNuggHolder';
+    hre.tracer.nameTags[processer.address] = 'dotnuggV1Processer';
     hre.tracer.nameTags['0x0000000000000000000000000000000000000000'] = 'BLACK_HOLE';
     hre.tracer.nameTags[owner] = 'Owner';
     // hre.tracer.nameTags[mockERC1155.address] = 'mockERC1155';
@@ -89,14 +79,13 @@ export const NuggFatherFix: Fixture<NuggFatherFixture> = async function (
     // }
 
     return {
-        holder,
+        // holder,
         // toNuggSwapTokenId,
         // mockERC1155,
         // dotnugg: hre.dotnugg,
         // nuggft,
         // xnugg,
-        compressedResolver,
-        defaultResolver,
+        processer,
         blockOffset,
         owner,
         // nuggswap,

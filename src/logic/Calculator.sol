@@ -92,8 +92,15 @@ library Calculator {
         //     receiver.coordinate.b,
         //     'receiver.coordinate.b'
         // );
+        // (bool overrides, uint8 overrideX, uint8 overrideY) = Version.getOverrides(mix.matrix.version);
+
+        // if (overrides && overrideX < canvas.matrix.width && overrideY < canvas.matrix.height) {
+        //     mix.xoffset = overrideX;
+        //     mix.yoffset = overrideY;
+        // } else {
         mix.xoffset = receiver.coordinate.a > anchor.coordinate.a ? receiver.coordinate.a - anchor.coordinate.a : 0;
         mix.yoffset = receiver.coordinate.b > anchor.coordinate.b ? receiver.coordinate.b - anchor.coordinate.b : 0;
+        // }
 
         canvas.matrix.moveTo(mix.xoffset, mix.yoffset, mix.matrix.width, mix.matrix.height);
     }

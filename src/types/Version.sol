@@ -52,10 +52,10 @@ library Version {
 
                 m[j][i].pallet = pallet;
 
-                (uint256 ancX, uint256 ancY) = getAnchor(m[j][i]);
-                (, , uint256 ancZ) = getPalletColorAt(m[j][i], getPixelAt(m[j][i], ancX, ancY));
+                // (uint256 ancX, uint256 ancY) = getAnchor(m[j][i]);
+                // (, , uint256 ancZ) = getPalletColorAt(m[j][i], getPixelAt(m[j][i], ancX, ancY));
 
-                setZ(m[j][i], ancZ);
+                // setZ(m[j][i], ancZ);
             }
         }
     }
@@ -100,22 +100,30 @@ library Version {
     ) internal pure returns (uint256 res) {
         // 12 bits: coordinate - anchor x and y
 
+        // if (xovers.length == 8 && yovers.length == 8 && (xovers[feature] != 0 || yovers[feature] != 0)) {
+        //     res |= uint256(uint256(yovers[feature]).safe6()) << 84;
+        //     res |= uint256(uint256(xovers[feature]).safe6()) << 78;
+        // }
+
         res |= feature << 75;
 
         uint256 width = reader.select(6);
         uint256 height = reader.select(6);
 
-        if (xovers[feature] != 0 || yovers[feature] != 0) {
-            res |= uint256(yovers[feature]) << 69;
-            res |= uint256(xovers[feature]) << 63;
-        } else {
-            res |= height << 69; // heighth and width
-            res |= width << 63;
-        }
+        res |= height << 69; // heighth and width
+        res |= width << 63;
 
-        // 12 bits: coordinate - anchor x and y
-        res |= reader.select(6) << 51;
-        res |= reader.select(6) << 57;
+        uint256 anchorX = reader.select(6);
+        uint256 anchorY = reader.select(6);
+
+        if (xovers.length == 8 && yovers.length == 8 && (xovers[feature] != 0 || yovers[feature] != 0)) {
+            res |= uint256(yovers[feature]) << 57;
+            res |= uint256(xovers[feature]) << 51;
+        } else {
+            // 12 bits: coordinate - anchor x and y
+            res |= anchorX << 51;
+            res |= anchorY << 57;
+        }
 
         // 1 or 25 bits: rlud - radii
         res |= (reader.select(1) == 0x1 ? 0x000000 : reader.select(24)) << 27;
@@ -290,6 +298,22 @@ library Version {
         y = (m.data >> 57) & ShiftLib.mask(6);
     }
 
+    function getOverrides(Memory memory m)
+        internal
+        pure
+        returns (
+            bool shouldOverride,
+            uint8 x,
+            uint8 y
+        )
+    {
+        // yOrYOffset
+        x = uint8((m.data >> 78) & ShiftLib.mask(6));
+        y = uint8((m.data >> 84) & ShiftLib.mask(6));
+
+        shouldOverride = x != 0 && y != 0;
+    }
+
     function getPixelAt(
         Memory memory m,
         uint256 x,
@@ -320,24 +344,24 @@ library Version {
         zindex = (res >> 32) & 0xf;
     }
 
-    function getDiffOfReceiverAt(Memory memory base, Memory memory mix)
-        internal
-        pure
-        returns (
-            bool negX,
-            uint256 diffX,
-            bool negY,
-            uint256 diffY
-        )
-    {
-        (uint256 recX, uint256 recY, ) = getReceiverAt(base, (mix.data >> 75) & ShiftLib.mask(3), false);
-        (uint256 ancX, uint256 ancY) = getAnchor(mix);
+    // function getDiffOfReceiverAt(Memory memory base, Memory memory mix)
+    //     internal
+    //     pure
+    //     returns (
+    //         bool negX,
+    //         uint256 diffX,
+    //         bool negY,
+    //         uint256 diffY
+    //     )
+    // {
+    //     (uint256 recX, uint256 recY, ) = getReceiverAt(base, (mix.data >> 75) & ShiftLib.mask(3), false);
+    //     (uint256 ancX, uint256 ancY, ) = getAnchor(mix);
 
-        negX = recX < ancX;
-        diffX = negX ? ancX - recX : recX - ancX;
-        negY = recY < ancY;
-        diffY = negY ? ancY - recY : recY - ancY;
-    }
+    //     negX = recX < ancX;
+    //     diffX = negX ? ancX - recX : recX - ancX;
+    //     negY = recY < ancY;
+    //     diffY = negY ? ancY - recY : recY - ancY;
+    // }
 
     function initBigMatrix(Memory memory m, uint256 width) internal pure {
         m.bigmatrix = new uint256[](((width * width) / 6) + 2);
