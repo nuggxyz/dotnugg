@@ -41,14 +41,14 @@ describe('uint tests', async function () {
     });
     describe('internal', async () => {
         it('should not fuck up', async () => {
-            const RAND_INDEXS = {
-                BACK: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.BACK].amount),
-                EYES: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.EYES].amount),
-                MOUT: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.MOUT].amount),
-                HEAD: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.HEAD].amount),
-                HAIR: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.HAIR].amount),
-                NECK: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.NECK].amount),
-            };
+            // const RAND_INDEXS = {
+            //     BACK: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.BACK].amount),
+            //     EYES: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.EYES].amount),
+            //     MOUT: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.MOUT].amount),
+            //     HEAD: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.HEAD].amount),
+            //     HAIR: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.HAIR].amount),
+            //     NECK: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.NECK].amount),
+            // };
 
             // const RAND_INDEXS = {
             //     BACK: 6,
@@ -79,9 +79,11 @@ describe('uint tests', async function () {
 
             // const RAND_INDEXS = { BACK: 1, EYES: 1, MOUT: 8, HEAD: 3, HAIR: 15, NECK: 3 };
 
+            const RAND_INDEXS = { BACK: 4, EYES: 24, MOUT: 11, HEAD: 11, HAIR: 9, NECK: 2 };
+
             console.log('const RAND_INDEXS = ');
             console.log(RAND_INDEXS);
-            const res = await fix.defaultResolver.process(
+            const res = await fix.processer.process(
                 [
                     fix.hre.dotnugg.itemsByFeatureById[Features.BASE][1].hex,
                     // fix.hre.dotnugg.itemsByFeatureById[Features.BACK][RAND_INDEXS.BACK].hex,
@@ -91,11 +93,18 @@ describe('uint tests', async function () {
                     fix.hre.dotnugg.itemsByFeatureById[Features.HEAD][RAND_INDEXS.HEAD].hex,
                     // fix.hre.dotnugg.itemsByFeatureById[Features.NECK][RAND_INDEXS.NECK].hex,
                 ],
-                new ethers.utils.AbiCoder().encode(
-                    ['address', 'uint256', 'uint256', 'address'],
-                    [ethers.constants.AddressZero, 0, 0, ethers.constants.AddressZero],
-                ),
-                '0x00',
+                {
+                    version: 1,
+                    name: 'test',
+                    desc: 'desc',
+                    owner: ethers.constants.AddressZero,
+                    tokenId: 0,
+                    proof: 0,
+                    ids: [0, 0, 0, 0, 0, 0, 0, 0],
+                    extras: [0, 0, 0, 0, 0, 0, 0, 0],
+                    xovers: [0, 0, 0, 0, 9, 0, 0, 0],
+                    yovers: [0, 0, 0, 0, 12, 0, 0, 0],
+                },
             );
 
             dotnugg.log.Console.drawConsole(res);
