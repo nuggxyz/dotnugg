@@ -23,36 +23,36 @@ library ShiftLib {
     }
 
     function set(
-        uint256 preStore,
+        uint256 cache,
         uint8 bits,
         uint8 pos,
         uint256 value
-    ) internal pure returns (uint256 postStore) {
-        postStore = preStore & fullsubmask(bits, pos);
+    ) internal pure returns (uint256 res) {
+        res = cache & fullsubmask(bits, pos);
 
         assembly {
             value := shl(pos, value)
         }
 
-        postStore |= value;
+        res |= value;
     }
 
     function get(
-        uint256 store,
+        uint256 cache,
         uint8 bits,
         uint8 pos
-    ) internal pure returns (uint256 value) {
+    ) internal pure returns (uint256 res) {
         assembly {
-            value := shr(pos, store)
+            res := shr(pos, cache)
         }
-        value &= mask(bits);
+        res &= mask(bits);
     }
 
     /*━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                                 ARRAYS
     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━*/
 
-    function getArray(uint256 store, uint8 pos) internal pure returns (uint8[] memory arr) {
+    function getArray8x8(uint256 store, uint8 pos) internal pure returns (uint8[] memory arr) {
         store = get(store, 64, pos);
 
         arr = new uint8[](8);
@@ -62,7 +62,7 @@ library ShiftLib {
         }
     }
 
-    function setArray(
+    function setArray8x8(
         uint256 store,
         uint8 pos,
         uint8[] memory arr

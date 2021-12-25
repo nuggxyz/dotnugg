@@ -72,7 +72,7 @@
             "type": "uint8[]"
           }
         ],
-        "internalType": "struct IdotnuggV1Data.Data",
+        "internalType": "struct IDotnuggV1Data.Data",
         "name": "data",
         "type": "tuple"
       }

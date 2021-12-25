@@ -2,34 +2,42 @@
 
 pragma solidity 0.8.9;
 
-import './interfaces/IdotnuggV1.sol';
+import {IDotnuggV1Processor} from './interfaces/IDotnuggV1Processor.sol';
+import {IDotnuggV1Data} from './interfaces/IDotnuggV1Data.sol';
+import {IDotnuggV1Implementer} from './interfaces/IDotnuggV1Implementer.sol';
 
-import './logic/Calculator.sol';
-import './logic/Matrix.sol';
-import './logic/Svg.sol';
+import {Calculator} from './logic/Calculator.sol';
+import {Matrix} from './logic/Matrix.sol';
+import {Svg} from './logic/Svg.sol';
 
-import './libraries/Base64.sol';
+import {ShiftLib} from './libraries/ShiftLib.sol';
+import {Base64} from './libraries/Base64.sol';
 
-import './types/Version.sol';
+import {Version} from './types/Version.sol';
+import {Types} from './types/Types.sol';
+
+import {StringCastLib} from './libraries/StringCastLib.sol';
 
 /// @title dotnugg Processor V1 - onchain encoder/decoder protocol for dotnugg files
 /// @author nugg.xyz - danny7even & dub6ix
 /// @notice yoU CAN'T HaVe ImAgES oN THe BlOCkcHAIn
 /// @dev hold my margarita
-contract dotnuggV1Processor is IdotnuggV1Processor {
+contract DotnuggV1Processor is IDotnuggV1Processor {
+    using StringCastLib for uint256;
+
     function process(
         address implementer,
         uint256 tokenId,
         uint8 width
-    ) public view override returns (uint256[] memory resp, IdotnuggV1Data.Data memory dat) {
-        (uint256[][] memory files, IdotnuggV1Data.Data memory data) = IdotnuggV1Implementer(implementer).prepareFiles(tokenId);
+    ) public view override returns (uint256[] memory resp, IDotnuggV1Data.Data memory dat) {
+        (uint256[][] memory files, IDotnuggV1Data.Data memory data) = IDotnuggV1Implementer(implementer).prepareFiles(tokenId);
         dat = data;
         resp = processCore(files, data, width);
     }
 
     function processCore(
         uint256[][] memory files,
-        IdotnuggV1Data.Data memory data,
+        IDotnuggV1Data.Data memory data,
         uint8 width
     ) public view override returns (uint256[] memory resp) {
         require(data.version == 1, 'V1');
@@ -45,7 +53,7 @@ contract dotnuggV1Processor is IdotnuggV1Processor {
 
     function resolveRaw(
         uint256[] memory file,
-        IdotnuggV1Data.Data memory,
+        IDotnuggV1Data.Data memory,
         uint8
     ) public pure override returns (uint256[] memory res) {
         res = file;
@@ -53,7 +61,7 @@ contract dotnuggV1Processor is IdotnuggV1Processor {
 
     function resolveBytes(
         uint256[] memory file,
-        IdotnuggV1Data.Data memory data,
+        IDotnuggV1Data.Data memory data,
         uint8
     ) public pure override returns (bytes memory res) {
         res = abi.encode(file, data);
@@ -61,17 +69,17 @@ contract dotnuggV1Processor is IdotnuggV1Processor {
 
     function resolveData(
         uint256[] memory,
-        IdotnuggV1Data.Data memory data,
+        IDotnuggV1Data.Data memory data,
         uint8
-    ) public pure override returns (IdotnuggV1Data.Data memory res) {
+    ) public pure override returns (IDotnuggV1Data.Data memory res) {
         res = data;
     }
 
     function resolveString(
         uint256[] memory file,
-        IdotnuggV1Data.Data memory data,
+        IDotnuggV1Data.Data memory data,
         uint8 zoom
-    ) public pure override returns (string memory) {
+    ) public view override returns (string memory) {
         uint256 width = (file[file.length - 1] >> 63) & ShiftLib.mask(6);
         uint256 height = (file[file.length - 1] >> 69) & ShiftLib.mask(6);
 
@@ -88,14 +96,14 @@ contract dotnuggV1Processor is IdotnuggV1Processor {
                         data.name,
                         '","description":"',
                         data.desc,
-                        '","dotnuggVersion":"',
-                        Uint256.toString(data.version),
+                        '","DotnuggVersion":"',
+                        StringCastLib.toAsciiString(data.version),
                         '","tokenId":"',
-                        Uint256.toString(data.tokenId),
+                        StringCastLib.toAsciiString(data.tokenId),
                         '","proof":"',
-                        Uint256.toHexString(data.proof, 32),
+                        StringCastLib.toHexString(data.proof, 32),
                         '","owner":"',
-                        Uint256.toHexString(uint160(data.owner), 20),
+                        StringCastLib.toHexString(uint160(data.owner), 20),
                         '", "image": "',
                         Base64.PREFIX_SVG,
                         working,
@@ -115,10 +123,10 @@ contract dotnuggV1Processor is IdotnuggV1Processor {
         uint8 width,
         uint8 zoom
     ) public view override returns (uint256[] memory res) {
-        (uint256[] memory file, IdotnuggV1Data.Data memory data) = process(implementer, tokenId, width);
+        (uint256[] memory file, IDotnuggV1Data.Data memory data) = process(implementer, tokenId, width);
 
         if (resolver != address(0)) {
-            res = IdotnuggV1Processor(resolver).resolveRaw(res, data, zoom);
+            res = IDotnuggV1Processor(resolver).resolveRaw(res, data, zoom);
         } else {
             res = file;
         }
@@ -131,9 +139,9 @@ contract dotnuggV1Processor is IdotnuggV1Processor {
         uint8 width,
         uint8 zoom
     ) public view override returns (bytes memory res) {
-        (uint256[] memory file, IdotnuggV1Data.Data memory data) = process(implementer, tokenId, width);
+        (uint256[] memory file, IDotnuggV1Data.Data memory data) = process(implementer, tokenId, width);
 
-        res = IdotnuggV1Processor(resolver).resolveBytes(file, data, zoom);
+        res = IDotnuggV1Processor(resolver).resolveBytes(file, data, zoom);
     }
 
     function dotnuggToString(
@@ -143,9 +151,9 @@ contract dotnuggV1Processor is IdotnuggV1Processor {
         uint8 width,
         uint8 zoom
     ) public view override returns (string memory res) {
-        (uint256[] memory file, IdotnuggV1Data.Data memory data) = process(implementer, tokenId, width);
+        (uint256[] memory file, IDotnuggV1Data.Data memory data) = process(implementer, tokenId, width);
 
-        res = IdotnuggV1Processor(resolver).resolveString(file, data, zoom);
+        res = IDotnuggV1Processor(resolver).resolveString(file, data, zoom);
     }
 
     function dotnuggToData(
@@ -154,9 +162,9 @@ contract dotnuggV1Processor is IdotnuggV1Processor {
         address resolver,
         uint8 width,
         uint8 zoom
-    ) public view override returns (IdotnuggV1Data.Data memory res) {
-        (uint256[] memory file, IdotnuggV1Data.Data memory data) = process(implementer, tokenId, width);
+    ) public view override returns (IDotnuggV1Data.Data memory res) {
+        (uint256[] memory file, IDotnuggV1Data.Data memory data) = process(implementer, tokenId, width);
 
-        res = IdotnuggV1Processor(resolver).resolveData(file, data, zoom);
+        res = IDotnuggV1Processor(resolver).resolveData(file, data, zoom);
     }
 }

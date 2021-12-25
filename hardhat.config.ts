@@ -26,7 +26,7 @@ import { HardhatUserConfig, NetworksUserConfig, NetworkUserConfig } from 'hardha
 
 dotenvConfig({ path: resolve(__dirname, '.env') });
 
-export const GAS_PRICE = utils.parseUnits('5', 'gwei');
+export const GAS_PRICE = utils.parseUnits('15', 'gwei');
 
 export const NamedAccounts = {
     main: { default: 0 },
@@ -64,7 +64,7 @@ const DefaultLocalNetworkConfig = {
 
 const DefaultStageNetworkConfig = {
     ...DefaultNetworkConfig,
-    gasMultiplier: 2,
+    gasMultiplier: 25,
     tags: [NetworkTags.STAGING],
 };
 
@@ -96,6 +96,7 @@ const StagingNetworks: NetworksUserConfig = {
         ...DefaultStageNetworkConfig,
         url: `https://ropsten.infura.io/v3/${process.env.INFURA_API_KEY}`,
         chainId: 3,
+        gasPrice: parseInt(utils.parseUnits('20', 'gwei').toString(), 10),
     },
     rinkeby: {
         ...DefaultStageNetworkConfig,

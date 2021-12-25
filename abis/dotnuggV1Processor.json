@@ -126,7 +126,7 @@
             "type": "uint8[]"
           }
         ],
-        "internalType": "struct IdotnuggV1Data.Data",
+        "internalType": "struct IDotnuggV1Data.Data",
         "name": "res",
         "type": "tuple"
       }
@@ -295,7 +295,7 @@
             "type": "uint8[]"
           }
         ],
-        "internalType": "struct IdotnuggV1Data.Data",
+        "internalType": "struct IDotnuggV1Data.Data",
         "name": "dat",
         "type": "tuple"
       }
@@ -368,7 +368,7 @@
             "type": "uint8[]"
           }
         ],
-        "internalType": "struct IdotnuggV1Data.Data",
+        "internalType": "struct IDotnuggV1Data.Data",
         "name": "data",
         "type": "tuple"
       },
@@ -454,7 +454,7 @@
             "type": "uint8[]"
           }
         ],
-        "internalType": "struct IdotnuggV1Data.Data",
+        "internalType": "struct IDotnuggV1Data.Data",
         "name": "data",
         "type": "tuple"
       },
@@ -540,7 +540,7 @@
             "type": "uint8[]"
           }
         ],
-        "internalType": "struct IdotnuggV1Data.Data",
+        "internalType": "struct IDotnuggV1Data.Data",
         "name": "data",
         "type": "tuple"
       },
@@ -610,7 +610,7 @@
             "type": "uint8[]"
           }
         ],
-        "internalType": "struct IdotnuggV1Data.Data",
+        "internalType": "struct IDotnuggV1Data.Data",
         "name": "res",
         "type": "tuple"
       }
@@ -683,7 +683,7 @@
             "type": "uint8[]"
           }
         ],
-        "internalType": "struct IdotnuggV1Data.Data",
+        "internalType": "struct IDotnuggV1Data.Data",
         "name": "",
         "type": "tuple"
       },
@@ -769,7 +769,7 @@
             "type": "uint8[]"
           }
         ],
-        "internalType": "struct IdotnuggV1Data.Data",
+        "internalType": "struct IDotnuggV1Data.Data",
         "name": "data",
         "type": "tuple"
       },
@@ -787,7 +787,7 @@
         "type": "string"
       }
     ],
-    "stateMutability": "pure",
+    "stateMutability": "view",
     "type": "function"
   }
 ]
