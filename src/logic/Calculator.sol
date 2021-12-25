@@ -20,7 +20,7 @@ library Calculator {
         uint256 featureLen,
         uint8 width,
         Version.Memory[][] memory versions
-    ) internal view returns (Types.Matrix memory resa) {
+    ) internal pure returns (Types.Matrix memory resa) {
         Types.Canvas memory canvas;
         canvas.matrix = Matrix.create(width, width);
         canvas.receivers = new Types.Anchor[](featureLen);
@@ -62,37 +62,12 @@ library Calculator {
      * @notice
      * @devg
      */
-    function postionForCanvas(Types.Canvas memory canvas, Types.Mix memory mix) internal view {
+    function postionForCanvas(Types.Canvas memory canvas, Types.Mix memory mix) internal pure {
         Types.Anchor memory receiver = canvas.receivers[mix.feature];
         Types.Anchor memory anchor = mix.version.anchor;
 
-        // (bool overExists, uint256 overX, uint256 overY) = Descriptor.receiverOverride(descriptor, mix.feature);
-
-        // if (overExists) {
-        //     receiver.coordinate.a = uint8(overX);
-        //     receiver.coordinate.b = uint8(overY);
-        // }
-
-        // uint256(mix.feature).log('mix.feature');
-
-        // uint256(anchor.coordinate.a).log(
-        //     'anchor.coordinate.a',
-        //     anchor.coordinate.b,
-        //     'anchor.coordinate.b',
-        //     receiver.coordinate.a,
-        //     'receiver.coordinate.a',
-        //     receiver.coordinate.b,
-        //     'receiver.coordinate.b'
-        // );
-        // (bool overrides, uint8 overrideX, uint8 overrideY) = Version.getOverrides(mix.matrix.version);
-
-        // if (overrides && overrideX < canvas.matrix.width && overrideY < canvas.matrix.height) {
-        //     mix.xoffset = overrideX;
-        //     mix.yoffset = overrideY;
-        // } else {
         mix.xoffset = receiver.coordinate.a > anchor.coordinate.a ? receiver.coordinate.a - anchor.coordinate.a : 0;
         mix.yoffset = receiver.coordinate.b > anchor.coordinate.b ? receiver.coordinate.b - anchor.coordinate.b : 0;
-        // }
 
         canvas.matrix.moveTo(mix.xoffset, mix.yoffset, mix.matrix.width, mix.matrix.height);
     }
@@ -125,11 +100,6 @@ library Calculator {
         }
     }
 
-    /**
-     * @notice
-     * @dev
-     * makes the sorts versions
-     */
     function pickVersionIndex(Types.Canvas memory canvas, Version.Memory[] memory versions) internal pure returns (uint8) {
         require(versions.length > 0, 'CALC:PVI:0');
         if (versions.length == 1) {
@@ -162,16 +132,11 @@ library Calculator {
         return (r1.r <= r2.r && r1.l <= r2.l) || (r1.u <= r2.u && r1.d <= r2.d);
     }
 
-    /**
-     * @notice
-     * @dev done
-     * makes the sorts versions
-     */
     function setMix(
         Types.Mix memory res,
         Version.Memory[] memory versions,
         uint8 versionIndex
-    ) internal view {
+    ) internal pure {
         uint256 radiiBits = (versions[versionIndex].data >> 27) & ShiftLib.mask(24);
         uint256 expanderBits = (versions[versionIndex].data >> 3) & ShiftLib.mask(24);
 
@@ -228,10 +193,6 @@ library Calculator {
         res.matrix.set(versions[versionIndex], width, height);
     }
 
-    /**
-     * @notice done
-     * @dev
-     */
     function updateReceivers(Types.Canvas memory canvas, Types.Mix memory mix) internal pure {
         for (uint8 i = 0; i < mix.receivers.length; i++) {
             Types.Anchor memory m = mix.receivers[i];
@@ -243,27 +204,12 @@ library Calculator {
         }
     }
 
-    /**
-     * @notice done
-     * @dev
-     */
-    function mergeToCanvas(Types.Canvas memory canvas, Types.Mix memory mix) internal view {
-        // uint256 count;
-        // uint256 count;
+    function mergeToCanvas(Types.Canvas memory canvas, Types.Mix memory mix) internal pure {
         while (canvas.matrix.next() && mix.matrix.next()) {
             uint256 canvasPixel = canvas.matrix.current();
             uint256 mixPixel = mix.matrix.current();
 
-            // if (mixPixel != 0 || canvasPixel != 0) {
-            //     // assert(count++ < 100);
-            //     // mixPixel.log('mixPixel', mixPixel.z(), 'mixPixel.z()', canvasPixel.z(), 'canvasPixel.z()');
-            //     // canvasPixel.log('canvasPixel');
-            // }
-            // assert(mixPixel.e() && mixPixel.z() >= canvasPixel.z());
-
             if (mixPixel.e() && mixPixel.z() >= canvasPixel.z()) {
-                // canvasPixel.z() = mixPixel.z();
-
                 canvas.matrix.setCurrent(Rgba.combine(canvasPixel, mixPixel));
             }
         }
@@ -272,153 +218,7 @@ library Calculator {
         mix.matrix.resetIterator();
     }
 
-    /**
-     * @notice poop
-     * @dev
-     */
     function calculateReceivers(Types.Mix memory mix) internal pure {
         Anchor.convertReceiversToAnchors(mix);
     }
-
-    // you combine one by one, and as you combine, child refs get overridden
-
-    // function add(Combinable comb, )
 }
-// add parent refs, if any - will use remys algo only for the canvas
-// the canvas will always be defined as the first, so if it isnt (will not happen for dotnugg), we define the center as all the child refs
-//  pick best version
-// figure out offset
-
-// function merge(Canvas memory canvas, Matrix memory versionMatrix) internal pure {
-//     for (int8 y = (canvas.matrix.data.length / 2) * -1; y <= canvas.matrix.data.length / 2; y++) {
-//         for (int8 x = (canvas.matrix.width / 2) * -1; x <= canvas.matrix[j].width / 2; x++) {
-//             Pixel memory canvas = canvas.matrix.at(x, y);
-//             Pixel memory addr = combinable.matrix.at(x, y);
-
-//             if (addr != 0 && addr.layer > canvas.layer) {
-//                 canvas.layer = addr.layer;
-//                 canvas.rgba = Colors.combine(canvas.rgba, add.rgba);
-//             }
-//         }
-//     }
-// }
-// Oh my god
-// Becky, look at her butt
-// Its so big
-// She looks like one of those rap guys girlfriends
-// Who understands those rap guys
-// They only talk to her because she looks like a total prostitute
-// I mean her butt
-// It's just so big
-// I can't believe it's so round
-// It's just out there
-// I mean, it's gross
-// Look, she's just so black
-
-// *rap*
-// I like big butts and I can not lie
-// You other brothers can't deny
-// That when a girl walks in with an itty bitty waist
-// And a round thing in your face
-// You get sprung
-// Wanna pull up tough
-// Cuz you notice that butt was stuffed
-// Deep in the jeans she's wearing
-// I'm hooked and I can't stop staring
-// Oh, baby I wanna get with ya
-// And take your picture
-// My homeboys tried to warn me
-// But that butt you got
-// Make Me so horney
-// Ooh, rump of smooth skin
-// You say you wanna get in my benz
-// Well use me use me cuz you aint that average groupy
-
-// I've seen them dancin'
-// The hell with romancin'
-// She's Sweat,Wet, got it goin like a turbo vette
-
-// I'm tired of magazines
-// Saying flat butts are the thing
-// Take the average black man and ask him that
-// She gotta pack much back
-
-// So Fellas (yeah) Fellas(yeah)
-// Has your girlfriend got the butt (hell yeah)
-// Well shake it, shake it, shake it, shake it, shake that healthy butt
-// Baby got back
-
-// (LA face with Oakland booty)
-
-// I like'em round and big
-// And when I'm throwin a gig
-// I just can't help myself
-// I'm actin like an animal
-// Now here's my scandal
-
-// I wanna get you home
-// And UH, double up UH UH
-// I aint talkin bout playboy
-// Cuz silicone parts were made for toys
-// I wannem real thick and juicy
-// So find that juicy double
-// Mixalot's in trouble
-// Beggin for a piece of that bubble
-// So I'm lookin' at rock videos
-// Knockin these bimbos walkin like hoes
-// You can have them bimbos
-// I'll keep my women like Flo Jo
-// A word to the thick soul sistas
-// I wanna get with ya
-// I won't cus or hit ya
-// But I gotta be straight when I say I wanna --
-// Til the break of dawn
-// Baby Got it goin on
-// Alot of pimps won't like this song
-// Cuz them punks lie to hit it and quit it
-// But I'd rather stay and play
-// Cuz I'm long and I'm strong
-// And I'm down to get the friction on
-
-// So ladies (yeah), Ladies (yeah)
-// Do you wanna roll in my Mercedes (yeah)
-// Then turn around
-// Stick it out
-// Even white boys got to shout
-// Baby got back
-
-// (LA face with the Oakland booty)
-
-// Yeah baby
-// When it comes to females
-// Cosmo ain't got nothin to do with my selection
-// 36-24-36
-// Only if she's 5'3"
-
-// So your girlfriend throws a Honda
-// Playin workout tapes by Fonda
-// But Fonda ain't got a motor in the back of her Honda
-// My anaconda don't want none unless you've got buns hun
-// You can do side bends or sit-ups, but please don't lose that butt
-// Some brothers wanna play that hard role
-// And tell you that the butt ain't gold
-// So they toss it and leave it
-// And I pull up quick to retrieve it
-// So cosmo says you're fat
-// Well I ain't down with that
-// Cuz your waste is small and your curves are kickin
-// And I'm thinkin bout stickin
-// To the beanpole dames in the magazines
-// You aint it miss thing
-// Give me a sista I can't resist her
-// Red beans and rice did miss her
-// Some knucklehead tried to dis
-// Cuz his girls were on my list
-// He had game but he chose to hit 'em
-// And pulled up quick to get with 'em
-// So ladies if the butt is round
-// And you wanna triple X throw down
-// Dial 1-900-MIXALOT and kick them nasty thoughts
-// Baby got back
-// Baby got back
-// Little in tha middle but she got much back x4

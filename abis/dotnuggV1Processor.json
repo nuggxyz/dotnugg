@@ -789,5 +789,29 @@
     ],
     "stateMutability": "view",
     "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "feature",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint256[][]",
+        "name": "data",
+        "type": "uint256[][]"
+      }
+    ],
+    "name": "storeFiles",
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "res",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
   }
 ]
