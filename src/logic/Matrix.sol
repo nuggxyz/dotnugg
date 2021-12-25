@@ -2,11 +2,10 @@
 
 pragma solidity 0.8.9;
 
+import {Rgba} from '../logic/Rgba.sol';
+
+import {Version} from '../types/Version.sol';
 import {Types} from '../types/Types.sol';
-
-import '../logic/Rgba.sol';
-
-import '../types/Version.sol';
 
 library Matrix {
     using Rgba for Types.Rgba;
@@ -17,11 +16,6 @@ library Matrix {
 
         Version.initBigMatrix(res.version, width);
         res.version.setWidth(width, height);
-
-        // res.data = new Types.Pixel[][](height);
-        // for (uint8 i = 0; i < height; i++) {
-        //     res.data[i] = new Types.Pixel[](width);
-        // }
     }
 
     function moveTo(
@@ -85,39 +79,34 @@ library Matrix {
         Version.Memory memory data,
         uint256 groupWidth,
         uint256 groupHeight
-    ) internal view {
+    ) internal pure {
         matrix.height = uint8(groupHeight);
-        uint256 feature = data.getFeature();
+        // uint256 feature = data.getFeature();
 
         for (uint256 y = 0; y < groupHeight; y++) {
             for (uint256 x = 0; x < groupWidth; x++) {
                 next(matrix, uint8(groupWidth));
                 uint256 col = Version.getPixelAt(data, x, y);
                 if (col != 0) {
-                    (, uint256 color, uint256 zindex) = Version.getPalletColorAt(data, col);
-                    // (zindex).log('zindex', (zindex << 32), '<< 32', (feature << 36) | (zindex << 32) | color, 'whole');
-                    setCurrent(matrix, (feature << 36) | (zindex << 32) | color);
+                    (uint256 yo, , ) = Version.getPalletColorAt(data, col);
+
+                    setCurrent(matrix, yo);
                 } else {
                     setCurrent(matrix, 0x0000000000);
                 }
             }
         }
 
-        // require(totalLength % groupWidth == 0, 'MTRX:SET:0');
-        // require(totalLength / groupWidth == groupHeight, 'MTRX:SET:1');
-
         matrix.width = uint8(groupWidth);
-        // // matrix.height = uint8(totalLength / groupWidth);
 
         resetIterator(matrix);
     }
 
     function addRowsAt(
-        Types.Matrix memory matrix, /// cowboy hat
+        Types.Matrix memory matrix,
         uint8 index,
         uint8 amount
     ) internal pure {
-        // require(index < matrix.data[0].length, 'MAT:ACA:0');
         for (uint256 i = 0; i < matrix.height; i++) {
             for (uint256 j = matrix.height; j > index; j--) {
                 if (j < index) break;
@@ -132,7 +121,7 @@ library Matrix {
     }
 
     function addColumnsAt(
-        Types.Matrix memory matrix, /// cowboy hat
+        Types.Matrix memory matrix,
         uint8 index,
         uint8 amount
     ) internal pure {

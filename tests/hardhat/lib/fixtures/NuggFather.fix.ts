@@ -37,7 +37,7 @@ export const NuggFatherFix: Fixture<NuggFatherFixture> = async function (
     // });
 
     const processor = await deployContractWithSalt<DotnuggV1Processor__factory>({
-        factory: 'dotnuggV1Processor',
+        factory: 'DotnuggV1Processor',
         from: eoaDeployer,
         args: [],
     });

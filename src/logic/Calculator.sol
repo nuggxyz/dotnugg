@@ -6,7 +6,6 @@ import './Matrix.sol';
 import './Rgba.sol';
 import './Anchor.sol';
 
-import '../types/Descriptor.sol';
 import '../types/Version.sol';
 import '../types/Pixel.sol';
 
@@ -39,8 +38,6 @@ library Calculator {
         Types.Mix memory mix;
         mix.matrix = Matrix.create(width, width);
         mix.receivers = new Types.Anchor[](featureLen);
-
-        // Types.Item[] memory items = Decoder.parseItems(inputs, featureLen);
 
         for (uint8 i = 0; i < versions.length; i++) {
             if (versions[i].length > 0) {

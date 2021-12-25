@@ -5,26 +5,20 @@ pragma solidity 0.8.9;
 /*
  * @dev Uint operations.
  */
-library Uint8 {
-    function toByte(uint8 u) internal pure returns (bytes1 res) {
-        res = bytes1(u);
-    }
-
-    function toString(uint8 u) internal pure returns (string memory res) {
-        res = Uint256.toString(uint256(u));
-    }
-}
-
-/*
- * @dev Uint operations.
- */
-library Uint256 {
+library StringCastLib {
     bytes16 private constant ALPHABET = '0123456789abcdef';
 
     /**
      * @dev Converts a `uint256` to its ASCII `string` decimal representation.
      */
-    function toAscii(uint256 value) internal pure returns (bytes memory buffer) {
+    function toAsciiString(uint256 value) internal pure returns (string memory) {
+        return string(toAsciiBytes(value));
+    }
+
+    /**
+     * @dev Converts a `uint256` to its ASCII `string` decimal representation.
+     */
+    function toAsciiBytes(uint256 value) internal pure returns (bytes memory buffer) {
         // Inspired by OraclizeAPI's implementation - MIT licence
         // https://github.com/oraclize/ethereum-api/blob/b42146b063c7d6ee1358846c198246239e9360e8/oraclizeAPI_0.4.25.sol
 
@@ -46,13 +40,6 @@ library Uint256 {
             value /= 10;
         }
         return buffer;
-    }
-
-    /**
-     * @dev Converts a `uint256` to its ASCII `string` decimal representation.
-     */
-    function toString(uint256 value) internal pure returns (string memory) {
-        return string(toAscii(value));
     }
 
     /// @notice Converts a `uint256` to its ASCII `string` hexadecimal representation with fixed length.

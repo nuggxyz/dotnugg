@@ -6,6 +6,11 @@ import {ShiftLib} from '../libraries/ShiftLib.sol';
 import {BitReader} from '../libraries/BitReader.sol';
 import {SafeCastLib} from '../libraries/SafeCastLib.sol';
 
+import {Pixel} from '../types/Pixel.sol';
+import {Event} from '../_test/Event.sol';
+
+import 'hardhat/console.sol';
+
 library Version {
     using BitReader for BitReader.Memory;
     using SafeCastLib for uint256;
@@ -30,12 +35,14 @@ library Version {
 
             if (empty) continue;
 
-            // 32 bits: NUGG
-            require(reader.select(32) == 0x4e554747, 'DEC:PI:0');
+            // indicates dotnuggV1 encoded file
+            require(reader.select(32) == 0x420690_01, 'DEC:PI:0');
 
             uint256 feature = reader.select(3);
 
-            uint256[] memory pallet = parsePallet(reader);
+            uint256 id = reader.select(8);
+
+            uint256[] memory pallet = parsePallet(reader, id, feature);
 
             uint256 versionLength = reader.select(2) + 1;
 
@@ -51,26 +58,28 @@ library Version {
                 m[j][i].minimatrix = parseMiniMatrix(reader, width, height);
 
                 m[j][i].pallet = pallet;
-
-                // (uint256 ancX, uint256 ancY) = getAnchor(m[j][i]);
-                // (, , uint256 ancZ) = getPalletColorAt(m[j][i], getPixelAt(m[j][i], ancX, ancY));
-
-                // setZ(m[j][i], ancZ);
             }
         }
     }
 
-    function parsePallet(BitReader.Memory memory reader) internal pure returns (uint256[] memory res) {
+    function parsePallet(
+        BitReader.Memory memory reader,
+        uint256 id,
+        uint256 feature
+    ) internal view returns (uint256[] memory res) {
         uint256 palletLength = reader.select(4) + 1;
 
         res = new uint256[](palletLength + 1);
 
         for (uint256 i = 0; i < palletLength; i++) {
-            uint256 working = 0;
+            // uint256 working = 0;
+
             // 4 bits: zindex
-            working |= (reader.select(4) << 32);
+            // working |= (reader.select(4) << 32);
+            uint256 z = reader.select(4);
 
             uint256 color;
+
             uint256 selecta = reader.select(1);
             if (selecta == 1) {
                 color = 0x000000;
@@ -82,14 +91,13 @@ library Version {
                 color = (r << 16) | (g << 8) | b;
             }
 
-            // // 1 or 25 bits: rgb
-            working |= color << 8;
-
             // // 1 or 8 bits: a
-            working |= (reader.select(1) == 0x1 ? 0xff : reader.select(8));
+            uint256 a = (reader.select(1) == 0x1 ? 0xff : reader.select(8));
 
-            res[i + 1] = working;
+            res[i + 1] = Pixel.safePack(color, a, id, z, feature);
         }
+
+        Event.pixLog(res, 'pixels');
     }
 
     function parseData(
@@ -99,11 +107,6 @@ library Version {
         uint8[] memory yovers
     ) internal pure returns (uint256 res) {
         // 12 bits: coordinate - anchor x and y
-
-        // if (xovers.length == 8 && yovers.length == 8 && (xovers[feature] != 0 || yovers[feature] != 0)) {
-        //     res |= uint256(uint256(yovers[feature]).safe6()) << 84;
-        //     res |= uint256(uint256(xovers[feature]).safe6()) << 78;
-        // }
 
         res |= feature << 75;
 
@@ -339,29 +342,10 @@ library Version {
         // res = (m.pallet[index / 7] >> (36 * (index % 7))) & ShiftLib.mask(36);
         res = m.pallet[index];
 
-        color = res & 0xffffffff;
+        color = Pixel.rgba(res);
 
-        zindex = (res >> 32) & 0xf;
+        zindex = Pixel.z(res);
     }
-
-    // function getDiffOfReceiverAt(Memory memory base, Memory memory mix)
-    //     internal
-    //     pure
-    //     returns (
-    //         bool negX,
-    //         uint256 diffX,
-    //         bool negY,
-    //         uint256 diffY
-    //     )
-    // {
-    //     (uint256 recX, uint256 recY, ) = getReceiverAt(base, (mix.data >> 75) & ShiftLib.mask(3), false);
-    //     (uint256 ancX, uint256 ancY, ) = getAnchor(mix);
-
-    //     negX = recX < ancX;
-    //     diffX = negX ? ancX - recX : recX - ancX;
-    //     negY = recY < ancY;
-    //     diffY = negY ? ancY - recY : recY - ancY;
-    // }
 
     function initBigMatrix(Memory memory m, uint256 width) internal pure {
         m.bigmatrix = new uint256[](((width * width) / 6) + 2);
@@ -377,8 +361,6 @@ library Version {
 
         uint256 index = x + (y * width);
 
-        // m.bigmatrix[index / 6] |= (color << (40 * (index % 6)));
-
         setBigMatrixPixelAt(m, index, color);
     }
 
@@ -387,11 +369,9 @@ library Version {
         uint256 index,
         uint256 color
     ) internal pure {
-        // require(m.bigmatrix.length > index / 6, 'VERS:SBM:0');
-
         if (m.bigmatrix.length > index / 6) {
-            uint8 offset = (40 * (index % 6)).safe8();
-            m.bigmatrix[index / 6] &= ShiftLib.fullsubmask(40, offset);
+            uint8 offset = (42 * (index % 6)).safe8();
+            m.bigmatrix[index / 6] &= ShiftLib.fullsubmask(42, offset);
             m.bigmatrix[index / 6] |= (color << offset);
         }
     }
@@ -407,7 +387,7 @@ library Version {
 
         if (index / 6 >= m.bigmatrix.length) return 0x0000000000;
 
-        res = (m.bigmatrix[index / 6] >> (40 * (index % 6))) & 0xffffffffff;
+        res = (m.bigmatrix[index / 6] >> (42 * (index % 6))) & ShiftLib.mask(42);
     }
 
     function bigMatrixHasPixelAt(
@@ -417,7 +397,7 @@ library Version {
     ) internal pure returns (bool res) {
         uint256 pix = getBigMatrixPixelAt(m, x, y);
 
-        res = pix & 0xff != 0x00;
+        res = pix & 0x7 != 0x00;
     }
 
     function bigMatrixWithData(Memory memory m) internal pure returns (uint256[] memory res) {

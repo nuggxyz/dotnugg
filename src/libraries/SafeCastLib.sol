@@ -40,4 +40,14 @@ library SafeCastLib {
         require(x <= 0xf7);
         y = uint8(x);
     }
+
+    function safe4(uint256 x) internal pure returns (uint8 y) {
+        require(x <= 0xf);
+        y = uint8(x);
+    }
+
+    function safe3(uint256 x) internal pure returns (uint8 y) {
+        require(x <= 0x7);
+        y = uint8(x);
+    }
 }

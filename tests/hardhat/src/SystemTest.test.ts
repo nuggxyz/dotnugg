@@ -83,6 +83,8 @@ describe('uint tests', async function () {
 
             console.log('const RAND_INDEXS = ');
             console.log(RAND_INDEXS);
+
+            console.log(fix.hre.dotnugg.itemsByFeatureById[Features.EYES][RAND_INDEXS.EYES].hex);
             const res = await fix.processor.processCore(
                 [
                     fix.hre.dotnugg.itemsByFeatureById[Features.BASE][1].hex,
