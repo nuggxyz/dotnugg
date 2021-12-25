@@ -15,14 +15,14 @@ import {Base64} from './libraries/Base64.sol';
 
 import {Version} from './types/Version.sol';
 import {Types} from './types/Types.sol';
-
+import {DotnuggV1Storage} from './logic/DotnuggV1Storage.sol';
 import {StringCastLib} from './libraries/StringCastLib.sol';
 
 /// @title dotnugg Processor V1 - onchain encoder/decoder protocol for dotnugg files
 /// @author nugg.xyz - danny7even & dub6ix
 /// @notice yoU CAN'T HaVe ImAgES oN THe BlOCkcHAIn
 /// @dev hold my margarita
-contract DotnuggV1Processor is IDotnuggV1Processor {
+contract DotnuggV1Processor is IDotnuggV1Processor, DotnuggV1Storage {
     using StringCastLib for uint256;
 
     function process(
@@ -30,8 +30,12 @@ contract DotnuggV1Processor is IDotnuggV1Processor {
         uint256 tokenId,
         uint8 width
     ) public view override returns (uint256[] memory resp, IDotnuggV1Data.Data memory dat) {
-        (uint256[][] memory files, IDotnuggV1Data.Data memory data) = IDotnuggV1Implementer(implementer).prepareFiles(tokenId);
+        (, IDotnuggV1Data.Data memory data) = IDotnuggV1Implementer(implementer).prepareFiles(tokenId);
+
+        uint256[][] memory files = getBatchFiles(implementer, data.ids);
+
         dat = data;
+
         resp = processCore(files, data, width);
     }
 
@@ -42,7 +46,9 @@ contract DotnuggV1Processor is IDotnuggV1Processor {
     ) public view override returns (uint256[] memory resp) {
         require(data.version == 1, 'V1');
 
-        require(width < 64 && width % 2 == 1, 'V1:SIZE');
+        require(width <= 64 && width > 4, 'V1:SIZE');
+
+        if (width % 2 == 0) width--;
 
         Version.Memory[][] memory versions = Version.parse(files, data.xovers, data.yovers);
 
