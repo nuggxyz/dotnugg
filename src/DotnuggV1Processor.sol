@@ -54,7 +54,7 @@ contract DotnuggV1Processor is IDotnuggV1Processor, DotnuggV1Storage {
 
         Types.Matrix memory old = Calculator.combine(8, width, versions);
 
-        resp = Version.bigMatrixWithData(old.version);
+        resp = Version.compressBigMatrix(old.version);
     }
 
     function resolveRaw(
@@ -102,6 +102,9 @@ contract DotnuggV1Processor is IDotnuggV1Processor, DotnuggV1Storage {
                         data.name,
                         '","description":"',
                         data.desc,
+                        '", "image": "',
+                        Base64.PREFIX_SVG,
+                        working,
                         '","DotnuggVersion":"',
                         StringCastLib.toAsciiString(data.version),
                         '","tokenId":"',
@@ -110,9 +113,6 @@ contract DotnuggV1Processor is IDotnuggV1Processor, DotnuggV1Storage {
                         StringCastLib.toHexString(data.proof, 32),
                         '","owner":"',
                         StringCastLib.toHexString(uint160(data.owner), 20),
-                        '", "image": "',
-                        Base64.PREFIX_SVG,
-                        working,
                         '"}'
                     )
                 )

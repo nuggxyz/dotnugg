@@ -404,4 +404,77 @@ library Version {
         res = m.bigmatrix;
         res[res.length - 1] = m.data;
     }
+
+    function compressBigMatrix(Memory memory m) internal pure returns (uint256[] memory res) {
+        res = new uint256[](m.bigmatrix.length);
+        uint256 counter;
+        uint256 rescounter;
+        uint256 zerocount;
+
+        // // save the number of initial zero rows
+        // res[rescounter++] = counter;
+
+        do {
+            if (m.bigmatrix[counter] == 0) {
+                zerocount++;
+                continue;
+            }
+
+            if (zerocount > 14) {
+                res[rescounter++] = (zerocount << 4) | 0xf;
+                zerocount = 0;
+            }
+
+            res[rescounter++] = (m.bigmatrix[counter] << 4) | zerocount;
+
+            zerocount = 0;
+        } while (++counter < m.bigmatrix.length);
+
+        if (zerocount > 14) {
+            res[rescounter++] = (zerocount << 4) | 0xf;
+            zerocount = 0;
+        }
+
+        res[rescounter++] = (m.data << 4) | zerocount;
+
+        assembly {
+            let ptr := mload(res)
+            ptr := rescounter
+            mstore(res, ptr)
+        }
+    }
+
+    //     function compressBigMatrix(Memory memory m) internal pure returns (uint256[] memory res) {
+    //     res = new uint256[](m.bigmatrix.length);
+    //     uint256 counter;
+    //     uint256 rescounter;
+    //     uint256 zerocount;
+
+    //     // // save the number of initial zero rows
+    //     // res[rescounter++] = counter;
+
+    //     do {
+    //         if (m.bigmatrix[counter] == 0) {
+    //             zerocount++;
+    //             continue;
+    //         }
+    //         if (zerocount > 0) {
+
+    //             res[rescounter++] = (zerocount << 4) | 0xf;
+    //             zerocount = 0;
+    //         }
+
+    //         res[rescounter++] = m.bigmatrix[counter] << 4;
+    //     } while (++counter < m.bigmatrix.length);
+
+    //     if (zerocount > 0) res[rescounter++] = (zerocount << 4) | 0xf;
+
+    //     res[rescounter++] = m.data << 4;
+
+    //     assembly {
+    //         let ptr := mload(res)
+    //         ptr := rescounter
+    //         mstore(res, ptr)
+    //     }
+    // }
 }

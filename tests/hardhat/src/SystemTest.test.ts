@@ -111,9 +111,11 @@ describe('uint tests', async function () {
                 45,
             );
 
+            console.log(res);
+
             dotnugg.log.Console.drawConsole(res);
 
-            dotnugg.log.Console.drawSvg(res, 10);
+            // dotnugg.log.Console.drawSvg(res, 10);
         });
     });
 });
