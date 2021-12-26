@@ -4,8 +4,9 @@ pragma solidity 0.8.9;
 
 import {IDotnuggV1Data} from './IDotnuggV1Data.sol';
 import {IDotnuggV1Resolver} from './IDotnuggV1Resolver.sol';
+import {IDotnuggV1Storage} from './IDotnuggV1Storage.sol';
 
-interface IDotnuggV1Processor is IDotnuggV1Resolver {
+interface IDotnuggV1Processor is IDotnuggV1Storage, IDotnuggV1Resolver {
     function dotnuggToBytes(
         address implementer,
         uint256 tokenId,
