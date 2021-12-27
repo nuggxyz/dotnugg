@@ -7,9 +7,6 @@ import {BitReader} from '../libraries/BitReader.sol';
 import {SafeCastLib} from '../libraries/SafeCastLib.sol';
 
 import {Pixel} from '../types/Pixel.sol';
-import {Event} from '../_test/Event.sol';
-
-import 'hardhat/console.sol';
 
 library Version {
     using BitReader for BitReader.Memory;
@@ -27,7 +24,7 @@ library Version {
         uint256[][] memory data,
         uint8[] memory xovers,
         uint8[] memory yovers
-    ) internal view returns (Memory[][] memory m) {
+    ) internal pure returns (Memory[][] memory m) {
         m = new Memory[][](data.length);
 
         for (uint256 j = 0; j < data.length; j++) {
@@ -66,7 +63,7 @@ library Version {
         BitReader.Memory memory reader,
         uint256 id,
         uint256 feature
-    ) internal view returns (uint256[] memory res) {
+    ) internal pure returns (uint256[] memory res) {
         uint256 palletLength = reader.select(4) + 1;
 
         res = new uint256[](palletLength + 1);
@@ -97,7 +94,7 @@ library Version {
             res[i + 1] = Pixel.safePack(color, a, id, z, feature);
         }
 
-        Event.pixLog(res, 'pixels');
+        // Event.pixLog(res, 'pixels');
     }
 
     function parseData(
@@ -383,11 +380,20 @@ library Version {
     ) internal pure returns (uint256 res) {
         (uint256 width, ) = getWidth(m);
 
+        return getPixelAt(m.bigmatrix, x, y, width);
+    }
+
+    function getPixelAt(
+        uint256[] memory arr,
+        uint256 x,
+        uint256 y,
+        uint256 width
+    ) internal pure returns (uint256 res) {
         uint256 index = x + (y * width);
 
-        if (index / 6 >= m.bigmatrix.length) return 0x0000000000;
+        if (index / 6 >= arr.length) return 0x0000000000;
 
-        res = (m.bigmatrix[index / 6] >> (42 * (index % 6))) & ShiftLib.mask(42);
+        res = (arr[index / 6] >> (42 * (index % 6))) & ShiftLib.mask(42);
     }
 
     function bigMatrixHasPixelAt(
@@ -400,81 +406,67 @@ library Version {
         res = pix & 0x7 != 0x00;
     }
 
-    function bigMatrixWithData(Memory memory m) internal pure returns (uint256[] memory res) {
-        res = m.bigmatrix;
-        res[res.length - 1] = m.data;
+    function decompressBigMatrix(uint256[] memory input) internal pure returns (uint256[] memory res) {
+        res = new uint256[]((input[input.length - 1] >> 240));
+
+        uint256 counter = 0;
+
+        for (uint256 i = 0; i < input.length; i++) {
+            uint256 numzeros = input[i] & 0xf;
+
+            if (numzeros == 0xf) {
+                numzeros = input[i++] >> 4;
+            }
+
+            for (uint256 j = 0; j < numzeros; j++) {
+                // skips a row, keeping it at zero
+                counter++;
+            }
+
+            res[counter++] = input[i] >> 4;
+        }
     }
 
-    function compressBigMatrix(Memory memory m) internal pure returns (uint256[] memory res) {
-        res = new uint256[](m.bigmatrix.length);
+    function setArrayLength(uint256[] memory input, uint256 size) internal pure {
+        assembly {
+            let ptr := mload(input)
+            ptr := size
+            mstore(input, ptr)
+        }
+    }
+
+    function compressBigMatrix(uint256[] memory input, uint256 data) internal pure returns (uint256[] memory res) {
+        // res = m.bigmatrix;
+
         uint256 counter;
         uint256 rescounter;
         uint256 zerocount;
 
-        // // save the number of initial zero rows
-        // res[rescounter++] = counter;
-
         do {
-            if (m.bigmatrix[counter] == 0) {
+            if (input[counter] == 0) {
                 zerocount++;
                 continue;
             }
 
             if (zerocount > 14) {
-                res[rescounter++] = (zerocount << 4) | 0xf;
+                input[rescounter++] = (zerocount << 4) | 0xf;
                 zerocount = 0;
             }
 
-            res[rescounter++] = (m.bigmatrix[counter] << 4) | zerocount;
+            input[rescounter++] = (input[counter] << 4) | zerocount;
 
             zerocount = 0;
-        } while (++counter < m.bigmatrix.length);
+        } while (++counter < input.length);
 
         if (zerocount > 14) {
-            res[rescounter++] = (zerocount << 4) | 0xf;
+            input[rescounter++] = (zerocount << 4) | 0xf;
             zerocount = 0;
         }
 
-        res[rescounter++] = (m.data << 4) | zerocount;
+        input[rescounter++] = (data << 4) | zerocount | ((input.length + 1) << 240);
 
-        assembly {
-            let ptr := mload(res)
-            ptr := rescounter
-            mstore(res, ptr)
-        }
+        setArrayLength(input, rescounter);
+
+        return input;
     }
-
-    //     function compressBigMatrix(Memory memory m) internal pure returns (uint256[] memory res) {
-    //     res = new uint256[](m.bigmatrix.length);
-    //     uint256 counter;
-    //     uint256 rescounter;
-    //     uint256 zerocount;
-
-    //     // // save the number of initial zero rows
-    //     // res[rescounter++] = counter;
-
-    //     do {
-    //         if (m.bigmatrix[counter] == 0) {
-    //             zerocount++;
-    //             continue;
-    //         }
-    //         if (zerocount > 0) {
-
-    //             res[rescounter++] = (zerocount << 4) | 0xf;
-    //             zerocount = 0;
-    //         }
-
-    //         res[rescounter++] = m.bigmatrix[counter] << 4;
-    //     } while (++counter < m.bigmatrix.length);
-
-    //     if (zerocount > 0) res[rescounter++] = (zerocount << 4) | 0xf;
-
-    //     res[rescounter++] = m.data << 4;
-
-    //     assembly {
-    //         let ptr := mload(res)
-    //         ptr := rescounter
-    //         mstore(res, ptr)
-    //     }
-    // }
 }

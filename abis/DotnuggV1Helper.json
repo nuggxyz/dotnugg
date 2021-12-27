@@ -2,13 +2,10 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "dotnuggV1Callback",
-    "outputs": [
+        "internalType": "uint256[][]",
+        "name": "files",
+        "type": "uint256[][]"
+      },
       {
         "components": [
           {
@@ -70,27 +67,22 @@
         "internalType": "struct IDotnuggV1Data.Data",
         "name": "data",
         "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256[][]",
-        "name": "data",
-        "type": "uint256[][]"
       },
       {
         "internalType": "uint8",
-        "name": "feature",
+        "name": "width",
         "type": "uint8"
       }
     ],
-    "name": "dotnuggV1StoreFiles",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "name": "processCore",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "resp",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "pure",
     "type": "function"
   }
 ]

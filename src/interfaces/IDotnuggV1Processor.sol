@@ -13,7 +13,7 @@ interface IDotnuggV1Processor is IDotnuggV1Storage, IDotnuggV1Resolver {
         address resolver,
         uint8 width,
         uint8 zoom
-    ) external view returns (bytes memory res);
+    ) external view returns (address resolvedBy, bytes memory res);
 
     function dotnuggToRaw(
         address implementer,
@@ -21,7 +21,7 @@ interface IDotnuggV1Processor is IDotnuggV1Storage, IDotnuggV1Resolver {
         address resolver,
         uint8 width,
         uint8 zoom
-    ) external view returns (uint256[] memory res);
+    ) external view returns (address resolvedBy, uint256[] memory res);
 
     function dotnuggToData(
         address implementer,
@@ -29,7 +29,7 @@ interface IDotnuggV1Processor is IDotnuggV1Storage, IDotnuggV1Resolver {
         address resolver,
         uint8 width,
         uint8 zoom
-    ) external view returns (IDotnuggV1Data.Data memory res);
+    ) external view returns (address resolvedBy, IDotnuggV1Data.Data memory res);
 
     function dotnuggToString(
         address implementer,
@@ -37,7 +37,15 @@ interface IDotnuggV1Processor is IDotnuggV1Storage, IDotnuggV1Resolver {
         address resolver,
         uint8 width,
         uint8 zoom
-    ) external view returns (string memory res);
+    ) external view returns (address resolvedBy, string memory res);
+
+    function dotnuggToUri(
+        address implementer,
+        uint256 tokenId,
+        address resolver,
+        uint8 width,
+        uint8 zoom
+    ) external view returns (address resolvedBy, string memory res);
 
     function process(
         address implementer,

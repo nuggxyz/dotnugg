@@ -1,11 +1,14 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity 0.8.9;
+import {ShiftLib} from './ShiftLib.sol';
 
-// OK
-/// @notice Safe unsigned integer casting library that reverts on overflow.
-/// @author Modified from OpenZeppelin (https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/SafeCast.sol)
 library SafeCastLib {
+    function safe252(uint256 x) internal pure returns (uint256 y) {
+        require(x <= ShiftLib.mask(252), 'SC:252');
+        return x;
+    }
+
     function safe160(uint256 x) internal pure returns (uint160 y) {
         require(x <= type(uint160).max);
         y = uint160(x);

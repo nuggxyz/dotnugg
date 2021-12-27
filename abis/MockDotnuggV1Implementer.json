@@ -2,6 +2,17 @@
   {
     "inputs": [
       {
+        "internalType": "contract IDotnuggV1Processor",
+        "name": "processor",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "tokenId",
         "type": "uint256"

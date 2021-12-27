@@ -5,20 +5,10 @@ pragma solidity 0.8.9;
 import {StringCastLib} from '../libraries/StringCastLib.sol';
 import {ShiftLib} from '../libraries/ShiftLib.sol';
 import {Pixel} from '../types/Pixel.sol';
+import {Version} from '../types/Version.sol';
 
 library Svg {
     using StringCastLib for uint256;
-
-    function getPixelAt(
-        uint256[] memory file,
-        uint256 x,
-        uint256 y,
-        uint256 width
-    ) internal pure returns (uint256 res) {
-        uint256 index = x + (y * width);
-
-        res = Pixel.rgba((file[index / 6] >> (42 * (index % 6))) & ShiftLib.mask(42));
-    }
 
     function buildSvg(
         uint256[] memory file,
@@ -40,7 +30,7 @@ library Svg {
 
         bytes memory footer = hex'3c2f7376673e';
 
-        uint256 last = getPixelAt(file, 0, 0, width);
+        uint256 last = Version.getPixelAt(file, 0, 0, width);
         uint256 count = 1;
 
         // bytes[] memory rects = new bytes[](35);
@@ -49,7 +39,7 @@ library Svg {
         for (uint256 y = 0; y < height; y++) {
             for (uint256 x = 0; x < height; x++) {
                 if (y == 0 && x == 0) x++;
-                uint256 curr = getPixelAt(file, x, y, width);
+                uint256 curr = Version.getPixelAt(file, x, y, width);
                 if (curr == last) {
                     count++;
                     continue;
