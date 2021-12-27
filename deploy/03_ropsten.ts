@@ -49,7 +49,7 @@ const deployment = async (hre: HardhatRuntimeEnvironment) => {
         //     // deterministicDeployment: salts[1],
         // });
 
-        const dotnuggV1Processor = await hre.deployments.deploy('dotnuggV1Processor', {
+        const dotnuggV1Processor = await hre.deployments.deploy('DotnuggV1Processor', {
             from: eoaDeployer,
             log: true,
             args: [],

@@ -79,7 +79,9 @@ describe('uint tests', async function () {
 
             // const RAND_INDEXS = { BACK: 1, EYES: 1, MOUT: 8, HEAD: 3, HAIR: 15, NECK: 3 };
 
-            const RAND_INDEXS = { BACK: 4, EYES: 24, MOUT: 11, HEAD: 11, HAIR: 9, NECK: 2 };
+            // const RAND_INDEXS = { BACK: 4, EYES: 24, MOUT: 11, HEAD: 11, HAIR: 9, NECK: 2 };
+
+            const RAND_INDEXS = { BASE: 0, EYES: 9, MOUT: 6, HAIR: 0, HEAD: 0, BACK: 2 };
 
             console.log('const RAND_INDEXS = ');
             console.log(RAND_INDEXS);
@@ -87,12 +89,12 @@ describe('uint tests', async function () {
             console.log(fix.hre.dotnugg.itemsByFeatureById[Features.EYES][RAND_INDEXS.EYES].hex);
             const res = await fix.processor.processCore(
                 [
-                    fix.hre.dotnugg.itemsByFeatureById[Features.BASE][1].hex,
+                    fix.hre.dotnugg.itemsByFeatureById[Features.BASE][RAND_INDEXS.BASE].hex,
                     // fix.hre.dotnugg.itemsByFeatureById[Features.BACK][RAND_INDEXS.BACK].hex,
-                    fix.hre.dotnugg.itemsByFeatureById[Features.EYES][RAND_INDEXS.EYES].hex,
+                    // fix.hre.dotnugg.itemsByFeatureById[Features.EYES][RAND_INDEXS.EYES].hex,
                     fix.hre.dotnugg.itemsByFeatureById[Features.MOUT][RAND_INDEXS.MOUT].hex,
                     // fix.hre.dotnugg.itemsByFeatureById[Features.HAIR][RAND_INDEXS.HAIR].hex,
-                    fix.hre.dotnugg.itemsByFeatureById[Features.HEAD][RAND_INDEXS.HEAD].hex,
+                    // fix.hre.dotnugg.itemsByFeatureById[Features.HEAD][RAND_INDEXS.HEAD].hex,
                     // fix.hre.dotnugg.itemsByFeatureById[Features.NECK][RAND_INDEXS.NECK].hex,
                 ],
                 {
@@ -105,17 +107,17 @@ describe('uint tests', async function () {
                     proof: 0,
                     ids: [0, 0, 0, 0, 0, 0, 0, 0],
                     extras: [0, 0, 0, 0, 0, 0, 0, 0],
-                    xovers: [0, 0, 0, 0, 9, 0, 0, 0],
-                    yovers: [0, 0, 0, 0, 12, 0, 0, 0],
+                    xovers: [0, 0, 0, 0, 0, 0, 0, 0],
+                    yovers: [0, 0, 0, 0, 0, 0, 0, 0],
                 },
-                45,
+                63,
             );
 
             console.log(res);
 
             dotnugg.log.Console.drawConsole(res);
 
-            // dotnugg.log.Console.drawSvg(res, 10);
+            dotnugg.log.Console.drawSvg(res, 10);
         });
     });
 });
