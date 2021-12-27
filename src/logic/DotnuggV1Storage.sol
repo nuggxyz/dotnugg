@@ -14,6 +14,10 @@ abstract contract DotnuggV1Storage is IDotnuggV1Storage {
     mapping(address => mapping(uint8 => uint168[])) sstore2Pointers;
     mapping(address => mapping(uint8 => uint8)) featureLengths;
 
+    function totalStoredFiles(address implementer, uint8 feature) public view override returns (uint8 res) {
+        return featureLengths[implementer][feature];
+    }
+
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                                 TRUSTED
        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */

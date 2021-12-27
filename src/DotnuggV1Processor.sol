@@ -90,11 +90,11 @@ contract DotnuggV1Processor is IDotnuggV1Processor, DotnuggV1Storage {
         uint256 width = (file[file.length - 1] >> 63) & ShiftLib.mask(6);
         uint256 height = (file[file.length - 1] >> 69) & ShiftLib.mask(6);
 
-        bytes memory working = Svg.buildSvg(file, width, height, zoom);
+        // bytes memory working = Svg.buildSvg(file, width, height, zoom);
 
-        working = Base64._encode(working);
+        // bytes memory working = Base64._encode(working);
 
-        working = abi.encodePacked(
+        bytes memory working = abi.encodePacked(
             Base64.PREFIX_JSON,
             Base64._encode(
                 bytes(
@@ -105,7 +105,7 @@ contract DotnuggV1Processor is IDotnuggV1Processor, DotnuggV1Storage {
                         data.desc,
                         '", "image": "',
                         Base64.PREFIX_SVG,
-                        working,
+                        // working,
                         '","DotnuggVersion":"',
                         StringCastLib.toAsciiString(data.version),
                         '","tokenId":"',
