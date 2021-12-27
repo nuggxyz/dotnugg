@@ -73,7 +73,7 @@ describe('uint tests', async function () {
             // const RAND_INDEXS = { BACK: 1, EYES: 19, MOUT: 11, HEAD: 3, HAIR: 2, NECK: 8 };
 
             // // another keran
-            // const RAND_INDEXS = { BACK: 5, EYES: 24, MOUT: 5, HEAD: 8, HAIR: 2, NECK: 0 };
+            const RAND_INDEXS = { BASE: 0, BACK: 5, EYES: 24, MOUT: 5, HEAD: 8, HAIR: 2, NECK: 0 };
 
             // const RAND_INDEXS = { BACK: 0, EYES: 2, MOUT: 10, HEAD: 11, HAIR: 15, NECK: 1 };
 
@@ -81,7 +81,7 @@ describe('uint tests', async function () {
 
             // const RAND_INDEXS = { BACK: 4, EYES: 24, MOUT: 11, HEAD: 11, HAIR: 9, NECK: 2 };
 
-            const RAND_INDEXS = { BASE: 0, EYES: 9, MOUT: 6, HAIR: 0, HEAD: 0, BACK: 2 };
+            // const RAND_INDEXS = { BASE: 0, EYES: 9, MOUT: 6, HAIR: 0, HEAD: 0, BACK: 2 };
 
             console.log('const RAND_INDEXS = ');
             console.log(RAND_INDEXS);
@@ -90,11 +90,11 @@ describe('uint tests', async function () {
             const res = await fix.processor.processCore(
                 [
                     fix.hre.dotnugg.itemsByFeatureById[Features.BASE][RAND_INDEXS.BASE].hex,
-                    // fix.hre.dotnugg.itemsByFeatureById[Features.BACK][RAND_INDEXS.BACK].hex,
-                    // fix.hre.dotnugg.itemsByFeatureById[Features.EYES][RAND_INDEXS.EYES].hex,
+                    fix.hre.dotnugg.itemsByFeatureById[Features.BACK][RAND_INDEXS.BACK].hex,
+                    fix.hre.dotnugg.itemsByFeatureById[Features.EYES][RAND_INDEXS.EYES].hex,
                     fix.hre.dotnugg.itemsByFeatureById[Features.MOUT][RAND_INDEXS.MOUT].hex,
-                    // fix.hre.dotnugg.itemsByFeatureById[Features.HAIR][RAND_INDEXS.HAIR].hex,
-                    // fix.hre.dotnugg.itemsByFeatureById[Features.HEAD][RAND_INDEXS.HEAD].hex,
+                    fix.hre.dotnugg.itemsByFeatureById[Features.HAIR][RAND_INDEXS.HAIR].hex,
+                    fix.hre.dotnugg.itemsByFeatureById[Features.HEAD][RAND_INDEXS.HEAD].hex,
                     // fix.hre.dotnugg.itemsByFeatureById[Features.NECK][RAND_INDEXS.NECK].hex,
                 ],
                 {
@@ -113,7 +113,13 @@ describe('uint tests', async function () {
                 63,
             );
 
-            console.log(res);
+            res.forEach((x) => {
+                console.log(`a.push(${x._hex});`);
+            });
+
+            // console.log(res);
+
+            // const aArray = a.split('0x').map((x) => BigNumber.from(x !== '' ? '0x' + x : 0));
 
             dotnugg.log.Console.drawConsole(res);
 
