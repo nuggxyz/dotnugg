@@ -282,6 +282,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "lib",
+    "outputs": [
+      {
+        "internalType": "contract DotnuggV1Lib",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -856,7 +869,7 @@
         "type": "string"
       }
     ],
-    "stateMutability": "pure",
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -942,7 +955,7 @@
         "type": "string"
       }
     ],
-    "stateMutability": "pure",
+    "stateMutability": "view",
     "type": "function"
   },
   {

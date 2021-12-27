@@ -3,7 +3,6 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/dist/src/signers';
 
 import { NamedAccounts } from '../../../hardhat.config';
 import { NuggFatherFix, NuggFatherFixture } from '../lib/fixtures/NuggFather.fix';
-import { dotnugg } from '../../../../dotnugg-sdk/src';
 
 import { prepareAccounts } from './';
 
@@ -86,44 +85,48 @@ describe('uint tests', async function () {
             console.log('const RAND_INDEXS = ');
             console.log(RAND_INDEXS);
 
-            console.log(fix.hre.dotnugg.itemsByFeatureById[Features.EYES][RAND_INDEXS.EYES].hex);
-            const res = await fix.processor.processCore(
-                [
-                    fix.hre.dotnugg.itemsByFeatureById[Features.BASE][RAND_INDEXS.BASE].hex,
-                    fix.hre.dotnugg.itemsByFeatureById[Features.BACK][RAND_INDEXS.BACK].hex,
-                    fix.hre.dotnugg.itemsByFeatureById[Features.EYES][RAND_INDEXS.EYES].hex,
-                    fix.hre.dotnugg.itemsByFeatureById[Features.MOUT][RAND_INDEXS.MOUT].hex,
-                    fix.hre.dotnugg.itemsByFeatureById[Features.HAIR][RAND_INDEXS.HAIR].hex,
-                    fix.hre.dotnugg.itemsByFeatureById[Features.HEAD][RAND_INDEXS.HEAD].hex,
-                    // fix.hre.dotnugg.itemsByFeatureById[Features.NECK][RAND_INDEXS.NECK].hex,
-                ],
-                {
-                    version: 1,
-                    name: 'test',
-                    desc: 'desc',
-                    renderedAt: 0,
-                    owner: ethers.constants.AddressZero,
-                    tokenId: 0,
-                    proof: 0,
-                    ids: [0, 0, 0, 0, 0, 0, 0, 0],
-                    extras: [0, 0, 0, 0, 0, 0, 0, 0],
-                    xovers: [0, 0, 0, 0, 0, 0, 0, 0],
-                    yovers: [0, 0, 0, 0, 0, 0, 0, 0],
-                },
-                63,
-            );
+            // console.log(fix.hre.dotnugg.itemsByFeatureById[Features.EYES][RAND_INDEXS.EYES].hex);
 
-            res.forEach((x) => {
-                console.log(`a.push(${x._hex});`);
-            });
+            const res = await fix.processor.dotnuggToString(fix.implementer.address, 100, ethers.constants.AddressZero, 45, 10);
+            // const res = await fix.processor.processCore(
+            //     [
+            //         fix.hre.dotnugg.itemsByFeatureById[Features.BASE][RAND_INDEXS.BASE].hex,
+            //         fix.hre.dotnugg.itemsByFeatureById[Features.BACK][RAND_INDEXS.BACK].hex,
+            //         fix.hre.dotnugg.itemsByFeatureById[Features.EYES][RAND_INDEXS.EYES].hex,
+            //         fix.hre.dotnugg.itemsByFeatureById[Features.MOUT][RAND_INDEXS.MOUT].hex,
+            //         fix.hre.dotnugg.itemsByFeatureById[Features.HAIR][RAND_INDEXS.HAIR].hex,
+            //         fix.hre.dotnugg.itemsByFeatureById[Features.HEAD][RAND_INDEXS.HEAD].hex,
+            //         // fix.hre.dotnugg.itemsByFeatureById[Features.NECK][RAND_INDEXS.NECK].hex,
+            //     ],
+            //     {
+            //         version: 1,
+            //         name: 'test',
+            //         desc: 'desc',
+            //         renderedAt: 0,
+            //         owner: ethers.constants.AddressZero,
+            //         tokenId: 0,
+            //         proof: 0,
+            //         ids: [0, 0, 0, 0, 0, 0, 0, 0],
+            //         extras: [0, 0, 0, 0, 0, 0, 0, 0],
+            //         xovers: [0, 0, 0, 0, 0, 0, 0, 0],
+            //         yovers: [0, 0, 0, 0, 0, 0, 0, 0],
+            //     },
+            //     63,
+            // );
+
+            // res.forEach((x) => {
+            //     console.log(`a.push(${x._hex});`);
+            // });
 
             // console.log(res);
 
             // const aArray = a.split('0x').map((x) => BigNumber.from(x !== '' ? '0x' + x : 0));
 
-            dotnugg.log.Console.drawConsole(res);
+            console.log(res.res);
 
-            dotnugg.log.Console.drawSvg(res, 10);
+            // dotnugg.log.Console.drawConsole(res.res);
+
+            // dotnugg.log.Console.drawSvg(res.res, 10);
         });
     });
 });

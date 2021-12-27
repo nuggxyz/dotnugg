@@ -6,6 +6,8 @@ import { getHRE } from '../shared/deployment';
 import { deployContractWithSalt } from '../shared';
 import { DotnuggV1Processor__factory } from '../../../../typechain/factories/DotnuggV1Processor__factory';
 import { DotnuggV1Processor } from '../../../../typechain/DotnuggV1Processor';
+import { MockDotnuggV1Implementer__factory } from '../../../../typechain/factories/MockDotnuggV1Implementer__factory';
+import { MockDotnuggV1Implementer } from '../../../../typechain/MockDotnuggV1Implementer';
 
 export interface NuggFatherFixture {
     // holder: MockDotNuggHolder;
@@ -17,7 +19,7 @@ export interface NuggFatherFixture {
     ownerStartBal: BigNumber;
     hre: HardhatRuntimeEnvironment;
     blockOffset: BigNumber;
-
+    implementer: MockDotnuggV1Implementer;
     // toNuggSwapTokenId(b: BigNumberish): BigNumber;
 }
 
@@ -38,15 +40,23 @@ export const NuggFatherFix: Fixture<NuggFatherFixture> = async function (
 
     const processor = await deployContractWithSalt<DotnuggV1Processor__factory>({
         factory: 'DotnuggV1Processor',
-        from: eoaDeployer,
+        from: eoaDeployer.address,
         args: [],
     });
 
-    // const holder = await deployContractWithSalt<MockDotNuggHolder__factory>({
-    //     factory: 'MockDotNuggHolder',
-    //     from: eoaDeployer,
-    //     args: [processor.address],
-    // });
+    const implementer = await deployContractWithSalt<MockDotnuggV1Implementer__factory>({
+        factory: 'MockDotnuggV1Implementer',
+        from: eoaDeployer.address,
+        args: [processor.address],
+    });
+
+    await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[0], 0);
+    await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[1], 1);
+    await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[2], 2);
+    await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[3], 3);
+    await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[4], 4);
+    await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[5], 5);
+    await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[6], 6);
 
     // const nuggswap = await deployContractWithSalt<NuggSwap__factory>({
     //     factory: 'NuggSwap',
@@ -57,7 +67,7 @@ export const NuggFatherFix: Fixture<NuggFatherFixture> = async function (
     //0x435ccc2eaa41633658be26d804be5A01fEcC9337
     //0x770f070388b13A597b84B557d6B8D1CD94Fc9925
 
-    // const nuggft = await deployContractWithSalt<NuggFT__factory>({
+    // const implementer = await deployContractWithSalt<NuggFT__factory>({
     //     factory: 'NuggFT',
     //     from: eoaDeployer,
     //     args: [xnugg.address, xnugg.address, xnugg.address],
@@ -89,6 +99,7 @@ export const NuggFatherFix: Fixture<NuggFatherFixture> = async function (
         processor,
         blockOffset,
         owner,
+        implementer,
         // nuggswap,
         hre: getHRE(),
         ownerStartBal: await getHRE().ethers.provider.getBalance(owner),

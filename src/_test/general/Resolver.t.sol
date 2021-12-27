@@ -7,7 +7,7 @@ import {IDotnuggV1Data} from '../../interfaces/IDotnuggV1Data.sol';
 
 import {UserTarget} from '../utils/User.sol';
 
-import {Version} from '../../types/Version.sol';
+import {DotnuggV1Lib} from '../../DotnuggV1Lib.sol';
 import {BigMatrix0} from '../objects/BigMatrix0.sol';
 
 contract ResolverTest is NuggFatherFix {
@@ -29,7 +29,7 @@ contract ResolverTest is NuggFatherFix {
 
         dummy1D = _bigmatrix0.get();
 
-        dummy1Dcompressed = Version.compressBigMatrix(dummy1D, _bigmatrix0.beforeData());
+        dummy1Dcompressed = processor.lib().compressBigMatrix(dummy1D, _bigmatrix0.beforeData());
 
         testData.name = 'name';
         testData.desc = 'desc';
@@ -44,7 +44,7 @@ contract ResolverTest is NuggFatherFix {
     // }
 
     function test__Resolver__resolvString__pass() public {
-        string memory res = processor.resolveString(dummy1Dcompressed, testData, 10);
+        string memory res = processor.resolveUri(dummy1Dcompressed, testData, 10);
 
         emit log_named_string('svg', res);
 

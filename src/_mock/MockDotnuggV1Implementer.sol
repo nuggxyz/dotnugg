@@ -13,7 +13,21 @@ contract MockDotnuggV1Implementer is IDotnuggV1Implementer {
         p = processor;
     }
 
-    function dotnuggV1Callback(uint256 tokenId) external view override returns (IDotnuggV1Data.Data memory data) {}
+    function dotnuggV1Callback(uint256 tokenId) external pure override returns (IDotnuggV1Data.Data memory data) {
+        data.name = 'name';
+        data.desc = 'desc';
+        data.version = 1;
+        data.tokenId = 0;
+        data.proof = 0;
+        data.owner = address(0);
+
+        data.ids = new uint8[](8);
+
+        data.ids[0] = 1;
+        data.ids[1] = 1;
+        data.ids[2] = 1;
+        data.ids[3] = 1;
+    }
 
     function dotnuggV1StoreFiles(uint256[][] calldata data, uint8 feature) external override {
         p.storeFiles(feature, data);

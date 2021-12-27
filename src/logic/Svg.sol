@@ -9,28 +9,29 @@ import {Version} from '../types/Version.sol';
 
 library Svg {
     using StringCastLib for uint256;
+    using Pixel for uint256;
 
-    function buildSvg(
+    function build(
         uint256[] memory file,
         uint256 width,
         uint256 height,
         uint8 zoom
     ) internal pure returns (bytes memory res) {
         bytes memory header = abi.encodePacked(
-            hex'3c7376672076696577426f783d2730203020', //"<svg Box='0 0 ",
+            "<svg Box='0 0 ", //"<svg Box='0 0 ",
             (zoom * width).toAsciiString(),
             hex'20', // ' ',
             (zoom * width).toAsciiString(),
-            hex'20272077696474683d27', //"' width='",
+            "' width='", //"' width='",
             (zoom * width).toAsciiString(),
-            hex'27206865696768743d27', //  "' height='",
+            "' height='", //  "' height='",
             (zoom * width).toAsciiString(),
-            hex'2720786d6c6e733d27687474703a2f2f7777772e77332e6f72672f323030302f7376672720786d6c6e733a786c696e6b3d27687474703a2f2f7777772e77332e6f72672f313939392f786c696e6b273e5c6e' // "' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>\n"
+            "' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>"
         );
 
         bytes memory footer = hex'3c2f7376673e';
 
-        uint256 last = Version.getPixelAt(file, 0, 0, width);
+        uint256 last = Version.getPixelAt(file, 0, 0, width).rgba();
         uint256 count = 1;
 
         // bytes[] memory rects = new bytes[](35);
@@ -40,12 +41,12 @@ library Svg {
             for (uint256 x = 0; x < height; x++) {
                 if (y == 0 && x == 0) x++;
                 uint256 curr = Version.getPixelAt(file, x, y, width);
-                if (curr == last) {
+                if (curr.rgba() == last) {
                     count++;
                     continue;
                 } else {
                     body = abi.encodePacked(body, getRekt(last, (x - count) * zoom, y * zoom, 1 * zoom, count * zoom));
-                    last = curr;
+                    last = curr.rgba();
                     count = 1;
                 }
             }
@@ -67,8 +68,8 @@ library Svg {
     ) internal pure returns (bytes memory res) {
         if (pixel & 0xff == 0) return '';
         res = abi.encodePacked(
-            "\t<rect fill='#",
-            pixel.toHexStringNoPrefix(4),
+            "<rect fill='#",
+            pixel.rgba().toHexStringNoPrefix(4),
             hex'2720783d27',
             x.toAsciiString(),
             hex'2720793d27',
@@ -77,7 +78,7 @@ library Svg {
             xlen.toAsciiString(),
             hex'272077696474683d27',
             ylen.toAsciiString(),
-            "'/>\n"
+            "'/>"
         );
     }
 }

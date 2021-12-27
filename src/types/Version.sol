@@ -20,45 +20,6 @@ library Version {
         uint256 data;
     }
 
-    function parse(
-        uint256[][] memory data,
-        uint8[] memory xovers,
-        uint8[] memory yovers
-    ) internal pure returns (Memory[][] memory m) {
-        m = new Memory[][](data.length);
-
-        for (uint256 j = 0; j < data.length; j++) {
-            (bool empty, BitReader.Memory memory reader) = BitReader.init(data[j]);
-
-            if (empty) continue;
-
-            // indicates dotnuggV1 encoded file
-            require(reader.select(32) == 0x420690_01, 'DEC:PI:0');
-
-            uint256 feature = reader.select(3);
-
-            uint256 id = reader.select(8);
-
-            uint256[] memory pallet = parsePallet(reader, id, feature);
-
-            uint256 versionLength = reader.select(2) + 1;
-
-            m[j] = new Memory[](versionLength);
-
-            for (uint256 i = 0; i < versionLength; i++) {
-                m[j][i].data = parseData(reader, feature, xovers, yovers);
-
-                m[j][i].receivers = parseReceivers(reader);
-
-                (uint256 width, uint256 height) = getWidth(m[j][i]);
-
-                m[j][i].minimatrix = parseMiniMatrix(reader, width, height);
-
-                m[j][i].pallet = pallet;
-            }
-        }
-    }
-
     function parsePallet(
         BitReader.Memory memory reader,
         uint256 id,
@@ -406,67 +367,11 @@ library Version {
         res = pix & 0x7 != 0x00;
     }
 
-    function decompressBigMatrix(uint256[] memory input) internal pure returns (uint256[] memory res) {
-        res = new uint256[]((input[input.length - 1] >> 240));
-
-        uint256 counter = 0;
-
-        for (uint256 i = 0; i < input.length; i++) {
-            uint256 numzeros = input[i] & 0xf;
-
-            if (numzeros == 0xf) {
-                numzeros = input[i++] >> 4;
-            }
-
-            for (uint256 j = 0; j < numzeros; j++) {
-                // skips a row, keeping it at zero
-                counter++;
-            }
-
-            res[counter++] = input[i] >> 4;
-        }
-    }
-
     function setArrayLength(uint256[] memory input, uint256 size) internal pure {
         assembly {
             let ptr := mload(input)
             ptr := size
             mstore(input, ptr)
         }
-    }
-
-    function compressBigMatrix(uint256[] memory input, uint256 data) internal pure returns (uint256[] memory res) {
-        // res = m.bigmatrix;
-
-        uint256 counter;
-        uint256 rescounter;
-        uint256 zerocount;
-
-        do {
-            if (input[counter] == 0) {
-                zerocount++;
-                continue;
-            }
-
-            if (zerocount > 14) {
-                input[rescounter++] = (zerocount << 4) | 0xf;
-                zerocount = 0;
-            }
-
-            input[rescounter++] = (input[counter] << 4) | zerocount;
-
-            zerocount = 0;
-        } while (++counter < input.length);
-
-        if (zerocount > 14) {
-            input[rescounter++] = (zerocount << 4) | 0xf;
-            zerocount = 0;
-        }
-
-        input[rescounter++] = (data << 4) | zerocount | ((input.length + 1) << 240);
-
-        setArrayLength(input, rescounter);
-
-        return input;
     }
 }
