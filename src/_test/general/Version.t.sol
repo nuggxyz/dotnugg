@@ -6,18 +6,8 @@ import {NuggFatherFix} from '../fixtures/NuggFather.fix.sol';
 
 import {UserTarget} from '../utils/User.sol';
 
-import {Version} from '../../types/Version.sol';
+import {DotnuggV1Lib} from '../../DotnuggV1Lib.sol';
 import {BigMatrix0} from '../objects/BigMatrix0.sol';
-
-contract VersionTarget {
-    function decompressBigMatrix(uint256[] memory input) external pure returns (uint256[] memory res) {
-        return Version.decompressBigMatrix(input);
-    }
-
-    function compressBigMatrix(uint256[] memory input, uint256 data) external pure returns (uint256[] memory res) {
-        return Version.compressBigMatrix(input, data);
-    }
-}
 
 contract VersionTest is NuggFatherFix {
     using UserTarget for address;
@@ -29,18 +19,14 @@ contract VersionTest is NuggFatherFix {
 
     uint256[] dummy1Dcompressed;
 
-    VersionTarget target;
-
     function setUp() public {
         reset();
-
-        target = new VersionTarget();
 
         _bigmatrix0 = new BigMatrix0();
 
         dummy1D = _bigmatrix0.get();
 
-        dummy1Dcompressed = Version.compressBigMatrix(dummy1D, 0);
+        dummy1Dcompressed = processor.lib().compressBigMatrix(dummy1D, 0);
 
         emit log_named_bytes32('compreseed last', bytes32(dummy1Dcompressed[dummy1Dcompressed.length - 1]));
 
@@ -55,8 +41,8 @@ contract VersionTest is NuggFatherFix {
 
     function test__Version__compressBigMatrix__pass() public {
         uint256 data = 0;
-        uint256[] memory compressed = target.compressBigMatrix(dummy1D, data);
-        uint256[] memory decompressed = target.decompressBigMatrix(compressed);
+        uint256[] memory compressed = processor.lib().compressBigMatrix(dummy1D, data);
+        uint256[] memory decompressed = processor.lib().decompressBigMatrix(compressed);
 
         dummy1D.push(data | ((dummy1D.length + 1) << 236));
 

@@ -16,48 +16,6 @@ library Calculator {
     using Matrix for Types.Matrix;
     using Pixel for uint256;
 
-    function combine(
-        uint256 featureLen,
-        uint8 width,
-        Version.Memory[][] memory versions
-    ) internal pure returns (Types.Matrix memory resa) {
-        Types.Canvas memory canvas;
-        canvas.matrix = Matrix.create(width, width);
-        canvas.receivers = new Types.Anchor[](featureLen);
-        Types.Coordinate memory coord;
-        coord.a = width / 2 + 1;
-        coord.b = width / 2 + 1;
-        coord.exists = true;
-        Types.Rlud memory r;
-        for (uint8 i = 0; i < featureLen; i++) {
-            canvas.receivers[i] = Types.Anchor({coordinate: coord, radii: r});
-        }
-        canvas.matrix.width = width;
-        canvas.matrix.height = width;
-
-        Types.Mix memory mix;
-        mix.matrix = Matrix.create(width, width);
-        mix.receivers = new Types.Anchor[](featureLen);
-
-        for (uint8 i = 0; i < versions.length; i++) {
-            if (versions[i].length > 0) {
-                setMix(mix, versions[i], pickVersionIndex(canvas, versions[i]));
-
-                formatForCanvas(canvas, mix);
-
-                postionForCanvas(canvas, mix);
-
-                mergeToCanvas(canvas, mix);
-
-                calculateReceivers(mix);
-
-                updateReceivers(canvas, mix);
-            }
-        }
-
-        return canvas.matrix;
-    }
-
     /**
      * @notice
      * @devg

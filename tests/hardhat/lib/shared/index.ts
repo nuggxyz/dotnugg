@@ -1,6 +1,7 @@
 import { Signer, Contract } from 'ethers';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/dist/src/signers';
+import { DeployOptions } from 'hardhat-deploy/dist/types';
 
 import { MinEthersFactory, GetContractTypeFromFactory, GetARGsTypeFromFactory } from '../../../../typechain/common';
 
@@ -30,17 +31,19 @@ export const deployContractWithSalt = async <CF extends MinEthersFactory<GetCont
     args,
     from,
     salt = '',
+    ...options
 }: {
     factory: string;
     args: GetARGsTypeFromFactory<CF>;
-    from: Signer | SignerWithAddress;
+    from: string;
     salt?: string;
-}): Promise<GetContractTypeFromFactory<CF>> => {
+} & DeployOptions): Promise<GetContractTypeFromFactory<CF>> => {
     const deployment = await getHRE().deployments.deploy(factory, {
-        from: await from.getAddress(),
+        from,
         log: true,
         args,
         deterministicDeployment: salt,
+        ...options,
     });
 
     const result = await getHRE().ethers.getContractAt<GetContractTypeFromFactory<CF>>(factory, deployment.address);
