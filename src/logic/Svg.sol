@@ -31,7 +31,7 @@ library Svg {
 
         bytes memory footer = hex'3c2f7376673e';
 
-        uint256 last = Version.getPixelAt(file, 0, 0, width).rgba();
+        uint256 last = Version.getPixelAt(file, 0, 0, width);
         uint256 count = 1;
 
         // bytes[] memory rects = new bytes[](35);
@@ -41,12 +41,12 @@ library Svg {
             for (uint256 x = 0; x < height; x++) {
                 if (y == 0 && x == 0) x++;
                 uint256 curr = Version.getPixelAt(file, x, y, width);
-                if (curr.rgba() == last) {
+                if (curr.rgba() == last.rgba()) {
                     count++;
                     continue;
                 } else {
                     body = abi.encodePacked(body, getRekt(last, (x - count) * zoom, y * zoom, 1 * zoom, count * zoom));
-                    last = curr.rgba();
+                    last = curr;
                     count = 1;
                 }
             }
@@ -66,7 +66,7 @@ library Svg {
         uint256 xlen,
         uint256 ylen
     ) internal pure returns (bytes memory res) {
-        if (pixel & 0xff == 0) return '';
+        if (pixel.a() == 0) return '';
         res = abi.encodePacked(
             "<rect fill='#",
             pixel.rgba().toHexStringNoPrefix(4),

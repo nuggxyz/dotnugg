@@ -26,6 +26,7 @@ enum Features {
     HEAD,
     BACK,
     NECK,
+    HOLD,
 }
 
 const refresh = async () => {
@@ -41,13 +42,17 @@ describe('uint tests', async function () {
     describe('internal', async () => {
         it('should not fuck up', async () => {
             // const RAND_INDEXS = {
-            //     BACK: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.BACK].amount),
-            //     EYES: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.EYES].amount),
-            //     MOUT: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.MOUT].amount),
-            //     HEAD: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.HEAD].amount),
-            //     HAIR: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.HAIR].amount),
-            //     NECK: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.NECK].amount),
+            // BASE: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.BASE].amount),
+            // BACK: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.BACK].amount),
+            // EYES: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.EYES].amount),
+            // MOUT: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.MOUT].amount),
+            // HEAD: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.HEAD].amount),
+            // HAIR: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.HAIR].amount),
+            // NECK: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.NECK].amount),
+            // HOLD: dotnugg.utils.randIntBetween(fix.hre.dotnugg.stats.features[Features.HOLD].amount),
             // };
+            //
+            // console.log(fix.hre.dotnugg.itemsByFeatureById[Features.NECK], RAND_INDEXS.NECK);
 
             // const RAND_INDEXS = {
             //     BACK: 6,
@@ -72,7 +77,7 @@ describe('uint tests', async function () {
             // const RAND_INDEXS = { BACK: 1, EYES: 19, MOUT: 11, HEAD: 3, HAIR: 2, NECK: 8 };
 
             // // another keran
-            const RAND_INDEXS = { BASE: 0, BACK: 5, EYES: 24, MOUT: 5, HEAD: 8, HAIR: 2, NECK: 0 };
+            // const RAND_INDEXS = { BASE: 0, BACK: 5, EYES: 24, MOUT: 5, HEAD: 8, HAIR: 2, NECK: 0 };
 
             // const RAND_INDEXS = { BACK: 0, EYES: 2, MOUT: 10, HEAD: 11, HAIR: 15, NECK: 1 };
 
@@ -81,38 +86,47 @@ describe('uint tests', async function () {
             // const RAND_INDEXS = { BACK: 4, EYES: 24, MOUT: 11, HEAD: 11, HAIR: 9, NECK: 2 };
 
             // const RAND_INDEXS = { BASE: 0, EYES: 9, MOUT: 6, HAIR: 0, HEAD: 0, BACK: 2 };
+            // const RAND_INDEXS = {
+            // BASE: 0,
+            // BACK: 3,
+            // EYES: 37,
+            // MOUT: 38,
+            // HEAD: 14,
+            // HAIR: 4,
+            // NECK: 11,
+            // HOLD: 0,
+            // };
+            //
+            // const RAND_INDEXS = {
+            // BASE: 1,
+            // BACK: 3,
+            // EYES: 42,
+            // MOUT: 28,
+            // HEAD: 7,
+            // HAIR: 27,
+            // NECK: 10,
+            // HOLD: 7,
+            // };
+            //
+            // todo 21 has a problem
+            const RAND_INDEXS = {
+                BASE: 1,
+                BACK: 3,
+                EYES: 41,
+                MOUT: 19,
+                HEAD: 20,
+                HAIR: 15,
+                NECK: 20,
+                HOLD: 4,
+            };
 
             console.log('const RAND_INDEXS = ');
             console.log(RAND_INDEXS);
 
             // console.log(fix.hre.dotnugg.itemsByFeatureById[Features.EYES][RAND_INDEXS.EYES].hex);
 
-            const res = await fix.processor.dotnuggToString(fix.implementer.address, 100, ethers.constants.AddressZero, 45, 10);
-            // const res = await fix.processor.processCore(
-            //     [
-            //         fix.hre.dotnugg.itemsByFeatureById[Features.BASE][RAND_INDEXS.BASE].hex,
-            //         fix.hre.dotnugg.itemsByFeatureById[Features.BACK][RAND_INDEXS.BACK].hex,
-            //         fix.hre.dotnugg.itemsByFeatureById[Features.EYES][RAND_INDEXS.EYES].hex,
-            //         fix.hre.dotnugg.itemsByFeatureById[Features.MOUT][RAND_INDEXS.MOUT].hex,
-            //         fix.hre.dotnugg.itemsByFeatureById[Features.HAIR][RAND_INDEXS.HAIR].hex,
-            //         fix.hre.dotnugg.itemsByFeatureById[Features.HEAD][RAND_INDEXS.HEAD].hex,
-            //         // fix.hre.dotnugg.itemsByFeatureById[Features.NECK][RAND_INDEXS.NECK].hex,
-            //     ],
-            //     {
-            //         version: 1,
-            //         name: 'test',
-            //         desc: 'desc',
-            //         renderedAt: 0,
-            //         owner: ethers.constants.AddressZero,
-            //         tokenId: 0,
-            //         proof: 0,
-            //         ids: [0, 0, 0, 0, 0, 0, 0, 0],
-            //         extras: [0, 0, 0, 0, 0, 0, 0, 0],
-            //         xovers: [0, 0, 0, 0, 0, 0, 0, 0],
-            //         yovers: [0, 0, 0, 0, 0, 0, 0, 0],
-            //     },
-            //     63,
-            // );
+            // const res = await fix.processor.dotnuggToString(fix.implementer.address, 100, ethers.constants.AddressZero, 45, 10);
+            const res = await fix.processor.dotnuggToString(fix.implementer.address, 69, fix.processor.address, 63, 10);
 
             // res.forEach((x) => {
             //     console.log(`a.push(${x._hex});`);
@@ -122,11 +136,11 @@ describe('uint tests', async function () {
 
             // const aArray = a.split('0x').map((x) => BigNumber.from(x !== '' ? '0x' + x : 0));
 
-            console.log(res.res);
+            console.log(res);
 
-            // dotnugg.log.Console.drawConsole(res.res);
+            // dotnugg.log.Console.drawConsole(res);
 
-            // dotnugg.log.Console.drawSvg(res.res, 10);
+            // dotnugg.log.Console.drawSvg(res, 10);
         });
     });
 });

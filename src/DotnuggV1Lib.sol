@@ -180,7 +180,7 @@ contract DotnuggV1Lib {
         return input;
     }
 
-    function buildSvg(uint256[] memory file, uint8 zoom) external pure returns (bytes memory res) {
+    function buildSvg(uint256[] memory file, uint8 zoom) external view returns (bytes memory res) {
         file = decompressBigMatrix(file);
 
         uint256 width = (file[file.length - 1] >> 63) & ShiftLib.mask(6);
@@ -188,7 +188,7 @@ contract DotnuggV1Lib {
 
         res = Svg.build(file, width, height, zoom);
 
-        return svgBase64(res);
+        return res;
     }
 
     function svgBase64(bytes memory input) public pure returns (bytes memory res) {
