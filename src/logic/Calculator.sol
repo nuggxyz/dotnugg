@@ -27,6 +27,8 @@ library Calculator {
         mix.xoffset = receiver.coordinate.a > anchor.coordinate.a ? receiver.coordinate.a - anchor.coordinate.a : 0;
         mix.yoffset = receiver.coordinate.b > anchor.coordinate.b ? receiver.coordinate.b - anchor.coordinate.b : 0;
 
+        mix.xoffset++;
+
         canvas.matrix.moveTo(mix.xoffset, mix.yoffset, mix.matrix.width, mix.matrix.height);
     }
 
@@ -59,29 +61,29 @@ library Calculator {
     }
 
     function pickVersionIndex(Types.Canvas memory canvas, Version.Memory[] memory versions) internal pure returns (uint8) {
-        require(versions.length > 0, 'CALC:PVI:0');
+        require(versions.length == 1, 'CALC:PVI:0');
         if (versions.length == 1) {
             return 0;
         }
-        uint8 index = uint8(versions.length) - 1;
+        // uint8 index = uint8(versions.length) - 1;
+        //
+        // uint256 feature = (versions[0].data >> 75) & ShiftLib.mask(3);
 
-        uint256 feature = (versions[0].data >> 75) & ShiftLib.mask(3);
+        // while (index > 0) {
+        // uint256 bits = (versions[index].data >> 27) & ShiftLib.mask(24);
+        // Types.Rlud memory anchorRadii = Types.Rlud({
+        // r: uint8((bits >> 18) & ShiftLib.mask(6)),
+        // l: uint8((bits >> 12) & ShiftLib.mask(6)),
+        // u: uint8((bits >> 6) & ShiftLib.mask(6)),
+        // d: uint8((bits) & ShiftLib.mask(6)),
+        // exists: true
+        // });
 
-        while (index > 0) {
-            uint256 bits = (versions[index].data >> 27) & ShiftLib.mask(24);
-            Types.Rlud memory anchorRadii = Types.Rlud({
-                r: uint8((bits >> 18) & ShiftLib.mask(6)),
-                l: uint8((bits >> 12) & ShiftLib.mask(6)),
-                u: uint8((bits >> 6) & ShiftLib.mask(6)),
-                d: uint8((bits) & ShiftLib.mask(6)),
-                exists: true
-            });
-
-            if (checkRluds(anchorRadii, canvas.receivers[feature].radii)) {
-                return index;
-            }
-            index = index - 1;
-        }
+        // if (checkRluds(anchorRadii, canvas.receivers[feature].radii)) {
+        // return index;
+        // }
+        // index = index - 1;
+        // }
 
         return 0;
     }

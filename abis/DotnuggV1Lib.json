@@ -39,7 +39,7 @@
         "type": "bytes"
       }
     ],
-    "stateMutability": "pure",
+    "stateMutability": "view",
     "type": "function"
   },
   {

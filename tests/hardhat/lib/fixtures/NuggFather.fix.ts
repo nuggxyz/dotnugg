@@ -50,13 +50,38 @@ export const NuggFatherFix: Fixture<NuggFatherFixture> = async function (
         args: [processor.address],
     });
 
-    await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[0], 0);
-    await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[1], 1);
-    await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[2], 2);
-    await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[3], 3);
-    await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[4], 4);
-    await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[5], 5);
-    await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[6], 6);
+    const t1 = await processor
+        .connect(eoaDeployer)
+        .unsafeStoreFilesBulk([
+            hre.dotnugg.itemsByFeatureByIdArray[0],
+            hre.dotnugg.itemsByFeatureByIdArray[1],
+            hre.dotnugg.itemsByFeatureByIdArray[2],
+            hre.dotnugg.itemsByFeatureByIdArray[3],
+            hre.dotnugg.itemsByFeatureByIdArray[4],
+            hre.dotnugg.itemsByFeatureByIdArray[5],
+            hre.dotnugg.itemsByFeatureByIdArray[6],
+            hre.dotnugg.itemsByFeatureByIdArray[7],
+        ]);
+
+    console.log(t1.data);
+    // await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[1], 1);
+    // await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[2], 2);
+    // await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[3], 3);
+    // await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[4], 4);
+    // await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[5], 5);
+    // await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[6], 6);
+
+    // const t1 = await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[0], 0);
+
+    // const t2 = await t1.wait();
+
+    // console.log({ t1, t2 });
+    // await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[1], 1);
+    // await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[2], 2);
+    // await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[3], 3);
+    // await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[4], 4);
+    // await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[5], 5);
+    // await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[6], 6);
 
     // const nuggswap = await deployContractWithSalt<NuggSwap__factory>({
     //     factory: 'NuggSwap',

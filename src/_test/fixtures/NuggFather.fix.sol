@@ -52,6 +52,8 @@ contract NuggFatherFix is t {
 
         _implementer = address(implementer);
 
+        assertTrue(processor.totalStoredFiles(_implementer, 0) > 0);
+
         safe = new User{value: 1000 ether}();
         frank = new User{value: 1000 ether}();
         charlie = new User{value: 1000 ether}();

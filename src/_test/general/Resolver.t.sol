@@ -39,15 +39,9 @@ contract ResolverTest is NuggFatherFix {
         testData.owner = address(0);
     }
 
-    // function test__DotnuggV2Processor__dotnuggV1StoreFiles__pass() public {
-    //     _implementer.shouldPass(frank, dotnuggV1StoreFiles(dummy2D, 0));
-    // }
-
     function test__Resolver__resolvString__pass() public {
         string memory res = processor.resolveUri(dummy1Dcompressed, testData, 10);
 
-        emit log_named_string('svg', res);
-
-        // assert(false);
+        // emit log_named_string('svg', res);
     }
 }

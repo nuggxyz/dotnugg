@@ -1005,5 +1005,18 @@
     ],
     "stateMutability": "view",
     "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[][][]",
+        "name": "data",
+        "type": "uint256[][][]"
+      }
+    ],
+    "name": "unsafeStoreFilesBulk",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   }
 ]

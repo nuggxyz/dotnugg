@@ -22,7 +22,14 @@ abstract contract DotnuggV1Storage is IDotnuggV1Storage {
                                 TRUSTED
        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-    function storeFiles(uint8 feature, uint256[][] calldata data) external override returns (uint8 res) {
+function unsafeStoreFilesBulk(uint256[][][] calldata data) public override  {
+        for (uint8 i = 0; i < 8; i++) {
+            storeFiles(i, data[i]);
+        }
+    }
+
+
+    function storeFiles(uint8 feature, uint256[][] calldata data) public override returns (uint8 res) {
         uint8 len = data.length.safe8();
 
         require(len > 0, 'F:0');
