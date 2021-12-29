@@ -8,6 +8,8 @@ import {SafeCastLib} from '../libraries/SafeCastLib.sol';
 
 import {Pixel} from '../types/Pixel.sol';
 
+import '../_test/utils/console.sol';
+
 library Version {
     using BitReader for BitReader.Memory;
     using SafeCastLib for uint256;
@@ -19,12 +21,13 @@ library Version {
         uint256 receivers;
         uint256 data;
     }
+    event log_named_bytes32(string key, bytes32 val);
 
     function parsePallet(
         BitReader.Memory memory reader,
         uint256 id,
         uint256 feature
-    ) internal pure returns (uint256[] memory res) {
+    ) internal view returns (uint256[] memory res) {
         uint256 palletLength = reader.select(4) + 1;
 
         res = new uint256[](palletLength + 1);
@@ -48,14 +51,14 @@ library Version {
 
                 color = (r << 16) | (g << 8) | b;
             }
+            console.log(z);
+            console.logBytes32(bytes32(color));
 
             // // 1 or 8 bits: a
             uint256 a = (reader.select(1) == 0x1 ? 0xff : reader.select(8));
 
             res[i + 1] = Pixel.safePack(color, a, id, z, feature);
         }
-
-        // Event.pixLog(res, 'pixels');
     }
 
     function parseData(

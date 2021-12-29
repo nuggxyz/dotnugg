@@ -378,7 +378,7 @@
           }
         ],
         "internalType": "struct IDotnuggV1Data.Data",
-        "name": "dat",
+        "name": "data",
         "type": "tuple"
       }
     ],

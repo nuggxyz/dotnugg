@@ -28,7 +28,7 @@ contract MockImplementerTest is NuggFatherFix {
             assertTrue(res > 0);
         }
         //76
-        (, string memory res) = processor.dotnuggToString(address(impl), 77, address(processor), 63, 10);
+        (, string memory res) = processor.dotnuggToString(address(impl), 72, address(processor), 63, 10);
 
         emit log_string(res);
     }

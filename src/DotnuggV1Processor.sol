@@ -30,12 +30,10 @@ contract DotnuggV1Processor is IDotnuggV1Processor, DotnuggV1Storage {
         address implementer,
         uint256 tokenId,
         uint8 width
-    ) public view override returns (uint256[] memory resp, IDotnuggV1Data.Data memory dat) {
-        IDotnuggV1Data.Data memory data = IDotnuggV1Implementer(implementer).dotnuggV1Callback(tokenId);
+    ) public view override returns (uint256[] memory resp, IDotnuggV1Data.Data memory data) {
+        data = IDotnuggV1Implementer(implementer).dotnuggV1Callback(tokenId);
 
         uint256[][] memory files = getBatchFiles(implementer, data.ids);
-
-        dat = data;
 
         resp = processCore(files, data, width);
     }
