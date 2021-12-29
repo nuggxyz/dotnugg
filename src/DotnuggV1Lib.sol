@@ -22,14 +22,16 @@ import {Types} from './types/Types.sol';
 import {DotnuggV1Storage} from './logic/DotnuggV1Storage.sol';
 import {StringCastLib} from './libraries/StringCastLib.sol';
 
-contract DotnuggV1Lib {
+import './_test/utils/DSEmit.sol';
+
+contract DotnuggV1Lib is DSEmit {
     using BitReader for BitReader.Memory;
 
     function processCore(
         uint256[][] memory files,
         IDotnuggV1Data.Data memory data,
         uint8 width
-    ) public pure returns (uint256[] memory resp) {
+    ) public view returns (uint256[] memory resp) {
         require(data.version == 1, 'V1s');
 
         require(width <= 64 && width > 4, 'V1:SIZE');
@@ -51,14 +53,15 @@ contract DotnuggV1Lib {
         Types.Canvas memory canvas;
         canvas.matrix = Matrix.create(width, width);
         canvas.receivers = new Types.Anchor[](featureLen);
-        Types.Coordinate memory coord;
-        coord.a = width / 2 + 1;
-        coord.b = width / 2 + 1;
-        coord.exists = true;
+
+        Types.Coordinate memory center = Types.Coordinate({a: width / 2 + 1, b: width / 2 + 1, exists: true});
+
         Types.Rlud memory r;
+
         for (uint8 i = 0; i < featureLen; i++) {
-            canvas.receivers[i] = Types.Anchor({coordinate: coord, radii: r});
+            canvas.receivers[i] = Types.Anchor({coordinate: center, radii: r});
         }
+
         canvas.matrix.width = width;
         canvas.matrix.height = width;
 
@@ -89,7 +92,7 @@ contract DotnuggV1Lib {
         uint256[][] memory data,
         uint8[] memory xovers,
         uint8[] memory yovers
-    ) internal pure returns (Version.Memory[][] memory m) {
+    ) public view returns (Version.Memory[][] memory m) {
         m = new Version.Memory[][](data.length);
 
         for (uint256 j = 0; j < data.length; j++) {
@@ -146,8 +149,6 @@ contract DotnuggV1Lib {
     }
 
     function compressBigMatrix(uint256[] memory input, uint256 data) public pure returns (uint256[] memory res) {
-        // res = m.bigmatrix;
-
         uint256 counter;
         uint256 rescounter;
         uint256 zerocount;
@@ -180,7 +181,7 @@ contract DotnuggV1Lib {
         return input;
     }
 
-    function buildSvg(uint256[] memory file, uint8 zoom) external view returns (bytes memory res) {
+    function buildSvg(uint256[] memory file, uint8 zoom) external pure returns (bytes memory res) {
         file = decompressBigMatrix(file);
 
         uint256 width = (file[file.length - 1] >> 63) & ShiftLib.mask(6);

@@ -24,3 +24,4 @@ coverage.json
 /tests/dapptools/out
 typechain
 out
+src/_generated
