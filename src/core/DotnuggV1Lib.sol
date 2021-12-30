@@ -2,34 +2,31 @@
 
 pragma solidity 0.8.9;
 
-import {IDotnuggV1Processor} from './interfaces/IDotnuggV1Processor.sol';
-import {IDotnuggV1Data} from './interfaces/IDotnuggV1Data.sol';
-import {IDotnuggV1Resolver} from './interfaces/IDotnuggV1Resolver.sol';
-import {IDotnuggV1Implementer} from './interfaces/IDotnuggV1Implementer.sol';
+import {IDotnuggV1Metadata} from '../interfaces/IDotnuggV1Metadata.sol';
 
-import {BitReader} from './libraries/BitReader.sol';
-import {Base64} from './libraries/Base64.sol';
+import {BitReader} from '../libraries/BitReader.sol';
+import {Base64} from '../libraries/Base64.sol';
 
-import {Calculator} from './logic/Calculator.sol';
-import {Matrix} from './logic/Matrix.sol';
-import {Svg} from './logic/Svg.sol';
+import {Calculator} from '../logic/Calculator.sol';
+import {Matrix} from '../logic/Matrix.sol';
+import {DotnuggV1SvgLib} from './DotnuggV1SvgLib.sol';
 
-import {ShiftLib} from './libraries/ShiftLib.sol';
-import {Base64} from './libraries/Base64.sol';
+import {ShiftLib} from '../libraries/ShiftLib.sol';
+import {Base64} from '../libraries/Base64.sol';
 
-import {Version} from './types/Version.sol';
-import {Types} from './types/Types.sol';
-import {DotnuggV1Storage} from './logic/DotnuggV1Storage.sol';
-import {StringCastLib} from './libraries/StringCastLib.sol';
+import {Version} from '../types/Version.sol';
+import {Types} from '../types/Types.sol';
+import {DotnuggV1Storage} from './DotnuggV1Storage.sol';
+import {StringCastLib} from '../libraries/StringCastLib.sol';
 
-import './_test/utils/DSEmit.sol';
+import '../_test/utils/DSTestEmmitter.sol';
 
-contract DotnuggV1Lib is DSEmit {
+contract DotnuggV1Lib is DSTestEmmitter {
     using BitReader for BitReader.Memory;
 
     function processCore(
         uint256[][] memory files,
-        IDotnuggV1Data.Data memory data,
+        IDotnuggV1Metadata.Memory memory data,
         uint8 width
     ) public view returns (uint256[] memory resp) {
         require(data.version == 1, 'V1s');
@@ -49,7 +46,7 @@ contract DotnuggV1Lib is DSEmit {
         uint256 featureLen,
         uint8 width,
         Version.Memory[][] memory versions
-    ) internal pure returns (Types.Matrix memory resa) {
+    ) internal pure returns (Types.Matrix memory) {
         Types.Canvas memory canvas;
         canvas.matrix = Matrix.create(width, width);
         canvas.receivers = new Types.Anchor[](featureLen);
@@ -181,19 +178,27 @@ contract DotnuggV1Lib is DSEmit {
         return input;
     }
 
-    function buildSvg(uint256[] memory file, uint8 zoom) external pure returns (bytes memory res) {
+    function buildSvg(
+        IDotnuggV1Metadata.Memory memory data,
+        uint256[] memory file,
+        uint8 zoom
+    ) external pure returns (bytes memory res) {
         file = decompressBigMatrix(file);
 
         uint256 width = (file[file.length - 1] >> 63) & ShiftLib.mask(6);
         uint256 height = (file[file.length - 1] >> 69) & ShiftLib.mask(6);
 
-        res = Svg.build(file, width, height, zoom);
+        res = DotnuggV1SvgLib.build(data, file, width, height, zoom);
 
         return res;
     }
 
     function svgBase64(bytes memory input) public pure returns (bytes memory res) {
         res = abi.encodePacked(Base64.PREFIX_SVG, base64(input));
+    }
+
+    function svgUtf8(bytes memory input) public pure returns (bytes memory res) {
+        res = abi.encodePacked('data:image/svg+xml;charset=UTF-8,', input);
     }
 
     function jsonBase64(bytes memory input) public pure returns (bytes memory res) {

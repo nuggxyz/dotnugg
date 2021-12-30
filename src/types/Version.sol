@@ -51,8 +51,6 @@ library Version {
 
                 color = (r << 16) | (g << 8) | b;
             }
-            console.log(z);
-            console.logBytes32(bytes32(color));
 
             // // 1 or 8 bits: a
             uint256 a = (reader.select(1) == 0x1 ? 0xff : reader.select(8));
@@ -344,7 +342,7 @@ library Version {
     ) internal pure returns (uint256 res) {
         (uint256 width, ) = getWidth(m);
 
-        return getPixelAt(m.bigmatrix, x, y, width);
+        (res, ) = getPixelAt(m.bigmatrix, x, y, width);
     }
 
     function getPixelAt(
@@ -352,12 +350,14 @@ library Version {
         uint256 x,
         uint256 y,
         uint256 width
-    ) internal pure returns (uint256 res) {
+    ) internal pure returns (uint256 res, uint256 row) {
         uint256 index = x + (y * width);
 
-        if (index / 6 >= arr.length) return 0x0000000000;
+        if (index / 6 >= arr.length) return (0, 0);
 
-        res = (arr[index / 6] >> (42 * (index % 6))) & ShiftLib.mask(42);
+        row = (arr[index / 6] >> (42 * (index % 6)));
+
+        res = row & ShiftLib.mask(42);
     }
 
     function bigMatrixHasPixelAt(

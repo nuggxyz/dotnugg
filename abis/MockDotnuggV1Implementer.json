@@ -2,7 +2,7 @@
   {
     "inputs": [
       {
-        "internalType": "contract IDotnuggV1Processor",
+        "internalType": "contract IDotnuggV1",
         "name": "processor",
         "type": "address"
       }
@@ -76,9 +76,14 @@
             "internalType": "uint8[]",
             "name": "yovers",
             "type": "uint8[]"
+          },
+          {
+            "internalType": "string[]",
+            "name": "labels",
+            "type": "string[]"
           }
         ],
-        "internalType": "struct IDotnuggV1Data.Data",
+        "internalType": "struct IDotnuggV1Metadata.Memory",
         "name": "data",
         "type": "tuple"
       }

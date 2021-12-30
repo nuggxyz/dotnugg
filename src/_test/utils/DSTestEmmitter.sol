@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.9;
 
-abstract contract DSEmit {
+abstract contract DSTestEmmitter {
     event log(string);
     event logs(bytes);
 

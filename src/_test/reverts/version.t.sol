@@ -2,11 +2,9 @@
 
 pragma solidity 0.8.9;
 
-import {DSTestPlus as t} from '../utils/DSTestPlus.sol';
+import {DotnuggV1Test} from '../DotnuggV1Test.sol';
 
-import {NuggFatherFix} from '../fixtures/NuggFather.fix.sol';
-
-contract revertTest__version is t, NuggFatherFix {
+contract revertTest__version is DotnuggV1Test {
     function setUp() public {
         reset();
     }

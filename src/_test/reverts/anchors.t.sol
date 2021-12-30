@@ -2,12 +2,9 @@
 
 pragma solidity 0.8.9;
 
-import {NuggFatherFix} from '../fixtures/NuggFather.fix.sol';
-import {SafeCast} from '../fixtures/NuggFather.fix.sol';
+import {DotnuggV1Test} from '../DotnuggV1Test.sol';
 
-contract revertTest__anchors is NuggFatherFix {
-    using SafeCast for uint96;
-
+contract revertTest__anchors is DotnuggV1Test {
     function setUp() public {
         reset();
     }

@@ -81,7 +81,6 @@ library Matrix {
         uint256 groupHeight
     ) internal pure {
         matrix.height = uint8(groupHeight);
-        // uint256 feature = data.getFeature();
 
         for (uint256 y = 0; y < groupHeight; y++) {
             for (uint256 x = 0; x < groupWidth; x++) {
