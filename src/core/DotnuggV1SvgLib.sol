@@ -7,11 +7,18 @@ import {ShiftLib} from '../libraries/ShiftLib.sol';
 import {Pixel} from '../types/Pixel.sol';
 import {Version} from '../types/Version.sol';
 
-library Svg {
+import {IDotnuggV1Metadata} from '../interfaces/IDotnuggV1Metadata.sol';
+
+library DotnuggV1SvgLib {
     using StringCastLib for uint256;
+    using StringCastLib for uint8;
+
+    using StringCastLib for address;
+
     using Pixel for uint256;
 
     function build(
+        IDotnuggV1Metadata.Memory memory data,
         uint256[] memory file,
         uint256 width,
         uint256 height,
@@ -31,16 +38,16 @@ library Svg {
 
         bytes memory footer = hex'3c2f7376673e';
 
-        uint256 last = Version.getPixelAt(file, 0, 0, width);
+        (uint256 last, ) = Version.getPixelAt(file, 0, 0, width);
         uint256 count = 1;
 
         // bytes[] memory rects = new bytes[](35);
         bytes memory body;
 
         for (uint256 y = 0; y < height; y++) {
-            for (uint256 x = 0; x < height; x++) {
+            for (uint256 x = 0; x < width; x++) {
                 if (y == 0 && x == 0) x++;
-                uint256 curr = Version.getPixelAt(file, x, y, width);
+                (uint256 curr, ) = Version.getPixelAt(file, x, y, width);
                 if (curr.rgba() == last.rgba()) {
                     count++;
                     continue;
@@ -56,7 +63,7 @@ library Svg {
             count = 0;
         }
 
-        res = abi.encodePacked(header, body, footer);
+        res = abi.encodePacked(header, body, getMetadata(data), footer);
     }
 
     function getRekt(
@@ -79,6 +86,45 @@ library Svg {
             hex'272077696474683d27',
             ylen.toAsciiString(),
             "'/>"
+        );
+    }
+
+    function getMetadata(IDotnuggV1Metadata.Memory memory data) internal pure returns (bytes memory res) {
+        res = abi.encodePacked(
+            '<text x="10" y="20" font-family="monospace" font-size="20px" style="fill:black;">Metadata:',
+            getTspan(45, 0, 'name', data.name),
+            getTspan(75, 0, 'description', data.desc),
+            getTspan(105, 0, 'id', data.tokenId.toAsciiString()),
+            getTspan(135, 0, 'owner', data.owner.toHexString()),
+            getTspan(165, 0, 'items', '')
+        );
+
+        for (uint256 i = 0; i < 8; i++) {
+            if (data.ids[i] > 0) {
+                res = abi.encodePacked(res, getTspan(195 + i * 30, 20, data.labels[i], data.ids[i].toAsciiString()));
+            }
+        }
+
+        res = abi.encodePacked(res, '</text>');
+    }
+
+    function getTspan(
+        uint256 y,
+        uint256 xoffset,
+        string memory label,
+        string memory data
+    ) internal pure returns (bytes memory res) {
+        res = abi.encodePacked(
+            '<tspan x="',
+            (10 + xoffset).toAsciiString(),
+            '" y="',
+            y.toAsciiString(),
+            '">',
+            '<tspan style="font-weight:bold;">',
+            label,
+            ':</tspan> ',
+            data,
+            '</tspan>'
         );
     }
 }

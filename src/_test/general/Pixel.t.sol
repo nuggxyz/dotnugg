@@ -2,12 +2,12 @@
 
 pragma solidity 0.8.9;
 
-import {NuggFatherFix} from '../fixtures/NuggFather.fix.sol';
+import {DotnuggV1Test} from '../DotnuggV1Test.sol';
 
 import {Pixel} from '../../types/Pixel.sol';
 import {StringCastLib} from '../../libraries/StringCastLib.sol';
 
-contract generalTest__PixelType is NuggFatherFix {
+contract generalTest__PixelType is DotnuggV1Test {
     function test__general__PixelType__a() public {
         uint256 input = Pixel.safePack(0xaaaaaa, 0xff, 0xaa, 0xa, 0x2);
 

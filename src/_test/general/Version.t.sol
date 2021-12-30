@@ -2,14 +2,13 @@
 
 pragma solidity 0.8.9;
 
-import {NuggFatherFix} from '../fixtures/NuggFather.fix.sol';
+import {DotnuggV1Test} from '../DotnuggV1Test.sol';
 
 import {UserTarget} from '../utils/User.sol';
 
-import {DotnuggV1Lib} from '../../DotnuggV1Lib.sol';
 import {BigMatrix0} from '../objects/BigMatrix0.sol';
 
-contract VersionTest is NuggFatherFix {
+contract VersionTest is DotnuggV1Test {
     using UserTarget for address;
 
     BigMatrix0 _bigmatrix0;
@@ -48,4 +47,11 @@ contract VersionTest is NuggFatherFix {
 
         assertArrayEq(decompressed, dummy1D);
     }
+
+    // function test__Version__findMinRightPadding__pass() public {
+    //     (uint8 l, uint8 r) = processor.lib().findMinRightPadding(dummy1D);
+
+    //     emit log_named_uint('l', l);
+    //     emit log_named_uint('r', r);
+    // }
 }

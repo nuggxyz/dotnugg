@@ -5,7 +5,6 @@ import {IDotnuggV1Storage} from '../interfaces/IDotnuggV1Storage.sol';
 import {SSTORE2} from '../libraries/SSTORE2.sol';
 import {SafeCastLib} from '../libraries/SafeCastLib.sol';
 
-
 abstract contract DotnuggV1Storage is IDotnuggV1Storage {
     using SafeCastLib for uint256;
     using SafeCastLib for uint16;
@@ -14,7 +13,7 @@ abstract contract DotnuggV1Storage is IDotnuggV1Storage {
     mapping(address => mapping(uint8 => uint168[])) sstore2Pointers;
     mapping(address => mapping(uint8 => uint8)) featureLengths;
 
-    function totalStoredFiles(address implementer, uint8 feature) public view override returns (uint8 res) {
+    function stored(address implementer, uint8 feature) public view override returns (uint8 res) {
         return featureLengths[implementer][feature];
     }
 
@@ -22,14 +21,13 @@ abstract contract DotnuggV1Storage is IDotnuggV1Storage {
                                 TRUSTED
        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-function unsafeStoreFilesBulk(uint256[][][] calldata data) public override  {
+    function unsafeBulkStore(uint256[][][] calldata data) public override {
         for (uint8 i = 0; i < 8; i++) {
-            storeFiles(i, data[i]);
+            store(i, data[i]);
         }
     }
 
-
-    function storeFiles(uint8 feature, uint256[][] calldata data) public override returns (uint8 res) {
+    function store(uint8 feature, uint256[][] calldata data) public override returns (uint8 res) {
         uint8 len = data.length.safe8();
 
         require(len > 0, 'F:0');
@@ -71,7 +69,7 @@ function unsafeStoreFilesBulk(uint256[][][] calldata data) public override  {
 
         uint168[] memory ptrs = sstore2Pointers[implementer][feature];
 
-        address store;
+        address stor;
         uint8 storePos;
 
         uint8 workingPos;
@@ -79,7 +77,7 @@ function unsafeStoreFilesBulk(uint256[][][] calldata data) public override  {
         for (uint256 i = 0; i < ptrs.length; i++) {
             uint8 here = uint8(ptrs[i] >> 160);
             if (workingPos + here > pos) {
-                store = address(uint160(ptrs[i]));
+                stor = address(uint160(ptrs[i]));
                 storePos = pos - workingPos;
                 break;
             } else {
@@ -87,8 +85,8 @@ function unsafeStoreFilesBulk(uint256[][][] calldata data) public override  {
             }
         }
 
-        require(store != address(0), 'F:3');
+        require(stor != address(0), 'F:3');
 
-        data = abi.decode(SSTORE2.read(address(uint160(store))), (uint256[][]))[storePos];
+        data = abi.decode(SSTORE2.read(stor), (uint256[][]))[storePos];
     }
 }

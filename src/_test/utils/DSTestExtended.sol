@@ -6,19 +6,28 @@ import {DSTest} from '../../../lib/ds-test/src/test.sol';
 
 import {Hevm, ForgeVm} from './Vm.sol';
 
-contract DSTestPlus is DSTest {
+contract DSTestExtended is DSTest {
     Hevm internal constant hevm = Hevm(HEVM_ADDRESS);
 
-    ForgeVm internal constant fvm = ForgeVm(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
+    ForgeVm internal constant fvm = ForgeVm(HEVM_ADDRESS);
 
     address internal constant DEAD_ADDRESS = 0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF;
 
     modifier changeInBalance96(address target, int192 change) {
-        int256 before_staked = int192(int256(uint256(target.balance)));
+        int192 before_staked = safeU96toI192(target.balance);
         _;
-        int256 after_staked = int192(int256(uint256(target.balance)));
+        int192 after_staked = safeU96toI192(target.balance);
 
         assertEq(after_staked - before_staked, change, 'user balance did not change');
+    }
+
+    function safeU96toI192(uint256 input) internal pure returns (int192) {
+        require(input <= type(uint96).max);
+        return (int192(int256(input)));
+    }
+
+    function u256toI192(uint96 input) internal pure returns (int192) {
+        return (int192(int256(uint256(input))));
     }
 
     bytes32 checkpointLabel;

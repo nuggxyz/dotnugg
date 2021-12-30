@@ -2,13 +2,13 @@
 
 pragma solidity 0.8.9;
 
-import {DSTestPlus as t} from '../utils/DSTestPlus.sol';
+import {DSTestExtended as t} from './utils/DSTestExtended.sol';
 
-import {User} from '../utils/User.sol';
+import {User} from './utils/User.sol';
 
-import {MockDotnuggV1Implementer} from '../../_mock/MockDotnuggV1Implementer.sol';
+import {MockDotnuggV1Implementer} from '../_mock/MockDotnuggV1Implementer.sol';
 
-import {DotnuggV1Processor} from '../../DotnuggV1Processor.sol';
+import {DotnuggV1} from '../DotnuggV1.sol';
 
 library SafeCast {
     function safeI192(uint96 input) internal pure returns (int192) {
@@ -16,12 +16,12 @@ library SafeCast {
     }
 }
 
-contract NuggFatherFix is t {
+contract DotnuggV1Test is t {
     using SafeCast for uint96;
     using SafeCast for uint256;
     using SafeCast for uint64;
 
-    DotnuggV1Processor public processor;
+    DotnuggV1 public processor;
 
     address public _processor;
 
@@ -44,7 +44,7 @@ contract NuggFatherFix is t {
     function reset() public {
         fvm.roll(1);
         fvm.roll(2);
-        processor = new DotnuggV1Processor();
+        processor = new DotnuggV1();
 
         _processor = address(processor);
 
@@ -52,7 +52,7 @@ contract NuggFatherFix is t {
 
         _implementer = address(implementer);
 
-        assertTrue(processor.totalStoredFiles(_implementer, 0) > 0);
+        assertTrue(processor.stored(_implementer, 0) > 0);
 
         safe = new User{value: 1000 ether}();
         frank = new User{value: 1000 ether}();

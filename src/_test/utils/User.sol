@@ -43,9 +43,6 @@ library UserTarget {
 }
 
 contract User {
-    ForgeVm internal constant fvm = ForgeVm(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
-    event log_named_string(string key, string val);
-
     fallback() external payable {}
 
     receive() external payable {}

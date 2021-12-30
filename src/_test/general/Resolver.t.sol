@@ -2,15 +2,14 @@
 
 pragma solidity 0.8.9;
 
-import {NuggFatherFix} from '../fixtures/NuggFather.fix.sol';
-import {IDotnuggV1Data} from '../../interfaces/IDotnuggV1Data.sol';
+import {DotnuggV1Test} from '../DotnuggV1Test.sol';
+import {IDotnuggV1Metadata} from '../../interfaces/IDotnuggV1Metadata.sol';
 
 import {UserTarget} from '../utils/User.sol';
 
-import {DotnuggV1Lib} from '../../DotnuggV1Lib.sol';
 import {BigMatrix0} from '../objects/BigMatrix0.sol';
 
-contract ResolverTest is NuggFatherFix {
+contract ResolverTest is DotnuggV1Test {
     using UserTarget for address;
 
     BigMatrix0 _bigmatrix0;
@@ -20,7 +19,7 @@ contract ResolverTest is NuggFatherFix {
 
     uint256[] dummy1Dcompressed;
 
-    IDotnuggV1Data.Data testData;
+    IDotnuggV1Metadata.Memory testData;
 
     function setUp() public {
         reset();

@@ -5,25 +5,6 @@
     "type": "constructor"
   },
   {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "key",
-        "type": "string"
-      },
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "val",
-        "type": "string"
-      }
-    ],
-    "name": "log_named_string",
-    "type": "event"
-  },
-  {
     "stateMutability": "payable",
     "type": "fallback"
   },

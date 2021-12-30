@@ -444,7 +444,7 @@
     "name": "processor",
     "outputs": [
       {
-        "internalType": "contract DotnuggV1Processor",
+        "internalType": "contract DotnuggV1",
         "name": "",
         "type": "address"
       }
