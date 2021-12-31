@@ -15,7 +15,6 @@ contract MockDotnuggV1Implementer is IDotnuggV1Implementer, GeneratedDotnuggV1Lo
         data.desc = 'desc';
         data.version = 1;
         data.tokenId = tokenId;
-        data.proof = 0;
         data.owner = address(0);
 
         data.ids = new uint8[](8);

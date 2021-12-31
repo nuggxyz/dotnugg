@@ -166,7 +166,7 @@ contract DotnuggV1 is IDotnuggV1, DotnuggV1Storage {
     ) public view override returns (string memory) {
         bytes memory working = lib.buildSvg(data, file, zoom);
 
-        return string(working);
+        return string(lib.svgUtf8(working));
     }
 
     function resolveUri(
@@ -183,14 +183,8 @@ contract DotnuggV1 is IDotnuggV1, DotnuggV1Storage {
                     data.desc,
                     '", "image": "',
                     lib.svgUtf8(lib.buildSvg(data, file, zoom)),
-                    '","DotnuggVersion":"',
-                    lib.uintToAscii(data.version),
                     '","tokenId":"',
                     lib.uintToAscii(data.tokenId),
-                    '","proof":"',
-                    lib.uintToHex(data.proof, 32),
-                    '","owner":"',
-                    lib.uintToHex(uint160(data.owner), 20),
                     '"}'
                 )
             )

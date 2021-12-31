@@ -116,18 +116,8 @@
             "type": "uint256"
           },
           {
-            "internalType": "uint256",
-            "name": "proof",
-            "type": "uint256"
-          },
-          {
             "internalType": "uint8[]",
             "name": "ids",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "extras",
             "type": "uint8[]"
           },
           {
@@ -144,6 +134,11 @@
             "internalType": "string[]",
             "name": "labels",
             "type": "string[]"
+          },
+          {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
           }
         ],
         "internalType": "struct IDotnuggV1Metadata.Memory",
@@ -357,18 +352,8 @@
             "type": "uint256"
           },
           {
-            "internalType": "uint256",
-            "name": "proof",
-            "type": "uint256"
-          },
-          {
             "internalType": "uint8[]",
             "name": "ids",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "extras",
             "type": "uint8[]"
           },
           {
@@ -385,6 +370,11 @@
             "internalType": "string[]",
             "name": "labels",
             "type": "string[]"
+          },
+          {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
           }
         ],
         "internalType": "struct IDotnuggV1Metadata.Memory",
@@ -435,18 +425,8 @@
             "type": "uint256"
           },
           {
-            "internalType": "uint256",
-            "name": "proof",
-            "type": "uint256"
-          },
-          {
             "internalType": "uint8[]",
             "name": "ids",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "extras",
             "type": "uint8[]"
           },
           {
@@ -463,6 +443,11 @@
             "internalType": "string[]",
             "name": "labels",
             "type": "string[]"
+          },
+          {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
           }
         ],
         "internalType": "struct IDotnuggV1Metadata.Memory",
@@ -526,18 +511,8 @@
             "type": "uint256"
           },
           {
-            "internalType": "uint256",
-            "name": "proof",
-            "type": "uint256"
-          },
-          {
             "internalType": "uint8[]",
             "name": "ids",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "extras",
             "type": "uint8[]"
           },
           {
@@ -554,6 +529,11 @@
             "internalType": "string[]",
             "name": "labels",
             "type": "string[]"
+          },
+          {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
           }
         ],
         "internalType": "struct IDotnuggV1Metadata.Memory",
@@ -601,18 +581,8 @@
             "type": "uint256"
           },
           {
-            "internalType": "uint256",
-            "name": "proof",
-            "type": "uint256"
-          },
-          {
             "internalType": "uint8[]",
             "name": "ids",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "extras",
             "type": "uint8[]"
           },
           {
@@ -629,6 +599,11 @@
             "internalType": "string[]",
             "name": "labels",
             "type": "string[]"
+          },
+          {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
           }
         ],
         "internalType": "struct IDotnuggV1Metadata.Memory",
@@ -679,18 +654,8 @@
             "type": "uint256"
           },
           {
-            "internalType": "uint256",
-            "name": "proof",
-            "type": "uint256"
-          },
-          {
             "internalType": "uint8[]",
             "name": "ids",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "extras",
             "type": "uint8[]"
           },
           {
@@ -707,6 +672,11 @@
             "internalType": "string[]",
             "name": "labels",
             "type": "string[]"
+          },
+          {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
           }
         ],
         "internalType": "struct IDotnuggV1Metadata.Memory",
@@ -770,18 +740,8 @@
             "type": "uint256"
           },
           {
-            "internalType": "uint256",
-            "name": "proof",
-            "type": "uint256"
-          },
-          {
             "internalType": "uint8[]",
             "name": "ids",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "extras",
             "type": "uint8[]"
           },
           {
@@ -798,6 +758,11 @@
             "internalType": "string[]",
             "name": "labels",
             "type": "string[]"
+          },
+          {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
           }
         ],
         "internalType": "struct IDotnuggV1Metadata.Memory",
@@ -861,18 +826,8 @@
             "type": "uint256"
           },
           {
-            "internalType": "uint256",
-            "name": "proof",
-            "type": "uint256"
-          },
-          {
             "internalType": "uint8[]",
             "name": "ids",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "extras",
             "type": "uint8[]"
           },
           {
@@ -889,6 +844,11 @@
             "internalType": "string[]",
             "name": "labels",
             "type": "string[]"
+          },
+          {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
           }
         ],
         "internalType": "struct IDotnuggV1Metadata.Memory",

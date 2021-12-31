@@ -12,7 +12,7 @@
         "type": "uint8"
       }
     ],
-    "name": "totalStoredFiles",
+    "name": "stored",
     "outputs": [
       {
         "internalType": "uint8",

@@ -34,7 +34,6 @@ contract ResolverTest is DotnuggV1Test {
         testData.desc = 'desc';
         testData.version = 1;
         testData.tokenId = 0;
-        testData.proof = 0;
         testData.owner = address(0);
     }
 

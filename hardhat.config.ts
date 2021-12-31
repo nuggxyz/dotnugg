@@ -306,10 +306,10 @@ const HardhatConfig: HardhatUserConfig = {
     //     clear: true,
     //     runOnCompile: true,
     // },
-    spdxLicenseIdentifier: {
-        overwrite: true,
-        runOnCompile: true,
-    },
+    // spdxLicenseIdentifier: {
+    //     overwrite: true,
+    //     runOnCompile: true,
+    // },
     dotnugg: {
         art: '../nuggft-art',
     },
