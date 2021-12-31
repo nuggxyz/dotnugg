@@ -4,17 +4,17 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types';
 
 import { getHRE } from '../shared/deployment';
 import { deployContractWithSalt } from '../shared';
-import { DotnuggV1Processor__factory } from '../../../../typechain/factories/DotnuggV1Processor__factory';
-import { DotnuggV1Processor } from '../../../../typechain/DotnuggV1Processor';
+import { DotnuggV1__factory } from '../../../../typechain/factories/DotnuggV1__factory';
+import { DotnuggV1 } from '../../../../typechain/DotnuggV1';
 import { MockDotnuggV1Implementer__factory } from '../../../../typechain/factories/MockDotnuggV1Implementer__factory';
 import { MockDotnuggV1Implementer } from '../../../../typechain/MockDotnuggV1Implementer';
 
 export interface NuggFatherFixture {
     // holder: MockDotNuggHolder;
     // let nuggin: GroupNuggIn;
-    // let nugginSVG: DotnuggV1Processor;
-    // let nugginDotNugg: DotnuggV1Processor;
-    processor: DotnuggV1Processor;
+    // let nugginSVG: DotnuggV1;
+    // let nugginDotNugg: DotnuggV1;
+    processor: DotnuggV1;
     owner: string;
     ownerStartBal: BigNumber;
     hre: HardhatRuntimeEnvironment;
@@ -38,8 +38,8 @@ export const NuggFatherFix: Fixture<NuggFatherFixture> = async function (
     //     args: [],
     // });
 
-    const processor = await deployContractWithSalt<DotnuggV1Processor__factory>({
-        factory: 'DotnuggV1Processor',
+    const processor = await deployContractWithSalt<DotnuggV1__factory>({
+        factory: 'DotnuggV1',
         from: eoaDeployer.address,
         args: [],
     });
@@ -52,7 +52,7 @@ export const NuggFatherFix: Fixture<NuggFatherFixture> = async function (
 
     const t1 = await processor
         .connect(eoaDeployer)
-        .unsafeStoreFilesBulk([
+        .unsafeBulkStore([
             hre.dotnugg.itemsByFeatureByIdArray[0],
             hre.dotnugg.itemsByFeatureByIdArray[1],
             hre.dotnugg.itemsByFeatureByIdArray[2],
