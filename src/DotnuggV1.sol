@@ -166,7 +166,7 @@ contract DotnuggV1 is IDotnuggV1, DotnuggV1Storage {
     ) public view override returns (string memory) {
         bytes memory working = lib.buildSvg(data, file, zoom);
 
-        return string(lib.svgUtf8(working));
+        return string(working);
     }
 
     function resolveUri(
