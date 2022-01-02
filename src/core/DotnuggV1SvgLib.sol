@@ -18,10 +18,13 @@ library DotnuggV1SvgLib {
     using Pixel for uint256;
 
     function getColorIndex(uint256[] memory mapper, uint256 color) internal pure returns (uint256 i) {
+        color = color.rgba();
+        if (color == 0) return 0;
+        i++;
         for (; i < mapper.length; i++) {
+            if (mapper[i] == 0) break;
             if (mapper[i] == color) return i;
         }
-
         mapper[i] = color;
     }
 
@@ -32,22 +35,22 @@ library DotnuggV1SvgLib {
         uint256 height,
         uint8 zoom
     ) internal pure returns (bytes memory res) {
-        bytes memory header = abi.encodePacked(
-            "<svg Box='0 0 ", //"<svg Box='0 0 ",
-            (zoom * width).toAsciiString(),
-            hex'20', // ' ',
-            (zoom * width).toAsciiString(),
-            "' width='", //"' width='",
-            (zoom * width).toAsciiString(),
-            "' height='", //  "' height='",
-            (zoom * width).toAsciiString(),
-            "' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>"
-        );
-
-        bytes memory footer = hex'3c2f7376673e';
+        // bytes memory header = abi.encodePacked(
+        //     "<svg Box='0 0 ", //"<svg Box='0 0 ",
+        //     (zoom * width).toAsciiString(),
+        //     hex'20', // ' ',
+        //     (zoom * width).toAsciiString(),
+        //     "' width='", //"' width='",
+        //     (zoom * width).toAsciiString(),
+        //     "' height='", //  "' height='",
+        //     (zoom * width).toAsciiString(),
+        //     "' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>"
+        // );
 
         (uint256 last, ) = Version.getPixelAt(file, 0, 0, width);
         uint256 count = 1;
+
+        uint256[] memory mapper = new uint256[](64);
 
         // bytes[] memory rects = new bytes[](35);
         bytes memory body;
@@ -60,18 +63,32 @@ library DotnuggV1SvgLib {
                     count++;
                     continue;
                 } else {
-                    body = abi.encodePacked(body, getRekt(last, (x - count) * zoom, y * zoom, 1 * zoom, count * zoom));
+                    body = abi.encodePacked(body, getRekt2(getColorIndex(mapper, last), (x - count) * zoom, y * zoom, 1 * zoom, count * zoom));
                     last = curr;
                     count = 1;
                 }
             }
 
-            body = abi.encodePacked(body, getRekt(last, (width - count) * zoom, y * zoom, 1 * zoom, count * zoom));
+            body = abi.encodePacked(body, getRekt2(getColorIndex(mapper, last), (width - count) * zoom, y * zoom, 1 * zoom, count * zoom));
             last = 0;
             count = 0;
         }
 
-        res = abi.encodePacked(header, body, footer);
+        bytes memory style = abi.encodePacked('<style><![CDATA[');
+
+        for (uint256 i = 1; i < mapper.length; i++) {
+            if (mapper[i] == 0) break;
+            style = abi.encodePacked(style, '.', (i + 64), '{stroke:#', mapper[i].toHexStringNoPrefix(4), '}');
+        }
+
+        style = abi.encodePacked(style, ']]></style>');
+
+        res = abi.encodePacked(
+            '<?xml version="1.0" encoding="utf-8"?><svg viewbox="0 0 63 63" height="63" width="63" version="1.2" baseProfile="tiny" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" overflow="visible" xml:space="preserve">',
+            style,
+            body,
+            hex'3c2f7376673e'
+        );
     }
 
     // function convertLine(
@@ -88,32 +105,45 @@ library DotnuggV1SvgLib {
     // }
 
     function getRekt2(
-        uint256 pixel,
+        uint256 class,
         uint256 x,
         uint256 y,
         uint256,
         uint256 xlen
     ) internal pure returns (bytes memory res) {
-        if (pixel.a() == 0) return '';
+        if (class == 0) return '';
 
         // if (parseFloat(x1, 10) < 0 || parseFloat(y1, 10) < 0 || parseFloat(x2, 10) < 0 || parseFloat(y2, 10) < 0) {
         //     return '';
         // }
 
-        string memory yy = y.toAsciiString();
+        // string memory yy = y.toAsciiString();
+
+        // res = abi.encodePacked(
+        //     '<path class="',
+        //     (class + 64),
+        //     '" d="M',
+        //     // ',' + y1 + 'L' + x2 + ',' + y2,
+        //     x.toAsciiString(),
+        //     ',',
+        //     y.toAsciiString(),
+        //     'L',
+        //     (x + xlen).toAsciiString(),
+        //     ',',
+        //     (y).toAsciiString(),
+        //     '"/>'
+        // );
 
         res = abi.encodePacked(
-            '<path stroke="#',
-            pixel.rgba().toHexStringNoPrefix(4),
+            '<path class="',
+            (class + 64),
             '" d="M',
             // ',' + y1 + 'L' + x2 + ',' + y2,
             x.toAsciiString(),
-            ',',
+            ' ',
             y.toAsciiString(),
-            'L',
-            (x + xlen).toAsciiString(),
-            ',',
-            (y).toAsciiString(),
+            'h',
+            (xlen).toAsciiString(),
             '"/>'
         );
     }
