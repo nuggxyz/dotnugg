@@ -17,6 +17,14 @@ library DotnuggV1SvgLib {
 
     using Pixel for uint256;
 
+    function getColorIndex(uint256[] memory mapper, uint256 color) internal pure returns (uint256 i) {
+        for (; i < mapper.length; i++) {
+            if (mapper[i] == color) return i;
+        }
+
+        mapper[i] = color;
+    }
+
     function build(
         IDotnuggV1Metadata.Memory memory data,
         uint256[] memory file,
@@ -63,7 +71,51 @@ library DotnuggV1SvgLib {
             count = 0;
         }
 
-        res = abi.encodePacked(header, body, getMetadata(data), footer);
+        res = abi.encodePacked(header, body, footer);
+    }
+
+    // function convertLine(
+    //     x1,
+    //     y1,
+    //     x2,
+    //     y2
+    // ) {
+    //     if (parseFloat(x1, 10) < 0 || parseFloat(y1, 10) < 0 || parseFloat(x2, 10) < 0 || parseFloat(y2, 10) < 0) {
+    //         return '';
+    //     }
+
+    //     return 'M' + x1 + ',' + y1 + 'L' + x2 + ',' + y2;
+    // }
+
+    function getRekt2(
+        uint256 pixel,
+        uint256 x,
+        uint256 y,
+        uint256,
+        uint256 xlen
+    ) internal pure returns (bytes memory res) {
+        if (pixel.a() == 0) return '';
+
+        // if (parseFloat(x1, 10) < 0 || parseFloat(y1, 10) < 0 || parseFloat(x2, 10) < 0 || parseFloat(y2, 10) < 0) {
+        //     return '';
+        // }
+
+        string memory yy = y.toAsciiString();
+
+        res = abi.encodePacked(
+            '<path stroke="#',
+            pixel.rgba().toHexStringNoPrefix(4),
+            '" d="M',
+            // ',' + y1 + 'L' + x2 + ',' + y2,
+            x.toAsciiString(),
+            ',',
+            y.toAsciiString(),
+            'L',
+            (x + xlen).toAsciiString(),
+            ',',
+            (y).toAsciiString(),
+            '"/>'
+        );
     }
 
     function getRekt(
