@@ -32,7 +32,7 @@ abstract contract DotnuggV1Storage is IDotnuggV1Storage {
 
         require(len > 0, 'F:0');
 
-        address ptr = SSTORE2.write(abi.encode(data));
+        address ptr = SSTORE2.write(data);
 
         sstore2Pointers[msg.sender][feature].push(uint168(uint160(ptr)) | (uint168(len) << 160));
 
@@ -87,6 +87,6 @@ abstract contract DotnuggV1Storage is IDotnuggV1Storage {
 
         require(stor != address(0), 'F:3');
 
-        data = abi.decode(SSTORE2.read(stor), (uint256[][]))[storePos];
+        data = SSTORE2.read2DArray(stor, storePos);
     }
 }
