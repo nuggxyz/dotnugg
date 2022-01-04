@@ -289,6 +289,11 @@
   {
     "inputs": [
       {
+        "internalType": "uint256[]",
+        "name": "file",
+        "type": "uint256[]"
+      },
+      {
         "components": [
           {
             "internalType": "uint256",
@@ -347,18 +352,13 @@
           }
         ],
         "internalType": "struct IDotnuggV1Metadata.Memory",
-        "name": "data",
+        "name": "metadata",
         "type": "tuple"
       },
       {
-        "internalType": "uint256[]",
-        "name": "file",
-        "type": "uint256[]"
-      },
-      {
-        "internalType": "uint8",
-        "name": "zoom",
-        "type": "uint8"
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
       }
     ],
     "name": "buildSvg",
@@ -385,7 +385,7 @@
         "type": "uint256"
       }
     ],
-    "name": "compressBigMatrix",
+    "name": "compress",
     "outputs": [
       {
         "internalType": "uint256[]",
@@ -404,7 +404,7 @@
         "type": "uint256[]"
       }
     ],
-    "name": "decompressBigMatrix",
+    "name": "decompress",
     "outputs": [
       {
         "internalType": "uint256[]",
@@ -584,7 +584,7 @@
         "type": "uint8"
       }
     ],
-    "name": "processCore",
+    "name": "process",
     "outputs": [
       {
         "internalType": "uint256[]",

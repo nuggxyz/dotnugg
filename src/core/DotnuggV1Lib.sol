@@ -19,12 +19,10 @@ import {Types} from '../types/Types.sol';
 import {DotnuggV1Storage} from './DotnuggV1Storage.sol';
 import {StringCastLib} from '../libraries/StringCastLib.sol';
 
-import '../_test/utils/DSTestEmmitter.sol';
-
-contract DotnuggV1Lib is DSTestEmmitter {
+contract DotnuggV1Lib {
     using BitReader for BitReader.Memory;
 
-    function processCore(
+    function process(
         uint256[][] memory files,
         IDotnuggV1Metadata.Memory memory data,
         uint8 width
@@ -39,7 +37,9 @@ contract DotnuggV1Lib is DSTestEmmitter {
 
         Types.Matrix memory old = combine(8, width, versions);
 
-        resp = compressBigMatrix(old.version.bigmatrix, old.version.data);
+        // resp = compressBigMatrix(old.version.bigmatrix, old.version.data);
+
+        resp = old.version.bigmatrix;
     }
 
     function combine(
@@ -124,7 +124,7 @@ contract DotnuggV1Lib is DSTestEmmitter {
         }
     }
 
-    function decompressBigMatrix(uint256[] memory input) public pure returns (uint256[] memory res) {
+    function decompress(uint256[] memory input) public pure returns (uint256[] memory res) {
         res = new uint256[]((input[input.length - 1] >> 240));
 
         uint256 counter = 0;
@@ -145,7 +145,7 @@ contract DotnuggV1Lib is DSTestEmmitter {
         }
     }
 
-    function compressBigMatrix(uint256[] memory input, uint256 data) public pure returns (uint256[] memory res) {
+    function compress(uint256[] memory input, uint256 data) public pure returns (uint256[] memory res) {
         uint256 counter;
         uint256 rescounter;
         uint256 zerocount;
@@ -179,18 +179,11 @@ contract DotnuggV1Lib is DSTestEmmitter {
     }
 
     function buildSvg(
-        IDotnuggV1Metadata.Memory memory data,
         uint256[] memory file,
-        uint8 zoom
+        IDotnuggV1Metadata.Memory memory metadata,
+        bytes memory data
     ) external pure returns (bytes memory res) {
-        file = decompressBigMatrix(file);
-
-        uint256 width = (file[file.length - 1] >> 63) & ShiftLib.mask(6);
-        uint256 height = (file[file.length - 1] >> 69) & ShiftLib.mask(6);
-
-        res = DotnuggV1SvgLib.build(data, file, width, height, zoom);
-
-        return res;
+        return DotnuggV1SvgLib.build(file, metadata, data);
     }
 
     function svgBase64(bytes memory input) public pure returns (bytes memory res) {

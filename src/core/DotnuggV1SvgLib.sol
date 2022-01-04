@@ -20,19 +20,23 @@ library DotnuggV1SvgLib {
     function getColorIndex(
         Memory[] memory mapper,
         uint256 color,
-        uint256 zoom
+        bool rekt
     ) internal pure returns (uint256 i) {
-        color = color.rgba();
-        if (color == 0) return 0;
+        // color = color.rgba();
+        if (color.rgba() == 0) return 0;
         i++;
         for (; i < mapper.length; i++) {
             if (mapper[i].color == 0) break;
             if (mapper[i].color == color) return i;
         }
+        // uint256 f =
         mapper[i].color = color;
+
         mapper[i].data = abi.encodePacked(
-            zoom > 1 ? '<path fill="#' : '<path stroke="#',
-            color & 0xff == 0xff ? (color >> 8).toHexStringNoPrefix(3) : color.toHexStringNoPrefix(4),
+            rekt ? '<path fill="#' : '<path stroke="#',
+            color.a() == 0xff ? (color.rgba() >> 8).toHexStringNoPrefix(3) : color.rgba().toHexStringNoPrefix(4),
+            '" class="',
+            color.f() + 65,
             '" d="'
         );
     }
@@ -48,68 +52,76 @@ library DotnuggV1SvgLib {
         uint256 x,
         uint256 y,
         uint256 xlen,
-        uint256 zoom
+        bool rekt
     ) internal pure {
         if (color == 0) return;
 
-        uint256 index = getColorIndex(mapper, color, zoom);
+        uint256 index = getColorIndex(mapper, color, rekt);
 
         mapper[index].data = abi.encodePacked(
-            mapper[index].data,
+            mapper[index].data, //
             'M',
-            (x * zoom).toAsciiString(),
+            (x).toAsciiString(),
             ' ',
-            (y * zoom).toAsciiString(),
+            (y).toAsciiString(),
             'h',
-            (xlen * zoom).toAsciiString()
+            (xlen).toAsciiString()
         );
 
-        if (zoom > 1) {
+        if (rekt) {
             mapper[index].data = abi.encodePacked(
-                mapper[index].data,
+                mapper[index].data, //
                 'v',
-                (zoom).toAsciiString(),
+                uint256(1).toAsciiString(),
                 'L',
-                (x * zoom).toAsciiString(),
+                (x).toAsciiString(),
                 ' ',
-                (y * zoom + zoom).toAsciiString()
+                (y + 1).toAsciiString()
             );
         }
     }
 
     function build(
-        IDotnuggV1Metadata.Memory memory data,
         uint256[] memory file,
-        uint256 width,
-        uint256 height,
-        uint256 zoom
+        IDotnuggV1Metadata.Memory memory metadata,
+        bytes memory data
     ) internal pure returns (bytes memory res) {
+        uint256 zoom = 10;
+
+        bool rekt = false;
+
+        string memory style = '';
+
+        string[] memory styles = new string[](8);
+
+        styles[0] = '{filter: drop-shadow( 3px 3px 2px rgba(0, 0, 0, .7));}';
+
         if (zoom == 0) zoom = 1;
 
-        (uint256 last, ) = Version.getPixelAt(file, 0, 0, width);
+        (uint256 last, ) = Version.getPixelAt(file, 0, 0, 63);
 
         uint256 count = 1;
 
         Memory[] memory mapper = new Memory[](64);
 
-        for (uint256 y = 0; y < height; y++) {
-            for (uint256 x = 0; x < width; x++) {
+        for (uint256 y = 0; y < 63; y++) {
+            for (uint256 x = 0; x < 63; x++) {
                 if (y == 0 && x == 0) x++;
 
-                (uint256 curr, ) = Version.getPixelAt(file, x, y, width);
+                (uint256 curr, ) = Version.getPixelAt(file, x, y, 63);
 
                 if (curr.rgba() == last.rgba()) {
                     count++;
                     continue;
                 }
 
-                setRektPath(mapper, last, (x - count), y, count, zoom);
+                setRektPath(mapper, last, (x - count), y, count, rekt);
 
                 last = curr;
                 count = 1;
             }
 
-            setRektPath(mapper, last, (width - count), y, count, zoom);
+            setRektPath(mapper, last, (63 - count), y, count, rekt);
 
             last = 0;
             count = 0;
@@ -119,21 +131,39 @@ library DotnuggV1SvgLib {
 
         for (uint256 i = 1; i < mapper.length; i++) {
             if (mapper[i].color == 0) break;
-            body = abi.encodePacked(body, mapper[i].data, '"/>');
+
+            body = abi.encodePacked(
+                body, //
+                mapper[i].data,
+                '"/>'
+            );
         }
 
-        string memory __s = (63 * zoom).toAsciiString();
+        string memory __z = (63 * zoom).toAsciiString();
+        string memory __v = uint256(63).toAsciiString();
+
+        if (styles.length == 8) {
+            bytes memory stylee = abi.encodePacked('<style type="text/css" ><![CDATA[');
+
+            for (uint256 i = 0; i < 8; i++) {
+                if (bytes(styles[i]).length == 0) continue;
+                stylee = abi.encodePacked(stylee, '.', i + 65, styles[i]);
+            }
+
+            body = abi.encodePacked(stylee, ']]></style>', body);
+        }
 
         res = abi.encodePacked(
-            '<?xml version="1.0" encoding="utf-8"?><svg viewbox="0 0 ',
-            __s,
+            '<svg viewbox="0 0 ',
+            __v,
             ' ',
-            __s,
+            __v,
             '" height="',
-            __s,
+            __z,
             '" width="',
-            __s,
-            '" version="1.2" baseProfile="tiny" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" overflow="visible" xml:space="preserve">',
+            __z,
+            '" version="1.2" baseProfile="tiny" xmlns="http://www.w3.org/2000/svg" overflow="visible" xml:space="preserve"',
+            bytes(style).length != 0 ? abi.encodePacked(' style="', style, '">') : abi.encodePacked('>'),
             body,
             hex'3c2f7376673e'
         );
