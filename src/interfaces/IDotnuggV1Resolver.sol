@@ -2,36 +2,37 @@
 
 pragma solidity 0.8.9;
 
-import {IDotnuggV1Metadata} from './IDotnuggV1Metadata.sol';
+import {IDotnuggV1Metadata as Metadata} from './IDotnuggV1Metadata.sol';
 
 interface IDotnuggV1Resolver {
-    function resolveBytes(
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                              complex [default] resolvers
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    function resolveSvg(
         uint256[] memory file,
-        IDotnuggV1Metadata.Memory memory data,
-        uint8 zoom
-    ) external view returns (bytes memory res);
-
-    function resolveRaw(
-        uint256[] memory file,
-        IDotnuggV1Metadata.Memory memory data,
-        uint8 zoom
-    ) external view returns (uint256[] memory res);
-
-    function resolveMetadata(
-        uint256[] memory file,
-        IDotnuggV1Metadata.Memory memory data,
-        uint8 zoom
-    ) external view returns (IDotnuggV1Metadata.Memory memory res);
-
-    function resolveString(
-        uint256[] memory file,
-        IDotnuggV1Metadata.Memory memory data,
-        uint8 zoom
+        Metadata.Memory memory metadata,
+        bytes memory data
     ) external view returns (string memory res);
 
-    function resolveUri(
+    function resolveJson(
         uint256[] memory file,
-        IDotnuggV1Metadata.Memory memory data,
-        uint8 zoom
+        Metadata.Memory memory metadata,
+        bytes memory data
+    ) external view returns (string memory res);
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                              basic resolvers
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+    function resolveBytes(
+        uint256[] memory file, //
+        Metadata.Memory memory metadata, //
+        bytes memory data
+    ) external view returns (bytes memory res);
+
+    function resolveString(
+        uint256[] memory file, //
+        Metadata.Memory memory metadata, //
+        bytes memory data
     ) external view returns (string memory res);
 }

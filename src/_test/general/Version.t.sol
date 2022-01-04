@@ -25,7 +25,7 @@ contract VersionTest is DotnuggV1Test {
 
         dummy1D = _bigmatrix0.get();
 
-        dummy1Dcompressed = processor.lib().compressBigMatrix(dummy1D, 0);
+        dummy1Dcompressed = processor.lib().compress(dummy1D, 0);
 
         emit log_named_bytes32('compreseed last', bytes32(dummy1Dcompressed[dummy1Dcompressed.length - 1]));
 
@@ -38,10 +38,10 @@ contract VersionTest is DotnuggV1Test {
     //     _implementer.shouldPass(frank, dotnuggV1StoreFiles(dummy2D, 0));
     // }
 
-    function test__Version__compressBigMatrix__pass() public {
+    function test__Version__compress__pass() public {
         uint256 data = 0;
-        uint256[] memory compressed = processor.lib().compressBigMatrix(dummy1D, data);
-        uint256[] memory decompressed = processor.lib().decompressBigMatrix(compressed);
+        uint256[] memory compressed = processor.lib().compress(dummy1D, data);
+        uint256[] memory decompressed = processor.lib().decompress(compressed);
 
         dummy1D.push(data | ((dummy1D.length + 1) << 236));
 

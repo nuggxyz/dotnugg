@@ -476,7 +476,7 @@
   },
   {
     "inputs": [],
-    "name": "test__Version__compressBigMatrix__pass",
+    "name": "test__Version__compress__pass",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

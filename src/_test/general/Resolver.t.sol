@@ -28,7 +28,7 @@ contract ResolverTest is DotnuggV1Test {
 
         dummy1D = _bigmatrix0.get();
 
-        dummy1Dcompressed = processor.lib().compressBigMatrix(dummy1D, _bigmatrix0.beforeData());
+        dummy1Dcompressed = processor.lib().compress(dummy1D, _bigmatrix0.beforeData());
 
         testData.name = 'name';
         testData.desc = 'desc';
@@ -38,7 +38,7 @@ contract ResolverTest is DotnuggV1Test {
     }
 
     function test__Resolver__resolvString__pass() public {
-        string memory res = processor.resolveUri(dummy1Dcompressed, testData, 10);
+        string memory res = processor.resolveSvg(dummy1Dcompressed, testData, '');
 
         // emit log_named_string('svg', res);
     }
