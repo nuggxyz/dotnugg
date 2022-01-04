@@ -8,11 +8,11 @@ interface IDotnuggV1Metadata {
         uint8[] xovers;
         uint8[] yovers;
         uint256 version;
-        address resolver;
+        address implementer;
         // uint256 renderedAt;
         // string name;
         // string desc;
-        uint256 id;
+        uint256 artifactId;
         // address owner;
         string[] labels;
         // json data

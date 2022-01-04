@@ -7,16 +7,16 @@ import {IDotnuggV1Metadata as Metadata} from './IDotnuggV1Metadata.sol';
 interface IDotnuggV1File {
     struct Raw {
         uint256[][] file;
-        Metadata metadata;
+        Metadata.Memory metadata;
     }
 
     struct Processed {
         uint256[] file;
-        Metadata metadata;
+        Metadata.Memory metadata;
     }
 
     struct Compressed {
         uint256[] file;
-        Metadata metadata;
+        Metadata.Memory metadata;
     }
 }

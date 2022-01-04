@@ -4,6 +4,7 @@ pragma solidity 0.8.9;
 
 import {IDotnuggV1} from './interfaces/IDotnuggV1.sol';
 import {IDotnuggV1Metadata as Metadata} from './interfaces/IDotnuggV1Metadata.sol';
+import {IDotnuggV1File as File} from './interfaces/IDotnuggV1File.sol';
 import {IDotnuggV1Resolver as Resolver} from './interfaces/IDotnuggV1Resolver.sol';
 import {IDotnuggV1Implementer as Implementer} from './interfaces/IDotnuggV1Implementer.sol';
 
@@ -32,14 +33,29 @@ contract DotnuggV1 is IDotnuggV1, DotnuggV1Storage {
         uint256 artifactId,
         address resolver,
         bytes memory data
-    ) public view override returns (uint256[][] memory raw, Metadata.Memory memory metadata) {
-        metadata = Implementer(implementer).dotnuggV1ImplementerCallback(artifactId);
+    ) public view override returns (File.Raw memory res) {
+        res.metadata = Metadata.Memory({
+            implementer: implementer,
+            artifactId: artifactId,
+            ids: new uint8[](8),
+            xovers: new uint8[](8),
+            yovers: new uint8[](8),
+            version: 1,
+            labels: new string[](8),
+            jsonKeys: new string[](8),
+            jsonValues: new string[](8),
+            styles: new string[](8),
+            globalStyle: '',
+            data: ''
+        });
 
-        raw = getBatchFiles(implementer, data.ids);
+        res.metadata = Implementer(implementer).dotnuggV1ImplementerCallback(res.metadata);
+
+        res.file = getBatchFiles(implementer, res.metadata.ids);
 
         if (resolver != address(0)) {
-            try Resolver(resolver).dotnuggV1MetadataCallback(implementer, artifactId, metadata, data) returns (Metadata.Memory memory resp) {
-                metadata = resp;
+            try Resolver(resolver).dotnuggV1MetadataCallback(implementer, artifactId, res.metadata, data) returns (Metadata.Memory memory resp) {
+                res.metadata = resp;
             } catch (bytes memory) {}
         }
     }
@@ -49,12 +65,12 @@ contract DotnuggV1 is IDotnuggV1, DotnuggV1Storage {
         uint256 artifactId,
         address resolver,
         bytes memory data
-    ) public view override returns (uint256[] memory processed, Metadata.Memory memory metadata) {
-        uint256[][] memory raw;
+    ) public view override returns (File.Processed memory res) {
+        File.Raw memory raw = dotnuggToRaw(implementer, artifactId, resolver, data);
 
-        (raw, metadata) = dotnuggToRaw(implementer, artifactId, resolver, data);
+        res.file = lib.process(raw.file, raw.metadata, 63);
 
-        processed = lib.process(raw, metadata, 63);
+        res.metadata = raw.metadata;
     }
 
     function dotnuggToCompressed(
@@ -62,10 +78,12 @@ contract DotnuggV1 is IDotnuggV1, DotnuggV1Storage {
         uint256 artifactId,
         address resolver,
         bytes memory data
-    ) public view override returns (uint256[] memory compressed, Metadata.Memory memory metadata) {
-        (compressed, metadata) = dotnuggToProcessed(implementer, id);
+    ) public view override returns (File.Compressed memory res) {
+        File.Processed memory resp = dotnuggToProcessed(implementer, artifactId, resolver, data);
 
-        compressed = lib.compress(resp, 0);
+        res.file = lib.compress(resp.file, 0);
+
+        res.metadata = resp.metadata;
     }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -78,32 +96,36 @@ contract DotnuggV1 is IDotnuggV1, DotnuggV1Storage {
         address resolver,
         bytes memory data
     ) external view override returns (string memory res) {
-        (uint256[] memory file, Metadata.Memory memory metadata) = dotnuggToProcessed(implementer, artifactId, resolver, data);
+        File.Processed memory proc = dotnuggToProcessed(implementer, artifactId, resolver, data);
 
-        if (resolver != address(0) && resolver != address(this)) {
-            try Resolver(resolver).dotnuggV1JsonCallback(file, metadata, data) returns (string memory d) {
-                return d;
+        if (resolver != address(0)) {
+            try Resolver(resolver).dotnuggV1JsonCallback(proc, data) returns (string memory r) {
+                return r;
             } catch (bytes memory) {}
         }
 
-        res = lib.buildJson(file, metadata, data);
+        res = string(lib.buildJson(proc.file, proc.metadata));
     }
 
     function dotnuggToSvg(
         address implementer,
         uint256 artifactId,
         address resolver,
+        uint8 zoom,
+        bool rekt,
+        bool stats,
+        bool base64,
         bytes memory data
     ) external view override returns (string memory res) {
-        (uint256[] memory file, Metadata.Memory memory metadata) = dotnuggToProcessed(implementer, artifactId, resolver, data);
+        File.Processed memory proc = dotnuggToProcessed(implementer, artifactId, resolver, data);
 
-        if (resolver != address(0) && resolver != address(this)) {
-            try Resolver(resolver).dotnuggV1SvgCallback(file, metadata, data) returns (string memory d) {
+        if (resolver != address(0)) {
+            try Resolver(resolver).dotnuggV1SvgCallback(proc, data) returns (string memory d) {
                 return d;
             } catch (bytes memory) {}
         }
 
-        res = lib.buildSvg(file, metadata, data);
+        res = string(lib.buildSvg(proc.file, proc.metadata, zoom, rekt, stats, base64));
     }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -116,15 +138,15 @@ contract DotnuggV1 is IDotnuggV1, DotnuggV1Storage {
         address resolver,
         bytes memory data
     ) external view override returns (bytes memory res) {
-        (uint256[] memory file, Metadata.Memory memory metadata) = dotnuggToProcessed(implementer, artifactId, resolver, data);
+        File.Processed memory proc = dotnuggToProcessed(implementer, artifactId, resolver, data);
 
-        if (resolver != address(0) && resolver != address(this)) {
-            try Resolver(resolver).dotnuggV1BytesCallback(file, metadata, data) returns (string memory d) {
+        if (resolver != address(0)) {
+            try Resolver(resolver).dotnuggV1BytesCallback(proc, data) returns (bytes memory d) {
                 return d;
             } catch (bytes memory) {}
         }
 
-        res = abi.encode(file, metadata);
+        res = lib.buildSvg(proc.file, proc.metadata, 10, false, false, true);
     }
 
     function dotnuggToString(
@@ -133,14 +155,14 @@ contract DotnuggV1 is IDotnuggV1, DotnuggV1Storage {
         address resolver,
         bytes memory data
     ) external view override returns (string memory res) {
-        (uint256[] memory file, Metadata.Memory memory metadata) = dotnuggToProcessed(implementer, artifactId, resolver, data);
+        File.Processed memory proc = dotnuggToProcessed(implementer, artifactId, resolver, data);
 
-        if (resolver != address(0) && resolver != address(this)) {
-            try Resolver(resolver).dotnuggV1StringCallback(file, metadata, data) returns (string memory d) {
+        if (resolver != address(0)) {
+            try Resolver(resolver).dotnuggV1StringCallback(proc, data) returns (string memory d) {
                 return d;
             } catch (bytes memory) {}
         }
 
-        res = string(abi.encod);
+        res = string(lib.buildSvg(proc.file, proc.metadata, 10, true, false, false));
     }
 }

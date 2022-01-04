@@ -3,6 +3,7 @@
 pragma solidity 0.8.9;
 
 import {IDotnuggV1Metadata as Metadata} from './IDotnuggV1Metadata.sol';
+import {IDotnuggV1File as File} from './IDotnuggV1File.sol';
 
 interface IDotnuggV1Resolver {
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -17,14 +18,12 @@ interface IDotnuggV1Resolver {
     ) external view returns (Metadata.Memory memory resolved);
 
     function dotnuggV1SvgCallback(
-        uint256[] memory file,
-        Metadata.Memory memory metadata,
+        File.Processed memory proc, //
         bytes memory data
     ) external view returns (string memory res);
 
     function dotnuggV1JsonCallback(
-        uint256[] memory file,
-        Metadata.Memory memory metadata,
+        File.Processed memory proc, //
         bytes memory data
     ) external view returns (string memory res);
 
@@ -33,14 +32,12 @@ interface IDotnuggV1Resolver {
        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
     function dotnuggV1StringCallback(
-        uint256[] memory file, //
-        Metadata.Memory memory metadata, //
+        File.Processed memory proc, //
         bytes memory data
     ) external view returns (string memory res);
 
     function dotnuggV1BytesCallback(
-        uint256[] memory file, //
-        Metadata.Memory memory metadata, //
+        File.Processed memory proc, //
         bytes memory data
     ) external view returns (bytes memory res);
 }

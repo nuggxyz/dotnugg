@@ -2,7 +2,8 @@
 
 pragma solidity 0.8.9;
 
-import {IDotnuggV1Metadata} from './IDotnuggV1Metadata.sol';
+import {IDotnuggV1Metadata as Metadata} from './IDotnuggV1Metadata.sol';
+import {IDotnuggV1File as File} from './IDotnuggV1File.sol';
 import {IDotnuggV1Storage} from './IDotnuggV1Storage.sol';
 
 interface IDotnuggV1 is IDotnuggV1Storage {
@@ -12,24 +13,24 @@ interface IDotnuggV1 is IDotnuggV1Storage {
 
     function dotnuggToRaw(
         address implementer,
-        address resolver,
         uint256 artifactId,
+        address resolver,
         bytes memory data
-    ) external view returns (uint256[][] memory res, IDotnuggV1Metadata.Memory memory metadata);
+    ) external view returns (File.Raw memory res);
 
     function dotnuggToProcessed(
         address implementer,
-        address resolver,
         uint256 artifactId,
+        address resolver,
         bytes memory data
-    ) external view returns (uint256[] memory res);
+    ) external view returns (File.Processed memory res);
 
     function dotnuggToCompressed(
         address implementer,
-        address resolver,
         uint256 artifactId,
+        address resolver,
         bytes memory data
-    ) external view returns (uint256[] memory res);
+    ) external view returns (File.Compressed memory res);
 
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                             basic resolved processors
@@ -62,6 +63,10 @@ interface IDotnuggV1 is IDotnuggV1Storage {
         address implementer,
         uint256 id,
         address resolver,
+        uint8 zoom,
+        bool rekt,
+        bool base64,
+        bool stats,
         bytes calldata data
     ) external view returns (string memory res);
 }
