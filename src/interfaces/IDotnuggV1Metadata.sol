@@ -4,16 +4,24 @@ pragma solidity 0.8.9;
 
 interface IDotnuggV1Metadata {
     struct Memory {
-        uint256 version;
-        uint256 renderedAt;
-        string name;
-        string desc;
-        address owner;
-        uint256 tokenId;
         uint8[] ids;
         uint8[] xovers;
         uint8[] yovers;
+        uint256 version;
+        address resolver;
+        // uint256 renderedAt;
+        // string name;
+        // string desc;
+        uint256 id;
+        // address owner;
         string[] labels;
+        // json data
+        string[] jsonKeys;
+        string[] jsonValues;
+        // svg styling
+        string[] styles;
+        string globalStyle;
+        // extra
         bytes data;
     }
 }
