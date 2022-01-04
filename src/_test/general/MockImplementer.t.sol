@@ -28,7 +28,7 @@ contract MockImplementerTest is DotnuggV1Test {
         //76
 
         for (uint256 i = 300; i < 301; i++) {
-            (, string memory res) = processor.dotnuggToString(address(impl), i, address(processor), '');
+            string memory res = processor.dotnuggToSvg(address(impl), i, address(processor), 10, false, false, false, '');
             emit log_string(res);
         }
     }

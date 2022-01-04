@@ -10,16 +10,12 @@ import {GeneratedDotnuggV1LocalUploader} from '../_generated/GeneratedDotnuggV1L
 contract MockDotnuggV1Implementer is IDotnuggV1Implementer, GeneratedDotnuggV1LocalUploader {
     IDotnuggV1 p;
 
-    function dotnuggV1Callback(uint256 tokenId) external view override returns (IDotnuggV1Metadata.Memory memory data) {
-        data.name = 'name';
-        data.desc = 'desc';
-        data.version = 1;
-        data.tokenId = tokenId;
-        data.owner = address(0);
-
-        data.ids = new uint8[](8);
-
-        data.labels = new string[](8);
+    function dotnuggV1ImplementerCallback(IDotnuggV1Metadata.Memory memory data) external view override returns (IDotnuggV1Metadata.Memory memory) {
+        // data.name = 'name';
+        // data.desc = 'desc';
+        // data.version = 1;
+        // data.tokenId = tokenId;
+        // data.owner = address(0);
 
         data.labels[0] = 'BASE';
         data.labels[1] = 'EYES';
@@ -30,19 +26,11 @@ contract MockDotnuggV1Implementer is IDotnuggV1Implementer, GeneratedDotnuggV1Lo
         data.labels[6] = 'NECK';
         data.labels[7] = 'HOLD';
 
-        // data.ids[0] = 3;
-        //
-        // for (uint8 i = 1; i < 8; i++) {
-        // uint8 items = p.totalStoredFiles(address(this), i);
-        // if (items > tokenId) {
-        // data.ids[i] = uint8(tokenId);
-        // break;
-        // } else {
-        // tokenId -= items;
-        // }
-        // }
+        data.styles[0] = '{filter:invert(75%);}';
 
-        data.ids = dotnuggV1CallbackHelper(tokenId, address(p), 3);
+        data.ids = dotnuggV1CallbackHelper(data.artifactId, address(p), 3);
+
+        return data;
     }
 
     function dotnuggV1StoreFiles(uint256[][] calldata data, uint8 feature) external override {

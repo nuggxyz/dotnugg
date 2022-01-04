@@ -181,10 +181,17 @@ contract DotnuggV1Lib {
     function buildSvg(
         uint256[] memory file,
         IDotnuggV1Metadata.Memory memory metadata,
-        bytes memory data
+        uint8 zoom,
+        bool rekt,
+        bool stats,
+        bool b64
     ) external pure returns (bytes memory res) {
-        return DotnuggV1SvgLib.build(file, metadata, data);
+        res = DotnuggV1SvgLib.build(file, metadata, zoom, rekt, stats);
+
+        if (b64) res = svgBase64(res);
     }
+
+    function buildJson(uint256[] memory file, IDotnuggV1Metadata.Memory memory metadata) external pure returns (bytes memory res) {}
 
     function svgBase64(bytes memory input) public pure returns (bytes memory res) {
         res = abi.encodePacked(Base64.PREFIX_SVG, base64(input));

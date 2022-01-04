@@ -30,16 +30,16 @@ contract ResolverTest is DotnuggV1Test {
 
         dummy1Dcompressed = processor.lib().compress(dummy1D, _bigmatrix0.beforeData());
 
-        testData.name = 'name';
-        testData.desc = 'desc';
-        testData.version = 1;
-        testData.tokenId = 0;
-        testData.owner = address(0);
+        // testData.name = 'name';
+        // testData.desc = 'desc';
+        // testData.version = 1;
+        testData.artifactId = 0;
+        // testData.owner = address(0);
     }
 
-    function test__Resolver__resolvString__pass() public {
-        string memory res = processor.resolveSvg(dummy1Dcompressed, testData, '');
+    // function test__Resolver__resolvString__pass() public {
+    //     string memory res = processor.dotnuggToString(dummy1Dcompressed, testData, '');
 
-        // emit log_named_string('svg', res);
-    }
+    //     // emit log_named_string('svg', res);
+    // }
 }

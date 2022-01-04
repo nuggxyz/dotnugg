@@ -32,13 +32,13 @@ library DotnuggV1SvgLib {
         // uint256 f =
         mapper[i].color = color;
 
-        mapper[i].data = abi.encodePacked(
-            rekt ? '<path fill="#' : '<path stroke="#',
-            color.a() == 0xff ? (color.rgba() >> 8).toHexStringNoPrefix(3) : color.rgba().toHexStringNoPrefix(4),
-            '" class="',
-            color.f() + 65,
-            '" d="'
-        );
+        string memory colorStr = color.a() == 0xff ? (color.rgba() >> 8).toHexStringNoPrefix(3) : color.rgba().toHexStringNoPrefix(4);
+
+        if (rekt) {
+            mapper[i].data = abi.encodePacked('<path fill="#', colorStr, '" class="', color.f() + 65, '" d="');
+        } else {
+            mapper[i].data = abi.encodePacked('<path stroke="#', colorStr, '" d="');
+        }
     }
 
     struct Memory {
@@ -84,17 +84,35 @@ library DotnuggV1SvgLib {
     function build(
         uint256[] memory file,
         IDotnuggV1Metadata.Memory memory metadata,
-        bytes memory data
+        uint256 zoom,
+        bool rekt,
+        bool stats
     ) internal pure returns (bytes memory res) {
-        uint256 zoom = 10;
+        // styles[0] = '{filter: drop-shadow( 3px 3px 2px rgba(0, 0, 0, .7));}';
 
-        bool rekt = false;
+        /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                                    header
+           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-        string memory style = '';
+        bytes memory header = abi.encodePacked(
+            '<svg viewbox="0 0 ',
+            uint256(63).toAsciiString(),
+            ' ',
+            uint256(63).toAsciiString(),
+            '" height="',
+            (63 * zoom).toAsciiString(),
+            '" width="',
+            (63 * zoom).toAsciiString(),
+            '" version="1.2" baseProfile="tiny" xmlns="http://www.w3.org/2000/svg" overflow="visible" xml:space="preserve"'
+        );
 
-        string[] memory styles = new string[](8);
+        if (rekt) {
+            header = abi.encodePacked(header, ' style="', metadata.globalStyle, '"');
+        }
 
-        styles[0] = '{filter: drop-shadow( 3px 3px 2px rgba(0, 0, 0, .7));}';
+        /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                                        body
+           ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
         if (zoom == 0) zoom = 1;
 
@@ -139,43 +157,31 @@ library DotnuggV1SvgLib {
             );
         }
 
-        string memory __z = (63 * zoom).toAsciiString();
-        string memory __v = uint256(63).toAsciiString();
-
-        if (styles.length == 8) {
+        if (rekt) {
             bytes memory stylee = abi.encodePacked('<style type="text/css" ><![CDATA[');
 
             for (uint256 i = 0; i < 8; i++) {
-                if (bytes(styles[i]).length == 0) continue;
-                stylee = abi.encodePacked(stylee, '.', i + 65, styles[i]);
+                if (metadata.styles.length > i && bytes(metadata.styles[i]).length == 0) continue;
+                stylee = abi.encodePacked(stylee, '.', i + 65, metadata.styles[i]);
             }
 
             body = abi.encodePacked(stylee, ']]></style>', body);
         }
 
-        res = abi.encodePacked(
-            '<svg viewbox="0 0 ',
-            __v,
-            ' ',
-            __v,
-            '" height="',
-            __z,
-            '" width="',
-            __z,
-            '" version="1.2" baseProfile="tiny" xmlns="http://www.w3.org/2000/svg" overflow="visible" xml:space="preserve"',
-            bytes(style).length != 0 ? abi.encodePacked(' style="', style, '">') : abi.encodePacked('>'),
-            body,
-            hex'3c2f7376673e'
-        );
+        if (stats) {
+            body = abi.encodePacked(body, getMetadata(metadata));
+        }
+
+        return abi.encodePacked(header, '>', body, hex'3c2f7376673e');
     }
 
     function getMetadata(IDotnuggV1Metadata.Memory memory data) internal pure returns (bytes memory res) {
         res = abi.encodePacked(
             '<text x="10" y="20" font-family="monospace" font-size="20px" style="fill:black;">Metadata:',
-            getTspan(45, 0, 'name', data.name),
-            getTspan(75, 0, 'description', data.desc),
-            getTspan(105, 0, 'id', data.tokenId.toAsciiString()),
-            getTspan(135, 0, 'owner', data.owner.toHexString()),
+            // getTspan(45, 0, 'name', data.name),
+            // getTspan(75, 0, 'description', data.desc),
+            // getTspan(105, 0, 'id', data.tokenId.toAsciiString()),
+            // getTspan(135, 0, 'owner', data.owner.toHexString()),
             getTspan(165, 0, 'items', '')
         );
 
