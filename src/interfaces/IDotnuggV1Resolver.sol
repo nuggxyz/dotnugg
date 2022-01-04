@@ -8,13 +8,21 @@ interface IDotnuggV1Resolver {
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                               complex [default] resolvers
        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-    function resolveSvg(
+
+    function dotnuggV1MetadataCallback(
+        address implementer,
+        uint256 artifactId,
+        Metadata.Memory memory input,
+        bytes memory data
+    ) external view returns (Metadata.Memory memory resolved);
+
+    function dotnuggV1SvgCallback(
         uint256[] memory file,
         Metadata.Memory memory metadata,
         bytes memory data
     ) external view returns (string memory res);
 
-    function resolveJson(
+    function dotnuggV1JsonCallback(
         uint256[] memory file,
         Metadata.Memory memory metadata,
         bytes memory data
@@ -24,15 +32,15 @@ interface IDotnuggV1Resolver {
                               basic resolvers
        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-    function resolveBytes(
-        uint256[] memory file, //
-        Metadata.Memory memory metadata, //
-        bytes memory data
-    ) external view returns (bytes memory res);
-
-    function resolveString(
+    function dotnuggV1StringCallback(
         uint256[] memory file, //
         Metadata.Memory memory metadata, //
         bytes memory data
     ) external view returns (string memory res);
+
+    function dotnuggV1BytesCallback(
+        uint256[] memory file, //
+        Metadata.Memory memory metadata, //
+        bytes memory data
+    ) external view returns (bytes memory res);
 }
