@@ -52,7 +52,7 @@ contract DotnuggV1Test is t {
 
         _implementer = address(implementer);
 
-        assertTrue(processor.stored(_implementer, 0) > 0);
+        assertTrue(implementer.proxy().stored(0) > 0);
 
         safe = new User{value: 1000 ether}();
         frank = new User{value: 1000 ether}();

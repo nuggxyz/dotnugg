@@ -4,24 +4,38 @@ pragma solidity 0.8.9;
 
 import {IDotnuggV1} from './interfaces/IDotnuggV1.sol';
 import {IDotnuggV1Metadata as Metadata} from './interfaces/IDotnuggV1Metadata.sol';
+import {IDotnuggV1Storage} from './interfaces/IDotnuggV1Storage.sol';
+
 import {IDotnuggV1File as File} from './interfaces/IDotnuggV1File.sol';
 import {IDotnuggV1Resolver as Resolver} from './interfaces/IDotnuggV1Resolver.sol';
 import {IDotnuggV1Implementer as Implementer} from './interfaces/IDotnuggV1Implementer.sol';
 
 import {DotnuggV1Storage} from './core/DotnuggV1Storage.sol';
 import {DotnuggV1Lib} from './core/DotnuggV1Lib.sol';
+import {MinimalProxy} from './libraries/MinimalProxy.sol';
 
 /// @title dotnugg V1 - onchain encoder/decoder protocol for dotnugg files
 /// @author nugg.xyz - danny7even & dub6ix
 /// @notice yoU CAN'T HaVe ImAgES oN THe BlOCkcHAIn
 /// @dev hold my margarita
-contract DotnuggV1 is IDotnuggV1, DotnuggV1Storage {
+contract DotnuggV1 is IDotnuggV1 {
     DotnuggV1Lib public lib;
 
-    mapping(address => mapping(uint256 => address)) _resolver;
+    address public template;
 
     constructor() {
         lib = new DotnuggV1Lib();
+        template = address(new DotnuggV1Storage());
+    }
+
+    function register() external override returns (IDotnuggV1Storage proxy) {
+        proxy = IDotnuggV1Storage(MinimalProxy.deploy(template, keccak256(abi.encodePacked(msg.sender))));
+        proxy.init(msg.sender);
+    }
+
+    function proxyOf(address implementer) public view override returns (IDotnuggV1Storage proxy) {
+        proxy = IDotnuggV1Storage(MinimalProxy.compute(template, keccak256(abi.encodePacked(implementer))));
+        require(address(proxy).code.length != 0, 'P:0');
     }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -39,7 +53,7 @@ contract DotnuggV1 is IDotnuggV1, DotnuggV1Storage {
         res.metadata.artifactId = artifactId;
         res.metadata.implementer = implementer;
 
-        res.file = getBatchFiles(implementer, res.metadata.ids);
+        res.file = proxyOf(implementer).getBatch(res.metadata.ids);
 
         if (resolver != address(0)) {
             try Resolver(resolver).dotnuggV1MetadataCallback(implementer, artifactId, res.metadata, data) returns (Metadata.Memory memory resp) {
@@ -127,41 +141,41 @@ contract DotnuggV1 is IDotnuggV1, DotnuggV1Storage {
         res = string(lib.buildSvg(_proc.file, _proc.metadata, rekt, back, stats, base64));
     }
 
-    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-                                basic proccessors
-       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    // /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    //                             basic proccessors
+    //    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-    function byt(
-        address implementer,
-        uint256 artifactId,
-        address resolver,
-        bytes memory data
-    ) external view override returns (bytes memory res) {
-        File.Processed memory _proc = proc(implementer, artifactId, resolver, data);
+    // function plain(
+    //     address implementer,
+    //     uint256 artifactId,
+    //     address resolver,
+    //     bytes memory data
+    // ) external view override returns (bytes memory res) {
+    //     File.Processed memory _proc = proc(implementer, artifactId, resolver, data);
 
-        if (resolver != address(0)) {
-            try Resolver(resolver).dotnuggV1BytesCallback(_proc, data) returns (bytes memory d) {
-                return d;
-            } catch (bytes memory) {}
-        }
+    //     if (resolver != address(0)) {
+    //         try Resolver(resolver).dotnuggV1BytesCallback(_proc, data) returns (bytes memory d) {
+    //             return d;
+    //         } catch (bytes memory) {}
+    //     }
 
-        res = lib.buildSvg(_proc.file, _proc.metadata, false, false, false, true);
-    }
+    //     res = lib.buildSvg(_proc.file, _proc.metadata, false, false, false, true);
+    // }
 
-    function str(
-        address implementer,
-        uint256 artifactId,
-        address resolver,
-        bytes memory data
-    ) external view override returns (string memory res) {
-        File.Processed memory _proc = proc(implementer, artifactId, resolver, data);
+    // function str(
+    //     address implementer,
+    //     uint256 artifactId,
+    //     address resolver,
+    //     bytes memory data
+    // ) external view override returns (string memory res) {
+    //     File.Processed memory _proc = proc(implementer, artifactId, resolver, data);
 
-        if (resolver != address(0)) {
-            try Resolver(resolver).dotnuggV1StringCallback(_proc, data) returns (string memory d) {
-                return d;
-            } catch (bytes memory) {}
-        }
+    //     if (resolver != address(0)) {
+    //         try Resolver(resolver).dotnuggV1StringCallback(_proc, data) returns (string memory d) {
+    //             return d;
+    //         } catch (bytes memory) {}
+    //     }
 
-        res = string(lib.buildSvg(_proc.file, _proc.metadata, false, false, false, false));
-    }
+    //     res = string(lib.buildSvg(_proc.file, _proc.metadata, false, false, false, false));
+    // }
 }

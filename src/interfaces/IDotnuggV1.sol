@@ -6,7 +6,11 @@ import {IDotnuggV1Metadata as Metadata} from './IDotnuggV1Metadata.sol';
 import {IDotnuggV1File as File} from './IDotnuggV1File.sol';
 import {IDotnuggV1Storage} from './IDotnuggV1Storage.sol';
 
-interface IDotnuggV1 is IDotnuggV1Storage {
+interface IDotnuggV1 {
+    function register() external returns (IDotnuggV1Storage proxy);
+
+    function proxyOf(address implementer) external view returns (IDotnuggV1Storage proxy);
+
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                                 core processors
        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
@@ -32,22 +36,22 @@ interface IDotnuggV1 is IDotnuggV1Storage {
         bytes memory data
     ) external view returns (File.Compressed memory res);
 
-    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-                            basic resolved processors
-       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-    function byt(
-        address implementer,
-        uint256 artifactId,
-        address resolver,
-        bytes calldata data
-    ) external view returns (bytes memory res);
+    // /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    //                         basic resolved processors
+    //    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    // function byt(
+    //     address implementer,
+    //     uint256 artifactId,
+    //     address resolver,
+    //     bytes calldata data
+    // ) external view returns (bytes memory res);
 
-    function str(
-        address implementer,
-        uint256 artifactId,
-        address resolver,
-        bytes calldata data
-    ) external view returns (string memory res);
+    // function str(
+    //     address implementer,
+    //     uint256 artifactId,
+    //     address resolver,
+    //     bytes calldata data
+    // ) external view returns (string memory res);
 
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                             complex resolved processors
