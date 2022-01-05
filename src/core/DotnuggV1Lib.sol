@@ -10,6 +10,7 @@ import {Base64} from '../libraries/Base64.sol';
 import {Calculator} from '../logic/Calculator.sol';
 import {Matrix} from '../logic/Matrix.sol';
 import {DotnuggV1SvgLib} from './DotnuggV1SvgLib.sol';
+import {DotnuggV1JsonLib} from './DotnuggV1JsonLib.sol';
 
 import {ShiftLib} from '../libraries/ShiftLib.sol';
 import {Base64} from '../libraries/Base64.sol';
@@ -19,7 +20,7 @@ import {Types} from '../types/Types.sol';
 import {DotnuggV1Storage} from './DotnuggV1Storage.sol';
 import {StringCastLib} from '../libraries/StringCastLib.sol';
 
-contract DotnuggV1Lib {
+contract DotnuggV1Lib is DotnuggV1SvgLib, DotnuggV1JsonLib {
     using BitReader for BitReader.Memory;
 
     function process(
@@ -178,32 +179,21 @@ contract DotnuggV1Lib {
         return input;
     }
 
-    function buildSvg(
-        uint256[] memory file,
-        IDotnuggV1Metadata.Memory memory metadata,
-        uint8 zoom,
-        bool rekt,
-        bool stats,
-        bool b64
-    ) external pure returns (bytes memory res) {
-        res = DotnuggV1SvgLib.build(file, metadata, zoom, rekt, stats);
+    // function buildSvg(
+    //     uint256[] memory file,
+    //     IDotnuggV1Metadata.Memory memory metadata,
+    //     uint8 zoom,
+    //     bool rekt,
+    //     bool back,
+    //     bool stats,
+    //     bool b64
+    // ) external pure returns (bytes memory res) {
+    //     res = DotnuggV1SvgLib.build(file, metadata, zoom, rekt, back, stats);
 
-        if (b64) res = svgBase64(res);
-    }
+    //     if (b64) res = svgBase64(res);
+    // }
 
-    function buildJson(uint256[] memory file, IDotnuggV1Metadata.Memory memory metadata) external pure returns (bytes memory res) {}
-
-    function svgBase64(bytes memory input) public pure returns (bytes memory res) {
-        res = abi.encodePacked(Base64.PREFIX_SVG, base64(input));
-    }
-
-    function svgUtf8(bytes memory input) public pure returns (bytes memory res) {
-        res = abi.encodePacked('data:image/svg+xml;charset=UTF-8,', input);
-    }
-
-    function jsonBase64(bytes memory input) public pure returns (bytes memory res) {
-        res = abi.encodePacked(Base64.PREFIX_JSON, base64(input));
-    }
+    // function buildJson(uint256[] memory file, IDotnuggV1Metadata.Memory memory metadata) external pure returns (bytes memory res) {}
 
     function dotnuggBase64(bytes memory input) public pure returns (bytes memory res) {
         res = abi.encodePacked(Base64.PREFIX_DOTNUGG, base64(input));

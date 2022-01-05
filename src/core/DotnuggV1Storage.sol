@@ -2,8 +2,12 @@
 
 pragma solidity 0.8.9;
 import {IDotnuggV1Storage} from '../interfaces/IDotnuggV1Storage.sol';
+import {IDotnuggV1Implementer} from '../interfaces/IDotnuggV1Implementer.sol';
+
 import {SSTORE2} from '../libraries/SSTORE2.sol';
 import {SafeCastLib} from '../libraries/SafeCastLib.sol';
+
+import '../_test/utils/console.sol';
 
 abstract contract DotnuggV1Storage is IDotnuggV1Storage {
     using SafeCastLib for uint256;
@@ -23,20 +27,34 @@ abstract contract DotnuggV1Storage is IDotnuggV1Storage {
 
     function unsafeBulkStore(uint256[][][] calldata data) public override {
         for (uint8 i = 0; i < 8; i++) {
-            store(i, data[i]);
+            uint8 len = data[i].length.safe8();
+
+            require(len > 0, 'F:0');
+
+            address ptr = SSTORE2.write(data[i]);
+
+            sstore2Pointers[msg.sender][i].push(uint168(uint160(ptr)) | (uint168(len) << 160));
+
+            featureLengths[msg.sender][i] += len;
         }
     }
 
-    function store(uint8 feature, uint256[][] calldata data) public override returns (uint8 res) {
+    function store(
+        address implementer,
+        uint8 feature,
+        uint256[][] calldata data
+    ) public override returns (uint8 res) {
+        IDotnuggV1Implementer(implementer).dotnuggV1TrustCallback(msg.sender);
+
         uint8 len = data.length.safe8();
 
         require(len > 0, 'F:0');
 
         address ptr = SSTORE2.write(data);
 
-        sstore2Pointers[msg.sender][feature].push(uint168(uint160(ptr)) | (uint168(len) << 160));
+        sstore2Pointers[implementer][feature].push(uint168(uint160(ptr)) | (uint168(len) << 160));
 
-        featureLengths[msg.sender][feature] += len;
+        featureLengths[implementer][feature] += len;
 
         return len;
     }

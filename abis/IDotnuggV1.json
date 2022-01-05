@@ -8,7 +8,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "id",
+        "name": "artifactId",
         "type": "uint256"
       },
       {
@@ -22,13 +22,8 @@
         "type": "bytes"
       }
     ],
-    "name": "dotnuggToBytes",
+    "name": "byt",
     "outputs": [
-      {
-        "internalType": "address",
-        "name": "resolvedBy",
-        "type": "address"
-      },
       {
         "internalType": "bytes",
         "name": "res",
@@ -47,93 +42,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "id",
-        "type": "uint256"
-      }
-    ],
-    "name": "dotnuggToCompressed",
-    "outputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "res",
-        "type": "uint256[]"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "version",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "renderedAt",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "desc",
-            "type": "string"
-          },
-          {
-            "internalType": "address",
-            "name": "owner",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "tokenId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "ids",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "xovers",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "yovers",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "string[]",
-            "name": "labels",
-            "type": "string[]"
-          },
-          {
-            "internalType": "bytes",
-            "name": "data",
-            "type": "bytes"
-          }
-        ],
-        "internalType": "struct IDotnuggV1Metadata.Memory",
-        "name": "data",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "implementer",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "id",
+        "name": "artifactId",
         "type": "uint256"
       },
       {
@@ -147,13 +56,121 @@
         "type": "bytes"
       }
     ],
-    "name": "dotnuggToJson",
+    "name": "comp",
     "outputs": [
       {
+        "components": [
+          {
+            "internalType": "uint256[]",
+            "name": "file",
+            "type": "uint256[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint8[]",
+                "name": "ids",
+                "type": "uint8[]"
+              },
+              {
+                "internalType": "uint8[]",
+                "name": "xovers",
+                "type": "uint8[]"
+              },
+              {
+                "internalType": "uint8[]",
+                "name": "yovers",
+                "type": "uint8[]"
+              },
+              {
+                "internalType": "uint256",
+                "name": "version",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "implementer",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "artifactId",
+                "type": "uint256"
+              },
+              {
+                "internalType": "string[]",
+                "name": "labels",
+                "type": "string[]"
+              },
+              {
+                "internalType": "string[]",
+                "name": "styles",
+                "type": "string[]"
+              },
+              {
+                "internalType": "string",
+                "name": "background",
+                "type": "string"
+              },
+              {
+                "internalType": "bytes",
+                "name": "data",
+                "type": "bytes"
+              }
+            ],
+            "internalType": "struct IDotnuggV1Metadata.Memory",
+            "name": "metadata",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct IDotnuggV1File.Compressed",
+        "name": "res",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
-        "name": "resolvedBy",
+        "name": "implementer",
         "type": "address"
       },
+      {
+        "internalType": "uint256",
+        "name": "artifactId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "resolver",
+        "type": "address"
+      },
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "desc",
+        "type": "string"
+      },
+      {
+        "internalType": "bool",
+        "name": "base64",
+        "type": "bool"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "dat",
+    "outputs": [
       {
         "internalType": "string",
         "name": "res",
@@ -172,245 +189,46 @@
       },
       {
         "internalType": "uint256",
-        "name": "id",
+        "name": "artifactId",
         "type": "uint256"
-      }
-    ],
-    "name": "dotnuggToMetadata",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "version",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "renderedAt",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "desc",
-            "type": "string"
-          },
-          {
-            "internalType": "address",
-            "name": "owner",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "tokenId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "ids",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "xovers",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "yovers",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "string[]",
-            "name": "labels",
-            "type": "string[]"
-          },
-          {
-            "internalType": "bytes",
-            "name": "data",
-            "type": "bytes"
-          }
-        ],
-        "internalType": "struct IDotnuggV1Metadata.Memory",
-        "name": "res",
-        "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
+      },
       {
         "internalType": "address",
-        "name": "implementer",
+        "name": "resolver",
         "type": "address"
       },
       {
-        "internalType": "uint256",
-        "name": "id",
-        "type": "uint256"
-      }
-    ],
-    "name": "dotnuggToProcessed",
-    "outputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "res",
-        "type": "uint256[]"
+        "internalType": "bool",
+        "name": "rekt",
+        "type": "bool"
       },
       {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "version",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "renderedAt",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "desc",
-            "type": "string"
-          },
-          {
-            "internalType": "address",
-            "name": "owner",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "tokenId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "ids",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "xovers",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "yovers",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "string[]",
-            "name": "labels",
-            "type": "string[]"
-          },
-          {
-            "internalType": "bytes",
-            "name": "data",
-            "type": "bytes"
-          }
-        ],
-        "internalType": "struct IDotnuggV1Metadata.Memory",
+        "internalType": "bool",
+        "name": "background",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "stats",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "base64",
+        "type": "bool"
+      },
+      {
+        "internalType": "bytes",
         "name": "data",
-        "type": "tuple"
+        "type": "bytes"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "implementer",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "id",
-        "type": "uint256"
-      }
-    ],
-    "name": "dotnuggToRaw",
+    "name": "img",
     "outputs": [
       {
-        "internalType": "uint256[][]",
+        "internalType": "string",
         "name": "res",
-        "type": "uint256[][]"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "version",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "renderedAt",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "desc",
-            "type": "string"
-          },
-          {
-            "internalType": "address",
-            "name": "owner",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "tokenId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "ids",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "xovers",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "yovers",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "string[]",
-            "name": "labels",
-            "type": "string[]"
-          },
-          {
-            "internalType": "bytes",
-            "name": "data",
-            "type": "bytes"
-          }
-        ],
-        "internalType": "struct IDotnuggV1Metadata.Memory",
-        "name": "data",
-        "type": "tuple"
+        "type": "string"
       }
     ],
     "stateMutability": "view",
@@ -425,7 +243,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "id",
+        "name": "artifactId",
         "type": "uint256"
       },
       {
@@ -439,17 +257,76 @@
         "type": "bytes"
       }
     ],
-    "name": "dotnuggToString",
+    "name": "proc",
     "outputs": [
       {
-        "internalType": "address",
-        "name": "resolvedBy",
-        "type": "address"
-      },
-      {
-        "internalType": "string",
+        "components": [
+          {
+            "internalType": "uint256[]",
+            "name": "file",
+            "type": "uint256[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint8[]",
+                "name": "ids",
+                "type": "uint8[]"
+              },
+              {
+                "internalType": "uint8[]",
+                "name": "xovers",
+                "type": "uint8[]"
+              },
+              {
+                "internalType": "uint8[]",
+                "name": "yovers",
+                "type": "uint8[]"
+              },
+              {
+                "internalType": "uint256",
+                "name": "version",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "implementer",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "artifactId",
+                "type": "uint256"
+              },
+              {
+                "internalType": "string[]",
+                "name": "labels",
+                "type": "string[]"
+              },
+              {
+                "internalType": "string[]",
+                "name": "styles",
+                "type": "string[]"
+              },
+              {
+                "internalType": "string",
+                "name": "background",
+                "type": "string"
+              },
+              {
+                "internalType": "bytes",
+                "name": "data",
+                "type": "bytes"
+              }
+            ],
+            "internalType": "struct IDotnuggV1Metadata.Memory",
+            "name": "metadata",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct IDotnuggV1File.Processed",
         "name": "res",
-        "type": "string"
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -464,7 +341,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "id",
+        "name": "artifactId",
         "type": "uint256"
       },
       {
@@ -478,368 +355,88 @@
         "type": "bytes"
       }
     ],
-    "name": "dotnuggToSvg",
+    "name": "raw",
     "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256[][]",
+            "name": "file",
+            "type": "uint256[][]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint8[]",
+                "name": "ids",
+                "type": "uint8[]"
+              },
+              {
+                "internalType": "uint8[]",
+                "name": "xovers",
+                "type": "uint8[]"
+              },
+              {
+                "internalType": "uint8[]",
+                "name": "yovers",
+                "type": "uint8[]"
+              },
+              {
+                "internalType": "uint256",
+                "name": "version",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "implementer",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "artifactId",
+                "type": "uint256"
+              },
+              {
+                "internalType": "string[]",
+                "name": "labels",
+                "type": "string[]"
+              },
+              {
+                "internalType": "string[]",
+                "name": "styles",
+                "type": "string[]"
+              },
+              {
+                "internalType": "string",
+                "name": "background",
+                "type": "string"
+              },
+              {
+                "internalType": "bytes",
+                "name": "data",
+                "type": "bytes"
+              }
+            ],
+            "internalType": "struct IDotnuggV1Metadata.Memory",
+            "name": "metadata",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct IDotnuggV1File.Raw",
+        "name": "res",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
       {
         "internalType": "address",
-        "name": "resolvedBy",
+        "name": "implementer",
         "type": "address"
       },
-      {
-        "internalType": "string",
-        "name": "res",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "file",
-        "type": "uint256[]"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "version",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "renderedAt",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "desc",
-            "type": "string"
-          },
-          {
-            "internalType": "address",
-            "name": "owner",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "tokenId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "ids",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "xovers",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "yovers",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "string[]",
-            "name": "labels",
-            "type": "string[]"
-          },
-          {
-            "internalType": "bytes",
-            "name": "data",
-            "type": "bytes"
-          }
-        ],
-        "internalType": "struct IDotnuggV1Metadata.Memory",
-        "name": "metadata",
-        "type": "tuple"
-      },
-      {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      }
-    ],
-    "name": "resolveBytes",
-    "outputs": [
-      {
-        "internalType": "bytes",
-        "name": "res",
-        "type": "bytes"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "file",
-        "type": "uint256[]"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "version",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "renderedAt",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "desc",
-            "type": "string"
-          },
-          {
-            "internalType": "address",
-            "name": "owner",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "tokenId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "ids",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "xovers",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "yovers",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "string[]",
-            "name": "labels",
-            "type": "string[]"
-          },
-          {
-            "internalType": "bytes",
-            "name": "data",
-            "type": "bytes"
-          }
-        ],
-        "internalType": "struct IDotnuggV1Metadata.Memory",
-        "name": "metadata",
-        "type": "tuple"
-      },
-      {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      }
-    ],
-    "name": "resolveJson",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "res",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "file",
-        "type": "uint256[]"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "version",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "renderedAt",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "desc",
-            "type": "string"
-          },
-          {
-            "internalType": "address",
-            "name": "owner",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "tokenId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "ids",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "xovers",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "yovers",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "string[]",
-            "name": "labels",
-            "type": "string[]"
-          },
-          {
-            "internalType": "bytes",
-            "name": "data",
-            "type": "bytes"
-          }
-        ],
-        "internalType": "struct IDotnuggV1Metadata.Memory",
-        "name": "metadata",
-        "type": "tuple"
-      },
-      {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      }
-    ],
-    "name": "resolveString",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "res",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "file",
-        "type": "uint256[]"
-      },
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "version",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "renderedAt",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "desc",
-            "type": "string"
-          },
-          {
-            "internalType": "address",
-            "name": "owner",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "tokenId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "ids",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "xovers",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "uint8[]",
-            "name": "yovers",
-            "type": "uint8[]"
-          },
-          {
-            "internalType": "string[]",
-            "name": "labels",
-            "type": "string[]"
-          },
-          {
-            "internalType": "bytes",
-            "name": "data",
-            "type": "bytes"
-          }
-        ],
-        "internalType": "struct IDotnuggV1Metadata.Memory",
-        "name": "metadata",
-        "type": "tuple"
-      },
-      {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      }
-    ],
-    "name": "resolveSvg",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "res",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
       {
         "internalType": "uint8",
         "name": "feature",
@@ -881,6 +478,40 @@
         "internalType": "uint8",
         "name": "",
         "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "implementer",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "artifactId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "resolver",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "str",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "res",
+        "type": "string"
       }
     ],
     "stateMutability": "view",

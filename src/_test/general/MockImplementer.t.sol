@@ -28,8 +28,12 @@ contract MockImplementerTest is DotnuggV1Test {
         //76
 
         for (uint256 i = 300; i < 301; i++) {
-            string memory res = processor.dotnuggToSvg(address(impl), i, address(processor), 10, false, false, false, '');
+            string memory res = processor.img(address(impl), i, address(processor), false, true, false, false, '');
+
+            string memory resJson = processor.dat(address(impl), i, address(processor), 'NuggftV1', 'Nugg Fungible Token V1', false, '');
+
             emit log_string(res);
+            emit log_string(resJson);
         }
     }
 }

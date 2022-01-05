@@ -10,12 +10,18 @@ import {GeneratedDotnuggV1LocalUploader} from '../_generated/GeneratedDotnuggV1L
 contract MockDotnuggV1Implementer is IDotnuggV1Implementer, GeneratedDotnuggV1LocalUploader {
     IDotnuggV1 p;
 
-    function dotnuggV1ImplementerCallback(IDotnuggV1Metadata.Memory memory data) external view override returns (IDotnuggV1Metadata.Memory memory) {
+    constructor(IDotnuggV1 processor) GeneratedDotnuggV1LocalUploader(address(processor)) {
+        p = processor;
+    }
+
+    function dotnuggV1ImplementerCallback(uint256 artifactId) external view override returns (IDotnuggV1Metadata.Memory memory data) {
         // data.name = 'name';
         // data.desc = 'desc';
         // data.version = 1;
         // data.tokenId = tokenId;
         // data.owner = address(0);
+
+        data.labels = new string[](8);
 
         data.labels[0] = 'BASE';
         data.labels[1] = 'EYES';
@@ -26,18 +32,45 @@ contract MockDotnuggV1Implementer is IDotnuggV1Implementer, GeneratedDotnuggV1Lo
         data.labels[6] = 'NECK';
         data.labels[7] = 'HOLD';
 
+        data.styles = new string[](8);
+
         data.styles[0] = '{filter:invert(75%);}';
+
+        data.background = '#c4d9f8';
+
+        data.version = 1;
 
         data.ids = dotnuggV1CallbackHelper(data.artifactId, address(p), 3);
 
         return data;
     }
 
-    function dotnuggV1StoreFiles(uint256[][] calldata data, uint8 feature) external override {
-        p.store(feature, data);
+    function dotnuggV1TrustCallback(address caller) external view override(GeneratedDotnuggV1LocalUploader, IDotnuggV1Implementer) {
+        require(caller == address(this), 'dotnuggV1TrustCallback');
     }
 
-    constructor(IDotnuggV1 processor) GeneratedDotnuggV1LocalUploader(address(processor)) {
-        p = processor;
+    // function dotnuggV1StyleCallback(uint256 artifactId, uint16 id) external pure override returns (string memory res) {}
+
+    // function dotnuggV1OverrideCallback(uint256 artifactId, uint16 id) external pure override returns (uint8 x, uint8 y) {}
+
+    // function dotnuggV1BackgroundCallback(uint256) external pure override returns (string memory res) {
+    //     return '#c4d9f8';
+    // }
+
+    // function dotnuggV1LabelCallback(uint8 feature) external pure override returns (string memory res) {
+    //     if (feature == 0) return 'BASE';
+    //     if (feature == 1) return 'EYES';
+    //     if (feature == 2) return 'MOUTH';
+    //     if (feature == 3) return 'HAIR';
+    //     if (feature == 4) return 'HAT';
+    //     if (feature == 5) return 'BACK';
+    //     if (feature == 6) return 'NECK';
+    //     if (feature == 7) return 'HOLD';
+    // }
+
+    // function dotnuggV1ItemCallback(uint256 artifactId) external view override returns (uint16[] memory displayed, uint16[] memory hidden) {}
+
+    function dotnuggV1StoreFiles(uint256[][] calldata data, uint8 feature) external {
+        p.store(address(this), feature, data);
     }
 }
