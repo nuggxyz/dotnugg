@@ -4,7 +4,7 @@ pragma solidity 0.8.9;
 
 import {IDotnuggV1} from './../interfaces/IDotnuggV1.sol';
 import {IDotnuggV1Implementer} from './../interfaces/IDotnuggV1Implementer.sol';
-import {IDotnuggV1Storage} from './../interfaces/IDotnuggV1Storage.sol';
+import {IDotnuggV1StorageProxy} from './../interfaces/IDotnuggV1StorageProxy.sol';
 
 import {IDotnuggV1Metadata} from './../interfaces/IDotnuggV1Metadata.sol';
 import {GeneratedDotnuggV1LocalUploader} from '../_generated/GeneratedDotnuggV1LocalUploader.sol';
@@ -12,12 +12,12 @@ import {GeneratedDotnuggV1LocalUploader} from '../_generated/GeneratedDotnuggV1L
 contract MockDotnuggV1Implementer is IDotnuggV1Implementer, GeneratedDotnuggV1LocalUploader {
     IDotnuggV1 p;
 
-    IDotnuggV1Storage public proxy;
+    IDotnuggV1StorageProxy public override dotnuggV1StorageProxy;
 
     constructor(IDotnuggV1 processor) {
         p = processor;
-        proxy = IDotnuggV1Storage(p.register());
-        init(address(proxy));
+        dotnuggV1StorageProxy = IDotnuggV1StorageProxy(p.register());
+        init(address(dotnuggV1StorageProxy));
     }
 
     function dotnuggV1ImplementerCallback(uint256 artifactId) external view override returns (IDotnuggV1Metadata.Memory memory data) {
@@ -46,7 +46,7 @@ contract MockDotnuggV1Implementer is IDotnuggV1Implementer, GeneratedDotnuggV1Lo
 
         data.version = 1;
 
-        data.ids = dotnuggV1CallbackHelper(artifactId, address(proxy), 3);
+        data.ids = dotnuggV1CallbackHelper(artifactId, address(dotnuggV1StorageProxy), 3);
 
         return data;
     }
@@ -78,6 +78,6 @@ contract MockDotnuggV1Implementer is IDotnuggV1Implementer, GeneratedDotnuggV1Lo
     // function dotnuggV1ItemCallback(uint256 artifactId) external view override returns (uint16[] memory displayed, uint16[] memory hidden) {}
 
     function dotnuggV1StoreFiles(uint256[][] calldata data, uint8 feature) external {
-        proxy.store(feature, data);
+        dotnuggV1StorageProxy.store(feature, data);
     }
 }

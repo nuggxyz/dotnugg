@@ -2,10 +2,61 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "implementer",
-        "type": "address"
+        "internalType": "uint8",
+        "name": "feature",
+        "type": "uint8"
       },
+      {
+        "internalType": "uint8",
+        "name": "pos",
+        "type": "uint8"
+      }
+    ],
+    "name": "get",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "data",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8[]",
+        "name": "ids",
+        "type": "uint8[]"
+      }
+    ],
+    "name": "getBatch",
+    "outputs": [
+      {
+        "internalType": "uint256[][]",
+        "name": "data",
+        "type": "uint256[][]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_implementer",
+        "type": "address"
+      }
+    ],
+    "name": "init",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
       {
         "internalType": "uint8",
         "name": "feature",
@@ -21,7 +72,7 @@
     "outputs": [
       {
         "internalType": "uint8",
-        "name": "res",
+        "name": "amount",
         "type": "uint8"
       }
     ],
@@ -30,11 +81,6 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "implementer",
-        "type": "address"
-      },
       {
         "internalType": "uint8",
         "name": "feature",
@@ -45,7 +91,7 @@
     "outputs": [
       {
         "internalType": "uint8",
-        "name": "res",
+        "name": "",
         "type": "uint8"
       }
     ],

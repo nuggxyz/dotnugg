@@ -27,40 +27,6 @@
         "type": "bytes"
       }
     ],
-    "name": "byt",
-    "outputs": [
-      {
-        "internalType": "bytes",
-        "name": "res",
-        "type": "bytes"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "implementer",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "artifactId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "resolver",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      }
-    ],
     "name": "comp",
     "outputs": [
       {
@@ -356,6 +322,25 @@
         "internalType": "address",
         "name": "implementer",
         "type": "address"
+      }
+    ],
+    "name": "proxyOf",
+    "outputs": [
+      {
+        "internalType": "contract IDotnuggV1StorageProxy",
+        "name": "proxy",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "implementer",
+        "type": "address"
       },
       {
         "internalType": "uint256",
@@ -449,103 +434,29 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "implementer",
-        "type": "address"
-      },
-      {
-        "internalType": "uint8",
-        "name": "feature",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint256[][]",
-        "name": "data",
-        "type": "uint256[][]"
-      }
-    ],
-    "name": "store",
+    "inputs": [],
+    "name": "register",
     "outputs": [
       {
-        "internalType": "uint8",
-        "name": "res",
-        "type": "uint8"
+        "internalType": "contract IDotnuggV1StorageProxy",
+        "name": "proxy",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "implementer",
-        "type": "address"
-      },
-      {
-        "internalType": "uint8",
-        "name": "feature",
-        "type": "uint8"
-      }
-    ],
-    "name": "stored",
+    "inputs": [],
+    "name": "template",
     "outputs": [
       {
-        "internalType": "uint8",
-        "name": "res",
-        "type": "uint8"
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "implementer",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "artifactId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "resolver",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      }
-    ],
-    "name": "str",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "res",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256[][][]",
-        "name": "data",
-        "type": "uint256[][][]"
-      }
-    ],
-    "name": "unsafeBulkStore",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   }
 ]

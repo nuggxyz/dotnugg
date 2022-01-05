@@ -21,7 +21,7 @@ contract MockImplementerTest is DotnuggV1Test {
         MockDotnuggV1Implementer impl = new MockDotnuggV1Implementer(processor);
 
         for (uint8 i = 0; i < 8; i++) {
-            uint8 res = impl.proxy().stored(i);
+            uint8 res = impl.dotnuggV1StorageProxy().stored(i);
             emit log_named_uint('[i]', res);
             assertTrue(res > 0);
         }

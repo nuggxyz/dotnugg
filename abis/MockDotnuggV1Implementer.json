@@ -82,6 +82,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "dotnuggV1StorageProxy",
+    "outputs": [
+      {
+        "internalType": "contract IDotnuggV1StorageProxy",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256[][]",
@@ -108,7 +121,13 @@
       }
     ],
     "name": "dotnuggV1TrustCallback",
-    "outputs": [],
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "res",
+        "type": "bool"
+      }
+    ],
     "stateMutability": "view",
     "type": "function"
   }

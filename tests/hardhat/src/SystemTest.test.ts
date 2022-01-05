@@ -1,5 +1,6 @@
 import { ethers, waffle } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/dist/src/signers';
+import { constants } from 'ethers';
 
 import { NamedAccounts } from '../../../hardhat.config';
 import { NuggFatherFix, NuggFatherFixture } from '../lib/fixtures/NuggFather.fix';
@@ -126,7 +127,7 @@ describe('uint tests', async function () {
             // console.log(fix.hre.dotnugg.itemsByFeatureById[Features.EYES][RAND_INDEXS.EYES].hex);
 
             // const res = await fix.processor.dotnuggToString(fix.implementer.address, 100, ethers.constants.AddressZero, 45, 10);
-            const res = await fix.processor.dotnuggToString(fix.implementer.address, 69, fix.processor.address, 63, 10);
+            const res = await fix.processor.img(fix.implementer.address, 69, constants.AddressZero, false, false, false, false, '0x00');
 
             // res.forEach((x) => {
             //     console.log(`a.push(${x._hex});`);
