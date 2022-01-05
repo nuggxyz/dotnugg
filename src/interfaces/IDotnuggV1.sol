@@ -11,21 +11,21 @@ interface IDotnuggV1 is IDotnuggV1Storage {
                                 core processors
        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-    function dotnuggToRaw(
+    function raw(
         address implementer,
         uint256 artifactId,
         address resolver,
         bytes memory data
     ) external view returns (File.Raw memory res);
 
-    function dotnuggToProcessed(
+    function proc(
         address implementer,
         uint256 artifactId,
         address resolver,
         bytes memory data
     ) external view returns (File.Processed memory res);
 
-    function dotnuggToCompressed(
+    function comp(
         address implementer,
         uint256 artifactId,
         address resolver,
@@ -35,16 +35,16 @@ interface IDotnuggV1 is IDotnuggV1Storage {
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                             basic resolved processors
        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-    function dotnuggToBytes(
+    function byt(
         address implementer,
-        uint256 id,
+        uint256 artifactId,
         address resolver,
         bytes calldata data
     ) external view returns (bytes memory res);
 
-    function dotnuggToString(
+    function str(
         address implementer,
-        uint256 id,
+        uint256 artifactId,
         address resolver,
         bytes calldata data
     ) external view returns (string memory res);
@@ -52,21 +52,24 @@ interface IDotnuggV1 is IDotnuggV1Storage {
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                             complex resolved processors
        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-    function dotnuggToJson(
+    function dat(
         address implementer,
-        uint256 id,
+        uint256 artifactId,
         address resolver,
+        string memory name,
+        string memory desc,
+        bool base64,
         bytes calldata data
     ) external view returns (string memory res);
 
-    function dotnuggToSvg(
+    function img(
         address implementer,
-        uint256 id,
+        uint256 artifactId,
         address resolver,
-        uint8 zoom,
         bool rekt,
-        bool base64,
+        bool background,
         bool stats,
+        bool base64,
         bytes calldata data
     ) external view returns (string memory res);
 }

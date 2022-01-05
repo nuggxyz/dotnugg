@@ -2,24 +2,10 @@
   {
     "inputs": [
       {
-        "internalType": "contract IDotnuggV1",
-        "name": "processor",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "artifactId",
-        "type": "uint256"
-      }
-    ],
-    "name": "dotnuggV1ImplementerCallback",
-    "outputs": [
+        "internalType": "uint256[]",
+        "name": "file",
+        "type": "uint256[]"
+      },
       {
         "components": [
           {
@@ -74,42 +60,77 @@
           }
         ],
         "internalType": "struct IDotnuggV1Metadata.Memory",
-        "name": "data",
+        "name": "metadata",
         "type": "tuple"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256[][]",
-        "name": "data",
-        "type": "uint256[][]"
       },
       {
-        "internalType": "uint8",
-        "name": "feature",
-        "type": "uint8"
+        "internalType": "bool",
+        "name": "rekt",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "background",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "stats",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "base64",
+        "type": "bool"
       }
     ],
-    "name": "dotnuggV1StoreFiles",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "name": "buildSvg",
+    "outputs": [
+      {
+        "internalType": "bytes",
+        "name": "res",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "pure",
     "type": "function"
   },
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "caller",
-        "type": "address"
+        "internalType": "bytes",
+        "name": "input",
+        "type": "bytes"
       }
     ],
-    "name": "dotnuggV1TrustCallback",
-    "outputs": [],
-    "stateMutability": "view",
+    "name": "svgBase64",
+    "outputs": [
+      {
+        "internalType": "bytes",
+        "name": "res",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "input",
+        "type": "bytes"
+      }
+    ],
+    "name": "svgUtf8",
+    "outputs": [
+      {
+        "internalType": "bytes",
+        "name": "res",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "pure",
     "type": "function"
   }
 ]

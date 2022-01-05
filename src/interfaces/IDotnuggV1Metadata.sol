@@ -9,19 +9,10 @@ interface IDotnuggV1Metadata {
         uint8[] yovers;
         uint256 version;
         address implementer;
-        // uint256 renderedAt;
-        // string name;
-        // string desc;
         uint256 artifactId;
-        // address owner;
         string[] labels;
-        // json data
-        string[] jsonKeys;
-        string[] jsonValues;
-        // svg styling
         string[] styles;
-        string globalStyle;
-        // extra
+        string background;
         bytes data;
     }
 }

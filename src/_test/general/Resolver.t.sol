@@ -38,7 +38,7 @@ contract ResolverTest is DotnuggV1Test {
     }
 
     // function test__Resolver__resolvString__pass() public {
-    //     string memory res = processor.dotnuggToString(dummy1Dcompressed, testData, '');
+    //     string memory res = processor.str(dummy1Dcompressed, testData, '');
 
     //     // emit log_named_string('svg', res);
     // }

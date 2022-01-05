@@ -3,44 +3,14 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "tokenId",
+        "name": "artifactId",
         "type": "uint256"
       }
     ],
-    "name": "dotnuggV1Callback",
+    "name": "dotnuggV1ImplementerCallback",
     "outputs": [
       {
         "components": [
-          {
-            "internalType": "uint256",
-            "name": "version",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "renderedAt",
-            "type": "uint256"
-          },
-          {
-            "internalType": "string",
-            "name": "name",
-            "type": "string"
-          },
-          {
-            "internalType": "string",
-            "name": "desc",
-            "type": "string"
-          },
-          {
-            "internalType": "address",
-            "name": "owner",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "tokenId",
-            "type": "uint256"
-          },
           {
             "internalType": "uint8[]",
             "name": "ids",
@@ -57,9 +27,34 @@
             "type": "uint8[]"
           },
           {
+            "internalType": "uint256",
+            "name": "version",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "implementer",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "artifactId",
+            "type": "uint256"
+          },
+          {
             "internalType": "string[]",
             "name": "labels",
             "type": "string[]"
+          },
+          {
+            "internalType": "string[]",
+            "name": "styles",
+            "type": "string[]"
+          },
+          {
+            "internalType": "string",
+            "name": "background",
+            "type": "string"
           },
           {
             "internalType": "bytes",
@@ -78,17 +73,12 @@
   {
     "inputs": [
       {
-        "internalType": "uint256[][]",
-        "name": "data",
-        "type": "uint256[][]"
-      },
-      {
-        "internalType": "uint8",
-        "name": "feature",
-        "type": "uint8"
+        "internalType": "address",
+        "name": "caller",
+        "type": "address"
       }
     ],
-    "name": "dotnuggV1StoreFiles",
+    "name": "dotnuggV1TrustCallback",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
