@@ -3,13 +3,15 @@
 pragma solidity 0.8.9;
 
 interface IDotnuggV1Storage {
-    function stored(address implementer, uint8 feature) external view returns (uint8);
+    function stored(uint8 feature) external view returns (uint8);
 
-    function store(
-        address implementer,
-        uint8 feature,
-        uint256[][] calldata data
-    ) external returns (uint8 amount);
+    function store(uint8 feature, uint256[][] calldata data) external returns (uint8 amount);
 
     function unsafeBulkStore(uint256[][][] calldata data) external;
+
+    function init(address _implementer) external;
+
+    function getBatch(uint8[] memory ids) external view returns (uint256[][] memory data);
+
+    function get(uint8 feature, uint8 pos) external view returns (uint256[] memory data);
 }

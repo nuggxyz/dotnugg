@@ -4,14 +4,20 @@ pragma solidity 0.8.9;
 
 import {IDotnuggV1} from './../interfaces/IDotnuggV1.sol';
 import {IDotnuggV1Implementer} from './../interfaces/IDotnuggV1Implementer.sol';
+import {IDotnuggV1Storage} from './../interfaces/IDotnuggV1Storage.sol';
+
 import {IDotnuggV1Metadata} from './../interfaces/IDotnuggV1Metadata.sol';
 import {GeneratedDotnuggV1LocalUploader} from '../_generated/GeneratedDotnuggV1LocalUploader.sol';
 
 contract MockDotnuggV1Implementer is IDotnuggV1Implementer, GeneratedDotnuggV1LocalUploader {
     IDotnuggV1 p;
 
-    constructor(IDotnuggV1 processor) GeneratedDotnuggV1LocalUploader(address(processor)) {
+    IDotnuggV1Storage public proxy;
+
+    constructor(IDotnuggV1 processor) {
         p = processor;
+        proxy = IDotnuggV1Storage(p.register());
+        init(address(proxy));
     }
 
     function dotnuggV1ImplementerCallback(uint256 artifactId) external view override returns (IDotnuggV1Metadata.Memory memory data) {
@@ -40,13 +46,14 @@ contract MockDotnuggV1Implementer is IDotnuggV1Implementer, GeneratedDotnuggV1Lo
 
         data.version = 1;
 
-        data.ids = dotnuggV1CallbackHelper(data.artifactId, address(p), 3);
+        data.ids = dotnuggV1CallbackHelper(artifactId, address(proxy), 3);
 
         return data;
     }
 
-    function dotnuggV1TrustCallback(address caller) external view override(GeneratedDotnuggV1LocalUploader, IDotnuggV1Implementer) {
+    function dotnuggV1TrustCallback(address caller) external view override(IDotnuggV1Implementer) returns (bool res) {
         require(caller == address(this), 'dotnuggV1TrustCallback');
+        return true;
     }
 
     // function dotnuggV1StyleCallback(uint256 artifactId, uint16 id) external pure override returns (string memory res) {}
@@ -71,6 +78,6 @@ contract MockDotnuggV1Implementer is IDotnuggV1Implementer, GeneratedDotnuggV1Lo
     // function dotnuggV1ItemCallback(uint256 artifactId) external view override returns (uint16[] memory displayed, uint16[] memory hidden) {}
 
     function dotnuggV1StoreFiles(uint256[][] calldata data, uint8 feature) external {
-        p.store(address(this), feature, data);
+        proxy.store(feature, data);
     }
 }
