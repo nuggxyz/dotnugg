@@ -17,7 +17,7 @@ import {Base64} from '../libraries/Base64.sol';
 
 import {Version} from '../types/Version.sol';
 import {Types} from '../types/Types.sol';
-import {DotnuggV1Storage} from './DotnuggV1Storage.sol';
+import {DotnuggV1StorageProxy} from './DotnuggV1StorageProxy.sol';
 import {StringCastLib} from '../libraries/StringCastLib.sol';
 
 contract DotnuggV1Lib is DotnuggV1SvgLib, DotnuggV1JsonLib {

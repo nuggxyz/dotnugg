@@ -4,12 +4,12 @@ pragma solidity 0.8.9;
 
 import {IDotnuggV1Metadata as Metadata} from './IDotnuggV1Metadata.sol';
 import {IDotnuggV1File as File} from './IDotnuggV1File.sol';
-import {IDotnuggV1Storage} from './IDotnuggV1Storage.sol';
+import {IDotnuggV1StorageProxy} from './IDotnuggV1StorageProxy.sol';
 
 interface IDotnuggV1 {
-    function register() external returns (IDotnuggV1Storage proxy);
+    function register() external returns (IDotnuggV1StorageProxy proxy);
 
-    function proxyOf(address implementer) external view returns (IDotnuggV1Storage proxy);
+    function proxyOf(address implementer) external view returns (IDotnuggV1StorageProxy proxy);
 
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                                 core processors

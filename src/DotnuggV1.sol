@@ -4,13 +4,13 @@ pragma solidity 0.8.9;
 
 import {IDotnuggV1} from './interfaces/IDotnuggV1.sol';
 import {IDotnuggV1Metadata as Metadata} from './interfaces/IDotnuggV1Metadata.sol';
-import {IDotnuggV1Storage} from './interfaces/IDotnuggV1Storage.sol';
+import {IDotnuggV1StorageProxy} from './interfaces/IDotnuggV1StorageProxy.sol';
 
 import {IDotnuggV1File as File} from './interfaces/IDotnuggV1File.sol';
 import {IDotnuggV1Resolver as Resolver} from './interfaces/IDotnuggV1Resolver.sol';
 import {IDotnuggV1Implementer as Implementer} from './interfaces/IDotnuggV1Implementer.sol';
 
-import {DotnuggV1Storage} from './core/DotnuggV1Storage.sol';
+import {DotnuggV1StorageProxy} from './core/DotnuggV1StorageProxy.sol';
 import {DotnuggV1Lib} from './core/DotnuggV1Lib.sol';
 import {MinimalProxy} from './libraries/MinimalProxy.sol';
 
@@ -25,16 +25,16 @@ contract DotnuggV1 is IDotnuggV1 {
 
     constructor() {
         lib = new DotnuggV1Lib();
-        template = address(new DotnuggV1Storage());
+        template = address(new DotnuggV1StorageProxy());
     }
 
-    function register() external override returns (IDotnuggV1Storage proxy) {
-        proxy = IDotnuggV1Storage(MinimalProxy.deploy(template, keccak256(abi.encodePacked(msg.sender))));
+    function register() external override returns (IDotnuggV1StorageProxy proxy) {
+        proxy = IDotnuggV1StorageProxy(MinimalProxy.deploy(template, keccak256(abi.encodePacked(msg.sender))));
         proxy.init(msg.sender);
     }
 
-    function proxyOf(address implementer) public view override returns (IDotnuggV1Storage proxy) {
-        proxy = IDotnuggV1Storage(MinimalProxy.compute(template, keccak256(abi.encodePacked(implementer))));
+    function proxyOf(address implementer) public view override returns (IDotnuggV1StorageProxy proxy) {
+        proxy = IDotnuggV1StorageProxy(MinimalProxy.compute(template, keccak256(abi.encodePacked(implementer))));
         require(address(proxy).code.length != 0, 'P:0');
     }
 

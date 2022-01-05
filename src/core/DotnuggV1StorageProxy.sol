@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity 0.8.9;
-import {IDotnuggV1Storage} from '../interfaces/IDotnuggV1Storage.sol';
+import {IDotnuggV1StorageProxy} from '../interfaces/IDotnuggV1StorageProxy.sol';
 import {IDotnuggV1Implementer} from '../interfaces/IDotnuggV1Implementer.sol';
 
 import {SSTORE2} from '../libraries/SSTORE2.sol';
@@ -9,7 +9,7 @@ import {SafeCastLib} from '../libraries/SafeCastLib.sol';
 
 import '../_test/utils/console.sol';
 
-contract DotnuggV1Storage is IDotnuggV1Storage {
+contract DotnuggV1StorageProxy is IDotnuggV1StorageProxy {
     using SafeCastLib for uint256;
     using SafeCastLib for uint16;
 
