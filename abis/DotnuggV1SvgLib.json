@@ -75,7 +75,7 @@
       },
       {
         "internalType": "bool",
-        "name": "stats",
+        "name": "",
         "type": "bool"
       },
       {

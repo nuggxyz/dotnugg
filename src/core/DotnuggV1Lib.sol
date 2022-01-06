@@ -30,60 +30,15 @@ contract DotnuggV1Lib is DotnuggV1SvgLib, DotnuggV1JsonLib {
     ) public view returns (uint256[] memory resp) {
         require(data.version == 1, 'V1s');
 
-        require(width <= 64 && width > 4, 'V1:SIZE');
+        // require(width <= 64 && width > 4, 'V1:SIZE');
 
-        if (width % 2 == 0) width--;
+        // if (width % 2 == 0) width--;
 
         Version.Memory[][] memory versions = parse(files, data.xovers, data.yovers);
 
-        Types.Matrix memory old = combine(8, width, versions);
-
-        // resp = compressBigMatrix(old.version.bigmatrix, old.version.data);
+        Types.Matrix memory old = Calculator.combine(8, width, versions);
 
         resp = old.version.bigmatrix;
-    }
-
-    function combine(
-        uint256 featureLen,
-        uint8 width,
-        Version.Memory[][] memory versions
-    ) internal pure returns (Types.Matrix memory) {
-        Types.Canvas memory canvas;
-        canvas.matrix = Matrix.create(width, width);
-        canvas.receivers = new Types.Anchor[](featureLen);
-
-        Types.Coordinate memory center = Types.Coordinate({a: width / 2 + 1, b: width / 2 + 1, exists: true});
-
-        Types.Rlud memory r;
-
-        for (uint8 i = 0; i < featureLen; i++) {
-            canvas.receivers[i] = Types.Anchor({coordinate: center, radii: r});
-        }
-
-        canvas.matrix.width = width;
-        canvas.matrix.height = width;
-
-        Types.Mix memory mix;
-        mix.matrix = Matrix.create(width, width);
-        mix.receivers = new Types.Anchor[](featureLen);
-
-        for (uint8 i = 0; i < versions.length; i++) {
-            if (versions[i].length > 0) {
-                Calculator.setMix(mix, versions[i], Calculator.pickVersionIndex(canvas, versions[i]));
-
-                Calculator.formatForCanvas(canvas, mix);
-
-                Calculator.postionForCanvas(canvas, mix);
-
-                Calculator.mergeToCanvas(canvas, mix);
-
-                Calculator.calculateReceivers(mix);
-
-                Calculator.updateReceivers(canvas, mix);
-            }
-        }
-
-        return canvas.matrix;
     }
 
     function parse(
@@ -179,35 +134,7 @@ contract DotnuggV1Lib is DotnuggV1SvgLib, DotnuggV1JsonLib {
         return input;
     }
 
-    // function buildSvg(
-    //     uint256[] memory file,
-    //     IDotnuggV1Metadata.Memory memory metadata,
-    //     uint8 zoom,
-    //     bool rekt,
-    //     bool back,
-    //     bool stats,
-    //     bool b64
-    // ) external pure returns (bytes memory res) {
-    //     res = DotnuggV1SvgLib.build(file, metadata, zoom, rekt, back, stats);
-
-    //     if (b64) res = svgBase64(res);
-    // }
-
-    // function buildJson(uint256[] memory file, IDotnuggV1Metadata.Memory memory metadata) external pure returns (bytes memory res) {}
-
-    function dotnuggBase64(bytes memory input) public pure returns (bytes memory res) {
-        res = abi.encodePacked(Base64.PREFIX_DOTNUGG, base64(input));
-    }
-
     function base64(bytes memory input) public pure returns (bytes memory res) {
         res = Base64._encode(input);
-    }
-
-    function uintToAscii(uint256 input) public pure returns (string memory res) {
-        res = StringCastLib.toAsciiString(input);
-    }
-
-    function uintToHex(uint256 input, uint8 length) public pure returns (string memory res) {
-        res = StringCastLib.toHexString(input, length);
     }
 }

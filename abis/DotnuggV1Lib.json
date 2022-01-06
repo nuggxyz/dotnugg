@@ -185,7 +185,7 @@
       },
       {
         "internalType": "bool",
-        "name": "stats",
+        "name": "",
         "type": "bool"
       },
       {
@@ -243,25 +243,6 @@
         "internalType": "uint256[]",
         "name": "res",
         "type": "uint256[]"
-      }
-    ],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes",
-        "name": "input",
-        "type": "bytes"
-      }
-    ],
-    "name": "dotnuggBase64",
-    "outputs": [
-      {
-        "internalType": "bytes",
-        "name": "res",
-        "type": "bytes"
       }
     ],
     "stateMutability": "pure",
@@ -475,49 +456,6 @@
         "internalType": "bytes",
         "name": "res",
         "type": "bytes"
-      }
-    ],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "input",
-        "type": "uint256"
-      }
-    ],
-    "name": "uintToAscii",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "res",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "pure",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "input",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint8",
-        "name": "length",
-        "type": "uint8"
-      }
-    ],
-    "name": "uintToHex",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "res",
-        "type": "string"
       }
     ],
     "stateMutability": "pure",
