@@ -16,10 +16,49 @@ library Calculator {
     using Matrix for Types.Matrix;
     using Pixel for uint256;
 
-    /**
-     * @notice
-     * @devg
-     */
+    function combine(
+        uint256 featureLen,
+        uint8 width,
+        Version.Memory[][] memory versions
+    ) internal pure returns (Types.Matrix memory) {
+        Types.Canvas memory canvas;
+        canvas.matrix = Matrix.create(width, width);
+        canvas.receivers = new Types.Anchor[](featureLen);
+
+        Types.Coordinate memory center = Types.Coordinate({a: width / 2 + 1, b: width / 2 + 1, exists: true});
+
+        Types.Rlud memory r;
+
+        for (uint8 i = 0; i < featureLen; i++) {
+            canvas.receivers[i] = Types.Anchor({coordinate: center, radii: r});
+        }
+
+        canvas.matrix.width = width;
+        canvas.matrix.height = width;
+
+        Types.Mix memory mix;
+        mix.matrix = Matrix.create(width, width);
+        mix.receivers = new Types.Anchor[](featureLen);
+
+        for (uint8 i = 0; i < versions.length; i++) {
+            if (versions[i].length > 0) {
+                Calculator.setMix(mix, versions[i], Calculator.pickVersionIndex(canvas, versions[i]));
+
+                Calculator.formatForCanvas(canvas, mix);
+
+                Calculator.postionForCanvas(canvas, mix);
+
+                Calculator.mergeToCanvas(canvas, mix);
+
+                Calculator.calculateReceivers(mix);
+
+                Calculator.updateReceivers(canvas, mix);
+            }
+        }
+
+        return canvas.matrix;
+    }
+
     function postionForCanvas(Types.Canvas memory canvas, Types.Mix memory mix) internal pure {
         Types.Anchor memory receiver = canvas.receivers[mix.feature];
         Types.Anchor memory anchor = mix.version.anchor;
@@ -32,10 +71,6 @@ library Calculator {
         canvas.matrix.moveTo(mix.xoffset, mix.yoffset, mix.matrix.width, mix.matrix.height);
     }
 
-    /**
-     * @notice
-     * @dev
-     */
     function formatForCanvas(Types.Canvas memory canvas, Types.Mix memory mix) internal pure {
         Types.Anchor memory receiver = canvas.receivers[mix.feature];
         Types.Anchor memory anchor = mix.version.anchor;

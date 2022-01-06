@@ -60,7 +60,7 @@ contract DotnuggV1JsonLib {
         bytes memory value,
         bool comma
     ) internal pure returns (bytes memory res) {
-        res = abi.encodePacked('"', key, '": {', value, '}', comma ? ',' : '');
+        res = abi.encodePacked('"', key, '":{', value, '}', comma ? ',' : '');
     }
 
     function kv(
@@ -68,6 +68,6 @@ contract DotnuggV1JsonLib {
         string memory value,
         bool comma
     ) internal pure returns (bytes memory res) {
-        res = abi.encodePacked('"', key, '": "', value, '"', comma ? ',' : '');
+        res = abi.encodePacked('"', key, '":"', value, '"', comma ? ',' : '');
     }
 }

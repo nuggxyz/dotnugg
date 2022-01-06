@@ -37,7 +37,7 @@ contract DotnuggV1SvgLib {
         // uint256 zoom,
         bool rekt,
         bool background,
-        bool stats,
+        bool,
         bool base64
     ) external pure returns (bytes memory res) {
         // styles[0] = '{filter: drop-shadow( 3px 3px 2px rgba(0, 0, 0, .7));}';
@@ -95,9 +95,9 @@ contract DotnuggV1SvgLib {
             body = abi.encodePacked(stylee, ']]></style>', body);
         }
 
-        if (stats) {
-            body = abi.encodePacked(body, getMetadata(metadata));
-        }
+        // if (stats) {
+        //     body = abi.encodePacked(body, getMetadata(metadata));
+        // }
 
         res = abi.encodePacked(header, '>', body, hex'3c2f7376673e');
 
@@ -194,42 +194,42 @@ contract DotnuggV1SvgLib {
         }
     }
 
-    function getMetadata(IDotnuggV1Metadata.Memory memory data) internal pure returns (bytes memory res) {
-        res = abi.encodePacked(
-            '<text x="10" y="20" font-family="monospace" font-size="20px" style="fill:black;">Metadata:',
-            // getTspan(45, 0, 'name', data.name),
-            // getTspan(75, 0, 'description', data.desc),
-            // getTspan(105, 0, 'id', data.tokenId.toAsciiString()),
-            // getTspan(135, 0, 'owner', data.owner.toHexString()),
-            getTspan(165, 0, 'items', '')
-        );
+    // function getMetadata(IDotnuggV1Metadata.Memory memory data) internal pure returns (bytes memory res) {
+    //     res = abi.encodePacked(
+    //         '<text x="10" y="20" font-family="monospace" font-size="20px" style="fill:black;">Metadata:',
+    //         // getTspan(45, 0, 'name', data.name),
+    //         // getTspan(75, 0, 'description', data.desc),
+    //         // getTspan(105, 0, 'id', data.tokenId.toAsciiString()),
+    //         // getTspan(135, 0, 'owner', data.owner.toHexString()),
+    //         getTspan(165, 0, 'items', '')
+    //     );
 
-        for (uint256 i = 0; i < 8; i++) {
-            if (data.ids[i] > 0) {
-                res = abi.encodePacked(res, getTspan(195 + i * 30, 20, data.labels[i], data.ids[i].toAsciiString()));
-            }
-        }
+    //     for (uint256 i = 0; i < 8; i++) {
+    //         if (data.ids[i] > 0) {
+    //             res = abi.encodePacked(res, getTspan(195 + i * 30, 20, data.labels[i], data.ids[i].toAsciiString()));
+    //         }
+    //     }
 
-        res = abi.encodePacked(res, '</text>');
-    }
+    //     res = abi.encodePacked(res, '</text>');
+    // }
 
-    function getTspan(
-        uint256 y,
-        uint256 xoffset,
-        string memory label,
-        string memory data
-    ) internal pure returns (bytes memory res) {
-        res = abi.encodePacked(
-            '<tspan x="',
-            (10 + xoffset).toAsciiString(),
-            '" y="',
-            y.toAsciiString(),
-            '">',
-            '<tspan style="font-weight:bold;">',
-            label,
-            ':</tspan> ',
-            data,
-            '</tspan>'
-        );
-    }
+    // function getTspan(
+    //     uint256 y,
+    //     uint256 xoffset,
+    //     string memory label,
+    //     string memory data
+    // ) internal pure returns (bytes memory res) {
+    //     res = abi.encodePacked(
+    //         '<tspan x="',
+    //         (10 + xoffset).toAsciiString(),
+    //         '" y="',
+    //         y.toAsciiString(),
+    //         '">',
+    //         '<tspan style="font-weight:bold;">',
+    //         label,
+    //         ':</tspan> ',
+    //         data,
+    //         '</tspan>'
+    //     );
+    // }
 }
