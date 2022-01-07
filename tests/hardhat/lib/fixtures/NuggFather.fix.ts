@@ -1,5 +1,5 @@
 import { Fixture, MockProvider } from 'ethereum-waffle';
-import { BigNumber, Wallet } from 'ethers';
+import { BigNumber, Contract, Wallet } from 'ethers';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 
 import { getHRE } from '../shared/deployment';
@@ -8,6 +8,7 @@ import { DotnuggV1__factory } from '../../../../typechain/factories/DotnuggV1__f
 import { DotnuggV1 } from '../../../../typechain/DotnuggV1';
 import { MockDotnuggV1Implementer__factory } from '../../../../typechain/factories/MockDotnuggV1Implementer__factory';
 import { MockDotnuggV1Implementer } from '../../../../typechain/MockDotnuggV1Implementer';
+import { DotnuggV1StorageProxy__factory, IDotnuggV1StorageProxy } from '../../../../typechain';
 
 export interface NuggFatherFixture {
     // holder: MockDotNuggHolder;
@@ -50,26 +51,34 @@ export const NuggFatherFix: Fixture<NuggFatherFixture> = async function (
         args: [processor.address],
     });
 
-    const t1 = await processor
-        .connect(eoaDeployer)
-        .unsafeBulkStore([
-            hre.dotnugg.itemsByFeatureByIdArray[0],
-            hre.dotnugg.itemsByFeatureByIdArray[1],
-            hre.dotnugg.itemsByFeatureByIdArray[2],
-            hre.dotnugg.itemsByFeatureByIdArray[3],
-            hre.dotnugg.itemsByFeatureByIdArray[4],
-            hre.dotnugg.itemsByFeatureByIdArray[5],
-            hre.dotnugg.itemsByFeatureByIdArray[6],
-            hre.dotnugg.itemsByFeatureByIdArray[7],
-        ]);
+    const dotnuggV1StorageProxy = new Contract(
+        await implementer.dotnuggV1StorageProxy(),
+        DotnuggV1StorageProxy__factory.abi,
+        eoaDeployer,
+    ) as unknown as IDotnuggV1StorageProxy;
 
-    console.log(t1.data);
-    // await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[1], 1);
-    // await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[2], 2);
-    // await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[3], 3);
-    // await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[4], 4);
-    // await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[5], 5);
-    // await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[6], 6);
+    // const t1 = await implementer
+    //     .connect(eoaDeployer)
+    //     .([
+    //         hre.dotnugg.itemsByFeatureByIdArray[0],
+    //         hre.dotnugg.itemsByFeatureByIdArray[1],
+    //         hre.dotnugg.itemsByFeatureByIdArray[2],
+    //         hre.dotnugg.itemsByFeatureByIdArray[3],
+    //         hre.dotnugg.itemsByFeatureByIdArray[4],
+    //         hre.dotnugg.itemsByFeatureByIdArray[5],
+    //         hre.dotnugg.itemsByFeatureByIdArray[6],
+    //         hre.dotnugg.itemsByFeatureByIdArray[7],
+    //     ]);
+
+    await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[0], 0);
+    await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[1], 1);
+    await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[2], 2);
+    await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[3], 3);
+    await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[4], 4);
+    await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[5], 5);
+    await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[6], 6);
+
+    await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[7], 7);
 
     // const t1 = await implementer.connect(eoaDeployer).dotnuggV1StoreFiles(hre.dotnugg.itemsByFeatureByIdArray[0], 0);
 

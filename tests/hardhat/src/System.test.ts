@@ -5,7 +5,7 @@ import { constants } from 'ethers';
 import { NamedAccounts } from '../../../hardhat.config';
 import { NuggFatherFix, NuggFatherFixture } from '../lib/fixtures/NuggFather.fix';
 
-import { prepareAccounts } from './';
+import { prepareAccounts } from '.';
 
 // import { getHRE } from './shared/deployment';
 const createFixtureLoader = waffle.createFixtureLoader;
@@ -110,15 +110,25 @@ describe('uint tests', async function () {
             // };
             //
             // todo 21 has a problem
+            // const RAND_INDEXS = {
+            //     BASE: 1,
+            //     BACK: 3,
+            //     EYES: 41,
+            //     MOUT: 19,
+            //     HEAD: 20,
+            //     HAIR: 15,
+            //     NECK: 20,
+            //     HOLD: 4,
+            // };
+
             const RAND_INDEXS = {
-                BASE: 1,
-                BACK: 3,
-                EYES: 41,
-                MOUT: 19,
-                HEAD: 20,
-                HAIR: 15,
-                NECK: 20,
-                HOLD: 4,
+                BASE: 2,
+                EYES: 2,
+                MOUT: 15,
+                HAIR: 17,
+                // HEAD: 0,
+                BACK: 11,
+                NECK: 5,
             };
 
             console.log('const RAND_INDEXS = ');
