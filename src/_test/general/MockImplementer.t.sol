@@ -19,7 +19,7 @@ contract MockImplementerTest is DotnuggV1Test {
 
     function test__MockImplementer__processorReceivedFiles__pass() public {
         MockDotnuggV1Implementer impl = new MockDotnuggV1Implementer(processor);
-
+        impl.afterConstructor();
         for (uint8 i = 0; i < 8; i++) {
             uint8 res = impl.dotnuggV1StorageProxy().stored(i);
             emit log_named_uint('[i]', res);

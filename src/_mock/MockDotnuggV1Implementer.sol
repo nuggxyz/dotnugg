@@ -9,14 +9,18 @@ import {IDotnuggV1StorageProxy} from './../interfaces/IDotnuggV1StorageProxy.sol
 import {IDotnuggV1Metadata} from './../interfaces/IDotnuggV1Metadata.sol';
 import {GeneratedDotnuggV1LocalUploader} from '../_generated/GeneratedDotnuggV1LocalUploader.sol';
 
-contract MockDotnuggV1Implementer is IDotnuggV1Implementer, GeneratedDotnuggV1LocalUploader {
+contract MockDotnuggV1Implementer is GeneratedDotnuggV1LocalUploader, IDotnuggV1Implementer {
     IDotnuggV1 p;
 
-    IDotnuggV1StorageProxy public override dotnuggV1StorageProxy;
+    IDotnuggV1StorageProxy public dotnuggV1StorageProxy;
 
     constructor(IDotnuggV1 processor) {
         p = processor;
         dotnuggV1StorageProxy = IDotnuggV1StorageProxy(p.register());
+        // init(address(dotnuggV1StorageProxy));
+    }
+
+    function afterConstructor() public {
         init(address(dotnuggV1StorageProxy));
     }
 
@@ -51,7 +55,12 @@ contract MockDotnuggV1Implementer is IDotnuggV1Implementer, GeneratedDotnuggV1Lo
         return data;
     }
 
-    function dotnuggV1TrustCallback(address caller) external view override(IDotnuggV1Implementer) returns (bool res) {
+    function dotnuggV1StoreCallback(
+        address caller,
+        uint8 feature,
+        uint8 amount,
+        address storagePointer
+    ) external view override(IDotnuggV1Implementer) returns (bool res) {
         require(caller == address(this), 'dotnuggV1TrustCallback');
         return true;
     }
