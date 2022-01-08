@@ -28,3 +28,4 @@ src/_generated
 _tmp
 
 abis
+hardhat/cache

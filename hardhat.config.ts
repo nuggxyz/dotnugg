@@ -24,13 +24,15 @@ import { utils } from 'ethers';
 import { removeConsoleLog } from 'hardhat-preprocessor';
 import { HardhatUserConfig, NetworksUserConfig, NetworkUserConfig } from 'hardhat/types';
 
+import { toGwei } from './hardhat/utils/conversion';
+
 dotenvConfig({ path: resolve(__dirname, '.env') });
 
 export const GAS_PRICE = utils.parseUnits('15', 'gwei');
 
 export const NamedAccounts = {
-    main: { default: 0 },
-    dev: { default: 1 },
+    __trusted: { default: 0 },
+    __special: { default: 1 },
     charile: { default: 2 },
     frank: { default: 3 },
     mac: { default: 4 },
@@ -48,9 +50,7 @@ export const NetworkTags = {
 };
 
 const DefaultNetworkConfig: NetworkUserConfig = {
-    accounts: {
-        mnemonic: process.env.UNSAFE_PRIVATE_MNEMONIC,
-    },
+    accounts: [process.env.TRUSTED_PRIV_KEY, process.env.SPECIAL_PRIV_KEY],
 };
 
 const DefaultLocalNetworkConfig = {
@@ -60,6 +60,16 @@ const DefaultLocalNetworkConfig = {
         mnemonic: 'many dark suns glow like gods fury when they eats that nugg',
         accountsBalance: '990000000000000000000',
     },
+    // accounts: [
+    //     {
+    //         privateKey: process.env.TRUSTED_PRIV_KEY,
+    //         balance: '990000000000000000000',
+    //     },
+    //     {
+    //         privateKey: process.env.SPECIAL_PRIV_KEY,
+    //         balance: '990000000000000000000',
+    //     },
+    // ],
 };
 
 const DefaultStageNetworkConfig = {
@@ -79,15 +89,25 @@ const LocalNetworks: NetworksUserConfig = {
     hardhat: {
         ...DefaultLocalNetworkConfig,
         allowUnlimitedContractSize: true,
-        forking: {
-            enabled: false,
-            url: `https://ropsten.infura.io/v3/${process.env.INFURA_API_KEY}` || '',
-        },
-        loggingEnabled: false,
+        // forking: {
+        //     enabled: false,
+        //     url: `https://ropsten.infura.io/v3/${process.env.INFURA_API_KEY}` || '',
+        // },
+        // loggingEnabled: false,
         gas: 10000000000,
         blockGasLimit: 10000000000000,
         gasPrice: parseInt(GAS_PRICE.toString(), 10),
         saveDeployments: false,
+        accounts: [
+            {
+                privateKey: process.env.TRUSTED_PRIV_KEY,
+                balance: '990000000000000000000',
+            },
+            {
+                privateKey: process.env.SPECIAL_PRIV_KEY,
+                balance: '0',
+            },
+        ],
     },
 };
 
@@ -96,68 +116,25 @@ const StagingNetworks: NetworksUserConfig = {
         ...DefaultStageNetworkConfig,
         url: `https://ropsten.infura.io/v3/${process.env.INFURA_API_KEY}`,
         chainId: 3,
-        gasPrice: parseInt(utils.parseUnits('20', 'gwei').toString(), 10),
+        gasPrice: toGwei('4.9').toNumber(),
     },
     rinkeby: {
         ...DefaultStageNetworkConfig,
         url: `https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`,
         chainId: 4,
+        gasPrice: toGwei('4.9').toNumber(),
     },
     goerli: {
         ...DefaultStageNetworkConfig,
         url: `https://goerli.infura.io/v3/${process.env.INFURA_API_KEY}`,
         chainId: 5,
+        gasPrice: toGwei('4.9').toNumber(),
     },
     kovan: {
         ...DefaultStageNetworkConfig,
         url: `https://kovan.infura.io/v3/${process.env.INFURA_API_KEY}`,
         chainId: 42,
-    },
-    'moonbase-alphanet': {
-        ...DefaultStageNetworkConfig,
-        url: 'https://rpc.testnet.moonbeam.network',
-        chainId: 1287,
-    },
-
-    'poloygon-mumbia': {
-        ...DefaultStageNetworkConfig,
-        url: `https://polygon-mumbai.infura.io/v3/${process.env.INFURA_API_KEY}`,
-        chainId: 80001,
-    },
-    chapel: {
-        ...DefaultStageNetworkConfig,
-        url: `https://data-seed-prebsc-1-s1.binance.org:8545`,
-        chainId: 97,
-    },
-    'arbitrum-testnet': {
-        ...DefaultStageNetworkConfig,
-        url: 'https://kovan3.arbitrum.io/rpc',
-        chainId: 79377087078960,
-    },
-    'heco-testnet': {
-        ...DefaultStageNetworkConfig,
-        url: 'https://http-testnet.hecochain.com',
-        chainId: 256,
-    },
-    fuji: {
-        ...DefaultStageNetworkConfig,
-        url: 'https://api.avax-test.network/ext/bc/C/rpc',
-        chainId: 43113,
-    },
-    'harmony-testnet': {
-        ...DefaultStageNetworkConfig,
-        url: 'https://api.s0.b.hmny.io',
-        chainId: 1666700000,
-    },
-    'okex-testnet': {
-        ...DefaultStageNetworkConfig,
-        url: 'https://exchaintestrpc.okex.org',
-        chainId: 65,
-    },
-    'fantom-testnet': {
-        ...DefaultStageNetworkConfig,
-        url: 'https://rpc.testnet.fantom.network',
-        chainId: 4002,
+        gasPrice: toGwei('4.9').toNumber(),
     },
 };
 
@@ -165,55 +142,8 @@ const ProductionNetworks: NetworksUserConfig = {
     mainnet: {
         ...DefaultProductionNetworkConfig,
         url: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
-        gasPrice: 120 * 1000000000,
+        gasPrice: toGwei('40').toNumber(),
         chainId: 1,
-    },
-    bsc: {
-        ...DefaultProductionNetworkConfig,
-        url: process.env.BSC_NODE ? process.env.BSC_NODE : `https://bsc-dataseed.binance.org:443`,
-        chainId: 56,
-    },
-    polygon: {
-        ...DefaultProductionNetworkConfig,
-        url: `https://polygon-mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
-        chainId: 137,
-    },
-    fantom: {
-        ...DefaultProductionNetworkConfig,
-        url: 'https://rpcapi.fantom.network',
-        chainId: 250,
-    },
-    xdai: {
-        ...DefaultProductionNetworkConfig,
-        url: 'https://rpc.xdaichain.com',
-        chainId: 100,
-    },
-    heco: {
-        ...DefaultProductionNetworkConfig,
-        url: 'https://http-mainnet.hecochain.com',
-        chainId: 128,
-    },
-    avalanche: {
-        ...DefaultProductionNetworkConfig,
-        url: 'https://api.avax.network/ext/bc/C/rpc',
-        chainId: 43114,
-        gasPrice: 470000000000,
-    },
-    harmony: {
-        ...DefaultProductionNetworkConfig,
-        url: 'https://api.s0.t.hmny.io',
-        chainId: 1666600000,
-    },
-    okex: {
-        ...DefaultProductionNetworkConfig,
-        url: 'https://exchainrpc.okex.org',
-        chainId: 66,
-    },
-    arbitrum: {
-        ...DefaultProductionNetworkConfig,
-        url: 'https://arb1.arbitrum.io/rpc',
-        chainId: 42161,
-        blockGasLimit: 700000,
     },
 };
 const HardhatConfig: HardhatUserConfig = {
@@ -230,10 +160,12 @@ const HardhatConfig: HardhatUserConfig = {
         timeout: 20000 * 6,
     },
     paths: {
-        artifacts: 'artifacts',
-        cache: 'cache',
+        artifacts: './hardhat/artifacts',
+        cache: './hardhat/cache',
         sources: 'src',
-        tests: 'tests',
+        tests: './hardhat/tests',
+        deploy: './hardhat/deploy',
+        deployments: './hardhat/deployments',
     },
     solidity: {
         compilers: [
@@ -243,33 +175,6 @@ const HardhatConfig: HardhatUserConfig = {
                     optimizer: {
                         enabled: true,
                         runs: 1000000,
-                    },
-                },
-            },
-            {
-                version: '0.6.12',
-                settings: {
-                    optimizer: {
-                        enabled: true,
-                        runs: 200,
-                    },
-                },
-            },
-            {
-                version: '0.6.8',
-                settings: {
-                    optimizer: {
-                        enabled: true,
-                        runs: 200,
-                    },
-                },
-            },
-            {
-                version: '0.7.6',
-                settings: {
-                    optimizer: {
-                        enabled: true,
-                        runs: 800,
                     },
                 },
             },
@@ -290,10 +195,10 @@ const HardhatConfig: HardhatUserConfig = {
         eachLine: removeConsoleLog((bre) => bre.network.name !== 'hardhat' && bre.network.name !== 'localhost'),
     },
     abiExporter: {
-        path: './abis',
+        path: './hardhat/abis',
         clear: true,
         flat: true,
-        only: [],
+        only: ['NuggftV1', 'DotnuggV1'],
         spacing: 2,
     },
     contractSizer: {
