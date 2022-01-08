@@ -50,6 +50,8 @@ contract DotnuggV1Test is t {
 
         implementer = new MockDotnuggV1Implementer(processor);
 
+        implementer.afterConstructor();
+
         _implementer = address(implementer);
 
         assertTrue(implementer.dotnuggV1StorageProxy().stored(0) > 0);

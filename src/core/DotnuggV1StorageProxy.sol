@@ -17,11 +17,6 @@ contract DotnuggV1StorageProxy is IDotnuggV1StorageProxy {
 
     address public implementer;
 
-    modifier requiresTrust() {
-        require(IDotnuggV1Implementer(implementer).dotnuggV1TrustCallback(msg.sender), 'C:0');
-        _;
-    }
-
     constructor() {
         dotnuggv1 = msg.sender;
     }
@@ -44,26 +39,35 @@ contract DotnuggV1StorageProxy is IDotnuggV1StorageProxy {
        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
     function unsafeBulkStore(uint256[][][] calldata data) public override {
-        require(msg.sender == implementer);
         for (uint8 i = 0; i < 8; i++) {
             uint8 len = data[i].length.safe8();
 
-            require(len > 0, 'F:0');
+            if (len > 0) {
+                address ptr = SSTORE2.write(data[i]);
 
-            address ptr = SSTORE2.write(data[i]);
+                bool ok = IDotnuggV1Implementer(implementer).dotnuggV1StoreCallback(msg.sender, i, len, ptr);
 
-            sstore2Pointers[i].push(uint168(uint160(ptr)) | (uint168(len) << 160));
+                require(ok, 'C:0');
 
-            featureLengths[i] += len;
+                sstore2Pointers[i].push(uint168(uint160(ptr)) | (uint168(len) << 160));
+
+                featureLengths[i] += len;
+            }
         }
     }
 
-    function store(uint8 feature, uint256[][] calldata data) public override requiresTrust returns (uint8 res) {
+    function store(uint8 feature, uint256[][] calldata data) public override returns (uint8 res) {
+        require(feature < 8, 'F:3');
+
         uint8 len = data.length.safe8();
 
         require(len > 0, 'F:0');
 
         address ptr = SSTORE2.write(data);
+
+        bool ok = IDotnuggV1Implementer(implementer).dotnuggV1StoreCallback(msg.sender, feature, len, ptr);
+
+        require(ok, 'C:0');
 
         sstore2Pointers[feature].push(uint168(uint160(ptr)) | (uint168(len) << 160));
 
