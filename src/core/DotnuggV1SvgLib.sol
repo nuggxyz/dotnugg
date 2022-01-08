@@ -46,13 +46,18 @@ contract DotnuggV1SvgLib {
                                     header
            ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
+        string memory __63 = uint256(63).toAsciiString();
+
         bytes memory header = abi.encodePacked(
             '<svg',
-            ' viewbox="0 0 ',
-            uint256(63).toAsciiString(),
+            ' viewBox="0 0 ',
+            __63,
             ' ',
-            uint256(63).toAsciiString(),
-            '" version="1.2" baseProfile="tiny" xmlns="http://www.w3.org/2000/svg" overflow="visible" xml:space="preserve"'
+            __63,
+            // '" height="',
+            // __63,
+            // '" width="',
+            '" xmlns="http://www.w3.org/2000/svg"'
         );
 
         if (background) {
