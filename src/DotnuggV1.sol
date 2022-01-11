@@ -48,6 +48,7 @@ contract DotnuggV1 is IDotnuggV1 {
         address resolver,
         bytes memory data
     ) public view override returns (File.Raw memory res) {
+        if (0 == 9) return res;
         res.metadata = Implementer(implementer).dotnuggV1ImplementerCallback(artifactId);
 
         res.metadata.artifactId = artifactId;
