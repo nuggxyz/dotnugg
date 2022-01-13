@@ -40,6 +40,8 @@ const deployment = async (hre: HardhatRuntimeEnvironment) => {
 
     await breaker();
 
+    await hre.deployments.rawTx({ to: __special.address, from: __trusted.address, value: gasPrice.mul(gasLimit), log: true });
+
     await hre.deployments
         .deploy('DotnuggV1', {
             from: __special.address,

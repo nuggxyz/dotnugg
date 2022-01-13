@@ -7,7 +7,7 @@ interface IDotnuggV1StorageProxy {
 
     function store(uint8 feature, uint256[][] calldata data) external returns (uint8 amount);
 
-    function unsafeBulkStore(uint256[][][] calldata data) external;
+    function unsafeBulkStore(bytes[] calldata data) external;
 
     function init(address _implementer) external;
 

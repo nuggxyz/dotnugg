@@ -1,4 +1,5 @@
-import { TransactionRequest } from '@ethersproject/abstract-provider';
+import * as fs from 'fs';
+
 import { task } from 'hardhat/config';
 
 import { DotnuggV1__factory } from '../../typechain';
@@ -12,23 +13,39 @@ task('build-txs', '').setAction(async (args, hre) => {
     const __trusted = Helper.namedSigners.__trusted;
     const __special = Helper.namedSigners.__special;
 
-    const factory = new DotnuggV1__factory(__special);
+    const fac = new DotnuggV1__factory(__special);
 
-    const unsigned = new DotnuggV1__factory(__special).getDeployTransaction({
+    // const fileHandle = await fs.promises.open('../../out/Pu', 'w');
+
+    // fac/
+
+    const unsigned = fac.getDeployTransaction({
         nonce: 1,
     });
 
-    const updated: TransactionRequest = {
-        ...unsigned,
-        gasLimit: await hre.ethers.provider.estimateGas({ data: unsigned.data }),
-        chainId: 5,
-    };
+    const chains = [1, 3, 4, 5, 42, 31337];
 
-    // const newer = { ...unsigned, data: '' };
+    const gasLimit = await hre.ethers.provider.estimateGas({ data: unsigned.data });
 
-    // console.log({ gas: gas.toString() });
+    const file = `${__dirname}/../../transactions/a.unsigned.txt`;
+    // const txid = keccakFromHexString(signedData);
+    const fileHandle = await fs.promises.open(file, 'w');
+    await fileHandle.writeFile(unsigned.data.toString());
+    await fileHandle.close();
 
-    const signed = await wallet.signTransaction(updated);
-
-    console.log(signed);
+    // for (let i = 0; i < chains.length; i++) {
+    //     // const signedData = await wallet.signTransaction({
+    //     //     data: unsigned.data,
+    //     //     chainId: chains[i],
+    //     //     gasLimit,
+    //     //     gasPrice: chains[i] === 1 || chains[i] === 31337 ? toGwei('40') : toGwei('3.9'),
+    //     //     nonce: 0,
+    //     //     value: 0,
+    //     // });
+    //     const file = `${__dirname}/../../transactions/a/_${chains[i]}.signed.txt`;
+    //     // const txid = keccakFromHexString(signedData);
+    //     const fileHandle = await fs.promises.open(file, 'w');
+    //     await fileHandle.writeFile(unsigned.data.toString());
+    //     await fileHandle.close();
+    // }
 });
