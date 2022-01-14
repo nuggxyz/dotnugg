@@ -42,8 +42,12 @@ library Version {
             uint256 color;
 
             uint256 selecta = reader.select(1);
+            uint256 selectb = reader.select(1);
+
             if (selecta == 1) {
                 color = 0x000000;
+            } else if (selectb == 1) {
+                color = 0xffffff;
             } else {
                 uint256 r = reader.select(8);
                 uint256 g = reader.select(8);
