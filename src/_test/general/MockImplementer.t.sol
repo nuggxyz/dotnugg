@@ -18,19 +18,19 @@ contract MockImplementerTest is DotnuggV1Test {
     }
 
     function test__MockImplementer__processorReceivedFiles__pass() public {
-        MockDotnuggV1Implementer impl = new MockDotnuggV1Implementer(processor);
-        impl.afterConstructor();
+        // MockDotnuggV1Implementer impl = new MockDotnuggV1Implementer(processor);
+        // impl.afterConstructor();
         for (uint8 i = 0; i < 8; i++) {
-            uint8 res = impl.dotnuggV1StorageProxy().stored(i);
+            uint8 res = implementer.dotnuggV1StorageProxy().stored(i);
             emit log_named_uint('[i]', res);
             assertTrue(res > 0);
         }
         //76
 
         for (uint256 i = 300; i < 301; i++) {
-            string memory res = processor.img(address(impl), i, address(processor), false, true, false, false, '');
+            string memory res = processor.img(address(implementer), i, address(processor), false, true, false, false, '');
 
-            string memory resJson = processor.dat(address(impl), i, address(processor), 'NuggftV1', 'Nugg Fungible Token V1', false, '');
+            string memory resJson = processor.dat(address(implementer), i, address(processor), 'NuggftV1', 'Nugg Fungible Token V1', false, '');
 
             emit log_string(res);
             emit log_string(resJson);

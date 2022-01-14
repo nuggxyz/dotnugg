@@ -44,7 +44,7 @@ contract DotnuggV1StorageProxy is IDotnuggV1StorageProxy {
     }
 
     // Mapping from token ID to owner address
-    mapping(uint8 => uint200[]) sstore2Pointers;
+    mapping(uint8 => uint168[]) sstore2Pointers;
     mapping(uint8 => uint8) featureLengths;
 
     function stored(uint8 feature) public view override returns (uint8 res) {
@@ -73,66 +73,6 @@ contract DotnuggV1StorageProxy is IDotnuggV1StorageProxy {
             }
         }
     }
-
-    // function unsafeBulkStore(uint256[][][] calldata data) public override {
-    //     uint256[] memory tmpPointers = new uint256[](8);
-
-    //     for (uint8 i = 0; i < 8; i++) {
-    //         // uint8 len = data[i].length.safe8();
-
-    //         address ptr;
-
-    //         bytes memory buffer;
-
-    //         uint8 count;
-
-    //         while (i < 8) {
-    //             data[i].length.safe8();
-
-    //             bytes memory enc = abi.encode(data[i]);
-    //             // bytes memory tmp = bytes.concat(buffer, abi.encode(data[i]));
-    //             require(enc.length <= 23000, 'U:2');
-
-    //             if (buffer.length + enc.length <= 23000) {
-    //                 uint256 start = buffer.length.safe16();
-    //                 buffer = bytes.concat(buffer, enc);
-    //                 uint256 end = buffer.length.safe16();
-    //                 tmpPointers[i] = (start << 16) | (end);
-    //                 count++;
-
-    //                 if (i < 8) {
-    //                     i++;
-    //                     continue;
-    //                 } else {
-    //                     break;
-    //                 }
-    //             }
-    //             i--;
-    //             break;
-    //         }
-
-    //         // if (len > 0) {
-    //         ptr = SSTORE2.write(buffer);
-
-    //         for (uint8 j = (i + 1) - count; j < count; j++) {
-    //             uint8 len = uint8(data[j].length);
-
-    //             bool ok = IDotnuggV1Implementer(implementer).dotnuggV1StoreCallback(msg.sender, j, len, ptr);
-
-    //             require(ok, 'C:0');
-
-    //             uint256 fin = tmpPointers[j];
-
-    //             fin |= uint160(ptr);
-
-    //             sstore2Pointers[j].push((uint200(fin) << 168) | (uint200(len) << 160) | uint200(uint160(ptr)));
-
-    //             featureLengths[j] += len;
-    //         }
-
-    //         // }
-    //     }
-    // }
 
     function store(uint8 feature, uint256[][] calldata data) public override returns (uint8 res) {
         require(feature < 8, 'F:3');
@@ -176,22 +116,17 @@ contract DotnuggV1StorageProxy is IDotnuggV1StorageProxy {
 
         require(pos < totalLength, 'F:2');
 
-        uint200[] memory ptrs = sstore2Pointers[feature];
+        uint168[] memory ptrs = sstore2Pointers[feature];
 
-        address stor;
+        uint168 stor;
         uint8 storePos;
-
-        // uint16 start;
-        // uint16 end;
 
         uint8 workingPos;
 
         for (uint256 i = 0; i < ptrs.length; i++) {
             uint8 here = uint8(ptrs[i] >> 160);
             if (workingPos + here > pos) {
-                // start = uint16(ptrs[i] >> 200);
-                // end = uint16((ptrs[i] >> 168));
-                stor = address(uint160(ptrs[i]));
+                stor = ptrs[i];
                 storePos = pos - workingPos;
                 break;
             } else {
@@ -199,8 +134,8 @@ contract DotnuggV1StorageProxy is IDotnuggV1StorageProxy {
             }
         }
 
-        require(stor != address(0), 'F:3');
+        require(stor != 0, 'F:3');
 
-        data = SSTORE2.read2DArray(stor, storePos);
+        data = SSTORE2.read(stor, storePos);
     }
 }
