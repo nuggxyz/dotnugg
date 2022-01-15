@@ -9,8 +9,6 @@ import {Hevm, ForgeVm} from './Vm.sol';
 contract DSTestExtended is DSTest {
     Hevm internal constant hevm = Hevm(HEVM_ADDRESS);
 
-    ForgeVm internal constant fvm = ForgeVm(HEVM_ADDRESS);
-
     address internal constant DEAD_ADDRESS = 0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF;
 
     modifier changeInBalance96(address target, int192 change) {

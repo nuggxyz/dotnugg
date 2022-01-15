@@ -55,10 +55,10 @@ const DefaultNetworkConfig: NetworkUserConfig = {
 const DefaultLocalNetworkConfig = {
     live: false,
     saveDeployments: true,
-    accounts: {
-        mnemonic: 'many dark suns glow like gods fury when they eats that nugg',
-        accountsBalance: '990000000000000000000',
-    },
+    // accounts: {
+    //     mnemonic: 'many dark suns glow like gods fury when they eats that nugg',
+    //     accountsBalance: '990000000000000000000',
+    // },
     // accounts: [
     //     {
     //         privateKey: process.env.TRUSTED_PRIV_KEY,
@@ -97,16 +97,16 @@ const LocalNetworks: NetworksUserConfig = {
         blockGasLimit: 10000000000000,
         gasPrice: parseInt(GAS_PRICE.toString(), 10),
         saveDeployments: false,
-        // accounts: [
-        //     {
-        //         privateKey: process.env.TRUSTED_PRIV_KEY,
-        //         balance: '990000000000000000000',
-        //     },
-        //     {
-        //         privateKey: process.env.SPECIAL_PRIV_KEY,
-        //         balance: '990000000000000000000',
-        //     },
-        // ],
+        accounts: [
+            {
+                privateKey: process.env.TRUSTED_PRIV_KEY,
+                balance: '990000000000000000000',
+            },
+            {
+                privateKey: process.env.SPECIAL_PRIV_KEY,
+                balance: '990000000000000000000',
+            },
+        ],
     },
 };
 

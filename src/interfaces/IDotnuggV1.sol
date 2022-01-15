@@ -36,23 +36,6 @@ interface IDotnuggV1 {
         bytes memory data
     ) external view returns (File.Compressed memory res);
 
-    // /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    //                         basic resolved processors
-    //    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-    // function byt(
-    //     address implementer,
-    //     uint256 artifactId,
-    //     address resolver,
-    //     bytes calldata data
-    // ) external view returns (bytes memory res);
-
-    // function str(
-    //     address implementer,
-    //     uint256 artifactId,
-    //     address resolver,
-    //     bytes calldata data
-    // ) external view returns (string memory res);
-
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                             complex resolved processors
        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
@@ -75,5 +58,18 @@ interface IDotnuggV1 {
         bool stats,
         bool base64,
         bytes calldata data
+    ) external view returns (string memory res);
+
+    function chunk(
+        address implementer,
+        uint256 id,
+        address resolver,
+        bool rekt,
+        bool background,
+        bool stats,
+        bool base64,
+        bytes calldata data,
+        uint8 chunks,
+        uint8 index
     ) external view returns (string memory res);
 }

@@ -14,6 +14,8 @@ contract MockDotnuggV1Implementer is GeneratedDotnuggV1LocalUploader, IDotnuggV1
 
     IDotnuggV1StorageProxy public dotnuggV1StorageProxy;
 
+    IDotnuggV1Metadata.Memory metadataOverride;
+
     constructor(IDotnuggV1 processor) {
         p = processor;
         dotnuggV1StorageProxy = IDotnuggV1StorageProxy(p.register());
@@ -24,7 +26,12 @@ contract MockDotnuggV1Implementer is GeneratedDotnuggV1LocalUploader, IDotnuggV1
         init(address(dotnuggV1StorageProxy));
     }
 
+    function setMetadataOverride(IDotnuggV1Metadata.Memory memory data) external {
+        metadataOverride = data;
+    }
+
     function dotnuggV1ImplementerCallback(uint256 artifactId) external view override returns (IDotnuggV1Metadata.Memory memory data) {
+        if (metadataOverride.implementer != address(0)) return metadataOverride;
         // data.name = 'name';
         // data.desc = 'desc';
         // data.version = 1;
@@ -87,6 +94,6 @@ contract MockDotnuggV1Implementer is GeneratedDotnuggV1LocalUploader, IDotnuggV1
     // function dotnuggV1ItemCallback(uint256 artifactId) external view override returns (uint16[] memory displayed, uint16[] memory hidden) {}
 
     function dotnuggV1StoreFiles(uint256[][] calldata data, uint8 feature) external {
-        dotnuggV1StorageProxy.store(feature, data);
+        // dotnuggV1StorageProxy.store(feature, data);
     }
 }

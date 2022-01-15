@@ -10,6 +10,8 @@ import {MockDotnuggV1Implementer} from '../_mock/MockDotnuggV1Implementer.sol';
 
 import {DotnuggV1} from '../DotnuggV1.sol';
 
+import './utils/Vm.sol';
+
 library SafeCast {
     function safeI192(uint96 input) internal pure returns (int192) {
         return (int192(int256(uint256(input))));
@@ -42,8 +44,8 @@ contract DotnuggV1Test is t {
     constructor() {}
 
     function reset() public {
-        fvm.roll(1);
-        fvm.roll(2);
+        forge.vm.roll(1);
+        forge.vm.roll(2);
         processor = new DotnuggV1();
 
         _processor = address(processor);

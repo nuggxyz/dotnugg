@@ -44,8 +44,12 @@ contract DotnuggV1StorageProxy is IDotnuggV1StorageProxy {
     }
 
     // Mapping from token ID to owner address
-    mapping(uint8 => uint168[]) sstore2Pointers;
-    mapping(uint8 => uint8) featureLengths;
+    mapping(uint8 => uint168[]) public sstore2Pointers;
+    mapping(uint8 => uint8) public featureLengths;
+
+    function pointer(uint8 feature) public view override returns (address res) {
+        return address(uint160(sstore2Pointers[feature][0]));
+    }
 
     function stored(uint8 feature) public view override returns (uint8 res) {
         return featureLengths[feature];
@@ -74,24 +78,22 @@ contract DotnuggV1StorageProxy is IDotnuggV1StorageProxy {
         }
     }
 
-    function store(uint8 feature, uint256[][] calldata data) public override returns (uint8 res) {
+    function store(uint8 feature, bytes calldata data) public override returns (uint8 res) {
         require(feature < 8, 'F:3');
 
         // uint8 len = data.length.safe8();
 
-        // require(len > 0, 'F:0');
+        (address ptr, uint8 len) = SSTORE2.write(data);
+        require(len > 0, 'F:0');
+        bool ok = IDotnuggV1Implementer(implementer).dotnuggV1StoreCallback(msg.sender, feature, len, ptr);
 
-        // address ptr = SSTORE2.write(data);
+        require(ok, 'C:0');
 
-        // bool ok = IDotnuggV1Implementer(implementer).dotnuggV1StoreCallback(msg.sender, feature, len, ptr);
+        sstore2Pointers[feature].push(uint168(uint160(ptr)) | (uint168(len) << 160));
 
-        // require(ok, 'C:0');
+        featureLengths[feature] += len;
 
-        // sstore2Pointers[feature].push(uint168(uint160(ptr)) | (uint168(len) << 160));
-
-        // featureLengths[feature] += len;
-
-        // return len;
+        return len;
     }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
