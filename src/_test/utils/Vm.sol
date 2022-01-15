@@ -2,6 +2,10 @@
 
 pragma solidity 0.8.9;
 
+library forge {
+    ForgeVm internal constant vm = ForgeVm(address(bytes20(uint160(uint256(keccak256('hevm cheat code'))))));
+}
+
 interface Hevm {
     function warp(uint256) external;
 
@@ -60,12 +64,14 @@ interface ForgeVm {
     // Performs a foreign function call via terminal, (stringInputs) => (result)
     function ffi(string[] calldata) external returns (bytes memory);
 
-    // Calls another contract with a specified `msg.sender`, (newSender, contract, input) => (success, returnData)
-    function prank(
-        address,
-        address,
-        bytes calldata
-    ) external payable returns (bool, bytes memory);
+    // Performs the next smart contract call with specified `msg.sender`, (newSender)
+    function prank(address) external;
+
+    // Performs all the following smart contract calls with specified `msg.sender`, (newSender)
+    function startPrank(address) external;
+
+    // Stop smart contract calls using the specified address with prankStart()
+    function stopPrank() external;
 
     // Sets an address' balance, (who, newBalance)
     function deal(address, uint256) external;
@@ -75,4 +81,12 @@ interface ForgeVm {
 
     // Expects an error on next call
     function expectRevert(bytes calldata) external;
+
+    // Expects the next emitted event. Params check topic 1, topic 2, topic 3 and data are the same.
+    function expectEmit(
+        bool,
+        bool,
+        bool,
+        bool
+    ) external;
 }

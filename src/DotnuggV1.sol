@@ -12,6 +12,8 @@ import {IDotnuggV1Implementer as Implementer} from './interfaces/IDotnuggV1Imple
 
 import {DotnuggV1StorageProxy} from './core/DotnuggV1StorageProxy.sol';
 import {DotnuggV1Lib} from './core/DotnuggV1Lib.sol';
+import {BytesLib} from './libraries/BytesLib.sol';
+
 import {MinimalProxy} from './libraries/MinimalProxy.sol';
 
 /// @title dotnugg V1 - onchain encoder/decoder protocol for dotnugg files
@@ -142,41 +144,36 @@ contract DotnuggV1 is IDotnuggV1 {
         res = string(lib.buildSvg(_proc.file, _proc.metadata, rekt, back, stats, base64));
     }
 
-    // /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    //                             basic proccessors
-    //    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    function chunk(
+        address implementer,
+        uint256 artifactId,
+        address resolver,
+        bool rekt,
+        bool back,
+        bool stats,
+        bool base64,
+        bytes calldata data,
+        uint8 chunks,
+        uint8 index
+    ) external view override returns (string memory res) {
+        require(index < chunks, 'I:0');
 
-    // function plain(
-    //     address implementer,
-    //     uint256 artifactId,
-    //     address resolver,
-    //     bytes memory data
-    // ) external view override returns (bytes memory res) {
-    //     File.Processed memory _proc = proc(implementer, artifactId, resolver, data);
+        File.Processed memory _proc = proc(implementer, artifactId, resolver, data);
 
-    //     if (resolver != address(0)) {
-    //         try Resolver(resolver).dotnuggV1BytesCallback(_proc, data) returns (bytes memory d) {
-    //             return d;
-    //         } catch (bytes memory) {}
-    //     }
+        if (resolver != address(0)) {
+            try Resolver(resolver).dotnuggV1SvgCallback(_proc, data) returns (string memory d) {
+                return d;
+            } catch (bytes memory) {}
+        }
 
-    //     res = lib.buildSvg(_proc.file, _proc.metadata, false, false, false, true);
-    // }
+        bytes memory ares = lib.buildSvg(_proc.file, _proc.metadata, rekt, back, stats, base64);
 
-    // function str(
-    //     address implementer,
-    //     uint256 artifactId,
-    //     address resolver,
-    //     bytes memory data
-    // ) external view override returns (string memory res) {
-    //     File.Processed memory _proc = proc(implementer, artifactId, resolver, data);
+        uint256 chunksize = ares.length / chunks;
 
-    //     if (resolver != address(0)) {
-    //         try Resolver(resolver).dotnuggV1StringCallback(_proc, data) returns (string memory d) {
-    //             return d;
-    //         } catch (bytes memory) {}
-    //     }
+        uint256 offset = index * chunksize;
 
-    //     res = string(lib.buildSvg(_proc.file, _proc.metadata, false, false, false, false));
-    // }
+        if (index == chunks - 1 && chunksize % ares.length != 0 && offset + chunksize + 1 < ares.length) chunksize++;
+
+        return string(BytesLib.slice(ares, offset, chunksize));
+    }
 }
