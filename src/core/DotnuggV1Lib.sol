@@ -19,6 +19,7 @@ import {Version} from '../types/Version.sol';
 import {Types} from '../types/Types.sol';
 import {DotnuggV1StorageProxy} from './DotnuggV1StorageProxy.sol';
 import {StringCastLib} from '../libraries/StringCastLib.sol';
+import '../_test/utils/logger.sol';
 
 contract DotnuggV1Lib is DotnuggV1SvgLib, DotnuggV1JsonLib {
     using BitReader for BitReader.Memory;
@@ -28,6 +29,8 @@ contract DotnuggV1Lib is DotnuggV1SvgLib, DotnuggV1JsonLib {
         IDotnuggV1Metadata.Memory memory data,
         uint8 width
     ) public view returns (uint256[] memory resp) {
+        console.log('process-begin');
+
         require(data.version == 1, 'V1s');
 
         // require(width <= 64 && width > 4, 'V1:SIZE');
@@ -35,8 +38,18 @@ contract DotnuggV1Lib is DotnuggV1SvgLib, DotnuggV1JsonLib {
         // if (width % 2 == 0) width--;
 
         Version.Memory[][] memory versions = parse(files, data.xovers, data.yovers);
+        console.log('-----versions');
 
+        for (uint256 i = 0; i < versions.length; i++) {
+            if (versions[i].length > 0) {
+                logger.log(versions[i][0].pallet, 'pallet');
+
+                logger.log(versions[i][0].bigmatrix, '[i]');
+                logger.log(versions[i][0].minimatrix, '[i]');
+            }
+        }
         Types.Matrix memory old = Calculator.combine(8, width, versions);
+        console.log('-----combine');
 
         resp = old.version.bigmatrix;
     }
