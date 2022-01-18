@@ -131,4 +131,54 @@ contract MockImplementerTest is DotnuggV1Test {
             // emit log_string(resJson);
         }
     }
+
+    function test__MockImplementer__processorReceivedFiles__override4() public {
+        IDotnuggV1Metadata.Memory memory __custom;
+
+        __custom.implementer = address(implementer);
+        __custom.artifactId = 1;
+
+        __custom.ids = new uint8[](8);
+        __custom.xovers = new uint8[](8);
+        __custom.yovers = new uint8[](8);
+        __custom.labels = new string[](8);
+        __custom.styles = new string[](8);
+
+        __custom.ids[0] = 0;
+        __custom.ids[1] = 0;
+        __custom.ids[2] = 0;
+        __custom.ids[3] = 0;
+        __custom.ids[6] = 7;
+
+        //         __custom.ids[0] = 2;
+        // __custom.ids[1] = 74;
+        // __custom.ids[2] = 58;
+        // __custom.ids[3] = 21;
+        // __custom.ids[6] = 7;
+
+        __custom.version = 1;
+
+        for (uint8 i = 0; i < 8; i++) {
+            uint8 res = implementer.dotnuggV1StorageProxy().stored(i);
+            emit log_named_uint('[i]', res);
+            assertTrue(res > 0);
+            assertTrue(res >= __custom.ids[i]);
+        }
+
+        implementer.setMetadataOverride(__custom);
+
+        for (uint256 i = 300; i < 301; i++) {
+            // string memory res = processor.chunk(address(implementer), i, address(processor), false, true, false, true, '', 3, 0);
+            // string memory res2 = processor.chunk(address(implementer), i, address(processor), false, true, false, true, '', 3, 1);
+            // string memory res3 = processor.chunk(address(implementer), i, address(processor), false, true, false, true, '', 3, 2);
+
+            string memory res4 = processor.chunk(address(implementer), i, address(processor), false, true, false, true, '', 1, 0);
+
+            // string memory resJson = processor.dat(address(implementer), i, address(processor), 'NuggftV1', 'Nugg Fungible Token V1', false, '');
+
+            emit log_string(res4);
+
+            // emit log_string(resJson);
+        }
+    }
 }

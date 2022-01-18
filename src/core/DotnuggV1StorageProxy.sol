@@ -210,7 +210,7 @@ contract DotnuggV1StorageProxy is IDotnuggV1StorageProxy {
 
         // this can go below zero for the first nugg in the list if the conditions are right
         // but if the keccack is in the front then it will be enough buffer to ensure that never happens
-        start -= (0x20 - (size % 0x20));
+        if (extra > 0) start -= (0x20 - (size % 0x20));
 
         size = end - start;
 
