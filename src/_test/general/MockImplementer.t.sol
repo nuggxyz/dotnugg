@@ -144,10 +144,14 @@ contract MockImplementerTest is DotnuggV1Test {
         __custom.labels = new string[](8);
         __custom.styles = new string[](8);
 
-        __custom.ids[0] = 0;
-        __custom.ids[1] = 0;
-        __custom.ids[2] = 0;
+        // [2, 87, 24, 0, 33, 0, 7, 0]
+
+        __custom.ids[0] = 2;
+        __custom.ids[1] = 87;
+        __custom.ids[2] = 24;
         __custom.ids[3] = 0;
+        __custom.ids[4] = 33;
+
         __custom.ids[6] = 7;
 
         //         __custom.ids[0] = 2;
