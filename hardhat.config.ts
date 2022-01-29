@@ -16,14 +16,14 @@ import 'hardhat-storage-layout';
 import 'hardhat-tracer';
 import 'hardhat-spdx-license-identifier';
 import '../dotnugg-hardhat/src';
-import './hardhat/tasks/main';
+// import './hardhat/tasks/main';
 import { resolve } from 'path';
 
 import { config as dotenvConfig } from 'dotenv';
-import { utils } from 'ethers';
+import { ethers, utils } from 'ethers';
 import { HardhatUserConfig, NetworksUserConfig, NetworkUserConfig } from 'hardhat/types';
 
-import { toGwei } from './hardhat/utils/conversion';
+// import { toGwei } from './hardhat/utils/conversion';
 
 dotenvConfig({ path: resolve(__dirname, '.env') });
 
@@ -108,6 +108,10 @@ const LocalNetworks: NetworksUserConfig = {
             },
         ],
     },
+};
+
+const toGwei = (num: string): ethers.BigNumber => {
+    return ethers.utils.parseUnits(num, 'gwei');
 };
 
 const StagingNetworks: NetworksUserConfig = {
