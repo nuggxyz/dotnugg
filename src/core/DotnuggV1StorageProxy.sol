@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.9;
+pragma solidity 0.8.11;
 import {IDotnuggV1StorageProxy} from '../interfaces/IDotnuggV1StorageProxy.sol';
 import {IDotnuggV1Implementer} from '../interfaces/IDotnuggV1Implementer.sol';
 
@@ -31,8 +31,12 @@ contract DotnuggV1StorageProxy is IDotnuggV1StorageProxy {
     mapping(uint8 => uint168[]) public sstore2Pointers;
     mapping(uint8 => uint8) public featureLengths;
 
-    function pointer(uint8 feature) public view override returns (address res) {
-        return address(uint160(sstore2Pointers[feature][0]));
+    function pointers() public view override returns (address[][] memory res) {
+        uint168[][] memory arr = new uint168[][](8);
+        for (uint8 i = 0; i < 8; i++) {
+            arr[i] = sstore2Pointers[i];
+        }
+        return abi.decode(abi.encode(arr), (address[][]));
     }
 
     function stored(uint8 feature) public view override returns (uint8 res) {

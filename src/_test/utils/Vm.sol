@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.9;
+pragma solidity 0.8.11;
 
 library forge {
     ForgeVm internal constant vm = ForgeVm(address(bytes20(uint160(uint256(keccak256('hevm cheat code'))))));
