@@ -1,5 +1,6 @@
 // HARDHAT IMPORTS
 import 'dotenv/config';
+
 import '@nomiclabs/hardhat-etherscan';
 import '@nomiclabs/hardhat-solhint';
 import '@nomiclabs/hardhat-waffle';
@@ -12,16 +13,17 @@ import 'hardhat-abi-exporter';
 import 'hardhat-contract-sizer';
 import '@atixlabs/hardhat-time-n-mine';
 import 'hardhat-storage-layout';
+import '@nuggxyz/dotnugg-hardhat';
+
 // NORMAL IMPORTS
 import 'hardhat-tracer';
 import 'hardhat-spdx-license-identifier';
-import '../dotnugg-hardhat/src';
-// import './hardhat/tasks/main';
+
 import { resolve } from 'path';
 
+import { HardhatUserConfig, NetworksUserConfig, NetworkUserConfig } from 'hardhat/types';
 import { config as dotenvConfig } from 'dotenv';
 import { ethers, utils } from 'ethers';
-import { HardhatUserConfig, NetworksUserConfig, NetworkUserConfig } from 'hardhat/types';
 
 // import { toGwei } from './hardhat/utils/conversion';
 
@@ -216,6 +218,7 @@ const HardhatConfig: HardhatUserConfig = {
     //     overwrite: true,
     //     runOnCompile: true,
     // },
+
     dotnugg: {
         art: '../nuggft-art',
     },
