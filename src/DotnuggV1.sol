@@ -59,7 +59,9 @@ contract DotnuggV1 is IDotnuggV1 {
         res.file = proxyOf(implementer).getBatch(res.metadata.ids);
 
         if (resolver != address(0)) {
-            try Resolver(resolver).dotnuggV1MetadataCallback(implementer, artifactId, res.metadata, data) returns (Metadata.Memory memory resp) {
+            try Resolver(resolver).dotnuggV1MetadataCallback(implementer, artifactId, res.metadata, data) returns (
+                Metadata.Memory memory resp
+            ) {
                 res.metadata = resp;
             } catch (bytes memory) {}
         }
@@ -175,5 +177,9 @@ contract DotnuggV1 is IDotnuggV1 {
         if (index == chunks - 1 && chunksize % ares.length != 0 && offset + chunksize + 1 < ares.length) chunksize++;
 
         return string(BytesLib.slice(ares, offset, chunksize));
+    }
+
+    function sim(uint256[][] calldata files) external view returns (string memory res) {
+        return lib.full(files);
     }
 }
