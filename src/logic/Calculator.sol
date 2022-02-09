@@ -20,7 +20,7 @@ library Calculator {
         uint256 featureLen,
         uint8 width,
         Version.Memory[][] memory versions
-    ) internal pure returns (Types.Matrix memory) {
+    ) internal view returns (Types.Matrix memory) {
         Types.Canvas memory canvas;
         canvas.matrix = Matrix.create(width, width);
         canvas.receivers = new Types.Anchor[](featureLen);
@@ -95,7 +95,11 @@ library Calculator {
         }
     }
 
-    function pickVersionIndex(Types.Canvas memory canvas, Version.Memory[] memory versions) internal pure returns (uint8) {
+    function pickVersionIndex(Types.Canvas memory canvas, Version.Memory[] memory versions)
+        internal
+        pure
+        returns (uint8)
+    {
         require(versions.length == 1, 'CALC:PVI:0');
         if (versions.length == 1) {
             return 0;

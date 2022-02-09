@@ -20,6 +20,7 @@ library Version {
         uint256[] bigmatrix;
         uint256 receivers;
         uint256 data;
+        uint256 bitmatrixptr;
     }
     event log_named_bytes32(string key, bytes32 val);
 
@@ -336,6 +337,10 @@ library Version {
             uint8 offset = (42 * (index % 6)).safe8();
             m.bigmatrix[index / 6] &= ShiftLib.fullsubmask(42, offset);
             m.bigmatrix[index / 6] |= (color << offset);
+
+            assembly {
+
+            }
         }
     }
 
