@@ -2,23 +2,23 @@
 
 pragma solidity 0.8.11;
 
-import {IDotnuggV1Metadata} from '../interfaces/IDotnuggV1Metadata.sol';
+import {IDotnuggV1Metadata} from "../interfaces/IDotnuggV1Metadata.sol";
 
-import {BitReader} from '../libraries/BitReader.sol';
-import {Base64} from '../libraries/Base64.sol';
+import {BitReader} from "../libraries/BitReader.sol";
+import {Base64} from "../libraries/Base64.sol";
 
-import {Calculator} from '../logic/Calculator.sol';
-import {Matrix} from '../logic/Matrix.sol';
-import {DotnuggV1SvgLib} from './DotnuggV1SvgLib.sol';
-import {DotnuggV1JsonLib} from './DotnuggV1JsonLib.sol';
+import {Calculator} from "../logic/Calculator.sol";
+import {Matrix} from "../logic/Matrix.sol";
+import {DotnuggV1SvgLib} from "./DotnuggV1SvgLib.sol";
+import {DotnuggV1JsonLib} from "./DotnuggV1JsonLib.sol";
 
-import {ShiftLib} from '../libraries/ShiftLib.sol';
-import {Base64} from '../libraries/Base64.sol';
+import {ShiftLib} from "../libraries/ShiftLib.sol";
+import {Base64} from "../libraries/Base64.sol";
 
-import {Version} from '../types/Version.sol';
-import {Types} from '../types/Types.sol';
-import {DotnuggV1StorageProxy} from './DotnuggV1StorageProxy.sol';
-import {StringCastLib} from '../libraries/StringCastLib.sol';
+import {Version} from "../types/Version.sol";
+import {Types} from "../types/Types.sol";
+import {DotnuggV1StorageProxy} from "./DotnuggV1StorageProxy.sol";
+import {StringCastLib} from "../libraries/StringCastLib.sol";
 
 // import '../_test/utils/logger.sol';
 
@@ -30,7 +30,7 @@ contract DotnuggV1Lib is DotnuggV1SvgLib, DotnuggV1JsonLib {
         IDotnuggV1Metadata.Memory memory data,
         uint8 width
     ) public view returns (uint256[] memory resp) {
-        require(data.version == 1, 'V1s');
+        require(data.version == 1, "V1s");
 
         Version.Memory[][] memory versions = parse(files, data.xovers, data.yovers);
 
@@ -84,7 +84,7 @@ contract DotnuggV1Lib is DotnuggV1SvgLib, DotnuggV1JsonLib {
             if (empty) continue;
 
             // indicates dotnuggV1 encoded file
-            require(reader.select(32) == 0x420690_01, 'DEC:PI:0');
+            require(reader.select(32) == 0x420690_01, "DEC:PI:0");
 
             uint256 feature = reader.select(3);
 
