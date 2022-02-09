@@ -26,36 +26,53 @@ contract DotnuggV1Lib is DotnuggV1SvgLib, DotnuggV1JsonLib {
     using BitReader for BitReader.Memory;
 
     function process(
-        uint256[][] memory files,
+        uint256[][] calldata files,
         IDotnuggV1Metadata.Memory memory data,
         uint8 width
     ) public view returns (uint256[] memory resp) {
-        // console.log('process-begin');
-
         require(data.version == 1, 'V1s');
 
-        // require(width <= 64 && width > 4, 'V1:SIZE');
-
-        // if (width % 2 == 0) width--;
-
         Version.Memory[][] memory versions = parse(files, data.xovers, data.yovers);
-        // console.log('-----versions');
 
-        for (uint256 i = 0; i < versions.length; i++) {
-            if (versions[i].length > 0) {
-                // // logger.log(versions[i][0].pallet, 'pallet');
-                // // logger.log(versions[i][0].bigmatrix, '[i]');
-                // // logger.log(versions[i][0].minimatrix, '[i]');
-            }
-        }
         Types.Matrix memory old = Calculator.combine(8, width, versions);
-        // console.log('-----combine');
 
         resp = old.version.bigmatrix;
     }
 
+    function full(
+        uint256[][] calldata files // uint256 zoom,
+    ) public view returns (string memory res) {
+        Version.Memory[][] memory versions = parse(files);
+
+        Types.Matrix memory old = Calculator.combine(8, 63, versions);
+        IDotnuggV1Metadata.Memory memory metadata;
+
+        return string(buildSvg(old.version.bigmatrix, metadata, false, false, false, true));
+    }
+
+    function full(
+        uint256[][] calldata files,
+        bool rekt,
+        bool background,
+        bool,
+        bool _base64
+    ) public view returns (string memory res) {
+        Version.Memory[][] memory versions = parse(files);
+
+        Types.Matrix memory old = Calculator.combine(8, 63, versions);
+        IDotnuggV1Metadata.Memory memory metadata;
+
+        return string(buildSvg(old.version.bigmatrix, metadata, rekt, background, false, _base64));
+    }
+
+    function parse(uint256[][] calldata data) public view returns (Version.Memory[][] memory m) {
+        uint8[] memory a;
+
+        return parse(data, a, a);
+    }
+
     function parse(
-        uint256[][] memory data,
+        uint256[][] calldata data,
         uint8[] memory xovers,
         uint8[] memory yovers
     ) public view returns (Version.Memory[][] memory m) {

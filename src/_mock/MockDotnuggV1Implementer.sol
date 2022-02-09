@@ -30,7 +30,12 @@ contract MockDotnuggV1Implementer is GeneratedDotnuggV1LocalUploader, IDotnuggV1
         metadataOverride = data;
     }
 
-    function dotnuggV1ImplementerCallback(uint256 artifactId) external view override returns (IDotnuggV1Metadata.Memory memory data) {
+    function dotnuggV1ImplementerCallback(uint256 artifactId)
+        external
+        view
+        override
+        returns (IDotnuggV1Metadata.Memory memory data)
+    {
         if (metadataOverride.implementer != address(0)) return metadataOverride;
         // data.name = 'name';
         // data.desc = 'desc';
@@ -68,7 +73,7 @@ contract MockDotnuggV1Implementer is GeneratedDotnuggV1LocalUploader, IDotnuggV1
         uint8 amount,
         address storagePointer
     ) external view override(IDotnuggV1Implementer) returns (bool res) {
-        require(caller == address(this), 'dotnuggV1TrustCallback');
+        // require(caller == address(this), 'dotnuggV1TrustCallback');
         return true;
     }
 

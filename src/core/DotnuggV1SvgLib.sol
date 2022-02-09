@@ -39,7 +39,7 @@ contract DotnuggV1SvgLib {
         bool background,
         bool,
         bool base64
-    ) external pure returns (bytes memory res) {
+    ) public pure returns (bytes memory res) {
         // styles[0] = '{filter: drop-shadow( 3px 3px 2px rgba(0, 0, 0, .7));}';
 
         /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -155,7 +155,9 @@ contract DotnuggV1SvgLib {
 
         mapper[i].color = color;
 
-        string memory colorStr = color.a() == 0xff ? (color.rgba() >> 8).toHexStringNoPrefix(3) : color.rgba().toHexStringNoPrefix(4);
+        string memory colorStr = color.a() == 0xff
+            ? (color.rgba() >> 8).toHexStringNoPrefix(3)
+            : color.rgba().toHexStringNoPrefix(4);
 
         if (rekt) {
             mapper[i].data = abi.encodePacked('<path fill="#', colorStr, '" class="', color.f() + 65, '" d="');

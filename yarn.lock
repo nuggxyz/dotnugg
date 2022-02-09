@@ -1050,35 +1050,35 @@
     "@types/sinon-chai" "^3.2.3"
     "@types/web3" "1.0.19"
 
-"@nuggxyz/dotnugg-grammar@^0.1.5":
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/@nuggxyz/dotnugg-grammar/-/dotnugg-grammar-0.1.5.tgz#172890f4a6ce3fd1df10e57c32dde222ec1f6075"
-  integrity sha512-G+BCawWk3ISL/90iYYCmw99RbgAXq+qb5d85eBmUon3tiNfsrizWx9ZoJ7OhYGJ6UXV+2lNjmF3G4IK/nfqe1w==
-  dependencies:
-    plist "^3.0.4"
+"@nuggxyz/dotnugg-grammar@^0.1.8":
+  version "0.1.8"
+  resolved "https://registry.yarnpkg.com/@nuggxyz/dotnugg-grammar/-/dotnugg-grammar-0.1.8.tgz#47422fba0d24a7053a06fee27388f42278afc527"
+  integrity sha512-spDOzIUe7QLc1NO547fti+lqUu8XLQea6XcG24QZJP0BYQbAtARUUPysToFAb421zeFXbm2s1TfzYHHuYzp2MA==
 
-"@nuggxyz/dotnugg-hardhat@^0.1.3":
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/@nuggxyz/dotnugg-hardhat/-/dotnugg-hardhat-0.1.3.tgz#3ee052520fe4c68ecd76e2f834234322eb4c6e94"
-  integrity sha512-W8YcnoAM3f7+vkLKVRruK6etongNS8+n64GGVyKem3NPb6IikRGs/Fbl92NiVo+FFkpwCM1fDFSYC3+MrnwybQ==
+"@nuggxyz/dotnugg-hardhat@^0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@nuggxyz/dotnugg-hardhat/-/dotnugg-hardhat-0.1.4.tgz#222c6bf6e6b0a9ec3e5e0d0f663f1aa64bcf0217"
+  integrity sha512-5/R6hDTnp6EXonMRdAS2XT6461ftjtwV0DGilUMnc/8NQCP/wUUtQjgV0lM184rl4oMxtNH4WlefEMaTPLo5KQ==
   dependencies:
-    "@nuggxyz/dotnugg-sdk" "0.1.5"
+    "@nuggxyz/dotnugg-sdk" "^0.1.12"
     ethers "^5.5.2"
     hardhat "^2.8.3"
 
-"@nuggxyz/dotnugg-sdk@0.1.5":
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/@nuggxyz/dotnugg-sdk/-/dotnugg-sdk-0.1.5.tgz#8fd8327974832c8bcc6a3683b8ab2f9465d176d7"
-  integrity sha512-U+UNIBiLb9+wf/KYf81qwc+9G9N1NK9RFJVSeT8AfX+cqyFZWwOrbR7nFeC6yUKEfFVsckv6fue3s+6d5yffjQ==
+"@nuggxyz/dotnugg-sdk@^0.1.12":
+  version "0.1.12"
+  resolved "https://registry.yarnpkg.com/@nuggxyz/dotnugg-sdk/-/dotnugg-sdk-0.1.12.tgz#34ce5abd431b496162166327aa95df3da7b675cd"
+  integrity sha512-ecVJ/EbrbhMHFxvxSZsHfpEFCLWZjwF7S0qOmaEmjO6wN5AOSMljjSGEVPVtDh0numGM5bS0ZN+9VTqlAIceBw==
   dependencies:
     "@ethersproject/abi" "^5.0.0"
     "@ethersproject/bytes" "^5.0.0"
     "@ethersproject/providers" "^5.0.0"
-    "@nuggxyz/dotnugg-grammar" "^0.1.5"
+    "@nuggxyz/dotnugg-grammar" "^0.1.8"
     ethers "^5.5.4"
     minimist "^1.2.5"
+    node-fetch "^3.2.0"
+    plist "^3.0.4"
     tiny-invariant "^1.2.0"
-    vscode-oniguruma "^1.5.1"
+    vscode-oniguruma "^1.6.1"
     vscode-textmate "^5.4.1"
 
 "@resolver-engine/core@^0.3.3":
@@ -4020,6 +4020,11 @@ dashdash@^1.12.0:
   dependencies:
     assert-plus "^1.0.0"
 
+data-uri-to-buffer@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/data-uri-to-buffer/-/data-uri-to-buffer-4.0.0.tgz#b5db46aea50f6176428ac05b73be39a57701a64b"
+  integrity sha512-Vr3mLBA8qWmcuschSLAOogKgQ/Jwxulv3RNE4FXnYWRGujzrRWQI4m12fQqRkwX06C0KanhLr4hK+GydchZsaA==
+
 de-indent@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/de-indent/-/de-indent-1.0.2.tgz#b2038e846dc33baa5796128d0804b455b8c1e21d"
@@ -5653,6 +5658,14 @@ fb-watchman@^2.0.0:
   dependencies:
     bser "2.1.1"
 
+fetch-blob@^3.1.2, fetch-blob@^3.1.4:
+  version "3.1.4"
+  resolved "https://registry.yarnpkg.com/fetch-blob/-/fetch-blob-3.1.4.tgz#e8c6567f80ad7fc22fd302e7dcb72bafde9c1717"
+  integrity sha512-Eq5Xv5+VlSrYWEqKrusxY1C3Hm/hjeAsCGVG3ft7pZahlUAChpGZT/Ms1WmSLnEAisEXszjzu/s+ce6HZB2VHA==
+  dependencies:
+    node-domexception "^1.0.0"
+    web-streams-polyfill "^3.0.3"
+
 fetch-ponyfill@^4.0.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/fetch-ponyfill/-/fetch-ponyfill-4.1.0.tgz#ae3ce5f732c645eab87e4ae8793414709b239893"
@@ -5917,6 +5930,13 @@ form-data@~2.3.2:
     asynckit "^0.4.0"
     combined-stream "^1.0.6"
     mime-types "^2.1.12"
+
+formdata-polyfill@^4.0.10:
+  version "4.0.10"
+  resolved "https://registry.yarnpkg.com/formdata-polyfill/-/formdata-polyfill-4.0.10.tgz#24807c31c9d402e002ab3d8c720144ceb8848423"
+  integrity sha512-buewHzMvYL29jdeQTVILecSaZKnt/RJWjoZCF5OW60Z67/GmSLBkOFM7qh1PI3zFNtJbaZL5eQu1vLfazOwj4g==
+  dependencies:
+    fetch-blob "^3.1.2"
 
 forwarded@0.2.0:
   version "0.2.0"
@@ -8863,6 +8883,11 @@ node-addon-api@^2.0.0:
   resolved "https://registry.yarnpkg.com/node-addon-api/-/node-addon-api-2.0.2.tgz#432cfa82962ce494b132e9d72a15b29f71ff5d32"
   integrity sha512-Ntyt4AIXyaLIuMHF6IOoTakB3K+RWxwtsHNRxllEoA6vPwP9o4866g6YWDLUdnucilZhmkxiHwHr11gAENw+QA==
 
+node-domexception@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/node-domexception/-/node-domexception-1.0.0.tgz#6888db46a1f71c0b76b3f7555016b63fe64766e5"
+  integrity sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==
+
 node-emoji@^1.10.0:
   version "1.11.0"
   resolved "https://registry.yarnpkg.com/node-emoji/-/node-emoji-1.11.0.tgz#69a0150e6946e2f115e9d7ea4df7971e2628301c"
@@ -8889,6 +8914,15 @@ node-fetch@^2.6.0, node-fetch@^2.6.1:
   integrity sha512-Z8/6vRlTUChSdIgMa51jxQ4lrw/Jy5SOW10ObaA47/RElsAN2c5Pn8bTgFGWn/ibwzXTE8qwr1Yzx28vsecXEA==
   dependencies:
     whatwg-url "^5.0.0"
+
+node-fetch@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-3.2.0.tgz#59390db4e489184fa35d4b74caf5510e8dfbaf3b"
+  integrity sha512-8xeimMwMItMw8hRrOl3C9/xzU49HV/yE6ORew/l+dxWimO5A4Ra8ld2rerlJvc/O7et5Z1zrWsPX43v1QBjCxw==
+  dependencies:
+    data-uri-to-buffer "^4.0.0"
+    fetch-blob "^3.1.4"
+    formdata-polyfill "^4.0.10"
 
 node-fetch@~1.7.1:
   version "1.7.3"
@@ -12121,7 +12155,7 @@ vm-browserify@^1.0.1:
   resolved "https://registry.yarnpkg.com/vm-browserify/-/vm-browserify-1.1.2.tgz#78641c488b8e6ca91a75f511e7a3b32a86e5dda0"
   integrity sha512-2ham8XPWTONajOR0ohOKOHXkm3+gaBmGut3SRuu75xLd/RRaY6vqgh8NBYYk7+RW3u5AtzPQZG8F10LHkl0lAQ==
 
-vscode-oniguruma@^1.5.1:
+vscode-oniguruma@^1.6.1:
   version "1.6.1"
   resolved "https://registry.yarnpkg.com/vscode-oniguruma/-/vscode-oniguruma-1.6.1.tgz#2bf4dfcfe3dd2e56eb549a3068c8ee39e6c30ce5"
   integrity sha512-vc4WhSIaVpgJ0jJIejjYxPvURJavX6QG41vu0mGhqywMkQqulezEqEQ3cO3gc8GvcOpX6ycmKGqRoROEMBNXTQ==
@@ -12202,6 +12236,11 @@ watchpack@^1.7.4:
   optionalDependencies:
     chokidar "^3.4.1"
     watchpack-chokidar2 "^2.0.1"
+
+web-streams-polyfill@^3.0.3:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/web-streams-polyfill/-/web-streams-polyfill-3.2.0.tgz#a6b74026b38e4885869fb5c589e90b95ccfc7965"
+  integrity sha512-EqPmREeOzttaLRm5HS7io98goBgZ7IVz79aDvqjD0kYXLtFZTc0T/U6wHTPKyIjb+MdN7DFIIX6hgdBEpWmfPA==
 
 web3-bzz@1.2.11:
   version "1.2.11"
