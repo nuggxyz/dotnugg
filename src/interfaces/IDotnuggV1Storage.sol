@@ -11,13 +11,15 @@ struct DotnuggV1Read {
 }
 
 interface IDotnuggV1Storage {
-    event Write(uint8 feature, uint168 pointer, address sender);
+    event Write(uint8 feature, uint8 amount, address pointer, address sender);
 
-    function init(address _implementer, address trusted) external;
+    function init(address trusted) external;
 
     function write(uint8 feature, bytes memory data) external;
 
     function write(bytes[8] calldata data) external;
+
+    function write(bytes[] calldata data) external;
 
     function read(uint8[8] memory ids) external view returns (DotnuggV1Read[8] memory data);
 

@@ -17,10 +17,10 @@ contract DotnuggV1Factory {
         template = new DotnuggV1Storage();
     }
 
-    function register(address trusted, string[8] memory labels) external returns (IDotnuggV1Storage proxy) {
+    function register() external returns (IDotnuggV1Storage proxy) {
         proxy = deploy();
 
-        proxy.init(msg.sender, labels, trusted);
+        proxy.init(msg.sender);
     }
 
     /**

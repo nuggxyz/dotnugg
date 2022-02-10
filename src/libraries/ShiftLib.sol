@@ -38,7 +38,7 @@ library ShiftLib {
 
     function select160(bytes memory data, uint16 ost) internal pure returns (uint160 res) {
         assembly {
-            res := mload(add(data, ost))
+            res := mload(add(add(data, ost), 20))
         }
     }
 }

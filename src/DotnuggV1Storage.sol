@@ -11,10 +11,10 @@ import {ShiftLib} from "./libraries/ShiftLib.sol";
 import {Calculator} from "./core/Calculator.sol";
 import {Parser} from "./core/Parser.sol";
 
+import "./_test/utils/forge.sol";
+
 contract DotnuggV1Storage is IDotnuggV1Storage {
     address public immutable factory;
-
-    address public implementer;
 
     address public trusted;
 
@@ -24,13 +24,12 @@ contract DotnuggV1Storage is IDotnuggV1Storage {
 
     constructor() {
         factory = msg.sender;
-        implementer = msg.sender;
+        trusted = msg.sender;
     }
 
-    function init(address _implementer, address _trusted) external {
-        require(implementer == address(0) && msg.sender == factory, "C:0");
+    function init(address _trusted) external {
+        require(trusted == address(0) && msg.sender == factory, "C:0");
 
-        implementer = _implementer;
         trusted = _trusted;
     }
 
@@ -43,6 +42,11 @@ contract DotnuggV1Storage is IDotnuggV1Storage {
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                                 TRUSTED
        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    function write(bytes[] calldata data) external {
+        for (uint8 i = 0; i < 8; i++) {
+            if (data[i].length > 0) write(i, data[i]);
+        }
+    }
 
     function write(bytes[8] calldata data) external override {
         for (uint8 i = 0; i < 8; i++) {
@@ -65,7 +69,7 @@ contract DotnuggV1Storage is IDotnuggV1Storage {
 
         __lengths[feature] += len;
 
-        emit Write(feature, ptr, msg.sender);
+        emit Write(feature, len, loc, msg.sender);
     }
 
     function lengthOf(uint8 feature) external view override returns (uint8 res) {
@@ -147,6 +151,9 @@ contract DotnuggV1Storage is IDotnuggV1Storage {
         uint256 header = 0x60_12_59_81_38_03_80_92_59_39_F3_64_6F_74_6E_75_67_67_00;
 
         uint256 prefix = ShiftLib.select160(data, 0);
+
+        console.log("prefix: ", prefix);
+        console.log("header: ", header);
 
         uint256 lenr = data.length;
 
