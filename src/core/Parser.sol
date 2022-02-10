@@ -3,14 +3,12 @@
 pragma solidity 0.8.11;
 
 import {BitReader} from "../libraries/BitReader.sol";
-import {SafeCastLib} from "../libraries/SafeCastLib.sol";
 import {ShiftLib} from "../libraries/ShiftLib.sol";
 
-import {Pixel} from "../types/Pixel.sol";
+import {Pixel} from "./Pixel.sol";
 
 library Parser {
     using BitReader for BitReader.Memory;
-    using SafeCastLib for uint256;
 
     struct Memory {
         uint256[] pallet;
@@ -21,10 +19,8 @@ library Parser {
         uint256 bitmatrixptr;
     }
 
-    function parse(uint256[][] calldata data) public view returns (Parser.Memory[][] memory m) {
-        m = new Parser.Memory[][](data.length);
-
-        for (uint256 j = 0; j < data.length; j++) {
+    function parse(uint256[][8] calldata data) internal pure returns (Parser.Memory[][8] memory m) {
+        for (uint256 j = 0; j < 8; j++) {
             (bool empty, BitReader.Memory memory reader) = BitReader.init(data[j]);
 
             if (empty) continue;
@@ -60,7 +56,7 @@ library Parser {
         BitReader.Memory memory reader,
         uint256 id,
         uint256 feature
-    ) internal view returns (uint256[] memory res) {
+    ) internal pure returns (uint256[] memory res) {
         uint256 palletLength = reader.select(4) + 1;
 
         res = new uint256[](palletLength + 1);
@@ -92,7 +88,7 @@ library Parser {
             // // 1 or 8 bits: a
             uint256 a = (reader.select(1) == 0x1 ? 0xff : reader.select(8));
 
-            res[i + 1] = Pixel.safePack(color, a, id, z, feature);
+            res[i + 1] = Pixel.unsafePack(color, a, id, z, feature);
         }
     }
 
@@ -364,7 +360,7 @@ library Parser {
         uint256 color
     ) internal pure {
         if (m.bigmatrix.length > index / 6) {
-            uint8 offset = (42 * (index % 6)).safe8();
+            uint8 offset = uint8(42 * (index % 6)); // NOTE: i removed safe8
             m.bigmatrix[index / 6] &= ShiftLib.fullsubmask(42, offset);
             m.bigmatrix[index / 6] |= (color << offset);
 

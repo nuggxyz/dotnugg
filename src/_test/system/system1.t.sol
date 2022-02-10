@@ -2,6 +2,6 @@
 
 pragma solidity 0.8.11;
 
-import {DotnuggV1Test} from '../DotnuggV1Test.sol';
+import {t} from "../main.t.sol";
 
-contract systemTest__one is DotnuggV1Test {}
+contract systemTest__one is t {}

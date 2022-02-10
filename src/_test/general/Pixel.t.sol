@@ -2,12 +2,11 @@
 
 pragma solidity 0.8.11;
 
-import {DotnuggV1Test} from '../DotnuggV1Test.sol';
+import "../main.t.sol";
 
-import {Pixel} from '../../types/Pixel.sol';
-import {StringCastLib} from '../../libraries/StringCastLib.sol';
+import {Pixel} from "../../core/Pixel.sol";
 
-contract generalTest__PixelType is DotnuggV1Test {
+contract generalTest__PixelType is t {
     function test__general__PixelType__a() public {
         uint256 input = Pixel.safePack(0xaaaaaa, 0xff, 0xaa, 0xa, 0x2);
 
@@ -24,6 +23,6 @@ contract generalTest__PixelType is DotnuggV1Test {
     function test__general__PixelType__toHexString() public {
         uint256 input = Pixel.safePack(0xaaaaaa, 0xff, 0xaa, 0xa, 0x2);
 
-        assertEq(StringCastLib.toHexStringNoPrefix(Pixel.rgba(input), 4), 'aaaaaaff');
+        assertEq(strings.toHexStringNoPrefix(Pixel.rgba(input), 4), "aaaaaaff");
     }
 }

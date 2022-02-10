@@ -2,27 +2,22 @@
 
 pragma solidity 0.8.11;
 
-import {SafeCastLib} from "../libraries/SafeCastLib.sol";
-import {ShiftLib} from "../libraries/ShiftLib.sol";
-
 library Pixel {
-    using SafeCastLib for uint256;
-
-    function safePack(
-        uint256 _rgb,
-        uint256 _a,
-        uint256 _id,
-        uint256 _zindex,
-        uint256 _feature
-    ) internal pure returns (uint256 res) {
-        unchecked {
-            res |= uint256(_feature.safe3()) << 39;
-            res |= uint256(_zindex.safe4()) << 35;
-            res |= uint256(_id.safe8()) << 27;
-            res |= uint256(_rgb) << 3;
-            res |= uint256(compressA(_a.safe8()));
-        }
-    }
+    // function safePack(
+    //     uint256 _rgb,
+    //     uint256 _a,
+    //     uint256 _id,
+    //     uint256 _zindex,
+    //     uint256 _feature
+    // ) internal pure returns (uint256 res) {
+    //     unchecked {
+    //         res |= uint256(_feature.safe3()) << 39;
+    //         res |= uint256(_zindex.safe4()) << 35;
+    //         res |= uint256(_id.safe8()) << 27;
+    //         res |= uint256(_rgb) << 3;
+    //         res |= uint256(compressA(_a.safe8()));
+    //     }
+    // }
 
     function unsafePack(
         uint256 _rgb,
@@ -32,11 +27,11 @@ library Pixel {
         uint256 _feature
     ) internal pure returns (uint256 res) {
         unchecked {
-            res |= _feature << 39;
-            res |= _zindex << 35;
-            res |= _id << 27;
+            res |= (_feature & 0x7) << 39;
+            res |= (_zindex & 0xf) << 35;
+            res |= (_id & 0xff) << 27;
             res |= _rgb << 3;
-            res |= compressA(uint8(_a));
+            res |= compressA(_a & 0xff);
         }
     }
 
@@ -87,13 +82,13 @@ library Pixel {
     /// @notice converts an 8 bit (0-255) value into a 3 bit value (0-7)
     /// @dev a compressed value of 7 is equivilent to 255, and a compressed 0 is 0
     function compressA(uint256 input) internal pure returns (uint256 res) {
-        return input.safe8() / 36;
+        return input / 36;
     }
 
     /// @notice converts an 8 bit value into a 3 bit value
     function decompressA(uint256 input) internal pure returns (uint256 res) {
         if (input == 7) return 255;
-        else return input.safe3() * 36;
+        else return input * 36;
     }
 
     function combine(uint256 base, uint256 mix) internal pure returns (uint256 res) {

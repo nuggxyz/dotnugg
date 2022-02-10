@@ -2,14 +2,6 @@
 
 pragma solidity 0.8.11;
 
-import {DotnuggV1Test} from '../DotnuggV1Test.sol';
+import {t} from "../main.t.sol";
 
-contract revertTest__version is DotnuggV1Test {
-    function setUp() public {
-        reset();
-    }
-
-    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-            [T:1] - addStakedShareFromMsgValue - "value of tx too low"
-       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-}
+contract revert__version is t {}

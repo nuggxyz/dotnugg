@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.11;
 
-import "./ShiftLib.sol";
+import {ShiftLib} from "./ShiftLib.sol";
 
 library BitReader {
     using ShiftLib for uint256;

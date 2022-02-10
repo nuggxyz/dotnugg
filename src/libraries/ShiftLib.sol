@@ -2,11 +2,7 @@
 
 pragma solidity 0.8.11;
 
-import {SafeCastLib} from './SafeCastLib.sol';
-
 library ShiftLib {
-    using SafeCastLib for uint256;
-
     /// @notice creates a bit mask
     /// @dev res = (2 ^ bits) - 1
     /// @param bits d
@@ -22,55 +18,27 @@ library ShiftLib {
         res = ~(mask(bits) << pos);
     }
 
-    function set(
-        uint256 cache,
-        uint8 bits,
-        uint8 pos,
-        uint256 value
-    ) internal pure returns (uint256 res) {
-        res = cache & fullsubmask(bits, pos);
-
+    function select8(bytes memory data, uint16 ost) internal pure returns (uint8 res) {
         assembly {
-            value := shl(pos, value)
+            res := shr(0xf7, mload(add(data, ost)))
         }
-
-        res |= value;
     }
 
-    function get(
-        uint256 cache,
-        uint8 bits,
-        uint8 pos
-    ) internal pure returns (uint256 res) {
+    function select16(bytes memory data, uint16 ost) internal pure returns (uint16 res) {
         assembly {
-            res := shr(pos, cache)
-        }
-        res &= mask(bits);
-    }
-
-    /*━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-                                ARRAYS
-    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━*/
-
-    function getArray8x8(uint256 store, uint8 pos) internal pure returns (uint8[] memory arr) {
-        store = get(store, 64, pos);
-
-        arr = new uint8[](8);
-        for (uint256 i = 0; i < 8; i++) {
-            arr[i] = uint8(store & 0xff);
-            store >>= 8;
+            res := shr(0xf0, mload(add(data, ost)))
         }
     }
 
-    function setArray8x8(
-        uint256 store,
-        uint8 pos,
-        uint8[] memory arr
-    ) internal pure returns (uint256 res) {
-        for (uint256 i = 8; i > 0; i--) {
-            res |= uint256(arr[i - 1]) << ((8 * (i - 1)));
+    function select256(bytes memory data, uint16 ost) internal pure returns (uint256 res) {
+        assembly {
+            res := mload(add(data, ost))
         }
+    }
 
-        res = set(store, 64, pos, res);
+    function select160(bytes memory data, uint16 ost) internal pure returns (uint160 res) {
+        assembly {
+            res := mload(add(data, ost))
+        }
     }
 }

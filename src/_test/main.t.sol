@@ -2,26 +2,17 @@
 
 pragma solidity 0.8.11;
 
-import {DSTestExtended as t} from './utils/DSTestExtended.sol';
+import {MockDotnuggV1Implementer} from "../_mock/MockDotnuggV1Implementer.sol";
 
-import {User} from './utils/User.sol';
+import {DotnuggV1Factory} from "../DotnuggV1Factory.sol";
+import {DotnuggV1Resolver} from "../DotnuggV1Resolver.sol";
 
-import {MockDotnuggV1Implementer} from '../_mock/MockDotnuggV1Implementer.sol';
+import "./utils/forge.sol";
 
-import {DotnuggV1} from '../DotnuggV1.sol';
-
-import './utils/Vm.sol';
-
-library SafeCast {
-    function safeI192(uint96 input) internal pure returns (int192) {
-        return (int192(int256(uint256(input))));
-    }
-}
-
-contract DotnuggV1Test is t {
-    using SafeCast for uint96;
-    using SafeCast for uint256;
-    using SafeCast for uint64;
+contract t is ForgeTest {
+    using cast for uint96;
+    using cast for uint256;
+    using cast for uint64;
 
     DotnuggV1 public processor;
 
@@ -43,29 +34,42 @@ contract DotnuggV1Test is t {
 
     constructor() {}
 
-    function reset() public {
-        forge.vm.roll(1);
-        forge.vm.roll(2);
-        processor = new DotnuggV1();
+    struct Users {
+        address frank;
+        address dee;
+        address mac;
+        address dennis;
+        address charlie;
+        address safe;
+    }
 
-        _processor = address(processor);
+    Users public users;
 
-        implementer = new MockDotnuggV1Implementer(processor);
+    function reset() internal {
+        forge.vm.roll(1000);
+        // bytes memory tmp = hex'000100';
+        ds.setDsTest(address(this));
+        users.frank = forge.vm.addr(12);
+        forge.vm.deal(users.frank, 90000 ether);
 
-        implementer.afterConstructor();
+        users.dee = forge.vm.addr(13);
+        forge.vm.deal(users.dee, 90000 ether);
 
-        _implementer = address(implementer);
+        users.mac = forge.vm.addr(14);
+        forge.vm.deal(users.mac, 90000 ether);
 
-        assertTrue(implementer.dotnuggV1StorageProxy().stored(0) > 0);
+        users.dennis = forge.vm.addr(15);
+        forge.vm.deal(users.dennis, 90000 ether);
 
-        safe = new User{value: 1000 ether}();
-        frank = new User{value: 1000 ether}();
-        charlie = new User{value: 1000 ether}();
-        dennis = new User{value: 1000 ether}();
-        mac = new User{value: 1000 ether}();
-        dee = new User{value: 1000 ether}();
+        users.charlie = forge.vm.addr(16);
+        forge.vm.deal(users.charlie, 90000 ether);
 
-        any = new User();
+        users.safe = forge.vm.addr(17);
+        forge.vm.deal(users.safe, 90000 ether);
+
+        forge.vm.startPrank(0x9B0E2b16F57648C7bAF28EDD7772a815Af266E77);
+        nuggft.setIsTrusted(users.safe, true);
+        forge.vm.stopPrank();
     }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -75,14 +79,6 @@ contract DotnuggV1Test is t {
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                                 encodeWithSelector
        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-
-    function dotnuggV1StoreFiles(uint256[][] memory files, uint8 feature) public view returns (bytes memory res) {
-        return abi.encodeWithSelector(implementer.dotnuggV1StoreFiles.selector, files, feature);
-    }
-
-    function take(int256 percent, int256 value) internal pure returns (int256) {
-        return (value * percent) / 100;
-    }
 }
 
 // Success: test__system1()

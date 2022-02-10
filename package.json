@@ -7,10 +7,11 @@
     "author": "dub6ix <dub6ix@nugg.xyz>",
     "license": "MIT",
     "devDependencies": {
-        "webpack": "^5.68.0",
-        "webpack-cli": "^4.9.2",
         "prettier": "2.5.1",
         "prettier-plugin-solidity": "1.0.0-beta.19",
-        "solhint": "3.3.6"
-    }
+        "solhint": "3.3.6",
+        "webpack": "^5.68.0",
+        "webpack-cli": "^4.9.2"
+    },
+    "dependencies": {}
 }

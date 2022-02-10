@@ -2,34 +2,19 @@
 
 pragma solidity 0.8.11;
 
-import {DSTest} from '../../../lib/ds-test/src/test.sol';
+import './ds.sol';
 
-import {Hevm, ForgeVm} from './Vm.sol';
+import {DSTest as ogDSTest} from '../../../lib/ds-test/src/test.sol';
 
-contract DSTestExtended is DSTest {
-    Hevm internal constant hevm = Hevm(HEVM_ADDRESS);
-
+contract DSTest is ogDSTest {
     address internal constant DEAD_ADDRESS = 0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF;
-
-    modifier changeInBalance96(address target, int192 change) {
-        int192 before_staked = safeU96toI192(target.balance);
-        _;
-        int192 after_staked = safeU96toI192(target.balance);
-
-        assertEq(after_staked - before_staked, change, 'user balance did not change');
-    }
-
-    function safeU96toI192(uint256 input) internal pure returns (int192) {
-        require(input <= type(uint96).max);
-        return (int192(int256(input)));
-    }
-
-    function u256toI192(uint96 input) internal pure returns (int192) {
-        return (int192(int256(uint256(input))));
-    }
 
     bytes32 checkpointLabel;
     uint256 private checkpointGasLeft;
+
+    constructor() {
+        ds.setDsTest(address(this));
+    }
 
     function startMeasuringGas(bytes32 label) internal virtual {
         checkpointLabel = label;
@@ -53,6 +38,29 @@ contract DSTestExtended is DSTest {
         assertTrue(!data);
     }
 
+    function assertBalance(
+        address user,
+        int192 expectedBalance,
+        string memory str
+    ) internal virtual {
+        if (expectedBalance < 0) {
+            emit log('Error: assertBalance - expectedBalance < 0');
+            emit log(str);
+            emit log_named_address('user: ', user);
+            emit log_named_int('  Expected', expectedBalance);
+            fail();
+        }
+        if (user.balance != uint256(int256(expectedBalance))) {
+            emit log('Error: assertBalance - user.balance != expectedBalance');
+            emit log(str);
+
+            emit log_named_address('user: ', user);
+            emit log_named_int('  Expected', expectedBalance);
+            emit log_named_uint('    Actual', user.balance);
+            fail();
+        }
+    }
+
     function assertBytesEq(bytes memory a, bytes memory b) internal virtual {
         if (keccak256(a) != keccak256(b)) {
             emit log('Error: a == b not satisfied [bytes]');
@@ -62,26 +70,10 @@ contract DSTestExtended is DSTest {
         }
     }
 
-    function assertArrayEq(uint256[] memory a, uint256[] memory b) internal virtual {
-        if (a.length != b.length) {
-            emit log('Error: a == b not satisfied [uint256[]]');
-            emit log_named_uint('  Expected length', b.length);
-            emit log_named_uint('    Actual length', a.length);
-            fail();
-            return;
+    function mockBlockhash(uint256 blocknum) internal view returns (bytes32 res) {
+        if (block.number - blocknum < 256) {
+            return keccak256(abi.encodePacked(blocknum));
         }
-
-        bool ok = true;
-        for (uint256 i = 0; i < a.length; i++) {
-            if (a[i] != b[i]) {
-                ok = false;
-                emit log_named_uint('Error: a == b not satisfied [bytes256[i]]: i = ', i);
-                emit log_named_bytes32('  Expected', bytes32(b[i]));
-                emit log_named_bytes32('    Actual', bytes32(a[i]));
-            }
-        }
-
-        if (!ok) fail();
     }
 }
 

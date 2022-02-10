@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+//SPDX-License-Identifier: MIT
 
 pragma solidity 0.8.11;
 
@@ -12,6 +12,18 @@ library console {
             let payloadStart := add(payload, 32)
             let r := staticcall(gas(), consoleAddress, payloadStart, payloadLength, 0, 0)
         }
+    }
+
+    function logb(bytes32 p0) internal view {
+        _sendLogPayload(abi.encodeWithSignature('log(bytes32)', p0));
+    }
+
+    function logb(uint256 p0) internal view {
+        _sendLogPayload(abi.encodeWithSignature('log(bytes32)', bytes32(p0)));
+    }
+
+    function logb(string memory p0, uint256 p1) internal view {
+        _sendLogPayload(abi.encodeWithSignature('log(string,bytes32)', p0, bytes32(p1)));
     }
 
     function log() internal view {
