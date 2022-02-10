@@ -20,19 +20,19 @@ library ShiftLib {
 
     function select8(bytes memory data, uint16 ost) internal pure returns (uint8 res) {
         assembly {
-            res := shr(0xf7, mload(add(data, ost)))
+            res := mload(add(add(data, ost), 1))
         }
     }
 
     function select16(bytes memory data, uint16 ost) internal pure returns (uint16 res) {
         assembly {
-            res := shr(0xf0, mload(add(data, ost)))
+            res := mload(add(add(data, ost), 2))
         }
     }
 
     function select256(bytes memory data, uint16 ost) internal pure returns (uint256 res) {
         assembly {
-            res := mload(add(data, ost))
+            res := mload(add(add(data, ost), 32))
         }
     }
 

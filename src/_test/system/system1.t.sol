@@ -12,9 +12,19 @@ contract systemTest__one is t {
     function test__something() public {
         forge.vm.startPrank(users.frank);
 
-        factory.register().write(abi.decode(__data, (bytes[])));
+        IDotnuggV1Storage proxy = factory.register();
+
+        proxy.write(abi.decode(__data, (bytes[])));
 
         forge.vm.stopPrank();
+
+        proxy.read(0, 1);
+
+        proxy.read([1, 1, 1, 1, 1, 1, 1, 1]);
+
+        proxy.calc(0, 1);
+
+        proxy.calc([1, 1, 1, 1, 1, 1, 1, 1]);
     }
 
     bytes __data =
