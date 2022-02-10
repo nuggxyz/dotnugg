@@ -2,14 +2,13 @@
 
 pragma solidity 0.8.11;
 
-import './Matrix.sol';
-import './Rgba.sol';
-import './Anchor.sol';
+import {Matix} from "./Matrix.sol";
+import {MiddleOut} from "./MiddleOut.sol";
 
-import '../types/Version.sol';
-import '../types/Pixel.sol';
+import {Parser} from "./Parser.sol";
+import {Pixel} from "./Pixel.sol";
 
-import '../types/Types.sol';
+import {Types} from "./Types.sol";
 
 library Calculator {
     using Rgba for Types.Rgba;
@@ -19,8 +18,8 @@ library Calculator {
     function combine(
         uint256 featureLen,
         uint8 width,
-        Version.Memory[][] memory versions
-    ) internal view returns (Types.Matrix memory) {
+        Parser.Memory[][8] memory versions
+    ) internal pure returns (Types.Matrix memory) {
         Types.Canvas memory canvas;
         canvas.matrix = Matrix.create(width, width);
         canvas.receivers = new Types.Anchor[](featureLen);
@@ -50,7 +49,7 @@ library Calculator {
 
                 Calculator.mergeToCanvas(canvas, mix);
 
-                Calculator.calculateReceivers(mix);
+                MiddleOut.convertReceiversToAnchors(mix);
 
                 Calculator.updateReceivers(canvas, mix);
             }
@@ -95,34 +94,35 @@ library Calculator {
         }
     }
 
-    function pickVersionIndex(Types.Canvas memory canvas, Version.Memory[] memory versions)
+    function pickVersionIndex(Types.Canvas memory canvas, Parser.Memory[] memory versions)
         internal
         pure
         returns (uint8)
     {
-        require(versions.length == 1, 'CALC:PVI:0');
+        require(versions.length == 1, "CALC:PVI:0");
         if (versions.length == 1) {
             return 0;
         }
-        // uint8 index = uint8(versions.length) - 1;
-        //
-        // uint256 feature = (versions[0].data >> 75) & ShiftLib.mask(3);
 
-        // while (index > 0) {
-        // uint256 bits = (versions[index].data >> 27) & ShiftLib.mask(24);
-        // Types.Rlud memory anchorRadii = Types.Rlud({
-        // r: uint8((bits >> 18) & ShiftLib.mask(6)),
-        // l: uint8((bits >> 12) & ShiftLib.mask(6)),
-        // u: uint8((bits >> 6) & ShiftLib.mask(6)),
-        // d: uint8((bits) & ShiftLib.mask(6)),
-        // exists: true
-        // });
+        uint8 index = uint8(versions.length) - 1;
 
-        // if (checkRluds(anchorRadii, canvas.receivers[feature].radii)) {
-        // return index;
-        // }
-        // index = index - 1;
-        // }
+        uint256 feature = (versions[0].data >> 75) & ShiftLib.mask(3);
+
+        while (index > 0) {
+            uint256 bits = (versions[index].data >> 27) & ShiftLib.mask(24);
+            Types.Rlud memory anchorRadii = Types.Rlud({
+                r: uint8((bits >> 18) & ShiftLib.mask(6)),
+                l: uint8((bits >> 12) & ShiftLib.mask(6)),
+                u: uint8((bits >> 6) & ShiftLib.mask(6)),
+                d: uint8((bits) & ShiftLib.mask(6)),
+                exists: true
+            });
+
+            if (checkRluds(anchorRadii, canvas.receivers[feature].radii)) {
+                return index;
+            }
+            index = index - 1;
+        }
 
         return 0;
     }
@@ -133,15 +133,15 @@ library Calculator {
 
     function setMix(
         Types.Mix memory res,
-        Version.Memory[] memory versions,
+        Parser.Memory[] memory versions,
         uint8 versionIndex
     ) internal pure {
         uint256 radiiBits = (versions[versionIndex].data >> 27) & ShiftLib.mask(24);
         uint256 expanderBits = (versions[versionIndex].data >> 3) & ShiftLib.mask(24);
 
-        (uint256 x, uint256 y) = Version.getAnchor(versions[versionIndex]);
+        (uint256 x, uint256 y) = Parser.getAnchor(versions[versionIndex]);
 
-        (uint256 width, uint256 height) = Version.getWidth(versions[versionIndex]);
+        (uint256 width, uint256 height) = Parser.getWidth(versions[versionIndex]);
 
         res.version.width = uint8(width);
         res.version.height = uint8(height);
@@ -167,7 +167,7 @@ library Calculator {
         res.version.staticReceivers = new Types.Coordinate[](8);
 
         for (uint256 i = 0; i < 8; i++) {
-            (uint256 _x, uint256 _y, bool exists) = Version.getReceiverAt(versions[versionIndex], i, false);
+            (uint256 _x, uint256 _y, bool exists) = Parser.getReceiverAt(versions[versionIndex], i, false);
             if (exists) {
                 res.version.staticReceivers[i].a = uint8(_x);
                 res.version.staticReceivers[i].b = uint8(_y);
@@ -176,7 +176,7 @@ library Calculator {
         }
 
         for (uint256 i = 0; i < 8; i++) {
-            (uint256 _x, uint256 _y, bool exists) = Version.getReceiverAt(versions[versionIndex], i, true);
+            (uint256 _x, uint256 _y, bool exists) = Parser.getReceiverAt(versions[versionIndex], i, true);
             if (exists) {
                 res.version.calculatedReceivers[i].a = uint8(_x);
                 res.version.calculatedReceivers[i].b = uint8(_y);
@@ -215,9 +215,5 @@ library Calculator {
         canvas.matrix.moveBack();
         canvas.matrix.resetIterator();
         mix.matrix.resetIterator();
-    }
-
-    function calculateReceivers(Types.Mix memory mix) internal pure {
-        Anchor.convertReceiversToAnchors(mix);
     }
 }

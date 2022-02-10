@@ -2,19 +2,17 @@
 
 pragma solidity 0.8.11;
 
-import {Rgba} from '../logic/Rgba.sol';
-
-import {Version} from '../types/Version.sol';
-import {Types} from '../types/Types.sol';
+import {Parser} from "./Parser.sol";
+import {Types} from "./Types.sol";
 
 library Matrix {
     using Rgba for Types.Rgba;
-    using Version for Version.Memory;
+    using Parser for Parser.Memory;
 
     function create(uint8 width, uint8 height) internal pure returns (Types.Matrix memory res) {
-        require(width % 2 == 1 && height % 2 == 1, 'ML:C:0');
+        require(width % 2 == 1 && height % 2 == 1, "ML:C:0");
 
-        Version.initBigMatrix(res.version, width);
+        Parser.initBigMatrix(res.version, width);
         res.version.setWidth(width, height);
     }
 
@@ -76,7 +74,7 @@ library Matrix {
 
     function set(
         Types.Matrix memory matrix,
-        Version.Memory memory data,
+        Parser.Memory memory data,
         uint256 groupWidth,
         uint256 groupHeight
     ) internal pure {
@@ -85,9 +83,9 @@ library Matrix {
         for (uint256 y = 0; y < groupHeight; y++) {
             for (uint256 x = 0; x < groupWidth; x++) {
                 next(matrix, uint8(groupWidth));
-                uint256 col = Version.getPixelAt(data, x, y);
+                uint256 col = Parser.getPixelAt(data, x, y);
                 if (col != 0) {
-                    (uint256 yo, , ) = Version.getPalletColorAt(data, col);
+                    (uint256 yo, , ) = Parser.getPalletColorAt(data, col);
 
                     setCurrent(matrix, yo);
                 } else {

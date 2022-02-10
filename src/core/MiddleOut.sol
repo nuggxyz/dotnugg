@@ -2,12 +2,15 @@
 
 pragma solidity 0.8.11;
 
-import '../types/Types.sol';
-import './Matrix.sol';
+import {Types} from "./Types.sol";
 
-library Anchor {
+import {Matrix} from "./Matrix.sol";
+
+import {Parser} from "./Parser.sol";
+
+library MiddleOut {
     using Matrix for Types.Matrix;
-    using Version for Version.Memory;
+    using Parser for Parser.Memory;
 
     function convertReceiversToAnchors(Types.Mix memory mix) internal pure {
         Types.Coordinate[] memory anchors;
@@ -40,16 +43,30 @@ library Anchor {
     ) internal pure {
         Types.Rlud memory radii;
 
-        while (coordinate.a < mix.matrix.width - 1 && mix.matrix.version.bigMatrixHasPixelAt(coordinate.a + (radii.r + 1), coordinate.b)) {
+        while (
+            coordinate.a < mix.matrix.width - 1 &&
+            mix.matrix.version.bigMatrixHasPixelAt(coordinate.a + (radii.r + 1), coordinate.b)
+        ) {
             radii.r++;
         }
-        while (coordinate.a != 0 && coordinate.a >= (radii.l + 1) && mix.matrix.version.bigMatrixHasPixelAt(coordinate.a - (radii.l + 1), coordinate.b)) {
+        while (
+            coordinate.a != 0 &&
+            coordinate.a >= (radii.l + 1) &&
+            mix.matrix.version.bigMatrixHasPixelAt(coordinate.a - (radii.l + 1), coordinate.b)
+        ) {
             radii.l++;
         }
-        while (coordinate.b != 0 && coordinate.b >= (radii.u + 1) && mix.matrix.version.bigMatrixHasPixelAt(coordinate.a, coordinate.b - (radii.u + 1))) {
+        while (
+            coordinate.b != 0 &&
+            coordinate.b >= (radii.u + 1) &&
+            mix.matrix.version.bigMatrixHasPixelAt(coordinate.a, coordinate.b - (radii.u + 1))
+        ) {
             radii.u++;
         }
-        while (coordinate.b < mix.matrix.height - 1 && mix.matrix.version.bigMatrixHasPixelAt(coordinate.a, coordinate.b + (radii.d + 1))) {
+        while (
+            coordinate.b < mix.matrix.height - 1 &&
+            mix.matrix.version.bigMatrixHasPixelAt(coordinate.a, coordinate.b + (radii.d + 1))
+        ) {
             radii.d++;
         }
 

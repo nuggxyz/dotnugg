@@ -2,15 +2,13 @@
 
 pragma solidity 0.8.11;
 
-import {ShiftLib} from '../libraries/ShiftLib.sol';
-import {BitReader} from '../libraries/BitReader.sol';
-import {SafeCastLib} from '../libraries/SafeCastLib.sol';
+import {BitReader} from "../libraries/BitReader.sol";
+import {SafeCastLib} from "../libraries/SafeCastLib.sol";
+import {ShiftLib} from "../libraries/ShiftLib.sol";
 
-import {Pixel} from '../types/Pixel.sol';
+import {Pixel} from "../types/Pixel.sol";
 
-import '../_test/utils/console.sol';
-
-library Version {
+library Parser {
     using BitReader for BitReader.Memory;
     using SafeCastLib for uint256;
 
@@ -22,7 +20,41 @@ library Version {
         uint256 data;
         uint256 bitmatrixptr;
     }
-    event log_named_bytes32(string key, bytes32 val);
+
+    function parse(uint256[][] calldata data) public view returns (Parser.Memory[][] memory m) {
+        m = new Parser.Memory[][](data.length);
+
+        for (uint256 j = 0; j < data.length; j++) {
+            (bool empty, BitReader.Memory memory reader) = BitReader.init(data[j]);
+
+            if (empty) continue;
+
+            // indicates dotnuggV1 encoded file
+            require(reader.select(32) == 0x420690_01, "DEC:PI:0");
+
+            uint256 feature = reader.select(3);
+
+            uint256 id = reader.select(8);
+
+            uint256[] memory pallet = Parser.parsePallet(reader, id, feature);
+
+            uint256 versionLength = reader.select(2) + 1;
+
+            m[j] = new Parser.Memory[](versionLength);
+
+            for (uint256 i = 0; i < versionLength; i++) {
+                m[j][i].data = Parser.parseData(reader, feature);
+
+                m[j][i].receivers = Parser.parseReceivers(reader);
+
+                (uint256 width, uint256 height) = Parser.getWidth(m[j][i]);
+
+                m[j][i].minimatrix = Parser.parseMiniMatrix(reader, width, height);
+
+                m[j][i].pallet = pallet;
+            }
+        }
+    }
 
     function parsePallet(
         BitReader.Memory memory reader,
@@ -64,12 +96,7 @@ library Version {
         }
     }
 
-    function parseData(
-        BitReader.Memory memory reader,
-        uint256 feature,
-        uint8[] memory xovers,
-        uint8[] memory yovers
-    ) internal pure returns (uint256 res) {
+    function parseData(BitReader.Memory memory reader, uint256 feature) internal pure returns (uint256 res) {
         // 12 bits: coordinate - anchor x and y
 
         res |= feature << 75;
@@ -83,14 +110,17 @@ library Version {
         uint256 anchorX = reader.select(6);
         uint256 anchorY = reader.select(6);
 
-        if (xovers.length == 8 && yovers.length == 8 && (xovers[feature] != 0 || yovers[feature] != 0)) {
-            res |= uint256(yovers[feature]) << 57;
-            res |= uint256(xovers[feature]) << 51;
-        } else {
-            // 12 bits: coordinate - anchor x and y
-            res |= anchorX << 51;
-            res |= anchorY << 57;
-        }
+        // if (xovers.length == 8 && yovers.length == 8 && (xovers[feature] != 0 || yovers[feature] != 0)) {
+        //     res |= uint256(yovers[feature]) << 57;
+        //     res |= uint256(xovers[feature]) << 51;
+        // } else {
+        //     // 12 bits: coordinate - anchor x and y
+        //     res |= anchorX << 51;
+        //     res |= anchorY << 57;
+        // }
+
+        res |= anchorX << 51;
+        res |= anchorY << 57;
 
         // 1 or 25 bits: rlud - radii
         res |= (reader.select(1) == 0x1 ? 0x000000 : reader.select(24)) << 27;
@@ -221,7 +251,7 @@ library Version {
     }
 
     function setZ(Memory memory m, uint256 z) internal pure {
-        require(z <= 0xf, 'VERS:SETZ:0');
+        require(z <= 0xf, "VERS:SETZ:0");
         m.data |= z << 78;
     }
 
@@ -230,7 +260,7 @@ library Version {
     }
 
     function setFeature(Memory memory m, uint256 z) internal pure {
-        require(z <= ShiftLib.mask(3), 'VERS:SETF:0');
+        require(z <= ShiftLib.mask(3), "VERS:SETF:0");
         m.data &= ShiftLib.fullsubmask(3, 75);
         m.data |= (z << 75);
     }
@@ -250,8 +280,8 @@ library Version {
         uint256 w,
         uint256 h
     ) internal pure {
-        require(w <= ShiftLib.mask(6), 'VERS:SETW:0');
-        require(h <= ShiftLib.mask(6), 'VERS:SETW:1');
+        require(w <= ShiftLib.mask(6), "VERS:SETW:0");
+        require(h <= ShiftLib.mask(6), "VERS:SETW:1");
 
         m.data &= ShiftLib.fullsubmask(12, 63);
 

@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.11;
 
-import {Version as NewVersion} from '../types/Version.sol';
+import {Parser} from "./Parser.sol";
 
 library Types {
     struct Rlud {
@@ -59,7 +59,7 @@ library Types {
     struct Matrix {
         uint8 width;
         uint8 height;
-        NewVersion.Memory version;
+        Parser.Memory version;
         uint8 currentUnsetX;
         uint8 currentUnsetY;
         bool init;

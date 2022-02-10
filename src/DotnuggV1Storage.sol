@@ -1,114 +1,102 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity 0.8.11;
-import {IDotnuggV1StorageProxy} from '../interfaces/IDotnuggV1StorageProxy.sol';
-import {IDotnuggV1Implementer} from '../interfaces/IDotnuggV1Implementer.sol';
 
-import {ShiftLib} from '../libraries/ShiftLib.sol';
-import {BytesLib} from '../libraries/BytesLib.sol';
-import {SafeCastLib} from '../libraries/SafeCastLib.sol';
-import '../_test/utils/logger.sol';
+import {IDotnuggV1Implementer} from "./interfaces/IDotnuggV1Implementer.sol";
 
-contract DotnuggV1StorageProxy is IDotnuggV1StorageProxy {
+import {IDotnuggV1Storage} from "./interfaces/IDotnuggV1Storage.sol";
+
+import {BytesLib} from "./libraries/BytesLib.sol";
+import {SafeCastLib} from "./libraries/SafeCastLib.sol";
+import {ShiftLib} from "./libraries/ShiftLib.sol";
+
+contract DotnuggV1Storage is IDotnuggV1Storage {
     using SafeCastLib for uint256;
     using SafeCastLib for uint16;
 
-    address public immutable dotnuggv1;
+    address public immutable factory;
 
     address public implementer;
 
+    address public trusted;
+
+    uint168[][8] public pointers;
+
+    uint8[8] public length;
+
+    string[8] public labels;
+
     constructor() {
-        dotnuggv1 = msg.sender;
+        factory = msg.sender;
         implementer = msg.sender;
     }
 
-    function init(address _implementer) external {
-        require(implementer == address(0) && msg.sender == dotnuggv1, 'C:0');
+    function lengthOf(uint8 feature) external view override returns (uint8 res) {
+        return length[feature];
+    }
+
+    function pointersOf(uint8 feature) external view override returns (uint168[] memory res) {
+        return pointers[feature];
+    }
+
+    function init(
+        address _implementer,
+        string[8] calldata _labels,
+        address _trusted
+    ) external {
+        require(implementer == address(0) && msg.sender == factory, "C:0");
+
         implementer = _implementer;
-    }
-
-    // Mapping from token ID to owner address
-    mapping(uint8 => uint168[]) public sstore2Pointers;
-    mapping(uint8 => uint8) public featureLengths;
-
-    function pointers() public view override returns (address[][] memory res) {
-        uint168[][] memory arr = new uint168[][](8);
-        for (uint8 i = 0; i < 8; i++) {
-            arr[i] = sstore2Pointers[i];
-        }
-        return abi.decode(abi.encode(arr), (address[][]));
-    }
-
-    function stored(uint8 feature) public view override returns (uint8 res) {
-        return featureLengths[feature];
+        labels = _labels;
+        trusted = _trusted;
     }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                                 TRUSTED
        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-    function unsafeBulkStore(bytes[] calldata data) public override {
+    function store(bytes[8] calldata data) public override {
         for (uint8 i = 0; i < 8; i++) {
-            // uint8 len = data[i].length.safe8();
-
-            if (data[i].length > 0) {
-                // emit log_uint(i);
-                (address ptr, uint8 len) = write(data[i]);
-
-                bool ok = IDotnuggV1Implementer(implementer).dotnuggV1StoreCallback(msg.sender, i, len, ptr);
-
-                require(ok, 'C:0');
-
-                sstore2Pointers[i].push(uint168(uint160(ptr)) | (uint168(len) << 160));
-
-                featureLengths[i] += len;
-            }
+            if (data[i].length > 0) store(i, data[i]);
         }
     }
 
-    function store(uint8 feature, bytes calldata data) public override returns (uint8 res) {
-        require(feature < 8, 'F:3');
+    function store(uint8 feature, bytes calldata data) public override {
+        require(feature < 8, "F:3");
 
         (address ptr, uint8 len) = write(data);
 
-        require(len > 0, 'F:0');
+        require(len > 0, "F:0");
 
-        bool ok = IDotnuggV1Implementer(implementer).dotnuggV1StoreCallback(msg.sender, feature, len, ptr);
+        require(trusted == msg.sender, "C:0");
 
-        require(ok, 'C:0');
+        pointers[feature].push(uint168(uint160(ptr)) | (uint168(len) << 160));
 
-        sstore2Pointers[feature].push(uint168(uint160(ptr)) | (uint168(len) << 160));
-
-        featureLengths[feature] += len;
-
-        return len;
+        length[feature] += len;
     }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                                  GET FILES
        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-    function getBatch(uint8[] memory ids) public view returns (uint256[][] memory data) {
-        data = new uint256[][](ids.length);
-
-        for (uint8 i = 0; i < ids.length; i++) {
-            if (ids[i] == 0) data[i] = new uint256[](0);
+    function get(uint8[8] memory ids) public view returns (uint256[][8] memory data) {
+        for (uint8 i = 0; i < 8; i++) {
+            // if (ids[i] == 0) data[i] = new uint256[](0);
+            if (ids[i] == 0) continue;
             else data[i] = get(i, ids[i]);
         }
     }
 
     function get(uint8 feature, uint8 pos) public view returns (uint256[] memory data) {
-        require(pos != 0, 'F:1');
+        require(pos != 0, "F:1");
 
         pos--;
 
-        uint8 totalLength = featureLengths[feature];
+        uint8 totalLength = length[feature];
 
-        console.log(totalLength, pos);
+        require(pos < totalLength, "F:2");
 
-        require(pos < totalLength, 'F:2');
-
-        uint168[] memory ptrs = sstore2Pointers[feature];
+        uint168[] memory ptrs = pointers[feature];
 
         uint168 stor;
         uint8 storePos;
@@ -126,7 +114,7 @@ contract DotnuggV1StorageProxy is IDotnuggV1StorageProxy {
             }
         }
 
-        require(stor != 0, 'F:3');
+        require(stor != 0, "F:3");
 
         data = read(stor, storePos);
     }
@@ -160,9 +148,9 @@ contract DotnuggV1StorageProxy is IDotnuggV1StorageProxy {
             kek := keccak256(add(data, add(0x20, 19)), keklen)
         }
 
-        require(check == kek, 'O:4');
+        require(check == kek, "O:4");
 
-        require(prefix == header, 'O:5');
+        require(prefix == header, "O:5");
 
         assembly {
             // Deploy a new contract with the generated creation code.
@@ -170,7 +158,7 @@ contract DotnuggV1StorageProxy is IDotnuggV1StorageProxy {
             _pointer := create(0, add(data, 0x20), sub(mload(data), 0x20))
         }
 
-        require(_pointer != address(0), 'DEPLOYMENT_FAILED');
+        require(_pointer != address(0), "DEPLOYMENT_FAILED");
     }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -196,7 +184,7 @@ contract DotnuggV1StorageProxy is IDotnuggV1StorageProxy {
         // get len
         uint8 len = BytesLib.toUint8(code, offset);
 
-        require(num + 1 <= len, 'P:x');
+        require(num + 1 <= len, "P:x");
 
         uint16 checker = (offset + 1) + (num) * 2;
 
@@ -204,9 +192,11 @@ contract DotnuggV1StorageProxy is IDotnuggV1StorageProxy {
 
         uint16 start = BytesLib.toUint16(code, checker) + biggeroffset + offset;
 
-        uint16 end = (len == num + 1) ? uint16(code.length) : BytesLib.toUint16(code, checker + 2) + biggeroffset + offset;
+        uint16 end = (len == num + 1)
+            ? uint16(code.length)
+            : BytesLib.toUint16(code, checker + 2) + biggeroffset + offset;
 
-        require(end >= uint16(start), 'P:y');
+        require(end >= uint16(start), "P:y");
 
         uint16 size = end - start;
 
@@ -218,7 +208,7 @@ contract DotnuggV1StorageProxy is IDotnuggV1StorageProxy {
 
         size = end - start;
 
-        require(size % 0x20 == 0, 'P:z');
+        require(size % 0x20 == 0, "P:z");
 
         res = new uint256[]((size / 0x20));
 
