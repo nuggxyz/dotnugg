@@ -7,6 +7,8 @@ import {ShiftLib} from "../libraries/ShiftLib.sol";
 
 import {Pixel} from "./Pixel.sol";
 
+import {DotnuggV1Read} from "../interfaces/IDotnuggV1Storage.sol";
+
 library Parser {
     using BitReader for BitReader.Memory;
 
@@ -19,9 +21,9 @@ library Parser {
         uint256 bitmatrixptr;
     }
 
-    function parse(uint256[][8] calldata data) internal pure returns (Parser.Memory[][8] memory m) {
+    function parse(DotnuggV1Read[8] memory data) internal pure returns (Parser.Memory[][8] memory m) {
         for (uint256 j = 0; j < 8; j++) {
-            (bool empty, BitReader.Memory memory reader) = BitReader.init(data[j]);
+            (bool empty, BitReader.Memory memory reader) = BitReader.init(data[j].dat);
 
             if (empty) continue;
 

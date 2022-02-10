@@ -44,14 +44,14 @@ library Types {
 
     struct Canvas {
         Matrix matrix;
-        Anchor[] receivers;
+        Anchor[8] receivers;
     }
 
     struct Mix {
         uint8 feature;
         Version version;
         Matrix matrix;
-        Anchor[] receivers;
+        Anchor[8] receivers;
         uint8 yoffset;
         uint8 xoffset;
     }

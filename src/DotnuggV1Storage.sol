@@ -4,9 +4,12 @@ pragma solidity 0.8.11;
 
 import {IDotnuggV1Implementer} from "./interfaces/IDotnuggV1Implementer.sol";
 
-import {IDotnuggV1Storage} from "./interfaces/IDotnuggV1Storage.sol";
+import {IDotnuggV1Storage, DotnuggV1Calculated, DotnuggV1Read} from "./interfaces/IDotnuggV1Storage.sol";
 
 import {ShiftLib} from "./libraries/ShiftLib.sol";
+
+import {Calculator} from "./core/Calculator.sol";
+import {Parser} from "./core/Parser.sol";
 
 contract DotnuggV1Storage is IDotnuggV1Storage {
     address public immutable factory;
@@ -19,22 +22,15 @@ contract DotnuggV1Storage is IDotnuggV1Storage {
 
     uint8[8] private __lengths;
 
-    string[8] private __labels;
-
     constructor() {
         factory = msg.sender;
         implementer = msg.sender;
     }
 
-    function init(
-        address _implementer,
-        string[8] calldata _labels,
-        address _trusted
-    ) external {
+    function init(address _implementer, address _trusted) external {
         require(implementer == address(0) && msg.sender == factory, "C:0");
 
         implementer = _implementer;
-        __labels = _labels;
         trusted = _trusted;
     }
 
@@ -42,12 +38,6 @@ contract DotnuggV1Storage is IDotnuggV1Storage {
         require(trusted == msg.sender, "C:0");
 
         trusted = _trusted;
-    }
-
-    function updateLabel(uint8 feature, string memory input) external {
-        require(trusted == msg.sender, "C:0");
-
-        __labels[feature] = input;
     }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -86,14 +76,6 @@ contract DotnuggV1Storage is IDotnuggV1Storage {
         return __pointers[feature];
     }
 
-    function labelOf(uint8 feature) external view override returns (string memory res) {
-        return __labels[feature];
-    }
-
-    function labels() external view override returns (string[8] memory res) {
-        return __labels;
-    }
-
     function lengths() external view override returns (uint8[8] memory res) {
         return __lengths;
     }
@@ -106,15 +88,23 @@ contract DotnuggV1Storage is IDotnuggV1Storage {
                                  GET FILES
        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-    function read(uint8[8] memory ids) public view returns (uint256[][8] memory data) {
+    function calc(uint8[8] memory ids) public view returns (DotnuggV1Calculated memory) {
+        return Calculator.combine(read(ids));
+    }
+
+    function calc(uint8 feature, uint8 pos) public view returns (DotnuggV1Calculated memory) {
+        DotnuggV1Read[8] memory blank;
+        blank[0] = read(feature, pos);
+        return Calculator.combine(blank);
+    }
+
+    function read(uint8[8] memory ids) public view returns (DotnuggV1Read[8] memory res) {
         for (uint8 i = 0; i < 8; i++) {
-            // if (ids[i] == 0) data[i] = new uint256[](0);
-            if (ids[i] == 0) continue;
-            else data[i] = read(i, ids[i]);
+            if (ids[i] != 0) res[i] = read(i, ids[i]);
         }
     }
 
-    function read(uint8 feature, uint8 pos) public view returns (uint256[] memory data) {
+    function read(uint8 feature, uint8 pos) public view returns (DotnuggV1Read memory res) {
         require(pos != 0, "F:1");
 
         pos--;
@@ -143,7 +133,7 @@ contract DotnuggV1Storage is IDotnuggV1Storage {
 
         require(stor != 0, "F:3");
 
-        data = _read(stor, storePos);
+        res = _read(stor, storePos);
     }
 
     uint16 internal constant DATA_PRE_OFFSET = 1; // We skip the first byte as it's a STOP opcode to ensure the contract can't be called.
@@ -193,7 +183,7 @@ contract DotnuggV1Storage is IDotnuggV1Storage {
        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
     // there can only be max 255 items per feature, and so num can not be higher than 255
-    function _read(uint168 _pointer, uint8 num) internal view returns (uint256[] memory res) {
+    function _read(uint168 _pointer, uint8 num) internal view returns (DotnuggV1Read memory res) {
         address addr = address(uint160(_pointer));
         uint16 offset = DATA_PRE_OFFSET + 32;
         // uint16 offset = 32 + 1;
@@ -237,15 +227,15 @@ contract DotnuggV1Storage is IDotnuggV1Storage {
 
         require(size % 0x20 == 0, "P:z");
 
-        res = new uint256[]((size / 0x20));
+        res.dat = new uint256[]((size / 0x20));
 
-        for (uint16 i = 0; i < res.length; i++) {
-            res[i] = ShiftLib.select256(code, start + i * 0x20);
+        for (uint16 i = 0; i < res.dat.length; i++) {
+            res.dat[i] = ShiftLib.select256(code, start + i * 0x20);
         }
 
         // keccak would be masked away here
         if (extra != 0) {
-            res[0] = res[0] & ShiftLib.mask(extra * 8);
+            res.dat[0] = res.dat[0] & ShiftLib.mask(extra * 8);
         }
     }
 }

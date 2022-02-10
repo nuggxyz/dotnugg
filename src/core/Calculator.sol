@@ -2,42 +2,39 @@
 
 pragma solidity 0.8.11;
 
-import {Matix} from "./Matrix.sol";
 import {MiddleOut} from "./MiddleOut.sol";
+import {ShiftLib} from "../libraries/ShiftLib.sol";
 
 import {Parser} from "./Parser.sol";
 import {Pixel} from "./Pixel.sol";
 
 import {Types} from "./Types.sol";
+import {Matrix} from "./Matrix.sol";
+
+import {DotnuggV1Calculated, DotnuggV1Read} from "../interfaces/IDotnuggV1Storage.sol";
 
 library Calculator {
-    using Rgba for Types.Rgba;
     using Matrix for Types.Matrix;
     using Pixel for uint256;
 
-    function combine(
-        uint256 featureLen,
-        uint8 width,
-        Parser.Memory[][8] memory versions
-    ) internal pure returns (Types.Matrix memory) {
+    function combine(DotnuggV1Read[8] memory files) internal pure returns (DotnuggV1Calculated memory res) {
+        Parser.Memory[][8] memory versions = Parser.parse(files);
+
         Types.Canvas memory canvas;
-        canvas.matrix = Matrix.create(width, width);
-        canvas.receivers = new Types.Anchor[](featureLen);
+        canvas.matrix = Matrix.create(63, 63);
+        // canvas.receivers = Types.Anchor[8];
+        canvas.matrix.width = 63;
+        canvas.matrix.height = 63;
 
-        Types.Coordinate memory center = Types.Coordinate({a: width / 2 + 1, b: width / 2 + 1, exists: true});
+        Types.Coordinate memory center = Types.Coordinate({a: 32, b: 32, exists: true});
 
-        Types.Rlud memory r;
-
-        for (uint8 i = 0; i < featureLen; i++) {
-            canvas.receivers[i] = Types.Anchor({coordinate: center, radii: r});
+        for (uint8 i = 0; i < 8; i++) {
+            canvas.receivers[i].coordinate = center;
         }
 
-        canvas.matrix.width = width;
-        canvas.matrix.height = width;
-
         Types.Mix memory mix;
-        mix.matrix = Matrix.create(width, width);
-        mix.receivers = new Types.Anchor[](featureLen);
+        mix.matrix = Matrix.create(63, 63);
+        // mix.receivers = new Types.Anchor[8];
 
         for (uint8 i = 0; i < versions.length; i++) {
             if (versions[i].length > 0) {
@@ -55,7 +52,7 @@ library Calculator {
             }
         }
 
-        return canvas.matrix;
+        res.dat = canvas.matrix.version.bigmatrix;
     }
 
     function postionForCanvas(Types.Canvas memory canvas, Types.Mix memory mix) internal pure {
@@ -187,7 +184,10 @@ library Calculator {
         // TODO - receivers?
         res.xoffset = 0;
         res.yoffset = 0;
-        res.receivers = new Types.Anchor[](res.receivers.length);
+        // res.receivers = new Types.Anchor[8](res.receivers.length);
+        Types.Anchor[8] memory upd;
+        res.receivers = upd;
+
         res.feature = uint8((versions[versionIndex].data >> 75) & ShiftLib.mask(3));
         res.matrix.set(versions[versionIndex], width, height);
     }
@@ -209,7 +209,7 @@ library Calculator {
             uint256 mixPixel = mix.matrix.current();
 
             if (mixPixel.e() && mixPixel.z() >= canvasPixel.z()) {
-                canvas.matrix.setCurrent(Rgba.combine(canvasPixel, mixPixel));
+                canvas.matrix.setCurrent(Pixel.combine(canvasPixel, mixPixel));
             }
         }
         canvas.matrix.moveBack();

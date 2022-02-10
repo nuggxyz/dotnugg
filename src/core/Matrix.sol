@@ -6,7 +6,6 @@ import {Parser} from "./Parser.sol";
 import {Types} from "./Types.sol";
 
 library Matrix {
-    using Rgba for Types.Rgba;
     using Parser for Parser.Memory;
 
     function create(uint8 width, uint8 height) internal pure returns (Types.Matrix memory res) {
