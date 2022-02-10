@@ -18,8 +18,10 @@ contract systemTest__one is t {
 
         forge.vm.stopPrank();
 
+        // get item #1 of feature 0
         proxy.read(0, 1);
 
+        // get item #1 of feature 0 - 7
         proxy.read([1, 1, 1, 1, 1, 1, 1, 1]);
 
         proxy.calc(0, 1);
