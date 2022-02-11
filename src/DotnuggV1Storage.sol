@@ -2,29 +2,25 @@
 
 pragma solidity 0.8.11;
 
-import {IDotnuggV1Implementer} from "./interfaces/IDotnuggV1Implementer.sol";
+import {DotnuggV1Resolver} from "./DotnuggV1Resolver.sol";
 
-import {IDotnuggV1Storage, DotnuggV1Calculated, DotnuggV1Read} from "./interfaces/IDotnuggV1Storage.sol";
+import {IDotnuggV1Storage} from "./interfaces/IDotnuggV1Storage.sol";
+import {DotnuggV1Calculated, DotnuggV1Read} from "./interfaces/DotnuggV1Files.sol";
 
 import {ShiftLib} from "./libraries/ShiftLib.sol";
 
-import {Calculator} from "./core/Calculator.sol";
-import {Parser} from "./core/Parser.sol";
-
-import "./_test/utils/forge.sol";
-
-contract DotnuggV1Storage is IDotnuggV1Storage {
+contract DotnuggV1Storage is IDotnuggV1Storage, DotnuggV1Resolver {
     address public immutable factory;
 
     address public trusted;
 
     uint168[][8] private __pointers;
-
     uint8[8] private __lengths;
 
     constructor() {
-        factory = msg.sender;
-        trusted = msg.sender;
+        factory = address(this);
+
+        trusted = address(this);
     }
 
     function init(address _trusted) external {
@@ -40,15 +36,11 @@ contract DotnuggV1Storage is IDotnuggV1Storage {
     }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-                                TRUSTED
+                                  write
        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-    function write(bytes[] calldata data) external {
-        for (uint8 i = 0; i < 8; i++) {
-            if (data[i].length > 0) write(i, data[i]);
-        }
-    }
 
-    function write(bytes[8] calldata data) external override {
+    function write(bytes[] calldata data) external {
+        require(data.length == 8, "nope");
         for (uint8 i = 0; i < 8; i++) {
             if (data[i].length > 0) write(i, data[i]);
         }
@@ -72,35 +64,21 @@ contract DotnuggV1Storage is IDotnuggV1Storage {
         emit Write(feature, len, loc, msg.sender);
     }
 
-    function lengthOf(uint8 feature) external view override returns (uint8 res) {
-        return __lengths[feature];
+    function exec(uint8[8] memory ids, bool base64) public view returns (string memory) {
+        return svg(calc(read(ids)), base64);
     }
 
-    function pointersOf(uint8 feature) external view override returns (uint168[] memory res) {
-        return __pointers[feature];
-    }
-
-    function lengths() external view override returns (uint8[8] memory res) {
-        return __lengths;
-    }
-
-    function pointers() external view override returns (uint168[][8] memory res) {
-        return __pointers;
+    function exec(
+        uint8 feature,
+        uint8 pos,
+        bool base64
+    ) public view returns (string memory) {
+        return svg(calc(read(feature, pos)), base64);
     }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                                  GET FILES
        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-
-    function calc(uint8[8] memory ids) public view returns (DotnuggV1Calculated memory) {
-        return Calculator.combine(read(ids));
-    }
-
-    function calc(uint8 feature, uint8 pos) public view returns (DotnuggV1Calculated memory) {
-        DotnuggV1Read[8] memory blank;
-        blank[0] = read(feature, pos);
-        return Calculator.combine(blank);
-    }
 
     function read(uint8[8] memory ids) public view returns (DotnuggV1Read[8] memory res) {
         for (uint8 i = 0; i < 8; i++) {
@@ -109,39 +87,36 @@ contract DotnuggV1Storage is IDotnuggV1Storage {
     }
 
     function read(uint8 feature, uint8 pos) public view returns (DotnuggV1Read memory res) {
-        require(pos != 0, "F:1");
+        require(pos != 0 && pos <= __lengths[feature], "F:1");
 
         pos--;
 
-        uint8 totalLength = __lengths[feature];
-
-        require(pos < totalLength, "F:2");
-
         uint168[] memory ptrs = __pointers[feature];
-
-        uint168 stor;
-        uint8 storePos;
-
-        uint8 workingPos;
 
         for (uint256 i = 0; i < ptrs.length; i++) {
             uint8 here = uint8(ptrs[i] >> 160);
-            if (workingPos + here > pos) {
-                stor = ptrs[i];
-                storePos = pos - workingPos;
-                break;
-            } else {
-                workingPos += here;
+            if (here >= pos) {
+                require(ptrs[i] != 0, "F:3");
+
+                return _read(ptrs[i], pos);
             }
+            pos -= here;
         }
 
-        require(stor != 0, "F:3");
+        // uint8 workingPos;
 
-        res = _read(stor, storePos);
+        // for (uint256 i = 0; i < ptrs.length; i++) {
+        //     uint8 here = uint8(ptrs[i] >> 160);
+        //     if (workingPos + here > pos) {
+        //         require(ptrs[i] != 0, "F:3");
+        //         return _read(ptrs[i], pos - workingPos);
+        //     } else {
+        //         workingPos += here;
+        //     }
+        // }
     }
 
     uint16 internal constant DATA_PRE_OFFSET = 1; // We skip the first byte as it's a STOP opcode to ensure the contract can't be called.
-    uint16 internal constant DATA_POST_OFFSET = 32; // We skip the first byte as it's a STOP opcode to ensure the contract can't be called.
 
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                                 WRITE TO STORAGE
@@ -152,9 +127,6 @@ contract DotnuggV1Storage is IDotnuggV1Storage {
 
         uint256 prefix = ShiftLib.select160(data, 0);
 
-        console.log("prefix: ", prefix);
-        console.log("header: ", header);
-
         uint256 lenr = data.length;
 
         uint256 keklen = lenr - 32 - 19;
@@ -162,21 +134,21 @@ contract DotnuggV1Storage is IDotnuggV1Storage {
         assembly {
             len := and(prefix, 0xff)
             prefix := shr(8, prefix)
-        }
 
-        uint256 check;
-        uint256 kek;
-        assembly {
-            check := mload(add(add(data, 0x20), sub(lenr, 0x20)))
+            let check := mload(add(add(data, 0x20), sub(lenr, 0x20)))
 
-            kek := keccak256(add(data, add(0x20, 19)), keklen)
-        }
+            let kek := keccak256(add(data, add(0x20, 19)), keklen)
 
-        require(check == kek, "O:4");
+            if iszero(eq(check, kek)) {
+                mstore(0, "O:5")
+                revert(0x0, 0x06)
+            }
 
-        require(prefix == header, "O:5");
+            if iszero(eq(prefix, header)) {
+                mstore(0, "O:4")
+                revert(0x0, 0x06)
+            }
 
-        assembly {
             // Deploy a new contract with the generated creation code.
             // We start 32 bytes into the code to avoid copying the byte length.
             _pointer := create(0, add(data, 0x20), sub(mload(data), 0x20))
@@ -192,17 +164,9 @@ contract DotnuggV1Storage is IDotnuggV1Storage {
     // there can only be max 255 items per feature, and so num can not be higher than 255
     function _read(uint168 _pointer, uint8 num) internal view returns (DotnuggV1Read memory res) {
         address addr = address(uint160(_pointer));
+
         uint16 offset = DATA_PRE_OFFSET + 32;
-        // uint16 offset = 32 + 1;
 
-        // bytes memory code;
-
-        // assembly {
-        //     // let free := mload(0x40)
-        //     mstore(code, sub(extcodesize(_pointer), 1))
-        //     extcodecopy(addr, add(code, 0x40), 0x1, mload(code))
-        // }
-        // 53f10f18a6e21e5105e23c761f18789455e8f38b2d71ebb69b43c94b42069001
         bytes memory code = bytes.concat(new bytes(32), addr.code);
 
         // get len
@@ -240,9 +204,25 @@ contract DotnuggV1Storage is IDotnuggV1Storage {
             res.dat[i] = ShiftLib.select256(code, start + i * 0x20);
         }
 
-        // keccak would be masked away here
+        // mask keccak away from first array element if needed
         if (extra != 0) {
             res.dat[0] = res.dat[0] & ShiftLib.mask(extra * 8);
         }
+    }
+
+    function lengthOf(uint8 feature) external view override returns (uint8 res) {
+        return __lengths[feature];
+    }
+
+    function pointersOf(uint8 feature) external view override returns (uint168[] memory res) {
+        return __pointers[feature];
+    }
+
+    function lengths() external view override returns (uint8[8] memory res) {
+        return __lengths;
+    }
+
+    function pointers() external view override returns (uint168[][8] memory res) {
+        return __pointers;
     }
 }

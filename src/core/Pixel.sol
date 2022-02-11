@@ -53,7 +53,7 @@ library Pixel {
 
     // 3 bits
     function a(uint256 input) internal pure returns (uint256 res) {
-        res = decompressA(uint8(input & 0x7));
+        res = ((input & 0x7) == 0x7 ? 255 : ((input & 0x7) * 36));
     }
 
     // this is 1-8 so 3 bits
@@ -83,12 +83,6 @@ library Pixel {
     /// @dev a compressed value of 7 is equivilent to 255, and a compressed 0 is 0
     function compressA(uint256 input) internal pure returns (uint256 res) {
         return input / 36;
-    }
-
-    /// @notice converts an 8 bit value into a 3 bit value
-    function decompressA(uint256 input) internal pure returns (uint256 res) {
-        if (input == 7) return 255;
-        else return input * 36;
     }
 
     function combine(uint256 base, uint256 mix) internal pure returns (uint256 res) {

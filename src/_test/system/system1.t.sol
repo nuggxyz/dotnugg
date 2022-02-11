@@ -18,15 +18,11 @@ contract systemTest__one is t {
 
         forge.vm.stopPrank();
 
-        // get item #1 of feature 0
-        proxy.read(0, 1);
+        proxy.exec(0, 1, false);
 
-        // get item #1 of feature 0 - 7
-        proxy.read([1, 1, 1, 1, 1, 1, 1, 1]);
+        proxy.exec([1, 1, 1, 1, 1, 1, 1, 1], true);
 
-        proxy.calc(0, 1);
-
-        proxy.calc([1, 1, 1, 1, 1, 1, 1, 1]);
+        ds.emit_log_string(proxy.exec([2, 2, 2, 2, 2, 2, 2, 2], false));
     }
 
     bytes __data =

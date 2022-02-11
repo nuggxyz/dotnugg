@@ -2,13 +2,7 @@
 
 pragma solidity 0.8.11;
 
-struct DotnuggV1Calculated {
-    uint256[] dat;
-}
-
-struct DotnuggV1Read {
-    uint256[] dat;
-}
+import {DotnuggV1Read, DotnuggV1Calculated} from "./DotnuggV1Files.sol";
 
 interface IDotnuggV1Storage {
     event Write(uint8 feature, uint8 amount, address pointer, address sender);
@@ -17,17 +11,19 @@ interface IDotnuggV1Storage {
 
     function write(uint8 feature, bytes memory data) external;
 
-    function write(bytes[8] calldata data) external;
-
     function write(bytes[] calldata data) external;
 
     function read(uint8[8] memory ids) external view returns (DotnuggV1Read[8] memory data);
 
     function read(uint8 feature, uint8 pos) external view returns (DotnuggV1Read memory data);
 
-    function calc(uint8[8] memory ids) external view returns (DotnuggV1Calculated memory data);
+    function exec(uint8[8] memory ids, bool base64) external view returns (string memory);
 
-    function calc(uint8 feature, uint8 pos) external view returns (DotnuggV1Calculated memory data);
+    function exec(
+        uint8 feature,
+        uint8 pos,
+        bool base64
+    ) external view returns (string memory);
 
     function lengths() external view returns (uint8[8] memory res);
 
