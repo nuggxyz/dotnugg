@@ -10,7 +10,7 @@ import {IDotnuggV1Storage} from "./interfaces/IDotnuggV1Storage.sol";
 
 contract DotnuggV1Factory is IDotnuggV1Factory, DotnuggV1Storage {
     function register() external returns (IDotnuggV1Storage proxy) {
-        require(address(this) == factory);
+        require(address(this) == factory, "oooooops");
 
         proxy = deploy();
 

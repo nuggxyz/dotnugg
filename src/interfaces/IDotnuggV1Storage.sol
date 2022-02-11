@@ -4,7 +4,9 @@ pragma solidity 0.8.11;
 
 import {DotnuggV1Read, DotnuggV1Calculated} from "./DotnuggV1Files.sol";
 
-interface IDotnuggV1Storage {
+import {IDotnuggV1Resolver} from "./IDotnuggV1Resolver.sol";
+
+interface IDotnuggV1Storage is IDotnuggV1Resolver {
     event Write(uint8 feature, uint8 amount, address pointer, address sender);
 
     function init(address trusted) external;
@@ -13,9 +15,9 @@ interface IDotnuggV1Storage {
 
     function write(bytes[] calldata data) external;
 
-    function read(uint8[8] memory ids) external view returns (DotnuggV1Read[8] memory data);
+    function read(uint8[8] memory ids) external returns (DotnuggV1Read[8] memory data);
 
-    function read(uint8 feature, uint8 pos) external view returns (DotnuggV1Read memory data);
+    function read(uint8 feature, uint8 pos) external returns (DotnuggV1Read memory data);
 
     function exec(uint8[8] memory ids, bool base64) external view returns (string memory);
 
@@ -25,11 +27,9 @@ interface IDotnuggV1Storage {
         bool base64
     ) external view returns (string memory);
 
-    function lengths() external view returns (uint8[8] memory res);
-
     function lengthOf(uint8 feature) external view returns (uint8 res);
 
-    function pointers() external view returns (uint168[][8] memory res);
+    function lengthOfex(uint8 feature) external returns (uint8 res);
 
-    function pointersOf(uint8 feature) external view returns (uint168[] memory res);
+    function pointerOf(uint8 feature) external view returns (address res);
 }

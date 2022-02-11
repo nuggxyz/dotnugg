@@ -8,6 +8,7 @@ import {ShiftLib} from "../libraries/ShiftLib.sol";
 import {Pixel} from "./Pixel.sol";
 
 import {DotnuggV1Read} from "../interfaces/IDotnuggV1Storage.sol";
+import "../_test/utils/forge.sol";
 
 library Parser {
     using BitReader for BitReader.Memory;

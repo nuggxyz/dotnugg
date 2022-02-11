@@ -51,4 +51,35 @@ library BitReader {
             }
         }
     }
+    //   77471890985702889308711372626335381168072159716100854356054307418634965127169
+    //   2873592145
+
+    //     function init2(bytes memory input) internal pure returns (bool err, Memory memory m) {
+    //         if (input.length == 0) return (true, m);
+
+    //         m.dat2 = input;
+    //     }
+
+    //     function peek2(Memory memory m, uint8 bits) internal pure returns (uint256 res) {
+    //         console.log("-----", m.dat2.length, bits);
+
+    //         // uint256 overflow = 68 - ((m.pos + bits) % 68) + (256 - bits);
+    //         // console.log(overflow);
+
+    //         res = ShiftLib.select256B(m.dat2, uint64((m.dat2.length) - m.pos));
+
+    //         console.log(res);
+    //         res = (res >> (256 - bits)) & ShiftLib.mask(bits);
+
+    //         console.log(res);
+    //     }
+
+    //     function select2(Memory memory m, uint8 bits) internal pure returns (uint256 res) {
+    //         res = peek2(m, bits);
+    //         // bytes memory a = m.dat2;
+    //         // assembly {
+    //         //     mstore(a, sub(mload(a), bits))
+    //         // }
+    //         m.pos += (bits % 16);
+    //     }
 }

@@ -9,12 +9,14 @@ import {DotnuggV1Calculated, DotnuggV1Read} from "./interfaces/DotnuggV1Files.so
 
 import {ShiftLib} from "./libraries/ShiftLib.sol";
 
+import "./_test/utils/forge.sol";
+
 contract DotnuggV1Storage is IDotnuggV1Storage, DotnuggV1Resolver {
     address public immutable factory;
 
     address public trusted;
 
-    uint168[][8] private __pointers;
+    address[8] private __pointers;
     uint8[8] private __lengths;
 
     constructor() {
@@ -33,6 +35,26 @@ contract DotnuggV1Storage is IDotnuggV1Storage, DotnuggV1Resolver {
         require(trusted == msg.sender, "C:0");
 
         trusted = _trusted;
+    }
+
+    function lengthOfex(uint8 feature) public returns (uint8) {
+        address ptr = __pointers[feature];
+
+        assembly {
+            extcodecopy(ptr, 0x1F, 0x01, 0x01)
+            log1(0x00, 0x00, mload(0x0))
+            return(0x0, 0x01)
+        }
+    }
+
+    function lengthOf(uint8 feature) public view override returns (uint8 a) {
+        address ptr = __pointers[feature];
+
+        assembly {
+            extcodecopy(ptr, 0x1F, 0x01, 0x01)
+
+            a := mload(0x00)
+        }
     }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -55,17 +77,13 @@ contract DotnuggV1Storage is IDotnuggV1Storage, DotnuggV1Resolver {
 
         require(len > 0, "F:0");
 
-        uint168 ptr = uint168(uint160(loc)) | (uint168(len) << 160);
-
-        __pointers[feature].push(ptr);
-
-        __lengths[feature] += len;
+        __pointers[feature] = loc;
 
         emit Write(feature, len, loc, msg.sender);
     }
 
     function exec(uint8[8] memory ids, bool base64) public view returns (string memory) {
-        return svg(calc(read(ids)), base64);
+        // return svg(calc(read(ids)), base64);
     }
 
     function exec(
@@ -73,48 +91,16 @@ contract DotnuggV1Storage is IDotnuggV1Storage, DotnuggV1Resolver {
         uint8 pos,
         bool base64
     ) public view returns (string memory) {
-        return svg(calc(read(feature, pos)), base64);
+        // return svg(calc(read(feature, pos)), base64);
     }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                                  GET FILES
        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-    function read(uint8[8] memory ids) public view returns (DotnuggV1Read[8] memory res) {
-        for (uint8 i = 0; i < 8; i++) {
-            if (ids[i] != 0) res[i] = read(i, ids[i]);
-        }
-    }
-
-    function read(uint8 feature, uint8 pos) public view returns (DotnuggV1Read memory res) {
-        require(pos != 0 && pos <= __lengths[feature], "F:1");
-
-        pos--;
-
-        uint168[] memory ptrs = __pointers[feature];
-
-        for (uint256 i = 0; i < ptrs.length; i++) {
-            uint8 here = uint8(ptrs[i] >> 160);
-            if (here >= pos) {
-                require(ptrs[i] != 0, "F:3");
-
-                return _read(ptrs[i], pos);
-            }
-            pos -= here;
-        }
-
-        // uint8 workingPos;
-
-        // for (uint256 i = 0; i < ptrs.length; i++) {
-        //     uint8 here = uint8(ptrs[i] >> 160);
-        //     if (workingPos + here > pos) {
-        //         require(ptrs[i] != 0, "F:3");
-        //         return _read(ptrs[i], pos - workingPos);
-        //     } else {
-        //         workingPos += here;
-        //     }
-        // }
-    }
+    // function read(uint8 feature, uint8 pos) public view returns (DotnuggV1Read memory res) {
+    //     res.dat = _read(feature, pos - 1);
+    // }
 
     uint16 internal constant DATA_PRE_OFFSET = 1; // We skip the first byte as it's a STOP opcode to ensure the contract can't be called.
 
@@ -161,68 +147,143 @@ contract DotnuggV1Storage is IDotnuggV1Storage, DotnuggV1Resolver {
                                 READ FROM STORAGE
        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
+    function read(uint8[8] memory ids) public returns (DotnuggV1Read[8] memory res) {
+        for (uint8 i = 0; i < 8; i++) {
+            if (ids[i] != 0) res[i] = read(i, ids[i]);
+        }
+    }
+
     // there can only be max 255 items per feature, and so num can not be higher than 255
-    function _read(uint168 _pointer, uint8 num) internal view returns (DotnuggV1Read memory res) {
-        address addr = address(uint160(_pointer));
+    function read(uint8 feature, uint8 num) public returns (DotnuggV1Read memory res) {
+        require(num != 0 && num <= lengthOf(feature), "F:1");
 
-        uint16 offset = DATA_PRE_OFFSET + 32;
+        num = num - 1;
 
-        bytes memory code = bytes.concat(new bytes(32), addr.code);
+        address _pointer = __pointers[feature];
 
-        // get len
-        uint8 len = ShiftLib.select8(code, offset);
+        uint8 len = lengthOf(feature);
 
-        require(num + 1 <= len, "P:x");
+        uint256[] memory dat;
 
-        uint16 checker = (offset + 1) + (num) * 2;
+        assembly {
+            let index := add(add(DATA_PRE_OFFSET, 0x01), mul(num, 2))
 
-        uint16 biggeroffset = len * 2;
+            let dataStart := add(mul(len, 0x2), DATA_PRE_OFFSET)
 
-        uint16 start = uint16(ShiftLib.select16(code, checker)) + biggeroffset + offset;
+            extcodecopy(_pointer, 0x1E, index, 0x2)
 
-        uint16 end = (len == num + 1)
-            ? uint16(code.length)
-            : ShiftLib.select16(code, checker + 2) + biggeroffset + offset;
+            let start := add(mload(0x00), dataStart)
+            let end := 0
 
-        require(end >= uint16(start), "P:y");
+            switch eq(len, add(num, 1))
+            case 1 {
+                end := extcodesize(_pointer)
+            }
+            default {
+                extcodecopy(_pointer, 0x1E, add(index, 2), 0x2)
+                end := add(mload(0x00), dataStart)
+            }
 
-        uint16 size = end - start;
+            let size := sub(end, start)
 
-        uint8 extra = uint8((size) % 0x20);
+            let extra := sub(0x20, mod(size, 0x20))
 
-        // this can go below zero for the first nugg in the list if the conditions are right
-        // but if the keccack is in the front then it will be enough buffer to ensure that never happens
-        if (extra > 0) start -= (0x20 - (size % 0x20));
+            let trusize := add(extra, size)
 
-        size = end - start;
+            if iszero(eq(0, mod(trusize, 0x20))) {
+                mstore(0x0, 0xffffffff)
+                revert(0x0, 0x20)
+            }
 
-        require(size % 0x20 == 0, "P:z");
+            function allocate(length) -> pos {
+                pos := mload(0x40)
+                mstore(0x40, add(pos, length))
+            }
 
-        res.dat = new uint256[]((size / 0x20));
+            let ret := add(size, add(0x20, extra))
 
-        for (uint16 i = 0; i < res.dat.length; i++) {
-            res.dat[i] = ShiftLib.select256(code, start + i * 0x20);
+            let ptr := allocate(ret)
+
+            mstore(ptr, div(trusize, 0x20))
+
+            extcodecopy(_pointer, add(ptr, add(0x20, extra)), start, size)
+
+            log1(ptr, mul(32, 8), ptr)
+
+            // mstore(tmp, ptr)
+            dat := ptr
         }
 
-        // mask keccak away from first array element if needed
-        if (extra != 0) {
-            res.dat[0] = res.dat[0] & ShiftLib.mask(extra * 8);
-        }
+        res.dat = dat;
     }
 
-    function lengthOf(uint8 feature) external view override returns (uint8 res) {
-        return __lengths[feature];
-    }
+    // // there can only be max 255 items per feature, and so num can not be higher than 255
+    // function _read2(uint8 feature, uint8 num) public returns (bytes memory res) {
+    //     uint16 offset = DATA_PRE_OFFSET;
 
-    function pointersOf(uint8 feature) external view override returns (uint168[] memory res) {
+    //     address _pointer = __pointers[feature];
+
+    //     // get len
+    //     uint8 len = lengthOf(feature);
+
+    //     require(num + 1 <= len, "P:x");
+
+    //     uint16 checker = (offset + 1) + (num) * 2;
+
+    //     uint16 biggeroffset = len * 2 + offset;
+
+    //     assembly {
+    //         extcodecopy(_pointer, 0x1E, checker, 0x2)
+
+    //         let start := add(mload(0x00), biggeroffset)
+    //         let end := 0
+
+    //         switch eq(len, add(num, 1))
+    //         case 1 {
+    //             end := extcodesize(_pointer)
+    //         }
+    //         default {
+    //             extcodecopy(_pointer, 0x1E, add(checker, 2), 0x2)
+    //             end := add(mload(0x00), biggeroffset)
+    //         }
+
+    //         let size := sub(end, start)
+
+    //         let extra := mod(size, 0x20)
+
+    //         // assembly {
+
+    //         let jum := sub(0x20, extra)
+
+    //         let trusize := add(jum, size)
+
+    //         if iszero(eq(0, mod(trusize, 0x20))) {
+    //             mstore(0x0, 0xffffffff)
+    //             revert(0x0, 0x20)
+    //         }
+
+    //         function allocate(length) -> pos {
+    //             pos := mload(0x40)
+    //             mstore(0x40, add(pos, length))
+    //         }
+
+    //         let ret := add(size, 0x20)
+
+    //         let ptr := allocate(ret)
+
+    //         mstore(ptr, size)
+
+    //         extcodecopy(_pointer, add(ptr, 0x20), start, size)
+
+    //         log1(ptr, add(size, 0x20), ptr)
+
+    //         res := ptr
+    //     }
+    // }
+
+    function pointerOf(uint8 feature) external view override returns (address res) {
         return __pointers[feature];
     }
-
-    function lengths() external view override returns (uint8[8] memory res) {
-        return __lengths;
-    }
-
-    function pointers() external view override returns (uint168[][8] memory res) {
-        return __pointers;
-    }
 }
+
+// 1e0392092105e094951052422003e422021431154861402e450c214455314624500372431430850c41535880291c8185503153151188240606163318801955f314320024816736001c616b31801c316f32470c5bcc720316f321316b361316f321314316331895855055d056006050c50c50d050d082406021150c51151050e000e030858c51256100e060835445540c41802e060d592814600f898598881f7203900bc7f08058316031e8005070c850b330a61324ccb5824792ea049dab4789517edc128561f224d67fd0492c9f889128aeb133587dc2401042069001
