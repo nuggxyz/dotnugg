@@ -18,6 +18,6 @@ contract DotnuggV1ERC721 is ERC721 {
     }
 
     function tokenURI(uint256) public view override returns (string memory) {
-        return proxy.exec([1, 1, 1, 1, 1, 1, 1, 1], false);
+        // return proxy.exec([1, 1, 1, 1, 1, 1, 1, 1], false);
     }
 }

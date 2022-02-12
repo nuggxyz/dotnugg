@@ -39,7 +39,7 @@ contract systemTest__one is t {
 
         // proxy.exec([2, 2, 2, 2, 2, 2, 2, 2], false);
 
-        ds.emit_log_string(proxy.svg(proxy.calc(proxy.read(0, 1)), false));
+        ds.emit_log_string(proxy.svg(proxy.calc(proxy.read([2, 2, 2, 2, 2, 2, 2, 2])), false));
     }
 
     // 3D_60_20_80_80_80_38_03_80_91_85_39_03_80_82_84_81_53_20_83_51_14_02_90_F3_00_04_20_00_00_69_00

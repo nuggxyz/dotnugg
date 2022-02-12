@@ -99,9 +99,9 @@ library DotnuggV1SvgLib {
             : color.rgba().toHexStringNoPrefix(4);
 
         mapper[i].data = abi.encodePacked(
-            "<path",
+            // "<path",
             // color.id().toAsciiString(),
-            '" class="',
+            '<path class="',
             uint8(color.f() + 65),
             '" stroke="#',
             colorStr,

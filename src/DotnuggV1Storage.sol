@@ -8,6 +8,7 @@ import {IDotnuggV1Storage} from "./interfaces/IDotnuggV1Storage.sol";
 import {DotnuggV1Calculated, DotnuggV1Read} from "./interfaces/DotnuggV1Files.sol";
 
 import {ShiftLib} from "./libraries/ShiftLib.sol";
+import {DotnuggV1FileStorage} from "./core/DotnuggV1FileStorage.sol";
 
 import "./_test/utils/forge.sol";
 
@@ -15,9 +16,6 @@ contract DotnuggV1Storage is IDotnuggV1Storage, DotnuggV1Resolver {
     address public immutable factory;
 
     address public trusted;
-
-    address[8] private __pointers;
-    uint8[8] private __lengths;
 
     constructor() {
         factory = address(this);
@@ -37,18 +35,40 @@ contract DotnuggV1Storage is IDotnuggV1Storage, DotnuggV1Resolver {
         trusted = _trusted;
     }
 
-    function lengthOf(uint8 feature) public view override returns (uint8 a) {
-        address ptr = __pointers[feature];
+    function lengthOf(uint8 feature) public override returns (uint8 a) {
+        address ptr = DotnuggV1FileStorage.location(feature);
 
         assembly {
             extcodecopy(ptr, 0x1F, 0x01, 0x01)
 
             a := mload(0x00)
+
+            mstore(0x00, 0x00)
         }
     }
 
+    function fun(address ptr) external pure {}
+
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                                   write
+       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+    function exec(uint8[8] memory ids, bool base64) public returns (string memory) {
+        return svg(calc(read(ids)), base64);
+    }
+
+    function exec(
+        uint8 feature,
+        uint8 pos,
+        bool base64
+    ) public returns (string memory) {
+        return svg(calc(read(feature, pos)), base64);
+    }
+
+    uint16 internal constant DATA_PRE_OFFSET = 1; // We skip the first byte as it's a STOP opcode to ensure the contract can't be called.
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                                WRITE TO STORAGE
        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
     function write(bytes[] calldata data) external {
@@ -63,89 +83,43 @@ contract DotnuggV1Storage is IDotnuggV1Storage, DotnuggV1Resolver {
 
         require(feature < 8, "F:3");
 
-        address loc = _write(data);
-
-        __pointers[feature] = loc;
+        DotnuggV1FileStorage.save(data, feature);
 
         uint8 len = lengthOf(feature);
 
         require(len > 0, "F:0");
 
-        emit Write(feature, len, loc, msg.sender);
-    }
-
-    function exec(uint8[8] memory ids, bool base64) public view returns (string memory) {
-        // return svg(calc(read(ids)), base64);
-    }
-
-    function exec(
-        uint8 feature,
-        uint8 pos,
-        bool base64
-    ) public view returns (string memory) {
-        // return svg(calc(read(feature, pos)), base64);
-    }
-
-    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-                                 GET FILES
-       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-
-    // function read(uint8 feature, uint8 pos) public view returns (DotnuggV1Read memory res) {
-    //     res.dat = _read(feature, pos - 1);
-    // }
-
-    uint16 internal constant DATA_PRE_OFFSET = 1; // We skip the first byte as it's a STOP opcode to ensure the contract can't be called.
-
-    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-                                WRITE TO STORAGE
-       ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-
-    function _write(bytes memory data) internal returns (address _pointer) {
-        uint256 header = 0x3D_60_20_80_80_80_38_03_80_91_85_39_03_80_82_84_81_53_20_83_51_14_02_90_F3_00_04_20_00_00_69_00;
-        // uint256 header = 0x3D6020808080380380918539038082848153208351140290F300042000006900;
-
-        uint256 dataHeader;
-        assembly {
-            dataHeader := mload(add(data, 32))
-        }
-
-        require(header == dataHeader, "");
-
-        assembly {
-            log1(add(data, 0x20), mload(data), data)
-            // Deploy a new contract with the generated creation code.
-            // We start 32 bytes into the code to avoid copying the byte length.
-            _pointer := create(0, add(data, 0x20), mload(data))
-        }
-
-        require(_pointer != address(0), "DEPLOYMENT_FAILED:1");
-        require(_pointer.code.length != 0, "DEPLOYMENT_FAILED:2");
+        emit Write(feature, len, msg.sender);
     }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                                 READ FROM STORAGE
        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-    function read(uint8[8] memory ids) public view returns (DotnuggV1Read[8] memory res) {
+    function read(uint8[8] memory ids) public returns (DotnuggV1Read[8] memory res) {
         for (uint8 i = 0; i < 8; i++) {
             if (ids[i] != 0) res[i] = read(i, ids[i]);
         }
     }
 
     // there can only be max 255 items per feature, and so num can not be higher than 255
-    function read(uint8 feature, uint8 num) public view returns (DotnuggV1Read memory res) {
+    function read(uint8 feature, uint8 num) public returns (DotnuggV1Read memory res) {
         require(num != 0 && num <= lengthOf(feature), "F:1");
 
         num = num - 1;
 
-        address _pointer = __pointers[feature];
+        address _pointer = pointerOf(feature);
 
         uint8 len = lengthOf(feature);
 
         assembly {
+            log1(0x00, 0x90, _pointer)
+
             let index := add(add(DATA_PRE_OFFSET, 0x01), mul(num, 2))
 
             let dataStart := add(mul(len, 0x2), DATA_PRE_OFFSET)
+
+            // mstore(0x00, 0x00)
 
             extcodecopy(_pointer, 0x1E, index, 0x2)
 
@@ -182,11 +156,15 @@ contract DotnuggV1Storage is IDotnuggV1Storage, DotnuggV1Resolver {
 
             extcodecopy(_pointer, add(ptr, add(0x20, extra)), start, size)
 
-            mstore(mload(res), ptr)
+            // log1(ptr, ret, res)
+
+            mstore(res, ptr)
+
+            // log1(res, ret, ptr)
         }
     }
 
-    function pointerOf(uint8 feature) external view override returns (address res) {
-        return __pointers[feature];
+    function pointerOf(uint8 feature) public override returns (address res) {
+        return DotnuggV1FileStorage.location(feature);
     }
 }
