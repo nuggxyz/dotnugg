@@ -29,7 +29,5 @@ interface IDotnuggV1Storage is IDotnuggV1Resolver {
 
     function lengthOf(uint8 feature) external view returns (uint8 res);
 
-    function lengthOfex(uint8 feature) external returns (uint8 res);
-
     function pointerOf(uint8 feature) external view returns (address res);
 }
