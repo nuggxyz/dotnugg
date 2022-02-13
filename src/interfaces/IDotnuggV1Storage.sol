@@ -15,19 +15,19 @@ interface IDotnuggV1Storage is IDotnuggV1Resolver {
 
     function write(bytes[] calldata data) external;
 
-    function read(uint8[8] memory ids) external returns (DotnuggV1Read[8] memory data);
+    function read(uint8[8] memory ids) external view returns (DotnuggV1Read[8] memory data);
 
-    function read(uint8 feature, uint8 pos) external returns (DotnuggV1Read memory data);
+    function read(uint8 feature, uint8 pos) external view returns (DotnuggV1Read memory data);
 
-    function exec(uint8[8] memory ids, bool base64) external returns (string memory);
+    function exec(uint8[8] memory ids, bool base64) external view returns (string memory);
 
     function exec(
         uint8 feature,
         uint8 pos,
         bool base64
-    ) external returns (string memory);
+    ) external view returns (string memory);
 
-    function lengthOf(uint8 feature) external returns (uint8 res);
+    function lengthOf(uint8 feature) external view returns (uint8 res);
 
-    function pointerOf(uint8 feature) external returns (address res);
+    function locationOf(uint8 feature) external view returns (address res);
 }
