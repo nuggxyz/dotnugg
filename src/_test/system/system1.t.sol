@@ -9,10 +9,26 @@ contract systemTest__one is t {
         reset();
     }
 
+    function test__gas__mask() public pure {
+        assembly {
+            let res := 0x81026004808483603a01903982513d8452809180519086801b90
+
+            res := shr(96, shl(44, res))
+        }
+    }
+
+    function test__gas__juke() public pure {
+        assembly {
+            let res := 0x81026004808483603a01903982513d8452809180519086801b90
+
+            res := and(res, sub(shl(44, 1), 1))
+        }
+    }
+
     function test__something() public {
         forge.vm.startPrank(users.frank);
 
-        IDotnuggV1Storage proxy = factory.register();
+        IDotnuggV1Safe proxy = factory.register();
 
         proxy.write(abi.decode(__data, (bytes[])));
 
@@ -39,7 +55,7 @@ contract systemTest__one is t {
 
         // proxy.exec([2, 2, 2, 2, 2, 2, 2, 2], false);
 
-        ds.emit_log_string(proxy.svg(proxy.calc(proxy.read([2, 2, 2, 2, 2, 2, 2, 2])), false));
+        ds.emit_log_string(proxy.exec([1, 1, 1, 1, 1, 1, 1, 1], true));
     }
 
     // 3D_60_20_80_80_80_38_03_80_91_85_39_03_80_82_84_81_53_20_83_51_14_02_90_F3_00_04_20_00_00_69_00

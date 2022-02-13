@@ -6,7 +6,7 @@ import {DotnuggV1Read, DotnuggV1Calculated} from "./DotnuggV1Files.sol";
 
 import {IDotnuggV1Resolver} from "./IDotnuggV1Resolver.sol";
 
-interface IDotnuggV1Storage is IDotnuggV1Resolver {
+interface IDotnuggV1Safe is IDotnuggV1Resolver {
     event Write(uint8 feature, uint8 amount, address sender);
 
     function init(address trusted) external;

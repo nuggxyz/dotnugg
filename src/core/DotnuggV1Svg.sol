@@ -6,10 +6,10 @@ import {StringCastLib} from "../libraries/StringCastLib.sol";
 
 import {DotnuggV1Calculated} from "../interfaces/DotnuggV1Files.sol";
 
-import {Parser} from "./Parser.sol";
-import {Pixel} from "./Pixel.sol";
+import {DotnuggV1Parser as Parser} from "./DotnuggV1Parser.sol";
+import {DotnuggV1Pixel as Pixel} from "./DotnuggV1Pixel.sol";
 
-library DotnuggV1SvgLib {
+library DotnuggV1Svg {
     using StringCastLib for uint256;
     using StringCastLib for uint8;
     using StringCastLib for address;

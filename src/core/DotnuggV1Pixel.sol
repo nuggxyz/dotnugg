@@ -2,22 +2,10 @@
 
 pragma solidity 0.8.11;
 
-library Pixel {
-    // function safePack(
-    //     uint256 _rgb,
-    //     uint256 _a,
-    //     uint256 _id,
-    //     uint256 _zindex,
-    //     uint256 _feature
-    // ) internal pure returns (uint256 res) {
-    //     unchecked {
-    //         res |= uint256(_feature.safe3()) << 39;
-    //         res |= uint256(_zindex.safe4()) << 35;
-    //         res |= uint256(_id.safe8()) << 27;
-    //         res |= uint256(_rgb) << 3;
-    //         res |= uint256(compressA(_a.safe8()));
-    //     }
-    // }
+library DotnuggV1Pixel {
+    function rgba(uint256 input) internal pure returns (uint256 res) {
+        return ((input << 5) & 0xffffff_00) | a(input);
+    }
 
     function unsafePack(
         uint256 _rgb,
@@ -33,10 +21,6 @@ library Pixel {
             res |= _rgb << 3;
             res |= compressA(_a & 0xff);
         }
-    }
-
-    function rgba(uint256 input) internal pure returns (uint256 res) {
-        return ((input << 5) & 0xffffff_00) | a(input);
     }
 
     function r(uint256 input) internal pure returns (uint256 res) {
@@ -86,15 +70,15 @@ library Pixel {
     }
 
     function combine(uint256 base, uint256 mix) internal pure returns (uint256 res) {
-        return mix;
-        // if (mix.a() == 255 || base.a() == 0) {
-        //     res = mix;
-        //     return res;
-        // }
-        // // FIXME - i am pretty sure there is a bug here that causes the non-color pixel data to be deleted
-        // res |= uint256((base.r() * (255 - mix.a()) + mix.r() * mix.a()) / 255) << 19;
-        // res |= uint256((base.g() * (255 - mix.a()) + mix.g() * mix.a()) / 255) << 11;
-        // res |= uint256((base.b() * (255 - mix.a()) + mix.b() * mix.a()) / 255) << 3;
-        // res |= 0x7;
+        if (a(mix) == 255 || a(base) == 0) {
+            res = mix;
+            return res;
+        }
+        // FIXME - i am pretty sure there is a bug here that causes the non-color pixel data to be deleted
+        res |= uint256((r(base) * (255 - a(mix)) + r(mix) * a(mix)) / 255) << 19;
+        res |= uint256((g(base) * (255 - a(mix)) + g(mix) * a(mix)) / 255) << 11;
+        res |= uint256((b(base) * (255 - a(mix)) + b(mix) * a(mix)) / 255) << 3;
+        res |= 0x7;
+        res |= (mix >> 27) << 27;
     }
 }

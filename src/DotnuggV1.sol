@@ -2,14 +2,14 @@
 
 pragma solidity 0.8.11;
 
-import {DotnuggV1Storage} from "./DotnuggV1Storage.sol";
+import {IDotnuggV1} from "./interfaces/IDotnuggV1.sol";
 
-import {IDotnuggV1Factory} from "./interfaces/IDotnuggV1Factory.sol";
+import {IDotnuggV1Safe} from "./interfaces/IDotnuggV1Safe.sol";
 
-import {IDotnuggV1Storage} from "./interfaces/IDotnuggV1Storage.sol";
+import {DotnuggV1Safe} from "./DotnuggV1Safe.sol";
 
-contract DotnuggV1Factory is IDotnuggV1Factory, DotnuggV1Storage {
-    function register() external returns (IDotnuggV1Storage proxy) {
+contract DotnuggV1 is IDotnuggV1, DotnuggV1Safe {
+    function register() external returns (IDotnuggV1Safe proxy) {
         require(address(this) == factory, "oooooops");
 
         proxy = deploy();
@@ -17,7 +17,7 @@ contract DotnuggV1Factory is IDotnuggV1Factory, DotnuggV1Storage {
         proxy.init(msg.sender);
     }
 
-    function deploy() internal returns (IDotnuggV1Storage instance) {
+    function deploy() internal returns (IDotnuggV1Safe instance) {
         assembly {
             let ptr := mload(0x40)
             mstore(ptr, 0x3d602d80600a3d3981f3363d3d373d3d3d363d73000000000000000000000000)

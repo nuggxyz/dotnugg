@@ -2,13 +2,12 @@
 
 pragma solidity 0.8.11;
 
-import {IDotnuggV1Factory} from "../interfaces/IDotnuggV1Factory.sol";
-import {IDotnuggV1Storage} from "../interfaces/IDotnuggV1Storage.sol";
+import {IDotnuggV1Safe} from "../interfaces/IDotnuggV1Safe.sol";
 
 contract DotnuggV1Implementer {
-    IDotnuggV1Storage immutable dotnuggv1Storage;
+    IDotnuggV1Safe immutable dotnuggv1Storage;
 
-    constructor(IDotnuggV1Storage proxy) {
+    constructor(IDotnuggV1Safe proxy) {
         dotnuggv1Storage = proxy;
     }
 }

@@ -4,12 +4,12 @@ pragma solidity 0.8.11;
 
 import "./utils/forge.sol";
 
-import "../DotnuggV1Factory.sol";
+import "../DotnuggV1.sol";
 
 contract t is ForgeTest {
-    DotnuggV1Factory factory;
+    DotnuggV1 factory;
 
     function reset() internal {
-        factory = new DotnuggV1Factory();
+        factory = new DotnuggV1();
     }
 }

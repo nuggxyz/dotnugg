@@ -8,5 +8,4 @@ struct DotnuggV1Calculated {
 
 struct DotnuggV1Read {
     uint256[] dat;
-    bytes dat2;
 }

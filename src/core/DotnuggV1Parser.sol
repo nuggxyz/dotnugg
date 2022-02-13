@@ -2,16 +2,15 @@
 
 pragma solidity 0.8.11;
 
-import {BitReader} from "../libraries/BitReader.sol";
 import {ShiftLib} from "../libraries/ShiftLib.sol";
 
-import {Pixel} from "./Pixel.sol";
+import {DotnuggV1Pixel as Pixel} from "./DotnuggV1Pixel.sol";
+import {DotnuggV1Reader as Reader} from "./DotnuggV1Reader.sol";
 
-import {DotnuggV1Read} from "../interfaces/IDotnuggV1Storage.sol";
-import "../_test/utils/forge.sol";
+import {DotnuggV1Read} from "../interfaces/DotnuggV1Files.sol";
 
-library Parser {
-    using BitReader for BitReader.Memory;
+library DotnuggV1Parser {
+    using Reader for Reader.Memory;
 
     struct Memory {
         uint256[] pallet;
@@ -22,9 +21,9 @@ library Parser {
         uint256 bitmatrixptr;
     }
 
-    function parse(DotnuggV1Read[8] memory data) internal pure returns (Parser.Memory[][8] memory m) {
+    function parse(DotnuggV1Read[8] memory data) internal pure returns (Memory[][8] memory m) {
         for (uint256 j = 0; j < 8; j++) {
-            (bool empty, BitReader.Memory memory reader) = BitReader.init(data[j].dat);
+            (bool empty, Reader.Memory memory reader) = Reader.init(data[j].dat);
 
             if (empty) continue;
 
@@ -35,20 +34,20 @@ library Parser {
 
             uint256 id = reader.select(8);
 
-            uint256[] memory pallet = Parser.parsePallet(reader, id, feature);
+            uint256[] memory pallet = parsePallet(reader, id, feature);
 
             uint256 versionLength = reader.select(2) + 1;
 
-            m[j] = new Parser.Memory[](versionLength);
+            m[j] = new Memory[](versionLength);
 
             for (uint256 i = 0; i < versionLength; i++) {
-                m[j][i].data = Parser.parseData(reader, feature);
+                m[j][i].data = parseData(reader, feature);
 
-                m[j][i].receivers = Parser.parseReceivers(reader);
+                m[j][i].receivers = parseReceivers(reader);
 
-                (uint256 width, uint256 height) = Parser.getWidth(m[j][i]);
+                (uint256 width, uint256 height) = getWidth(m[j][i]);
 
-                m[j][i].minimatrix = Parser.parseMiniMatrix(reader, width, height);
+                m[j][i].minimatrix = parseMiniMatrix(reader, width, height);
 
                 m[j][i].pallet = pallet;
             }
@@ -56,7 +55,7 @@ library Parser {
     }
 
     function parsePallet(
-        BitReader.Memory memory reader,
+        Reader.Memory memory reader,
         uint256 id,
         uint256 feature
     ) internal pure returns (uint256[] memory res) {
@@ -95,7 +94,7 @@ library Parser {
         }
     }
 
-    function parseData(BitReader.Memory memory reader, uint256 feature) internal pure returns (uint256 res) {
+    function parseData(Reader.Memory memory reader, uint256 feature) internal pure returns (uint256 res) {
         // 12 bits: coordinate - anchor x and y
 
         res |= feature << 75;
@@ -128,7 +127,7 @@ library Parser {
         res |= (reader.select(1) == 0x1 ? 0x000000 : reader.select(24)) << 3;
     }
 
-    function parseReceivers(BitReader.Memory memory reader) internal pure returns (uint256 res) {
+    function parseReceivers(Reader.Memory memory reader) internal pure returns (uint256 res) {
         uint256 receiversLength = reader.select(1) == 0x1 ? 0x1 : reader.select(4);
 
         for (uint256 j = 0; j < receiversLength; j++) {
@@ -158,7 +157,7 @@ library Parser {
     }
 
     function parseMiniMatrix(
-        BitReader.Memory memory reader,
+        Reader.Memory memory reader,
         uint256 height,
         uint256 width
     ) internal pure returns (uint256[] memory res) {

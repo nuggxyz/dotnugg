@@ -4,7 +4,7 @@ pragma solidity 0.8.11;
 
 import "../main.t.sol";
 
-import {Pixel} from "../../core/Pixel.sol";
+import {DotnuggV1Pixel as Pixel} from "../../core/DotnuggV1Pixel.sol";
 
 contract generalTest__PixelType is t {
     function test__general__PixelType__a() public {
