@@ -20,33 +20,6 @@ library DotnuggV1SvgLib {
         uint256 color;
     }
 
-    // function uint256.rgba( input) internal pure returns (uint256 res) {
-    //     return ((input << 5) & 0xffffff_00) | ((input & 0x7) == 0x7 ? 255 : ((input & 0x7) * 36));
-    // }
-
-    // // this is 1-8 so 3 bits
-    // function feature(uint256 input) internal pure returns (uint8 res) {
-    //     assembly {
-    //         res := and(shr(39, input), 0x7)
-    //     }
-    // }
-
-    // function getPixelAt(
-    //     uint256[] memory arr,
-    //     uint256 x,
-    //     uint256 y,
-    //     uint256 width
-    // ) internal pure returns (uint256 res, uint256 row) {
-    //     uint256 index = x + (y * width);
-
-    //     if (index / 6 >= arr.length) return (0, 0);
-
-    //     row = (arr[index / 6] >> (42 * (index % 6)));
-
-    //     // 2 ^ 42
-    //     res = row & 0x3FFFFFFFFFF;
-    // }
-
     function fledgeOutTheRekts(DotnuggV1Calculated memory file) public pure returns (bytes memory res) {
         (uint256 last, ) = Parser.getPixelAt(file.dat, 0, 0, 63);
 
@@ -56,8 +29,6 @@ library DotnuggV1SvgLib {
 
         for (uint256 y = 0; y < 63; y++) {
             for (uint256 x = y == 0 ? 1 : 0; x < 63; x++) {
-                // if (y == 0 && x == 0) x++;
-
                 (uint256 curr, ) = Parser.getPixelAt(file.dat, x, y, 63);
 
                 if (curr.rgba() == last.rgba()) {
@@ -98,15 +69,7 @@ library DotnuggV1SvgLib {
             ? (color.rgba() >> 8).toHexStringNoPrefix(3)
             : color.rgba().toHexStringNoPrefix(4);
 
-        mapper[i].data = abi.encodePacked(
-            // "<path",
-            // color.id().toAsciiString(),
-            '<path class="',
-            uint8(color.f() + 65),
-            '" stroke="#',
-            colorStr,
-            '" d="'
-        );
+        mapper[i].data = abi.encodePacked('<path class="', uint8(color.f() + 65), '" stroke="#', colorStr, '" d="');
     }
 
     function setRektPath(

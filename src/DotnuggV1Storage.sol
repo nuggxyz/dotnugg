@@ -108,60 +108,120 @@ contract DotnuggV1Storage is IDotnuggV1Storage, DotnuggV1Resolver {
 
         num = num - 1;
 
-        address _pointer = pointerOf(feature);
+        res.dat = DotnuggV1FileStorage.fetch(feature, num);
 
-        uint8 len = lengthOf(feature);
+        return res;
 
-        assembly {
-            log1(0x00, 0x90, _pointer)
+        // address _pointer = pointerOf(feature);
 
-            let index := add(add(DATA_PRE_OFFSET, 0x01), mul(num, 2))
+        // uint8 len = lengthOf(feature);
+        // // PUSH1 32
+        // // PUSH1 02     2
+        // // RETSIZE      0 2
+        // // CALLDATALOAD I 2
+        // // DUP2         2 I 2
+        // // MUL          M 2
+        // // DUP          M M 2
+        // // DUP3         2 M M 2
+        // // ADD          A M 2
+        // // DUP3         2 A M 2
+        // // DUP          2
+        // // ADD          4 A M 2
+        // // DUP          4 4 A M 2
+        // // DUP6         X 4 4 A M 2
+        // // DUP5         M X 4 4 A M 2
+        // // DUP2
+        // // -----
+        // // PUSH05
+        // // ADD
+        // // ADD          01
+        // // SWAP         90
+        // // CODECOPY     4 A M 2
+        // // DUP4         2 4 A M 2
+        // // MLOAD        S 4 A M 2
+        // // RETSIZE      0 S 4 A M 2
+        // // DUP5         2 0 S 4 A M 2
+        // // MSTORE       S 4 A M 2
+        // // DUP          S S 4 A M 2
+        // // SWA2P2       4 S S A M 2
+        // // MLOAD        E S S A M 2
+        // // SUB          Z S A M 2
+        // // DUP          Z Z S
+        // // ---- SWAP         S Z Z
+        // // --- DUP3         S Z Z S
+        // // DUP4         X Z Z S
+        // // MOD          M Z S
+        // // DUP7         X M Z S
+        // // SUB          E Z S
+        // // DUP2         Z E Z S
+        // // DUP4         S Z E Z S
+        // // DUP2         E S Z E Z S
+        // // RETSIZE      0 E Z E Z S
+        // // CODE COPY    E Z S
+        // // ADD          L
+        // // RETSIZE      0 Z
+        // // RETURN
+        // // 6020_6002_3D_35_81_02_80_82_01_82_80_01_80_85_84_81_600f_01_01_90_39_83_51_3D_85_52_80_91_51_03_80_86_06_86_03_81_83_82_3D_39_01_3D_F3
+        // // 0x6002_3D_35_81_02_80_82_01_82_80_01_80_6020_84_01_90_39_83_51_3D_84_82_52_80_91_52_03_80_90_3D_39;
 
-            let dataStart := add(mul(len, 0x2), DATA_PRE_OFFSET)
+        // // read first byte of calldata
+        // // multiply it by 2
+        // // store it
+        // // store it + 2
+        // // read start at load(it)
+        // // read end load(it + 2)
+        // // code copy 0 start (end-start)
+        // // return 0 (end-start)
+        // assembly {
+        //     log1(0x00, 0x90, _pointer)
 
-            // mstore(0x00, 0x00)
+        //     let index := add(add(DATA_PRE_OFFSET, 0x01), mul(num, 2))
 
-            extcodecopy(_pointer, 0x1E, index, 0x2)
+        //     let dataStart := add(mul(len, 0x2), DATA_PRE_OFFSET)
 
-            let start := add(mload(0x00), dataStart)
-            let end := 0
+        //     // mstore(0x00, 0x00)
 
-            switch eq(len, add(num, 1))
-            case 1 {
-                end := extcodesize(_pointer)
-            }
-            default {
-                extcodecopy(_pointer, 0x1E, add(index, 2), 0x2)
-                end := add(mload(0x00), dataStart)
-            }
+        //     extcodecopy(_pointer, 0x1E, index, 0x2)
 
-            let size := sub(end, start)
+        //     let start := add(mload(0x00), dataStart)
+        //     let end := 0
 
-            let extra := sub(0x20, mod(size, 0x20))
+        //     switch eq(len, add(num, 1))
+        //     case 1 {
+        //         end := extcodesize(_pointer)
+        //     }
+        //     default {
+        //         extcodecopy(_pointer, 0x1E, add(index, 2), 0x2)
+        //         end := add(mload(0x00), dataStart)
+        //     }
 
-            let trusize := add(extra, size)
+        //     let size := sub(end, start)
 
-            if iszero(eq(0, mod(trusize, 0x20))) {
-                mstore(0x0, 0xffffffff)
-                revert(0x0, 0x20)
-            }
+        //     let extra := sub(0x20, mod(size, 0x20))
 
-            let ret := add(size, add(0x20, extra))
+        //     let trusize := add(extra, size)
 
-            let ptr := mload(0x40)
+        //     if iszero(eq(0, mod(trusize, 0x20))) {
+        //         mstore(0x0, 0xffffffff)
+        //         revert(0x0, 0x20)
+        //     }
 
-            mstore(0x40, add(ptr, ret))
+        //     let ret := add(size, add(0x20, extra))
 
-            mstore(ptr, div(trusize, 0x20))
+        //     let ptr := mload(0x40)
 
-            extcodecopy(_pointer, add(ptr, add(0x20, extra)), start, size)
+        //     mstore(0x40, add(ptr, ret))
 
-            // log1(ptr, ret, res)
+        //     mstore(ptr, div(trusize, 0x20))
 
-            mstore(res, ptr)
+        //     extcodecopy(_pointer, add(ptr, add(0x20, extra)), start, size)
 
-            // log1(res, ret, ptr)
-        }
+        //     // log1(ptr, ret, res)
+
+        //     mstore(res, ptr)
+
+        //     // log1(res, ret, ptr)
+        // }
     }
 
     function pointerOf(uint8 feature) public override returns (address res) {

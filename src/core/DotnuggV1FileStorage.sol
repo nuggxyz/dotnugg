@@ -12,7 +12,7 @@ library DotnuggV1FileStorage {
     // ======================
 
     bytes32 internal constant DOTNUGG_HEADER =
-        0x3D_60_20_80_80_80_38_03_80_91_85_39_03_80_82_84_81_53_20_83_51_14_02_90_F3_00_04_20_00_00_69_00;
+        0x3D_60_20_80_80_80_38_03_80_91_85_39_03_80_82_20_83_51_14_02_90_F3_00_04_20_00_00_69_00_00_00_00;
 
     // FILE HEADER [32 bytes]
     // +=====+==============+==============+========================================+
@@ -30,6 +30,8 @@ library DotnuggV1FileStorage {
     //   10    85             DUP6           [0] 32 A A 32 32 !0
     //   11    39             CODECOPY       {0 32 A} | code[32,A) -> mem[0, A-32)
     //   12    03             SUB            <B: A - 32> 32 0
+    // Swap
+    // return
     //   13    80             DUP1           [B] !B 32 0
     //   14    82             DUP3           [32] B B !32 0
     //   15    84             DUP5           [0] 32 B B 32 !0
@@ -135,6 +137,26 @@ library DotnuggV1FileStorage {
             mstore(0x00, 0x00)
 
             mstore(0x40, add(mptr, and(add(add(0x55, 32), 31), not(31))))
+        }
+    }
+
+    function fetch(uint8 feature, uint8 pos) internal view returns (uint256[] memory res) {
+        address pointer = location(feature);
+
+        assembly {
+            mstore(0x00, pos)
+
+            let a := staticcall(gas(), pointer, 0, 0x20, 0x0, 0)
+
+            let rds := returndatasize()
+
+            res := mload(0x40)
+
+            mstore(0x40, add(res, add(rds, 0x20)))
+
+            mstore(res, div(rds, 0x20))
+
+            returndatacopy(add(res, 0x20), 0x00, rds)
         }
     }
 }
