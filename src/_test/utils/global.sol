@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.11;
+pragma solidity 0.8.12;
 
-import '../utils/vm.sol';
+import "../utils/vm.sol";
 
 library global {
     address constant GLOBAL_ADDRESS_PTR = 0xDDdDddDdDdddDDddDDddDDDDdDdDDdDDdDDDDDDd;
@@ -25,7 +25,7 @@ library global {
 
     function getSafe(string memory name) internal returns (uint256 a) {
         a = get(name);
-        require(a != 0, string(abi.encodePacked('ERROR:global:getSafe: ', name, ' does not exist')));
+        require(a != 0, string(abi.encodePacked("ERROR:global:getSafe: ", name, " does not exist")));
     }
 
     function getAddressSafe(string memory name) internal returns (address a) {

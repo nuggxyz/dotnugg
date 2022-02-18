@@ -1,13 +1,11 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.11;
+pragma solidity 0.8.12;
 
 import {ShiftLib} from "../libraries/ShiftLib.sol";
 
 import {DotnuggV1Pixel as Pixel} from "./DotnuggV1Pixel.sol";
 import {DotnuggV1Reader as Reader} from "./DotnuggV1Reader.sol";
-
-import {DotnuggV1Read} from "../interfaces/DotnuggV1Files.sol";
 
 library DotnuggV1Parser {
     using Reader for Reader.Memory;
@@ -21,9 +19,11 @@ library DotnuggV1Parser {
         uint256 bitmatrixptr;
     }
 
-    function parse(DotnuggV1Read[8] memory data) internal pure returns (Memory[][8] memory m) {
-        for (uint256 j = 0; j < 8; j++) {
-            (bool empty, Reader.Memory memory reader) = Reader.init(data[j].dat);
+    function parse(uint256[][] memory reads) internal pure returns (Memory[][] memory m) {
+        m = new Memory[][](reads.length);
+
+        for (uint256 j = 0; j < reads.length; j++) {
+            (bool empty, Reader.Memory memory reader) = Reader.init(reads[j]);
 
             if (empty) continue;
 

@@ -1,10 +1,8 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.11;
+pragma solidity 0.8.12;
 
 import {StringCastLib} from "../libraries/StringCastLib.sol";
-
-import {DotnuggV1Calculated} from "../interfaces/DotnuggV1Files.sol";
 
 import {DotnuggV1Parser as Parser} from "./DotnuggV1Parser.sol";
 import {DotnuggV1Pixel as Pixel} from "./DotnuggV1Pixel.sol";
@@ -20,8 +18,8 @@ library DotnuggV1Svg {
         uint256 color;
     }
 
-    function fledgeOutTheRekts(DotnuggV1Calculated memory file) public pure returns (bytes memory res) {
-        (uint256 last, ) = Parser.getPixelAt(file.dat, 0, 0, 63);
+    function fledgeOutTheRekts(uint256[] memory calculated) internal pure returns (bytes memory res) {
+        (uint256 last, ) = Parser.getPixelAt(calculated, 0, 0, 63);
 
         uint256 count = 1;
 
@@ -29,7 +27,7 @@ library DotnuggV1Svg {
 
         for (uint256 y = 0; y < 63; y++) {
             for (uint256 x = y == 0 ? 1 : 0; x < 63; x++) {
-                (uint256 curr, ) = Parser.getPixelAt(file.dat, x, y, 63);
+                (uint256 curr, ) = Parser.getPixelAt(calculated, x, y, 63);
 
                 if (curr.rgba() == last.rgba()) {
                     count++;

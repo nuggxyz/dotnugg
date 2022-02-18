@@ -13,5 +13,7 @@
         "webpack": "^5.68.0",
         "webpack-cli": "^4.9.2"
     },
-    "dependencies": {}
+    "dependencies": {
+        "@rari-capital/solmate": "^6.2.0"
+    }
 }

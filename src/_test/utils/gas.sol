@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.11;
+pragma solidity 0.8.12;
 
-import './console.sol';
+import "./console.sol";
 
 library gas {
     struct cp {
@@ -30,7 +30,7 @@ library gas {
 
         string memory l1 = ptr().label;
 
-        string memory lab = (bytes(l1).length == 0) ? 'no label' : l1;
+        string memory lab = (bytes(l1).length == 0) ? "no label" : l1;
 
         console.log(lab, ptr().left - checkpointGasLeft2);
     }
@@ -48,7 +48,7 @@ contract GasTracker {
             a := sub(a, gas())
         }
 
-        console.log('gas used: ', a);
+        console.log("gas used: ", a);
     }
 
     modifier trackGas2(string memory mem) {

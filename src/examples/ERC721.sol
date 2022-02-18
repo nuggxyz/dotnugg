@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.11;
+pragma solidity 0.8.12;
 
-import {ERC721} from "solmate/tokens/ERC721.sol";
+import {ERC721} from "@rari-capital/solmate/tokens/ERC721.sol";
 
 import {IDotnuggV1Safe} from "../interfaces/IDotnuggV1Safe.sol";
 

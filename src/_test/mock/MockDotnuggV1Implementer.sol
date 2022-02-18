@@ -1,6 +1,6 @@
 // // SPDX-License-Identifier: MIT
 
-// pragma solidity 0.8.11;
+// pragma solidity 0.8.12;
 
 // import {IDotnuggV1} from './../interfaces/IDotnuggV1.sol';
 // import {IDotnuggV1Implementer} from './../interfaces/IDotnuggV1Implementer.sol';

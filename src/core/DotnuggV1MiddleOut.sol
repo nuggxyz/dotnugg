@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.11;
+pragma solidity 0.8.12;
 
 import {ShiftLib} from "../libraries/ShiftLib.sol";
 
@@ -9,20 +9,18 @@ import {DotnuggV1Pixel as Pixel} from "./DotnuggV1Pixel.sol";
 import {DotnuggV1Matrix as Matrix} from "./DotnuggV1Matrix.sol";
 import {DotnuggV1Parser as Parser} from "./DotnuggV1Parser.sol";
 
-import {DotnuggV1Calculated, DotnuggV1Read} from "../interfaces/DotnuggV1Files.sol";
-
 library DotnuggV1MiddleOut {
     using Matrix for Matrix.Memory;
     using Parser for Parser.Memory;
     using Pixel for uint256;
 
     struct Run {
-        Parser.Memory[][8] versions;
+        Parser.Memory[][] versions;
         Canvas canvas;
         Mix mix;
     }
 
-    function combine(DotnuggV1Read[8] memory files) internal pure returns (DotnuggV1Calculated memory res) {
+    function combine(uint256[][] memory files) internal pure returns (uint256[] memory res) {
         Run memory run;
 
         run.versions = Parser.parse(files);
@@ -52,7 +50,7 @@ library DotnuggV1MiddleOut {
             }
         }
 
-        res.dat = run.canvas.matrix.version.bigmatrix;
+        res = run.canvas.matrix.version.bigmatrix;
     }
 
     function center() internal pure returns (Coordinate memory) {

@@ -1,17 +1,15 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.11;
-
-import {DotnuggV1Read, DotnuggV1Calculated} from "./DotnuggV1Files.sol";
-
-// type DotnuggId is uint40;
+pragma solidity 0.8.12;
 
 interface IDotnuggV1Resolver {
-    function calc(DotnuggV1Read[8] memory inputs) external view returns (DotnuggV1Calculated memory data);
+    function calc(uint256[][] memory reads) external view returns (uint256[] memory calculated);
 
-    function calc(DotnuggV1Read memory input) external view returns (DotnuggV1Calculated memory data);
+    function combo(uint256[][] memory reads, bool base64) external view returns (string memory data);
 
-    function svg(DotnuggV1Calculated memory file, bool base64) external pure returns (string memory);
+    function calc(uint256[] memory read) external view returns (uint256[] memory calculated);
 
-    // function pack(uint8[8] memory ids) external pure returns (DotnuggId);
+    function combo(uint256[] memory read, bool base64) external view returns (string memory data);
+
+    function svg(uint256[] memory calculated, bool base64) external view returns (string memory data);
 }

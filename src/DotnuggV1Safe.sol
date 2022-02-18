@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.11;
+pragma solidity 0.8.12;
 
 import {IDotnuggV1Safe} from "./interfaces/IDotnuggV1Safe.sol";
 
@@ -8,31 +8,26 @@ import {DotnuggV1Resolver} from "./DotnuggV1Resolver.sol";
 
 import {DotnuggV1Storage as Storage} from "./core/DotnuggV1Storage.sol";
 
-import {DotnuggV1Calculated, DotnuggV1Read} from "./interfaces/DotnuggV1Files.sol";
-
 import {ShiftLib} from "./libraries/ShiftLib.sol";
 
 contract DotnuggV1Safe is IDotnuggV1Safe, DotnuggV1Resolver {
-    address public trusted;
-
     address public immutable factory;
 
     constructor() {
         factory = address(this);
-        trusted = address(this);
     }
 
-    function init(address _trusted) external {
-        require(trusted == address(0) && msg.sender == factory, "C:0");
+    function init(bytes[] calldata input) external {
+        require(msg.sender == factory, "C:0");
 
-        trusted = _trusted;
+        write(input);
     }
 
     function exec(
         uint8[8] memory ids, //
         bool base64
     ) external view returns (string memory) {
-        return svg(calc(read(ids)), base64);
+        return this.combo(this.read(ids), base64);
     }
 
     function exec(
@@ -40,19 +35,17 @@ contract DotnuggV1Safe is IDotnuggV1Safe, DotnuggV1Resolver {
         uint8 pos,
         bool base64
     ) external view returns (string memory) {
-        return svg(calc(read(feature, pos)), base64);
+        return this.combo(this.read(feature, pos), base64);
     }
 
-    function write(bytes[] calldata data) external {
+    function write(bytes[] calldata data) internal {
         require(data.length == 8, "nope");
         for (uint8 i = 0; i < 8; i++) {
-            if (data[i].length > 0) write(i, data[i]);
+            if (data[i].length > 0) write(data[i], i);
         }
     }
 
-    function write(uint8 feature, bytes calldata data) public override {
-        require(trusted == msg.sender, "C:0");
-
+    function write(bytes calldata data, uint8 feature) internal {
         require(feature < 8, "F:3");
 
         uint8 saved = Storage.save(data, feature);
@@ -60,36 +53,35 @@ contract DotnuggV1Safe is IDotnuggV1Safe, DotnuggV1Resolver {
         emit Write(feature, saved, msg.sender);
     }
 
-    function updateTrusted(address _trusted) external {
-        require(trusted == msg.sender, "C:0");
-
-        trusted = _trusted;
-    }
-
     function lengthOf(uint8 feature) public view override returns (uint8 a) {
         a = Storage.length(feature);
+    }
+
+    function randOf(uint8 feature, uint256 seed) public view override returns (uint8 a) {
+        return Storage.search(feature, seed);
     }
 
     function locationOf(uint8 feature) public view override returns (address res) {
         return address(Storage.location(feature));
     }
 
-    function read(uint8[8] memory ids) public view returns (DotnuggV1Read[8] memory res) {
+    function read(uint8[8] memory ids) public view returns (uint256[][] memory _reads) {
+        _reads = new uint256[][](8);
         for (uint8 i = 0; i < 8; i++) {
             if (ids[i] != 0) {
-                res[i] = read(i, ids[i]);
+                _reads[i] = read(i, ids[i]);
             }
         }
     }
 
     // there can only be max 255 items per feature, and so num can not be higher than 255
-    function read(uint8 feature, uint8 num) public view returns (DotnuggV1Read memory res) {
+    function read(uint8 feature, uint8 num) public view returns (uint256[] memory _read) {
         require(num <= Storage.length(feature), "F:1");
 
         // num = num - 1;
 
-        res.dat = Storage.fetch(feature, num);
+        _read = Storage.read(feature, num);
 
-        return res;
+        return _read;
     }
 }

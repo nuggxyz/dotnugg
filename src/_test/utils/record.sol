@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.11;
+pragma solidity 0.8.12;
 
-import './vm.sol';
-import './global.sol';
+import "./vm.sol";
+import "./global.sol";
 
 contract Recorder {
     constructor(bytes32 seed) {
@@ -27,7 +27,7 @@ contract Recorder {
 library record {
     function build(bytes32 __slot) internal {
         address recorder = address(new Recorder(__slot));
-        global.set('Recorder', recorder);
+        global.set("Recorder", recorder);
     }
 
     function check(address at, bytes32 guess) internal returns (bool found, uint256 res) {
@@ -56,7 +56,7 @@ library record {
 
         tokens = new uint160[](writes.length);
 
-        address recorder = global.getAddressSafe('Recorder');
+        address recorder = global.getAddressSafe("Recorder");
 
         for (uint256 i = 0; i < writes.length; i++) {
             if (uint256(writes[i]) > type(uint128).max) {

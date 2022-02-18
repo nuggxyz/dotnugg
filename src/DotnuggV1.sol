@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.11;
+pragma solidity 0.8.12;
 
 import {IDotnuggV1} from "./interfaces/IDotnuggV1.sol";
 
@@ -9,12 +9,12 @@ import {IDotnuggV1Safe} from "./interfaces/IDotnuggV1Safe.sol";
 import {DotnuggV1Safe} from "./DotnuggV1Safe.sol";
 
 contract DotnuggV1 is IDotnuggV1, DotnuggV1Safe {
-    function register() external returns (IDotnuggV1Safe proxy) {
+    function register(bytes[] calldata input) external returns (IDotnuggV1Safe proxy) {
         require(address(this) == factory, "oooooops");
 
         proxy = deploy();
 
-        proxy.init(msg.sender);
+        proxy.init(input);
     }
 
     function deploy() internal returns (IDotnuggV1Safe instance) {
