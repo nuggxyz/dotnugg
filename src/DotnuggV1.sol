@@ -8,9 +8,15 @@ import {IDotnuggV1Safe} from "./interfaces/IDotnuggV1Safe.sol";
 
 import {DotnuggV1Safe} from "./DotnuggV1Safe.sol";
 
+import {data as nuggs} from "./_data/nuggs.data.sol";
+
 contract DotnuggV1 is IDotnuggV1, DotnuggV1Safe {
+    constructor() {
+        write(abi.decode(nuggs, (bytes[])));
+    }
+
     function register(bytes[] calldata input) external returns (IDotnuggV1Safe proxy) {
-        require(address(this) == factory, "oooooops");
+        require(address(this) == factory, "O");
 
         proxy = deploy();
 
@@ -25,6 +31,6 @@ contract DotnuggV1 is IDotnuggV1, DotnuggV1Safe {
             mstore(add(ptr, 0x28), 0x5af43d82803e903d91602b57fd5bf30000000000000000000000000000000000)
             instance := create(0, ptr, 0x37)
         }
-        require(address(instance) != address(0), "ERC1167: create2 failed");
+        require(address(instance) != address(0), "E");
     }
 }
