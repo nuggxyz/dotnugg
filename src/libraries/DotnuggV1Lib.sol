@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: CC-BY-SA-4.0
 
 pragma solidity 0.8.12;
 import "../_test/utils/forge.sol";
@@ -114,6 +114,11 @@ library DotnuggV1Lib {
         }
     }
 
+    // [0] 00
+    // [1] AMOUNT OF NUGGS
+    // [2 - 2 * AON - bytes2[]] weights
+    //  [---        - bytes2[]] start & ends
+
     function read(
         address safe,
         uint8 feature,
@@ -127,11 +132,13 @@ library DotnuggV1Lib {
 
         index = index - 1;
 
-        uint32 starts = uint32(bytes4(readBytecode(loc, DOTNUGG_RUNTIME_BYTE_LEN + length * 2 + 1 + index * 2, 4)));
+        uint32 startAndEnd = uint32(
+            bytes4(readBytecode(loc, DOTNUGG_RUNTIME_BYTE_LEN + length * 2 + 1 + index * 2, 4))
+        );
 
-        uint32 begin = starts >> 16;
+        uint32 begin = startAndEnd >> 16;
 
-        return readBytecodeAsArray(loc, begin, (starts & 0xffff) - begin);
+        return readBytecodeAsArray(loc, begin, (startAndEnd & 0xffff) - begin);
     }
 
     function location(address registration, uint8 feature) internal pure returns (address res) {
@@ -156,6 +163,16 @@ library DotnuggV1Lib {
             // [0x20] 0x________________feature___________________>___________________
             // [0x40] 0x________________PROXY_INIT_CODE_HASH______////////////////////
             // =======================================================================]
+
+            // 1 proxy #1 - dotnugg for nuggft (or a clone of dotnugg)
+            // to calculate proxy #2 - address proxy #1 + feature(0-7) + PROXY#2_INIT_CODE
+            // 8 proxy #2 - things that get self dest
+
+            // 8 proxy #3 - nuggs
+            // to calc proxy #3 = address proxy #2 + [feature(1-8)] = nonce
+            // nonces for contracts start at 1
+
+            // bytecode -> proxy #2 -> contract with items (dotnugg file) -> kills itelf
 
             // [======================================================================
             mstore(0x02, shl(96, keccak256(0x00, 0x55)))
