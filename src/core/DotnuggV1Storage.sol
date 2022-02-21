@@ -94,7 +94,6 @@ library DotnuggV1Storage {
 
     function save(bytes memory data, uint8 feature) internal returns (uint8 amount) {
         // require(DOTNUGG_HEADER == bytes25(data[:DOTNUGG_HEADER_BYTE_LEN]), "A");
-
         address proxy;
 
         assembly {

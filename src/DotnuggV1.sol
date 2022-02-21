@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: CC-BY-SA-4.0
 
 pragma solidity 0.8.12;
 
@@ -18,12 +18,12 @@ contract DotnuggV1 is IDotnuggV1, DotnuggV1Safe {
     function register(bytes[] calldata input) external returns (IDotnuggV1Safe proxy) {
         require(address(this) == factory, "O");
 
-        proxy = deploy();
+        proxy = clone();
 
         proxy.init(input);
     }
 
-    function deploy() internal returns (IDotnuggV1Safe instance) {
+    function clone() internal returns (IDotnuggV1Safe instance) {
         assembly {
             let ptr := mload(0x40)
             mstore(ptr, 0x3d602d80600a3d3981f3363d3d373d3d3d363d73000000000000000000000000)
