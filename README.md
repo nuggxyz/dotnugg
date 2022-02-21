@@ -22,7 +22,7 @@ For example:
 ```typescript
 import {
     abi as DotnuggV1Factory__ABI,
-    bytecode as DotnuggV1Factory__BYTECODE
+    bytecode as DotnuggV1Factory__BYTECODE,
 } from "@nuggxyz/dotnugg-v1-core/DotnuggV1Factory.json";
 
 // deploy the bytecode
