@@ -7,6 +7,16 @@ This repository contains the core smart contracts for the DotnuggV1 Protocol.
 For higher level contracts, see the [dotnugg-v1-periphery](https://github.com/nuggxyz/dotnugg-v1-periphery)
 repository.
 
+## m1 configuration
+```bash
+# to install apple silicon version of solc
+brew install solidity
+
+# each shell you want to use forge in
+export SOLC_PATH=/opt/homebrew/Cellar/solidity/0.8.12/bin/solc
+```
+
+
 ## Bug bounty
 
 This repository is subject to the DotnuggV1 bug bounty program, per the terms defined [here](./bug-bounty.md).
