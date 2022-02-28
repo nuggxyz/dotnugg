@@ -37,14 +37,14 @@ contract DotnuggV1Safe is IDotnuggV1Safe, DotnuggV1Resolver {
         return combo(read(feature, pos), base64);
     }
 
-    function write(bytes[] memory data) internal {
+    function write(bytes[] memory data) public {
         require(data.length == 8, "nope");
         for (uint8 i = 0; i < 8; i++) {
             if (data[i].length > 0) write(data[i], i);
         }
     }
 
-    function write(bytes memory data, uint8 feature) internal {
+    function write(bytes memory data, uint8 feature) public {
         require(feature < 8, "F:3");
 
         uint8 saved = Storage.save(data, feature);

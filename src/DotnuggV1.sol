@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 pragma solidity 0.8.12;
+import './_test/utils/forge.sol';
 
 import {IDotnuggV1} from "./interfaces/IDotnuggV1.sol";
 
@@ -12,7 +13,11 @@ import {data as nuggs} from "./_data/nuggs.data.sol";
 
 contract DotnuggV1 is IDotnuggV1, DotnuggV1Safe {
     constructor() {
+
+        // ds.inject.log(33);
+
         write(abi.decode(nuggs, (bytes[])));
+
     }
 
     function register(bytes[] calldata input) external returns (IDotnuggV1Safe proxy) {
