@@ -251,4 +251,9 @@ library DotnuggV1Lib {
             extcodecopy(file, add(data, 32), start, len)
         }
     }
+
+    function parseItemId(uint16 itemId) internal pure returns (uint8 feat, uint8 pos) {
+        feat = uint8(itemId >> 8);
+        pos = uint8(itemId);
+    }
 }

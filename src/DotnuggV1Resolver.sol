@@ -134,4 +134,13 @@ abstract contract DotnuggV1Resolver is IDotnuggV1Resolver {
         feat = uint8(itemId >> 8);
         pos = uint8(itemId);
     }
+
+    function parseItemIdAsString(uint16 itemId, string[8] memory labels)
+        external
+        pure
+        override
+        returns (string memory)
+    {
+        return string.concat(labels[(itemId >> 8)], " ", StringCastLib.toAsciiString((itemId) & 0xff));
+    }
 }
