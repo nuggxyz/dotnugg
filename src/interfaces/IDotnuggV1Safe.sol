@@ -4,7 +4,7 @@ pragma solidity 0.8.13;
 
 import {IDotnuggV1Resolver} from "../interfaces/IDotnuggV1Resolver.sol";
 
-interface IDotnuggV1Safe is IDotnuggV1Resolver {
+interface IDotnuggV1Safe {
     event Write(uint8 feature, uint8 amount, address sender);
 
     function init(bytes[] calldata data) external;

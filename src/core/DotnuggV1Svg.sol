@@ -78,13 +78,13 @@ library DotnuggV1Svg {
 
         res = abi.encodePacked(
             '<g class="DN" transform="scale(',
-            string((xScale).toAsciiBytesDecimal(5)),
+            string((xScale).toAsciiBytes(5)),
             ") translate(",
             xTrans > 320 ? "-" : "",
-            string((xTrans > 320 ? xTrans - 320 : 320 - xTrans).toAsciiBytesDecimal(1)),
+            string((xTrans > 320 ? xTrans - 320 : 320 - xTrans).toAsciiBytes(1)),
             ",",
             yTrans > 320 ? "-" : "",
-            string((yTrans > 320 ? yTrans - 320 : 320 - yTrans).toAsciiBytesDecimal(1)),
+            string((yTrans > 320 ? yTrans - 320 : 320 - yTrans).toAsciiBytes(1)),
             ')" transform-origin="center center">',
             children,
             "</g>"

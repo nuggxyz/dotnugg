@@ -5,27 +5,33 @@ pragma solidity 0.8.13;
 import {IDotnuggV1Resolver} from "./interfaces/IDotnuggV1Resolver.sol";
 
 import {DotnuggV1Svg as Svg} from "./core/DotnuggV1Svg.sol";
-import {middleout} from "./core/DotnuggV1MiddleOut.sol";
+import {DotnuggV1MiddleOut as MiddleOut} from "./core/DotnuggV1MiddleOut.sol";
 
 import {Base64} from "./libraries/Base64.sol";
 import {StringCastLib} from "./libraries/StringCastLib.sol";
 
 abstract contract DotnuggV1Resolver is IDotnuggV1Resolver {
-    function calc(uint256[][] memory reads) public pure returns (uint256[] memory) {
-        return middleout(reads);
+    MiddleOut internal immutable middleout;
+
+    constructor() {
+        middleout = new MiddleOut();
     }
 
-    function calc(uint256[] memory read) public pure returns (uint256[] memory) {
+    function calc(uint256[][] memory reads) public view returns (uint256[] memory) {
+        return middleout.execute(reads);
+    }
+
+    function calc(uint256[] memory read) public view returns (uint256[] memory) {
         uint256[][] memory reads = new uint256[][](1);
         reads[0] = read;
-        return middleout(reads);
+        return middleout.execute(reads);
     }
 
-    function combo(uint256[][] memory reads, bool base64) public pure returns (string memory) {
+    function combo(uint256[][] memory reads, bool base64) public view returns (string memory) {
         return svg(calc(reads), base64);
     }
 
-    function combo(uint256[] memory reads, bool base64) public pure returns (string memory) {
+    function combo(uint256[] memory reads, bool base64) public view returns (string memory) {
         return svg(calc(reads), base64);
     }
 

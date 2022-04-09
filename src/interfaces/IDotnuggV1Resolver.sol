@@ -33,5 +33,7 @@ interface IDotnuggV1Resolver {
 
     function encodeProof(uint16[16] memory ids) external pure returns (uint256 proof);
 
+    function decodeProofCore(uint256 proof) external pure returns (uint8[8] memory res);
+
     function parseItemIdAsString(uint16 itemId, string[8] memory labels) external pure returns (string memory);
 }

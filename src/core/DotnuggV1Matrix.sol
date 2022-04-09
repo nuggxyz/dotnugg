@@ -43,20 +43,22 @@ library DotnuggV1Matrix {
     }
 
     function next(Memory memory matrix, uint8 width) internal pure returns (bool res) {
-        if (matrix.init) {
-            if (width <= matrix.currentUnsetX + 1) {
-                if (matrix.height == matrix.currentUnsetY + 1) {
-                    return false;
+        unchecked {
+            if (matrix.init) {
+                if (width <= matrix.currentUnsetX + 1) {
+                    if (matrix.height == matrix.currentUnsetY + 1) {
+                        return false;
+                    }
+                    matrix.currentUnsetX = matrix.startX; // 0 by default
+                    matrix.currentUnsetY++;
+                } else {
+                    matrix.currentUnsetX++;
                 }
-                matrix.currentUnsetX = matrix.startX; // 0 by default
-                matrix.currentUnsetY++;
             } else {
-                matrix.currentUnsetX++;
+                matrix.init = true;
             }
-        } else {
-            matrix.init = true;
+            res = true;
         }
-        res = true;
     }
 
     function current(Memory memory matrix) internal pure returns (uint256 res) {
@@ -86,25 +88,27 @@ library DotnuggV1Matrix {
         uint256 groupWidth,
         uint256 groupHeight
     ) internal pure {
-        matrix.height = uint8(groupHeight);
+        unchecked {
+            matrix.height = uint8(groupHeight);
 
-        for (uint256 y = 0; y < groupHeight; y++) {
-            for (uint256 x = 0; x < groupWidth; x++) {
-                next(matrix, uint8(groupWidth));
-                uint256 col = Parser.getPixelAt(data, x, y);
-                if (col != 0) {
-                    (uint256 yo, , ) = Parser.getPalletColorAt(data, col);
+            for (uint256 y = 0; y < groupHeight; y++) {
+                for (uint256 x = 0; x < groupWidth; x++) {
+                    next(matrix, uint8(groupWidth));
+                    uint256 col = Parser.getPixelAt(data, x, y);
+                    if (col != 0) {
+                        (uint256 yo, , ) = Parser.getPalletColorAt(data, col);
 
-                    setCurrent(matrix, yo);
-                } else {
-                    setCurrent(matrix, 0x0000000000);
+                        setCurrent(matrix, yo);
+                    } else {
+                        setCurrent(matrix, 0x0000000000);
+                    }
                 }
             }
+
+            matrix.width = uint8(groupWidth);
+
+            resetIterator(matrix);
         }
-
-        matrix.width = uint8(groupWidth);
-
-        resetIterator(matrix);
     }
 
     function addRowsAt(
@@ -112,17 +116,19 @@ library DotnuggV1Matrix {
         uint8 index,
         uint8 amount
     ) internal pure {
-        for (uint256 i = 0; i < matrix.height; i++) {
-            for (uint256 j = matrix.height; j > index; j--) {
-                if (j < index) break;
-                matrix.version.setBigMatrixPixelAt(i, j + amount, matrix.version.getBigMatrixPixelAt(i, j));
+        unchecked {
+            for (uint256 i = 0; i < matrix.height; i++) {
+                for (uint256 j = matrix.height; j > index; j--) {
+                    if (j < index) break;
+                    matrix.version.setBigMatrixPixelAt(i, j + amount, matrix.version.getBigMatrixPixelAt(i, j));
+                }
+                // "<=" is because this loop needs to run [amount] times
+                for (uint256 j = index + 1; j <= index + amount; j++) {
+                    matrix.version.setBigMatrixPixelAt(i, j, matrix.version.getBigMatrixPixelAt(i, index));
+                }
             }
-            // "<=" is because this loop needs to run [amount] times
-            for (uint256 j = index + 1; j <= index + amount; j++) {
-                matrix.version.setBigMatrixPixelAt(i, j, matrix.version.getBigMatrixPixelAt(i, index));
-            }
+            matrix.height += amount;
         }
-        matrix.height += amount;
     }
 
     function addColumnsAt(
@@ -130,17 +136,19 @@ library DotnuggV1Matrix {
         uint8 index,
         uint8 amount
     ) internal pure {
-        // require(index < matrix.data[0].length, 'MAT:ACA:0');
-        for (uint256 i = 0; i < matrix.width; i++) {
-            for (uint256 j = matrix.width; j > index; j--) {
-                if (j < index) break;
-                matrix.version.setBigMatrixPixelAt(j + amount, i, matrix.version.getBigMatrixPixelAt(j, i));
+        unchecked {
+            // require(index < matrix.data[0].length, 'MAT:ACA:0');
+            for (uint256 i = 0; i < matrix.width; i++) {
+                for (uint256 j = matrix.width; j > index; j--) {
+                    if (j < index) break;
+                    matrix.version.setBigMatrixPixelAt(j + amount, i, matrix.version.getBigMatrixPixelAt(j, i));
+                }
+                // "<=" is because this loop needs to run [amount] times
+                for (uint256 j = index + 1; j <= index + amount; j++) {
+                    matrix.version.setBigMatrixPixelAt(j, i, matrix.version.getBigMatrixPixelAt(index, i));
+                }
             }
-            // "<=" is because this loop needs to run [amount] times
-            for (uint256 j = index + 1; j <= index + amount; j++) {
-                matrix.version.setBigMatrixPixelAt(j, i, matrix.version.getBigMatrixPixelAt(index, i));
-            }
+            matrix.width += amount;
         }
-        matrix.width += amount;
     }
 }

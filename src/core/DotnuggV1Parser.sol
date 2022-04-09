@@ -41,13 +41,7 @@ library DotnuggV1Parser {
 
             uint256 id = reader.select(8);
 
-            uint256[] memory pallet = parsePallet(
-                reader,
-                id,
-                feature,
-                graftPallet
-                // graftPalletIndex == 8 ? new uint256[](0) : m[graftPalletIndex][0].pallet
-            );
+            uint256[] memory pallet = parsePallet(reader, id, feature, graftPallet);
 
             if (reader.select(1) == 1) {
                 require(graftPallet.length == 0, "0x34");
