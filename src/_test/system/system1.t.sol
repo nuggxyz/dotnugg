@@ -3,7 +3,7 @@
 pragma solidity 0.8.13;
 
 import "../main.t.sol";
-import {data} from "../../_data/a.data.sol";
+import {data} from "../../_data/nuggs.data.sol";
 
 contract systemTest__one is t {
     function setUp() public {
@@ -50,11 +50,12 @@ contract systemTest__one is t {
 
         // proxy.exec(0, 1, false);
 
-        // proxy.exec([1, 1, 1, 1, 1, 1, 1, 1], true);
+        // proxy.exec([1, 1, 1, 1, 1, 0, 0, 0], true);
 
-        // proxy.exec([2, 2, 2, 2, 2, 2, 2, 2], false);
+        // proxy.exec([1, 16, 16], false);
 
-        // ds.emit_log_string(proxy.exec([1, 1, 1, 1, 1, 1, 1, 1], true));
+        // ds.emit_log_string(proxy.exec([2, 47, 23, 0, 25, 0, 0, 15], false));
+        ds.emit_log_string(proxy.exec([3, 47, 23, 21, 0, 0, 0, 0], false));
 
         proxy.randOf(1, 0x1234444997373738);
     }

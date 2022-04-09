@@ -707,10 +707,7 @@ library array {
         address f,
         address g
     ) internal pure returns (address[] memory arr) {
-        return
-            toAddress(
-                arrayHelpers.build(uint160(a), uint160(b), uint160(c), uint160(d), uint160(e), uint160(f), uint160(g))
-            );
+        return toAddress(arrayHelpers.build(uint160(a), uint160(b), uint160(c), uint160(d), uint160(e), uint160(f), uint160(g)));
     }
 
     function bAddress(
@@ -723,18 +720,6 @@ library array {
         address g,
         address h
     ) internal pure returns (address[] memory arr) {
-        return
-            toAddress(
-                arrayHelpers.build(
-                    uint160(a),
-                    uint160(b),
-                    uint160(c),
-                    uint160(d),
-                    uint160(e),
-                    uint160(f),
-                    uint160(g),
-                    uint160(h)
-                )
-            );
+        return toAddress(arrayHelpers.build(uint160(a), uint160(b), uint160(c), uint160(d), uint160(e), uint160(f), uint160(g), uint160(h)));
     }
 }

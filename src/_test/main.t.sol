@@ -9,6 +9,10 @@ import "../DotnuggV1.sol";
 contract t is ForgeTest {
     DotnuggV1 factory;
 
+    constructor() {
+        ds.setDsTest(address(this));
+    }
+
     function reset() internal {
         factory = new DotnuggV1();
     }
