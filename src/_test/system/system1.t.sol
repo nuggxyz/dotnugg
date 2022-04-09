@@ -55,7 +55,8 @@ contract systemTest__one is t {
         // proxy.exec([1, 16, 16], false);
 
         // ds.emit_log_string(proxy.exec([2, 47, 23, 0, 25, 0, 0, 15], false));
-        ds.emit_log_string(proxy.exec([3, 47, 23, 21, 0, 0, 0, 0], false));
+        // ds.emit_log_string(proxy.exec([3, 47, 23, 21, 0, 0, 0, 0], false));
+        ds.emit_log_string(proxy.exec([3, 0, 0, 18, 0, 0, 0, 0], false));
 
         proxy.randOf(1, 0x1234444997373738);
     }

@@ -2,6 +2,8 @@
 
 pragma solidity 0.8.13;
 
+import {ShiftLib} from "../libraries/ShiftLib.sol";
+
 library DotnuggV1Pixel {
     function rgba(uint256 input) internal pure returns (uint256 res) {
         return ((input << 5) & 0xffffff_00) | a(input);
@@ -20,6 +22,20 @@ library DotnuggV1Pixel {
             res |= (_id & 0xff) << 27;
             res |= _rgb << 3;
             res |= compressA(_a & 0xff);
+        }
+    }
+
+    function unsafeGraft(
+        uint256 base,
+        uint256 _id,
+        uint256 _zindex,
+        uint256 _feature
+    ) internal pure returns (uint256 res) {
+        unchecked {
+            res = base & ShiftLib.mask(27);
+            res |= (_feature & 0x7) << 39;
+            res |= (_zindex & 0xf) << 35;
+            res |= (_id & 0xff) << 27;
         }
     }
 

@@ -8,11 +8,12 @@ import {data} from "../_data/a.data.sol";
 
 contract DotnuggV1Deployer {
     DotnuggV1 immutable dotnuggv1;
-    IDotnuggV1Safe immutable safe;
+
+    // IDotnuggV1Safe immutable safe;
 
     constructor() {
         dotnuggv1 = new DotnuggV1();
 
-        safe = dotnuggv1.register(abi.decode(data, (bytes[])));
+        // safe = dotnuggv1.register(abi.decode(data, (bytes[])));
     }
 }

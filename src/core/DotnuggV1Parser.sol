@@ -9,6 +9,7 @@ import {DotnuggV1Reader as Reader} from "./DotnuggV1Reader.sol";
 
 library DotnuggV1Parser {
     using Reader for Reader.Memory;
+    using Pixel for uint256;
 
     struct Memory {
         uint256[] pallet;
@@ -22,6 +23,12 @@ library DotnuggV1Parser {
     function parse(uint256[][] memory reads) internal pure returns (Memory[][] memory m) {
         m = new Memory[][](reads.length);
 
+        // uint256 graftPalletIndex = 8;
+
+        uint256[] memory graftPallet;
+
+        // todo sort the reads by feature
+
         for (uint256 j = 0; j < reads.length; j++) {
             (bool empty, Reader.Memory memory reader) = Reader.init(reads[j]);
 
@@ -34,7 +41,19 @@ library DotnuggV1Parser {
 
             uint256 id = reader.select(8);
 
-            uint256[] memory pallet = parsePallet(reader, id, feature);
+            uint256[] memory pallet = parsePallet(
+                reader,
+                id,
+                feature,
+                graftPallet
+                // graftPalletIndex == 8 ? new uint256[](0) : m[graftPalletIndex][0].pallet
+            );
+
+            if (reader.select(1) == 1) {
+                require(graftPallet.length == 0, "0x34");
+                graftPallet = pallet;
+                // graftPalletIndex = j;
+            }
 
             uint256 versionLength = reader.select(2) + 1;
 
@@ -57,7 +76,8 @@ library DotnuggV1Parser {
     function parsePallet(
         Reader.Memory memory reader,
         uint256 id,
-        uint256 feature
+        uint256 feature,
+        uint256[] memory graftPallet
     ) internal pure returns (uint256[] memory res) {
         uint256 palletLength = reader.select(4) + 1;
 
@@ -72,25 +92,28 @@ library DotnuggV1Parser {
 
             uint256 color;
 
-            uint256 selecta = reader.select(1);
-            uint256 selectb = reader.select(1);
+            uint256 graftIndex = reader.select(1);
+            if (graftIndex == 1) graftIndex = reader.select(4);
 
-            if (selecta == 1) {
+            uint256 isWhite = reader.select(1);
+            uint256 isBlack = reader.select(1);
+
+            if (isWhite == 1) {
                 color = 0x000000;
-            } else if (selectb == 1) {
+            } else if (isBlack == 1) {
                 color = 0xffffff;
             } else {
-                uint256 r = reader.select(8);
-                uint256 g = reader.select(8);
-                uint256 b = reader.select(8);
-
-                color = (r << 16) | (g << 8) | b;
+                color = reader.select(24);
             }
 
             // // 1 or 8 bits: a
             uint256 a = (reader.select(1) == 0x1 ? 0xff : reader.select(8));
 
-            res[i + 1] = Pixel.unsafePack(color, a, id, z, feature);
+            if (graftIndex != 0 && graftPallet.length > graftIndex) {
+                res[i + 1] = Pixel.unsafeGraft(graftPallet[graftIndex], id, z, feature);
+            } else {
+                res[i + 1] = Pixel.unsafePack(color, a, id, z, feature);
+            }
         }
     }
 
