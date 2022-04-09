@@ -32,7 +32,7 @@ abstract contract DotnuggV1Resolver is IDotnuggV1Resolver {
     function svg(uint256[] memory calculated) public pure override returns (string memory) {
         bytes memory res = abi.encodePacked(
             '<svg viewBox="0 0 63 63" xmlns="http://www.w3.org/2000/svg">',
-            '<style type="text/css"><![CDATA[.A.B.C.D.E.F.G.H]]></style>',
+            // '<style type="text/css"><![CDATA[.A.B.C.D.E.F.G.H]]></style>',
             Svg.fledgeOutTheRekts(calculated),
             "</svg>"
         );
