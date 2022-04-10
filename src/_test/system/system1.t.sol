@@ -56,10 +56,29 @@ contract systemTest__one is t {
 
         // ds.emit_log_string(proxy.exec([2, 47, 23, 0, 25, 0, 0, 15], false));
         // ds.emit_log_string(proxy.exec([3, 47, 23, 21, 0, 0, 0, 0], false));
-        // ds.emit_log_string(proxy.exec([3, 0, 0, 18, 0, 0, 0, 0], false));
-        ds.emit_log_string(proxy.exec(3, 40, false));
+        ds.emit_log_string(proxy.exec([2, 0, 0, 18, 0, 0, 0, 0], false));
+        // ds.emit_log_string(proxy.exec(3, 48, false));
+        proxy.exec([0, 0, 0, 0, 0, 0, 0, 0], false);
 
         proxy.randOf(1, 0x1234444997373738);
+    }
+
+    function test__all() public {
+        forge.vm.startPrank(users.frank);
+
+        IDotnuggV1Safe proxy = factory.register(abi.decode(data, (bytes[])));
+
+        forge.vm.stopPrank();
+
+        for (uint8 i = 0; i < 8; i++) {
+            uint8 len = proxy.lengthOf(i);
+
+            for (uint8 j = 0; j < len; j++) {
+                proxy.exec(i, j + 1, false);
+                proxy.exec(i, j + 1, false);
+                proxy.exec([0, 0, 0, 0, 0, 0, 0, 0], false);
+            }
+        }
     }
 
     // 3D_60_20_80_80_80_38_03_80_91_85_39_03_80_82_84_81_53_20_83_51_14_02_90_F3_00_04_20_00_00_69_00

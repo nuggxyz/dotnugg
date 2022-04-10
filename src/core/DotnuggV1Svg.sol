@@ -26,6 +26,7 @@ library DotnuggV1Svg {
         uint256 yEnd;
         uint256 xStart;
         uint256 yStart;
+        uint256 isaG;
     }
 
     function fledgeOutTheRekts(uint256[] memory calculated) internal pure returns (bytes memory res) {
@@ -33,7 +34,14 @@ library DotnuggV1Svg {
 
         uint256 count = 1;
 
-        Execution memory exec = Execution({mapper: new Memory[](64), xEnd: 0, yEnd: 0, xStart: 62, yStart: 62});
+        Execution memory exec = Execution({
+            mapper: new Memory[](64),
+            xEnd: 0,
+            yEnd: 0,
+            xStart: 62,
+            yStart: 62,
+            isaG: 0
+        });
 
         for (uint256 y = 0; y < 63; y++) {
             for (uint256 x = y == 0 ? 1 : 0; x < 63; x++) {
@@ -60,8 +68,7 @@ library DotnuggV1Svg {
             if (exec.mapper[i].color == 0) break;
             res = abi.encodePacked(res, exec.mapper[i].data, '"/>');
         }
-
-        res = gWrap(exec, res);
+        if (exec.isaG == 1) res = gWrap(exec, res);
     }
 
     function gWrap(Execution memory exec, bytes memory children) internal pure returns (bytes memory res) {
@@ -70,6 +77,9 @@ library DotnuggV1Svg {
 
         uint256 xTrans = ((exec.xEnd + 1) * 10) / 2 + (exec.xStart) * 10;
         uint256 yTrans = ((exec.yEnd + 1) * 10) / 2 + (exec.yStart) * 10;
+
+        if (exec.xEnd == 0) exec.xEnd++;
+        if (exec.yEnd == 0) exec.yEnd++;
 
         uint256 xScale = (6200000) / exec.xEnd;
         uint256 yScale = (6200000) / exec.yEnd;
@@ -117,6 +127,7 @@ library DotnuggV1Svg {
     ) internal pure {
         if (color == 0) return;
 
+        exec.isaG = 1;
         if (x < exec.xStart) exec.xStart = x;
         if (y < exec.yStart) exec.yStart = y;
         if (x + xlen > exec.xEnd) exec.xEnd = x + xlen;
