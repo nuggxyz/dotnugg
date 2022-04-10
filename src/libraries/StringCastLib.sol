@@ -45,34 +45,34 @@ library StringCastLib {
     function toAsciiBytes(uint256 value, uint256 places) internal pure returns (bytes memory buffer) {
         // Inspired by OraclizeAPI's implementation - MIT licence
         // https://github.com/oraclize/ethereum-api/blob/b42146b063c7d6ee1358846c198246239e9360e8/oraclizeAPI_0.4.25.sol
+        unchecked {
+            if (value == 0) return "0";
 
-        if (value == 0) {
-            return "0";
-        }
-        uint256 temp = value;
-        uint256 digits;
-        while (temp != 0) {
-            digits++;
-            temp /= 10;
-        }
-
-        digits = places == 0 ? digits : (digits > places ? digits : places) + 1;
-
-        buffer = new bytes(digits);
-
-        if (places != 0) buffer[digits - places - 1] = ".";
-
-        while (digits != 0) {
-            digits -= 1;
-            if (buffer[digits] == ".") {
-                if (digits == 0) break;
-                digits -= 1;
+            uint256 temp = value;
+            uint256 digits;
+            while (temp != 0) {
+                digits++;
+                temp /= 10;
             }
 
-            buffer[digits] = bytes1(uint8(48 + uint256(value % 10)));
-            value /= 10;
+            digits = places == 0 ? digits : (digits > places ? digits : places) + 1;
+
+            buffer = new bytes(digits);
+
+            if (places != 0) buffer[digits - places - 1] = ".";
+
+            while (digits != 0) {
+                digits -= 1;
+                if (buffer[digits] == ".") {
+                    if (digits == 0) break;
+                    digits -= 1;
+                }
+
+                buffer[digits] = bytes1(uint8(48 + uint256(value % 10)));
+                value /= 10;
+            }
+            return buffer;
         }
-        return buffer;
     }
 
     // /**

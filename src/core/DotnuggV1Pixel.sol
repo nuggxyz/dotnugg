@@ -86,15 +86,17 @@ library DotnuggV1Pixel {
     }
 
     function combine(uint256 base, uint256 mix) internal pure returns (uint256 res) {
-        if (a(mix) == 255 || a(base) == 0) {
-            res = mix;
-            return res;
+        unchecked {
+            if (a(mix) == 255 || a(base) == 0) {
+                res = mix;
+                return res;
+            }
+            // FIXME - i am pretty sure there is a bug here that causes the non-color pixel data to be deleted
+            res |= uint256((r(base) * (255 - a(mix)) + r(mix) * a(mix)) / 255) << 19;
+            res |= uint256((g(base) * (255 - a(mix)) + g(mix) * a(mix)) / 255) << 11;
+            res |= uint256((b(base) * (255 - a(mix)) + b(mix) * a(mix)) / 255) << 3;
+            res |= 0x7;
+            res |= (mix >> 27) << 27;
         }
-        // FIXME - i am pretty sure there is a bug here that causes the non-color pixel data to be deleted
-        res |= uint256((r(base) * (255 - a(mix)) + r(mix) * a(mix)) / 255) << 19;
-        res |= uint256((g(base) * (255 - a(mix)) + g(mix) * a(mix)) / 255) << 11;
-        res |= uint256((b(base) * (255 - a(mix)) + b(mix) * a(mix)) / 255) << 3;
-        res |= 0x7;
-        res |= (mix >> 27) << 27;
     }
 }

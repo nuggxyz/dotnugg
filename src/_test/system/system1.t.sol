@@ -6,8 +6,15 @@ import "../main.t.sol";
 import {data} from "../../_data/nuggs.data.sol";
 
 contract systemTest__one is t {
+    IDotnuggV1Safe proxy;
+
     function setUp() public {
         reset();
+        forge.vm.startPrank(users.frank);
+
+        proxy = factory.register(abi.decode(data, (bytes[])));
+
+        forge.vm.stopPrank();
     }
 
     function test__gas__mask() public pure {
@@ -27,12 +34,6 @@ contract systemTest__one is t {
     }
 
     function test__something() public {
-        forge.vm.startPrank(users.frank);
-
-        IDotnuggV1Safe proxy = factory.register(abi.decode(data, (bytes[])));
-
-        forge.vm.stopPrank();
-
         proxy.lengthOf(0);
 
         // uint256[] memory a = new uint256[](7);
@@ -64,12 +65,6 @@ contract systemTest__one is t {
     }
 
     function test__all() public {
-        forge.vm.startPrank(users.frank);
-
-        IDotnuggV1Safe proxy = factory.register(abi.decode(data, (bytes[])));
-
-        forge.vm.stopPrank();
-
         for (uint8 i = 0; i < 8; i++) {
             uint8 len = proxy.lengthOf(i);
 
@@ -80,6 +75,63 @@ contract systemTest__one is t {
             }
         }
     }
+
+    function test__back__offset() public {
+        // for (uint8 i = 0; i < 8; i++) {
+        // uint8 len = proxy.lengthOf(i);
+
+        /// OK
+        uint256[][] memory check = new uint256[][](4);
+
+        // not OK
+        // uint256[][] memory check = new uint256[][](4);
+
+        // check[0] = proxy.read(0, 3);
+        // check[1] = proxy.read(1, 5);
+        // check[2] = proxy.read(2, 5);
+        check[3] = proxy.read(5, 3);
+
+        // check[3] = proxy.read(2, 87);
+
+        ds.emit_log_string(proxy.combo(check, false));
+
+        // for (uint8 j = 0; j < len; j++) {
+        //     proxy.exec(i, j + 1, false);
+        //     proxy.exec(i, j + 1, false);
+        //     proxy.exec([0, 0, 0, 0, 0, 0, 0, 0], false);
+        // }
+    }
+
+    function test__back__offset2() public {
+        // for (uint8 i = 0; i < 8; i++) {
+        // uint8 len = proxy.lengthOf(i);
+
+        /// OK
+        uint256[][] memory check = new uint256[][](16);
+
+        // not OK
+        // uint256[][] memory check = new uint256[][](4);
+
+        // check[0] = proxy.read(0, 3);
+        // check[1] = proxy.read(1, 5);
+        // check[2] = proxy.read(2, 5);
+        check[2] = proxy.read(5, 3);
+        check[1] = proxy.read(5, 2);
+        check[3] = proxy.read(5, 1);
+        check[4] = proxy.read(5, 4);
+        check[5] = proxy.read(5, 5);
+
+        // check[3] = proxy.read(2, 87);
+
+        ds.emit_log_string(proxy.combo(check, false));
+
+        // for (uint8 j = 0; j < len; j++) {
+        //     proxy.exec(i, j + 1, false);
+        //     proxy.exec(i, j + 1, false);
+        //     proxy.exec([0, 0, 0, 0, 0, 0, 0, 0], false);
+        // }
+    }
+    // }
 
     // 3D_60_20_80_80_80_38_03_80_91_85_39_03_80_82_84_81_53_20_83_51_14_02_90_F3_00_04_20_00_00_69_00
     // 3D6020808080380380918539038082848153208351140290F300042000006900

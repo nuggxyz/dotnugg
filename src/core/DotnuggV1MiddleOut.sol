@@ -15,31 +15,35 @@ contract DotnuggV1MiddleOut {
     using Pixel for uint256;
 
     struct Run {
-        Parser.Memory[][] versions;
+        Parser.Memory[8] versions;
         Canvas canvas;
         Mix mix;
     }
 
     function execute(uint256[][] memory files) public pure returns (uint256[] memory res) {
-        Run memory run;
+        unchecked {
+            Run memory run;
+            uint256 len;
 
-        run.versions = Parser.parse(files);
+            (run.versions, len) = Parser.parse(files);
 
-        run.canvas.matrix = Matrix.create(63, 63);
-        run.canvas.matrix.width = run.canvas.matrix.height = 63;
+            run.canvas.matrix = Matrix.create(63, 63);
+            run.canvas.matrix.width = run.canvas.matrix.height = 63;
 
-        for (uint8 i = 0; i < run.versions.length; i++) {
-            run.canvas.receivers[i].coordinate = center();
-        }
+            for (uint8 i = 0; i < run.versions.length; i++) {
+                run.canvas.receivers[i].coordinate = center();
+            }
 
-        run.mix.matrix = Matrix.create(63, 63);
+            run.mix.matrix = Matrix.create(63, 63);
 
-        for (uint8 i = 0; i < run.versions.length; i++) {
-            if (run.versions[i].length > 0) {
-                setMix(run.mix, run.versions[i], pickVersionIndex(run.canvas, run.versions[i]));
+            for (uint8 i = 0; i < 8; i++) {
+                if (!run.versions[i].exists) continue;
+
+                // setMix(run.mix, run.versions[i], pickVersionIndex(run.canvas, run.versions[i]));
+                setMix(run.mix, run.versions[i]);
 
                 // no reposition on single items
-                if (files.length == 1) return run.mix.matrix.version.bigmatrix;
+                if (len == 1) return run.mix.matrix.version.bigmatrix;
 
                 formatForCanvas(run.canvas, run.mix);
 
@@ -51,9 +55,9 @@ contract DotnuggV1MiddleOut {
 
                 updateReceivers(run.canvas, run.mix);
             }
-        }
 
-        res = run.canvas.matrix.version.bigmatrix;
+            res = run.canvas.matrix.version.bigmatrix;
+        }
     }
 
     function center() internal pure returns (Coordinate memory) {
@@ -112,69 +116,73 @@ contract DotnuggV1MiddleOut {
     }
 
     function postionForCanvas(Canvas memory canvas, Mix memory mix) internal pure {
-        Anchor memory receiver = canvas.receivers[mix.feature];
-        Anchor memory anchor = mix.version.anchor;
+        unchecked {
+            Anchor memory receiver = canvas.receivers[mix.feature];
+            Anchor memory anchor = mix.version.anchor;
 
-        mix.xoffset = receiver.coordinate.a > anchor.coordinate.a ? receiver.coordinate.a - anchor.coordinate.a : 0;
-        mix.yoffset = receiver.coordinate.b > anchor.coordinate.b ? receiver.coordinate.b - anchor.coordinate.b : 0;
+            mix.xoffset = receiver.coordinate.a > anchor.coordinate.a ? receiver.coordinate.a - anchor.coordinate.a : 0;
+            mix.yoffset = receiver.coordinate.b > anchor.coordinate.b ? receiver.coordinate.b - anchor.coordinate.b : 0;
 
-        mix.xoffset++;
+            mix.xoffset++;
 
-        canvas.matrix.moveTo(mix.xoffset, mix.yoffset, mix.matrix.width, mix.matrix.height);
+            canvas.matrix.moveTo(mix.xoffset, mix.yoffset, mix.matrix.width, mix.matrix.height);
+        }
     }
 
     function formatForCanvas(Canvas memory canvas, Mix memory mix) internal pure {
-        Anchor memory receiver = canvas.receivers[mix.feature];
-        Anchor memory anchor = mix.version.anchor;
+        unchecked {
+            Anchor memory receiver = canvas.receivers[mix.feature];
+            Anchor memory anchor = mix.version.anchor;
 
-        if (mix.version.expanders.l != 0 && anchor.radii.l != 0 && anchor.radii.l <= receiver.radii.l) {
-            uint8 amount = receiver.radii.l - anchor.radii.l;
-            mix.matrix.addColumnsAt(mix.version.expanders.l - 1, amount);
-            anchor.coordinate.a += amount;
-            if (mix.version.expanders.r > 0) mix.version.expanders.r += amount;
-        }
-        if (mix.version.expanders.r != 0 && anchor.radii.r != 0 && anchor.radii.r <= receiver.radii.r) {
-            mix.matrix.addColumnsAt(mix.version.expanders.r - 1, receiver.radii.r - anchor.radii.r);
-        }
-        if (mix.version.expanders.d != 0 && anchor.radii.d != 0 && anchor.radii.d <= receiver.radii.d) {
-            uint8 amount = receiver.radii.d - anchor.radii.d;
-            mix.matrix.addRowsAt(mix.version.expanders.d, amount);
-            anchor.coordinate.b += amount;
-            if (mix.version.expanders.u > 0) mix.version.expanders.u += amount;
-        }
-        if (mix.version.expanders.u != 0 && anchor.radii.u != 0 && anchor.radii.u <= receiver.radii.u) {
-            mix.matrix.addRowsAt(mix.version.expanders.u, receiver.radii.u - anchor.radii.u);
-        }
-    }
-
-    function pickVersionIndex(Canvas memory canvas, Parser.Memory[] memory versions) internal pure returns (uint8) {
-        require(versions.length == 1, "CALC:PVI:0");
-        if (versions.length == 1) {
-            return 0;
-        }
-
-        uint8 index = uint8(versions.length) - 1;
-
-        uint256 feature = (versions[0].data >> 75) & ShiftLib.mask(3);
-
-        while (index > 0) {
-            uint256 bits = (versions[index].data >> 27) & ShiftLib.mask(24);
-            Rlud memory anchorRadii = Rlud({
-                r: uint8((bits >> 18) & ShiftLib.mask(6)),
-                l: uint8((bits >> 12) & ShiftLib.mask(6)),
-                u: uint8((bits >> 6) & ShiftLib.mask(6)),
-                d: uint8((bits) & ShiftLib.mask(6)),
-                exists: true
-            });
-
-            if (checkRluds(anchorRadii, canvas.receivers[feature].radii)) {
-                return index;
+            if (mix.version.expanders.l != 0 && anchor.radii.l != 0 && anchor.radii.l <= receiver.radii.l) {
+                uint8 amount = receiver.radii.l - anchor.radii.l;
+                mix.matrix.addColumnsAt(mix.version.expanders.l - 1, amount);
+                anchor.coordinate.a += amount;
+                if (mix.version.expanders.r > 0) mix.version.expanders.r += amount;
             }
-            index = index - 1;
+            if (mix.version.expanders.r != 0 && anchor.radii.r != 0 && anchor.radii.r <= receiver.radii.r) {
+                mix.matrix.addColumnsAt(mix.version.expanders.r - 1, receiver.radii.r - anchor.radii.r);
+            }
+            if (mix.version.expanders.d != 0 && anchor.radii.d != 0 && anchor.radii.d <= receiver.radii.d) {
+                uint8 amount = receiver.radii.d - anchor.radii.d;
+                mix.matrix.addRowsAt(mix.version.expanders.d, amount);
+                anchor.coordinate.b += amount;
+                if (mix.version.expanders.u > 0) mix.version.expanders.u += amount;
+            }
+            if (mix.version.expanders.u != 0 && anchor.radii.u != 0 && anchor.radii.u <= receiver.radii.u) {
+                mix.matrix.addRowsAt(mix.version.expanders.u, receiver.radii.u - anchor.radii.u);
+            }
         }
-
-        return 0;
     }
+
+    // function pickVersionIndex(Canvas memory canvas, Parser.Memory[] memory versions) internal pure returns (uint8) {
+    //     require(versions.length == 1, "CALC:PVI:0");
+    //     if (versions.length == 1) {
+    //         return 0;
+    //     }
+
+    //     uint8 index = uint8(versions.length) - 1;
+
+    //     uint256 feature = (versions[0].data >> 75) & ShiftLib.mask(3);
+
+    //     while (index > 0) {
+    //         uint256 bits = (versions[index].data >> 27) & ShiftLib.mask(24);
+    //         Rlud memory anchorRadii = Rlud({
+    //             r: uint8((bits >> 18) & ShiftLib.mask(6)),
+    //             l: uint8((bits >> 12) & ShiftLib.mask(6)),
+    //             u: uint8((bits >> 6) & ShiftLib.mask(6)),
+    //             d: uint8((bits) & ShiftLib.mask(6)),
+    //             exists: true
+    //         });
+
+    //         if (checkRluds(anchorRadii, canvas.receivers[feature].radii)) {
+    //             return index;
+    //         }
+    //         index = index - 1;
+    //     }
+
+    //     return 0;
+    // }
 
     function checkRluds(Rlud memory r1, Rlud memory r2) internal pure returns (bool) {
         return (r1.r <= r2.r && r1.l <= r2.l) || (r1.u <= r2.u && r1.d <= r2.d);
@@ -182,113 +190,120 @@ contract DotnuggV1MiddleOut {
 
     function setMix(
         Mix memory res,
-        Parser.Memory[] memory versions,
-        uint8 versionIndex
+        Parser.Memory memory version // uint8 versionIndex
     ) internal pure {
-        uint256 radiiBits = (versions[versionIndex].data >> 27) & ShiftLib.mask(24);
-        uint256 expanderBits = (versions[versionIndex].data >> 3) & ShiftLib.mask(24);
+        unchecked {
+            uint256 radiiBits = (version.data >> 27) & ShiftLib.mask(24);
+            uint256 expanderBits = (version.data >> 3) & ShiftLib.mask(24);
 
-        (uint256 x, uint256 y) = Parser.getAnchor(versions[versionIndex]);
+            (uint256 x, uint256 y) = Parser.getAnchor(version);
 
-        (uint256 width, uint256 height) = Parser.getWidth(versions[versionIndex]);
+            (uint256 width, uint256 height) = Parser.getWidth(version);
 
-        res.version.width = uint8(width);
-        res.version.height = uint8(height);
-        res.version.anchor = Anchor({
-            radii: Rlud({
-                r: uint8((radiiBits >> 18) & ShiftLib.mask(6)),
-                l: uint8((radiiBits >> 12) & ShiftLib.mask(6)),
-                u: uint8((radiiBits >> 6) & ShiftLib.mask(6)),
-                d: uint8((radiiBits >> 0) & ShiftLib.mask(6)),
+            res.version.width = uint8(width);
+            res.version.height = uint8(height);
+            res.version.anchor = Anchor({
+                radii: Rlud({
+                    r: uint8((radiiBits >> 18) & ShiftLib.mask(6)),
+                    l: uint8((radiiBits >> 12) & ShiftLib.mask(6)),
+                    u: uint8((radiiBits >> 6) & ShiftLib.mask(6)),
+                    d: uint8((radiiBits >> 0) & ShiftLib.mask(6)),
+                    exists: true
+                }),
+                coordinate: Coordinate({a: uint8(x), b: uint8(y), exists: true})
+            });
+            res.version.expanders = Rlud({
+                r: uint8((expanderBits >> 18) & ShiftLib.mask(6)),
+                l: uint8((expanderBits >> 12) & ShiftLib.mask(6)),
+                u: uint8((expanderBits >> 6) & ShiftLib.mask(6)),
+                d: uint8((expanderBits >> 0) & ShiftLib.mask(6)),
                 exists: true
-            }),
-            coordinate: Coordinate({a: uint8(x), b: uint8(y), exists: true})
-        });
-        res.version.expanders = Rlud({
-            r: uint8((expanderBits >> 18) & ShiftLib.mask(6)),
-            l: uint8((expanderBits >> 12) & ShiftLib.mask(6)),
-            u: uint8((expanderBits >> 6) & ShiftLib.mask(6)),
-            d: uint8((expanderBits >> 0) & ShiftLib.mask(6)),
-            exists: true
-        });
-        res.version.calculatedReceivers = new Coordinate[](8);
+            });
+            res.version.calculatedReceivers = new Coordinate[](8);
 
-        res.version.staticReceivers = new Coordinate[](8);
+            res.version.staticReceivers = new Coordinate[](8);
 
-        for (uint256 i = 0; i < 8; i++) {
-            (uint256 _x, uint256 _y, bool exists) = Parser.getReceiverAt(versions[versionIndex], i, false);
-            if (exists) {
-                res.version.staticReceivers[i].a = uint8(_x);
-                res.version.staticReceivers[i].b = uint8(_y);
-                res.version.staticReceivers[i].exists = true;
+            for (uint256 i = 0; i < 8; i++) {
+                (uint256 _x, uint256 _y, bool exists) = Parser.getReceiverAt(version, i, false);
+                if (exists) {
+                    res.version.staticReceivers[i].a = uint8(_x);
+                    res.version.staticReceivers[i].b = uint8(_y);
+                    res.version.staticReceivers[i].exists = true;
+                }
             }
-        }
 
-        for (uint256 i = 0; i < 8; i++) {
-            (uint256 _x, uint256 _y, bool exists) = Parser.getReceiverAt(versions[versionIndex], i, true);
-            if (exists) {
-                res.version.calculatedReceivers[i].a = uint8(_x);
-                res.version.calculatedReceivers[i].b = uint8(_y);
-                res.version.calculatedReceivers[i].exists = true;
+            for (uint256 i = 0; i < 8; i++) {
+                (uint256 _x, uint256 _y, bool exists) = Parser.getReceiverAt(version, i, true);
+                if (exists) {
+                    res.version.calculatedReceivers[i].a = uint8(_x);
+                    res.version.calculatedReceivers[i].b = uint8(_y);
+                    res.version.calculatedReceivers[i].exists = true;
+                }
             }
+
+            // TODO - receivers?
+            res.xoffset = 0;
+            res.yoffset = 0;
+            // res.receivers = new Anchor[8](res.receivers.length);
+            Anchor[8] memory upd;
+            res.receivers = upd;
+
+            res.feature = uint8((version.data >> 75) & ShiftLib.mask(3));
+            res.matrix.set(version, width, height);
         }
-
-        // TODO - receivers?
-        res.xoffset = 0;
-        res.yoffset = 0;
-        // res.receivers = new Anchor[8](res.receivers.length);
-        Anchor[8] memory upd;
-        res.receivers = upd;
-
-        res.feature = uint8((versions[versionIndex].data >> 75) & ShiftLib.mask(3));
-        res.matrix.set(versions[versionIndex], width, height);
     }
 
     function updateReceivers(Canvas memory canvas, Mix memory mix) internal pure {
-        for (uint8 i = 0; i < mix.receivers.length; i++) {
-            Anchor memory m = mix.receivers[i];
-            if (m.coordinate.exists) {
-                m.coordinate.a += mix.xoffset;
-                m.coordinate.b += mix.yoffset;
-                canvas.receivers[i] = m;
+        unchecked {
+            for (uint8 i = 0; i < mix.receivers.length; i++) {
+                Anchor memory m = mix.receivers[i];
+                if (m.coordinate.exists) {
+                    m.coordinate.a += mix.xoffset;
+                    m.coordinate.b += mix.yoffset;
+                    canvas.receivers[i] = m;
+                }
             }
         }
     }
 
     function mergeToCanvas(Canvas memory canvas, Mix memory mix) internal pure {
-        while (canvas.matrix.next() && mix.matrix.next()) {
-            uint256 canvasPixel = canvas.matrix.current();
-            uint256 mixPixel = mix.matrix.current();
+        unchecked {
+            while (canvas.matrix.next() && mix.matrix.next()) {
+                uint256 canvasPixel = canvas.matrix.current();
+                uint256 mixPixel = mix.matrix.current();
 
-            if (mixPixel.e() && mixPixel.z() >= canvasPixel.z()) {
-                canvas.matrix.setCurrent(Pixel.combine(canvasPixel, mixPixel));
+                if (mixPixel.e() && mixPixel.z() >= canvasPixel.z()) {
+                    canvas.matrix.setCurrent(Pixel.combine(canvasPixel, mixPixel));
+                }
             }
+            canvas.matrix.moveBack();
+            canvas.matrix.resetIterator();
+            mix.matrix.resetIterator();
         }
-        canvas.matrix.moveBack();
-        canvas.matrix.resetIterator();
-        mix.matrix.resetIterator();
     }
 
     function convertReceiversToAnchors(Mix memory mix) internal pure {
-        Coordinate[] memory anchors;
-        uint8 stat = 0;
-        uint8 cal = 0;
+        unchecked {
+            Coordinate[] memory anchors;
+            uint8 stat = 0;
+            uint8 cal = 0;
 
-        for (uint8 i = 0; i < mix.version.staticReceivers.length; i++) {
-            Coordinate memory coordinate;
-            if (mix.version.staticReceivers[i].exists) {
-                stat++;
-                coordinate = mix.version.staticReceivers[i];
-                mix.receivers[i].coordinate.a = coordinate.b;
-                mix.receivers[i].coordinate.b = coordinate.a;
-                mix.receivers[i].coordinate.exists = true;
-            } else if (mix.version.calculatedReceivers[i].exists) {
-                // if (mix.feature != 0) continue;
+            for (uint8 i = 0; i < mix.version.staticReceivers.length; i++) {
+                Coordinate memory coordinate;
+                if (mix.version.staticReceivers[i].exists) {
+                    stat++;
+                    coordinate = mix.version.staticReceivers[i];
+                    mix.receivers[i].coordinate.a = coordinate.b;
+                    mix.receivers[i].coordinate.b = coordinate.a;
+                    mix.receivers[i].coordinate.exists = true;
+                } else if (mix.version.calculatedReceivers[i].exists) {
+                    // if (mix.feature != 0) continue;
 
-                cal++;
-                if (anchors.length == 0) anchors = getAnchors(mix.matrix);
-                coordinate = calculateReceiverCoordinate(mix, mix.version.calculatedReceivers[i], anchors);
-                fledgeOutTheRluds(mix, coordinate, i);
+                    cal++;
+                    if (anchors.length == 0) anchors = getAnchors(mix.matrix);
+                    coordinate = calculateReceiverCoordinate(mix, mix.version.calculatedReceivers[i], anchors);
+                    fledgeOutTheRluds(mix, coordinate, i);
+                }
             }
         }
     }
@@ -298,37 +313,39 @@ contract DotnuggV1MiddleOut {
         Coordinate memory coordinate,
         uint8 index
     ) internal pure {
-        Rlud memory radii;
+        unchecked {
+            Rlud memory radii;
 
-        while (
-            coordinate.a < mix.matrix.width - 1 &&
-            mix.matrix.version.bigMatrixHasPixelAt(coordinate.a + (radii.r + 1), coordinate.b)
-        ) {
-            radii.r++;
-        }
-        while (
-            coordinate.a != 0 &&
-            coordinate.a >= (radii.l + 1) &&
-            mix.matrix.version.bigMatrixHasPixelAt(coordinate.a - (radii.l + 1), coordinate.b)
-        ) {
-            radii.l++;
-        }
-        while (
-            coordinate.b != 0 &&
-            coordinate.b >= (radii.u + 1) &&
-            mix.matrix.version.bigMatrixHasPixelAt(coordinate.a, coordinate.b - (radii.u + 1))
-        ) {
-            radii.u++;
-        }
-        while (
-            coordinate.b < mix.matrix.height - 1 &&
-            mix.matrix.version.bigMatrixHasPixelAt(coordinate.a, coordinate.b + (radii.d + 1))
-        ) {
-            radii.d++;
-        }
+            while (
+                coordinate.a < mix.matrix.width - 1 &&
+                mix.matrix.version.bigMatrixHasPixelAt(coordinate.a + (radii.r + 1), coordinate.b)
+            ) {
+                radii.r++;
+            }
+            while (
+                coordinate.a != 0 &&
+                coordinate.a >= (radii.l + 1) &&
+                mix.matrix.version.bigMatrixHasPixelAt(coordinate.a - (radii.l + 1), coordinate.b)
+            ) {
+                radii.l++;
+            }
+            while (
+                coordinate.b != 0 &&
+                coordinate.b >= (radii.u + 1) &&
+                mix.matrix.version.bigMatrixHasPixelAt(coordinate.a, coordinate.b - (radii.u + 1))
+            ) {
+                radii.u++;
+            }
+            while (
+                coordinate.b < mix.matrix.height - 1 &&
+                mix.matrix.version.bigMatrixHasPixelAt(coordinate.a, coordinate.b + (radii.d + 1))
+            ) {
+                radii.d++;
+            }
 
-        if (!mix.receivers[index].coordinate.exists) {
-            mix.receivers[index] = Anchor({radii: radii, coordinate: coordinate});
+            if (!mix.receivers[index].coordinate.exists) {
+                mix.receivers[index] = Anchor({radii: radii, coordinate: coordinate});
+            }
         }
     }
 
@@ -337,48 +354,52 @@ contract DotnuggV1MiddleOut {
         Coordinate memory calculatedReceiver,
         Coordinate[] memory anchors
     ) internal pure returns (Coordinate memory coordinate) {
-        coordinate.a = anchors[calculatedReceiver.a].a;
-        coordinate.b = anchors[calculatedReceiver.a].b;
-        coordinate.exists = true;
+        unchecked {
+            coordinate.a = anchors[calculatedReceiver.a].a;
+            coordinate.b = anchors[calculatedReceiver.a].b;
+            coordinate.exists = true;
 
-        if (calculatedReceiver.b < 32) {
-            coordinate.b = coordinate.b - calculatedReceiver.b;
-        } else {
-            coordinate.b = coordinate.b + (calculatedReceiver.b - 32);
-        }
-
-        while (!mix.matrix.version.bigMatrixHasPixelAt(coordinate.a, coordinate.b)) {
-            if (anchors[0].b > coordinate.b) {
-                coordinate.b++;
+            if (calculatedReceiver.b < 32) {
+                coordinate.b = coordinate.b - calculatedReceiver.b;
             } else {
-                coordinate.b--;
+                coordinate.b = coordinate.b + (calculatedReceiver.b - 32);
             }
+
+            while (!mix.matrix.version.bigMatrixHasPixelAt(coordinate.a, coordinate.b)) {
+                if (anchors[0].b > coordinate.b) {
+                    coordinate.b++;
+                } else {
+                    coordinate.b--;
+                }
+            }
+            return coordinate;
         }
-        return coordinate;
     }
 
     function getAnchors(Matrix.Memory memory matrix) internal pure returns (Coordinate[] memory anchors) {
-        (uint8 topOffset, uint8 bottomOffset, Coordinate memory center) = getBox(matrix);
+        unchecked {
+            (uint8 topOffset, uint8 bottomOffset, Coordinate memory center) = getBox(matrix);
 
-        anchors = new Coordinate[](5);
+            anchors = new Coordinate[](5);
 
-        anchors[0] = center; // center
+            anchors[0] = center; // center
 
-        anchors[1] = Coordinate({a: center.a, b: center.b - topOffset, exists: true}); // top
+            anchors[1] = Coordinate({a: center.a, b: center.b - topOffset, exists: true}); // top
 
-        uint8 upperOffset = topOffset;
-        if (upperOffset % 2 != 0) {
-            upperOffset++;
+            uint8 upperOffset = topOffset;
+            if (upperOffset % 2 != 0) {
+                upperOffset++;
+            }
+            anchors[2] = Coordinate({a: center.a, b: center.b - (upperOffset / 2), exists: true}); // inner top
+
+            uint8 lowerOffset = bottomOffset;
+            if (lowerOffset % 2 != 0) {
+                lowerOffset++;
+            }
+            anchors[3] = Coordinate({a: center.a, b: center.b + (lowerOffset / 2), exists: true}); // inner bottom
+
+            anchors[4] = Coordinate({a: center.a, b: center.b + bottomOffset, exists: true}); // bottom
         }
-        anchors[2] = Coordinate({a: center.a, b: center.b - (upperOffset / 2), exists: true}); // inner top
-
-        uint8 lowerOffset = bottomOffset;
-        if (lowerOffset % 2 != 0) {
-            lowerOffset++;
-        }
-        anchors[3] = Coordinate({a: center.a, b: center.b + (lowerOffset / 2), exists: true}); // inner bottom
-
-        anchors[4] = Coordinate({a: center.a, b: center.b + bottomOffset, exists: true}); // bottom
     }
 
     function getBox(Matrix.Memory memory matrix)
@@ -390,81 +411,83 @@ contract DotnuggV1MiddleOut {
             Coordinate memory center
         )
     {
-        center.a = (matrix.width) / 2;
-        center.b = (matrix.height) / 2;
-        center.exists = true;
+        unchecked {
+            center.a = (matrix.width) / 2;
+            center.b = (matrix.height) / 2;
+            center.exists = true;
 
-        bool topFound = false;
-        bool bottomFound = false;
-        bool sideFound = false;
-        bool shouldExpandSide = true;
+            bool topFound = false;
+            bool bottomFound = false;
+            bool sideFound = false;
+            bool shouldExpandSide = true;
 
-        topOffset = 1;
-        bottomOffset = 1;
-        uint8 sideOffset = 1;
+            topOffset = 1;
+            bottomOffset = 1;
+            uint8 sideOffset = 1;
 
-        bool allFound = false;
+            bool allFound = false;
 
-        while (!allFound) {
-            if (shouldExpandSide = !shouldExpandSide && !sideFound) {
-                if (
-                    matrix.version.bigMatrixHasPixelAt(center.a - (sideOffset + 1), center.b - topOffset) &&
-                    // potential top left
-                    matrix.version.bigMatrixHasPixelAt(center.a + (sideOffset + 1), center.b - topOffset) &&
-                    // potential top right
-                    matrix.version.bigMatrixHasPixelAt(center.a - (sideOffset + 1), center.b + bottomOffset) &&
-                    // potential bot left
-                    matrix.version.bigMatrixHasPixelAt(center.a + (sideOffset + 1), center.b + bottomOffset)
-                    // potential bot right
-                ) {
-                    sideOffset++;
-                } else {
-                    sideFound = true;
+            while (!allFound) {
+                if (shouldExpandSide = !shouldExpandSide && !sideFound) {
+                    if (
+                        matrix.version.bigMatrixHasPixelAt(center.a - (sideOffset + 1), center.b - topOffset) &&
+                        // potential top left
+                        matrix.version.bigMatrixHasPixelAt(center.a + (sideOffset + 1), center.b - topOffset) &&
+                        // potential top right
+                        matrix.version.bigMatrixHasPixelAt(center.a - (sideOffset + 1), center.b + bottomOffset) &&
+                        // potential bot left
+                        matrix.version.bigMatrixHasPixelAt(center.a + (sideOffset + 1), center.b + bottomOffset)
+                        // potential bot right
+                    ) {
+                        sideOffset++;
+                    } else {
+                        sideFound = true;
+                    }
                 }
-            }
-            if (!topFound) {
-                if (
-                    center.b - topOffset > 0 &&
-                    matrix.version.bigMatrixHasPixelAt(center.a - sideOffset, center.b - (topOffset + 1)) &&
-                    // potential top left
-                    matrix.version.bigMatrixHasPixelAt(center.a + sideOffset, center.b - (topOffset + 1))
-                    // potential top right
-                ) {
-                    topOffset++;
-                } else {
-                    topFound = true;
+                if (!topFound) {
+                    if (
+                        center.b - topOffset > 0 &&
+                        matrix.version.bigMatrixHasPixelAt(center.a - sideOffset, center.b - (topOffset + 1)) &&
+                        // potential top left
+                        matrix.version.bigMatrixHasPixelAt(center.a + sideOffset, center.b - (topOffset + 1))
+                        // potential top right
+                    ) {
+                        topOffset++;
+                    } else {
+                        topFound = true;
+                    }
                 }
-            }
-            if (!bottomFound) {
-                if (
-                    center.b + bottomOffset < matrix.height - 1 &&
-                    matrix.version.bigMatrixHasPixelAt(center.a - sideOffset, center.b + (bottomOffset + 1)) &&
-                    // potential bot left
-                    matrix.version.bigMatrixHasPixelAt(center.a + sideOffset, center.b + (bottomOffset + 1))
-                    // potenetial bot right
-                ) {
-                    bottomOffset++;
-                } else {
-                    bottomFound = true;
+                if (!bottomFound) {
+                    if (
+                        center.b + bottomOffset < matrix.height - 1 &&
+                        matrix.version.bigMatrixHasPixelAt(center.a - sideOffset, center.b + (bottomOffset + 1)) &&
+                        // potential bot left
+                        matrix.version.bigMatrixHasPixelAt(center.a + sideOffset, center.b + (bottomOffset + 1))
+                        // potenetial bot right
+                    ) {
+                        bottomOffset++;
+                    } else {
+                        bottomFound = true;
+                    }
                 }
+                if (bottomFound && topFound && sideFound) allFound = true;
             }
-            if (bottomFound && topFound && sideFound) allFound = true;
-        }
 
-        if (topOffset != bottomOffset) {
-            uint8 newHeight = topOffset + bottomOffset + 1;
-            uint8 relativeCenter = (newHeight % 2 == 0 ? newHeight : newHeight + 1) / 2;
-            uint8 newCenter = relativeCenter + center.b - 1 - topOffset;
-            if (newCenter > center.b) {
-                uint8 diff = newCenter - center.b;
-                topOffset += diff;
-                bottomOffset > diff ? bottomOffset = bottomOffset - diff : bottomOffset = diff - bottomOffset;
-            } else {
-                uint8 diff = center.b - newCenter;
-                topOffset > diff ? topOffset = topOffset - diff : topOffset = diff - topOffset;
-                bottomOffset += diff;
+            if (topOffset != bottomOffset) {
+                uint8 newHeight = topOffset + bottomOffset + 1;
+                uint8 relativeCenter = (newHeight % 2 == 0 ? newHeight : newHeight + 1) / 2;
+                uint8 newCenter = relativeCenter + center.b - 1 - topOffset;
+                if (newCenter > center.b) {
+                    uint8 diff = newCenter - center.b;
+                    topOffset += diff;
+                    bottomOffset > diff ? bottomOffset = bottomOffset - diff : bottomOffset = diff - bottomOffset;
+                } else {
+                    uint8 diff = center.b - newCenter;
+                    topOffset > diff ? topOffset = topOffset - diff : topOffset = diff - topOffset;
+                    bottomOffset += diff;
+                }
+                center.b = newCenter;
             }
-            center.b = newCenter;
         }
     }
 }

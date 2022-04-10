@@ -21,9 +21,9 @@ contract DotnuggV1Safe is IDotnuggV1Safe, DotnuggV1Resolver {
         write(input);
     }
 
-    function exec(uint256 proof, bool base64) external view returns (string memory) {
-        return combo(read(decodeProofCore(proof)), base64);
-    }
+    // function exec(uint256 proof, bool base64) external view returns (string memory) {
+    //     return combo(read(decodeProofCore(proof)), base64);
+    // }
 
     function exec(uint8[8] memory ids, bool base64) external view returns (string memory) {
         return combo(read(ids), base64);
@@ -34,22 +34,20 @@ contract DotnuggV1Safe is IDotnuggV1Safe, DotnuggV1Resolver {
         uint8 pos,
         bool base64
     ) external view returns (string memory) {
-        return combo(read(feature, pos), base64);
+        uint256[][] memory arr = new uint256[][](1);
+        arr[0] = read(feature, pos);
+        return combo(arr, base64);
     }
 
     function write(bytes[] memory data) public {
         require(data.length == 8, "nope");
-        for (uint8 i = 0; i < 8; i++) {
-            if (data[i].length > 0) write(data[i], i);
+        for (uint8 feature = 0; feature < 8; feature++) {
+            if (data[feature].length > 0) {
+                uint8 saved = Storage.save(data[feature], feature);
+
+                emit Write(feature, saved, msg.sender);
+            }
         }
-    }
-
-    function write(bytes memory data, uint8 feature) public {
-        require(feature < 8, "F:3");
-
-        uint8 saved = Storage.save(data, feature);
-
-        emit Write(feature, saved, msg.sender);
     }
 
     function lengthOf(uint8 feature) public view override returns (uint8 a) {

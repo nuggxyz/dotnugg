@@ -12,57 +12,63 @@ library DotnuggV1Parser {
     using Pixel for uint256;
 
     struct Memory {
+        Reader.Memory reader;
         uint256[] pallet;
         uint256[] minimatrix;
         uint256[] bigmatrix;
         uint256 receivers;
         uint256 data;
         uint256 bitmatrixptr;
+        bool exists;
     }
 
-    function parse(uint256[][] memory reads) internal pure returns (Memory[][] memory m) {
-        m = new Memory[][](reads.length);
+    function parse(uint256[][] memory reads) internal pure returns (Memory[8] memory m, uint256 len) {
+        unchecked {
+            for (uint256 j = 0; j < reads.length; j++) {
+                (bool empty, Reader.Memory memory reader) = Reader.init(reads[j]);
 
-        // uint256 graftPalletIndex = 8;
+                if (empty) continue;
 
-        uint256[] memory graftPallet;
+                // indicates dotnuggV1 encoded file
+                require(reader.select(32) == 0x420690_01, "0x42");
 
-        // todo sort the reads by feature
+                uint256 feature = reader.select(3);
 
-        for (uint256 j = 0; j < reads.length; j++) {
-            (bool empty, Reader.Memory memory reader) = Reader.init(reads[j]);
+                if (m[feature].exists) continue;
 
-            if (empty) continue;
+                len++;
 
-            // indicates dotnuggV1 encoded file
-            require(reader.select(32) == 0x420690_01, "DEC:PI:0");
-
-            uint256 feature = reader.select(3);
-
-            uint256 id = reader.select(8);
-
-            uint256[] memory pallet = parsePallet(reader, id, feature, graftPallet);
-
-            if (reader.select(1) == 1) {
-                require(graftPallet.length == 0, "0x34");
-                graftPallet = pallet;
-                // graftPalletIndex = j;
+                m[feature].exists = true;
+                m[feature].reader = reader;
             }
 
-            uint256 versionLength = reader.select(2) + 1;
+            uint256[] memory graftPallet;
 
-            m[j] = new Memory[](versionLength);
+            for (uint256 feature = 0; feature < 8; feature++) {
+                if (!m[feature].exists) continue;
 
-            for (uint256 i = 0; i < versionLength; i++) {
-                m[j][i].data = parseData(reader, feature);
+                uint256 id = m[feature].reader.select(8);
 
-                m[j][i].receivers = parseReceivers(reader);
+                uint256[] memory pallet = parsePallet(m[feature].reader, id, feature, graftPallet);
 
-                (uint256 width, uint256 height) = getWidth(m[j][i]);
+                if (m[feature].reader.select(1) == 1) {
+                    require(graftPallet.length == 0, "0x34");
+                    graftPallet = pallet;
+                }
 
-                m[j][i].minimatrix = parseMiniMatrix(reader, width, height);
+                uint256 versionLength = m[feature].reader.select(2) + 1;
 
-                m[j][i].pallet = pallet;
+                require(versionLength == 1, "OOPSSSS");
+
+                m[feature].data = parseData(m[feature].reader, feature);
+
+                m[feature].receivers = parseReceivers(m[feature].reader);
+
+                (uint256 width, uint256 height) = getWidth(m[feature]);
+
+                m[feature].minimatrix = parseMiniMatrix(m[feature].reader, width, height);
+
+                m[feature].pallet = pallet;
             }
         }
     }
@@ -73,40 +79,42 @@ library DotnuggV1Parser {
         uint256 feature,
         uint256[] memory graftPallet
     ) internal pure returns (uint256[] memory res) {
-        uint256 palletLength = reader.select(4) + 1;
+        unchecked {
+            uint256 palletLength = reader.select(4) + 1;
 
-        res = new uint256[](palletLength + 1);
+            res = new uint256[](palletLength + 1);
 
-        for (uint256 i = 0; i < palletLength; i++) {
-            // uint256 working = 0;
+            for (uint256 i = 0; i < palletLength; i++) {
+                // uint256 working = 0;
 
-            // 4 bits: zindex
-            // working |= (reader.select(4) << 32);
-            uint256 z = reader.select(4);
+                // 4 bits: zindex
+                // working |= (reader.select(4) << 32);
+                uint256 z = reader.select(4);
 
-            uint256 color;
+                uint256 color;
 
-            uint256 graftIndex = reader.select(1);
-            if (graftIndex == 1) graftIndex = reader.select(4);
+                uint256 graftIndex = reader.select(1);
+                if (graftIndex == 1) graftIndex = reader.select(4);
 
-            uint256 isWhite = reader.select(1);
-            uint256 isBlack = reader.select(1);
+                uint256 isWhite = reader.select(1);
+                uint256 isBlack = reader.select(1);
 
-            if (isWhite == 1) {
-                color = 0x000000;
-            } else if (isBlack == 1) {
-                color = 0xffffff;
-            } else {
-                color = reader.select(24);
-            }
+                if (isWhite == 1) {
+                    color = 0x000000;
+                } else if (isBlack == 1) {
+                    color = 0xffffff;
+                } else {
+                    color = reader.select(24);
+                }
 
-            // // 1 or 8 bits: a
-            uint256 a = (reader.select(1) == 0x1 ? 0xff : reader.select(8));
+                // // 1 or 8 bits: a
+                uint256 a = (reader.select(1) == 0x1 ? 0xff : reader.select(8));
 
-            if (graftIndex != 0 && graftPallet.length > graftIndex) {
-                res[i + 1] = Pixel.unsafeGraft(graftPallet[graftIndex], id, z, feature);
-            } else {
-                res[i + 1] = Pixel.unsafePack(color, a, id, z, feature);
+                if (graftIndex != 0 && graftPallet.length > graftIndex) {
+                    res[i + 1] = Pixel.unsafeGraft(graftPallet[graftIndex], id, z, feature);
+                } else {
+                    res[i + 1] = Pixel.unsafePack(color, a, id, z, feature);
+                }
             }
         }
     }
