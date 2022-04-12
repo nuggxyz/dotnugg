@@ -57,9 +57,10 @@ contract systemTest__one is t {
 
         // ds.emit_log_string(proxy.exec([2, 47, 23, 0, 25, 0, 0, 15], false));
         // ds.emit_log_string(proxy.exec([3, 47, 23, 21, 0, 0, 0, 0], false));
-        ds.emit_log_string(proxy.exec([2, 0, 0, 18, 0, 0, 0, 0], false));
+        // ds.emit_log_string(proxy.exec([2, 0, 0, 18, 0, 0, 0, 0], false));
         // ds.emit_log_string(proxy.exec(3, 48, false));
-        proxy.exec([0, 0, 0, 0, 0, 0, 0, 0], false);
+        // proxy.exec([0, 0, 0, 0, 0, 0, 0, 0], false);
+        ds.emit_log_string(proxy.exec(2, 66, false));
 
         proxy.randOf(1, 0x1234444997373738);
     }
@@ -130,6 +131,38 @@ contract systemTest__one is t {
         //     proxy.exec(i, j + 1, false);
         //     proxy.exec([0, 0, 0, 0, 0, 0, 0, 0], false);
         // }
+    }
+
+    function test__supersize() public {
+        // for (uint8 i = 0; i < 8; i++) {
+        // uint8 len = proxy.lengthOf(i);
+        uint256[][][] memory arg = new uint256[][][](25);
+        for (uint256 i = 0; i < arg.length; i++) {
+            uint256[][] memory check = new uint256[][](8);
+
+            // not OK
+            // uint256[][] memory check = new uint256[][](4);
+
+            // check[0] = proxy.read(0, 3);
+            // check[1] = proxy.read(1, 5);
+            // check[2] = proxy.read(2, 5);
+            check[0] = proxy.read(0, 2);
+            check[2] = proxy.read(5, 3);
+            check[1] = proxy.read(1, 2);
+            check[3] = proxy.read(2, 1);
+            check[4] = proxy.read(3, 4);
+            check[5] = proxy.read(4, 5);
+
+            arg[i] = check;
+
+            // check[3] = proxy.read(2, 87);
+        }
+
+        string[] memory ret = proxy.supersize(arg, true);
+
+        for (uint256 i = 0; i < arg.length; i++) {
+            // ds.emit_log_string(ret[i]);
+        }
     }
     // }
 
