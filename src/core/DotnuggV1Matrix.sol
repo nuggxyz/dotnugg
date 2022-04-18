@@ -3,7 +3,6 @@
 pragma solidity 0.8.13;
 
 import {DotnuggV1Parser as Parser} from "./DotnuggV1Parser.sol";
-import "../_test/utils/forge.sol";
 
 library DotnuggV1Matrix {
     using Parser for Parser.Memory;
@@ -18,7 +17,7 @@ library DotnuggV1Matrix {
         uint8 startX;
     }
 
-    function create(uint8 width, uint8 height) internal view returns (Memory memory res) {
+    function create(uint8 width, uint8 height) internal pure returns (Memory memory res) {
         require(width % 2 == 1 && height % 2 == 1, "ML:C:0");
 
         Parser.initBigMatrix(res.version, width);
@@ -31,7 +30,7 @@ library DotnuggV1Matrix {
         uint8 yoffset,
         uint8 width,
         uint8 height
-    ) internal view {
+    ) internal pure {
         matrix.currentUnsetX = xoffset;
         matrix.currentUnsetY = yoffset;
         matrix.startX = xoffset;
@@ -39,11 +38,11 @@ library DotnuggV1Matrix {
         matrix.height = height + yoffset;
     }
 
-    function next(Memory memory matrix) internal view returns (bool res) {
+    function next(Memory memory matrix) internal pure returns (bool res) {
         res = next(matrix, matrix.width);
     }
 
-    function next(Memory memory matrix, uint8 width) internal view returns (bool res) {
+    function next(Memory memory matrix, uint8 width) internal pure returns (bool res) {
         {
             if (matrix.init) {
                 if (width <= matrix.currentUnsetX + 1) {
@@ -62,22 +61,22 @@ library DotnuggV1Matrix {
         }
     }
 
-    function current(Memory memory matrix) internal view returns (uint256 res) {
+    function current(Memory memory matrix) internal pure returns (uint256 res) {
         res = matrix.version.getBigMatrixPixelAt(matrix.currentUnsetX, matrix.currentUnsetY);
     }
 
-    function setCurrent(Memory memory matrix, uint256 pixel) internal view {
+    function setCurrent(Memory memory matrix, uint256 pixel) internal pure {
         matrix.version.setBigMatrixPixelAt(matrix.currentUnsetX, matrix.currentUnsetY, pixel);
     }
 
-    function resetIterator(Memory memory matrix) internal view {
+    function resetIterator(Memory memory matrix) internal pure {
         matrix.currentUnsetX = 0;
         matrix.currentUnsetY = 0;
         matrix.startX = 0;
         matrix.init = false;
     }
 
-    function moveBack(Memory memory matrix) internal view {
+    function moveBack(Memory memory matrix) internal pure {
         (uint256 width, uint256 height) = matrix.version.getWidth();
         matrix.width = uint8(width);
         matrix.height = uint8(height);
@@ -88,7 +87,7 @@ library DotnuggV1Matrix {
         Parser.Memory memory data,
         uint256 groupWidth,
         uint256 groupHeight
-    ) internal view {
+    ) internal pure {
         {
             matrix.height = uint8(groupHeight);
 
@@ -116,7 +115,7 @@ library DotnuggV1Matrix {
         Memory memory matrix,
         uint8 index,
         uint8 amount
-    ) internal view {
+    ) internal pure {
         {
             for (uint256 i = 0; i < matrix.height; i++) {
                 for (uint256 j = matrix.height; j > index; j--) {
@@ -136,7 +135,7 @@ library DotnuggV1Matrix {
         Memory memory matrix,
         uint8 index,
         uint8 amount
-    ) internal view {
+    ) internal pure {
         {
             // require(index < matrix.data[0].length, 'MAT:ACA:0');
             for (uint256 i = 0; i < matrix.width; i++) {

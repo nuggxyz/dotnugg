@@ -6,7 +6,6 @@ import {ShiftLib} from "../libraries/ShiftLib.sol";
 
 import {DotnuggV1Pixel as Pixel} from "./DotnuggV1Pixel.sol";
 import {DotnuggV1Reader as Reader} from "./DotnuggV1Reader.sol";
-import "../_test/utils/forge.sol";
 
 library DotnuggV1Parser {
     using Reader for Reader.Memory;
@@ -23,7 +22,7 @@ library DotnuggV1Parser {
         bool exists;
     }
 
-    function parse(uint256[][] calldata reads) internal view returns (Memory[8] memory m, uint256 len) {
+    function parse(uint256[][] calldata reads) internal pure returns (Memory[8] memory m, uint256 len) {
         {
             for (uint256 j = 0; j < reads.length; j++) {
                 (bool empty, Reader.Memory memory reader) = Reader.init(reads[j]);
@@ -79,7 +78,7 @@ library DotnuggV1Parser {
         uint256 id,
         uint256 feature,
         uint256[] memory graftPallet
-    ) internal view returns (uint256[] memory res) {
+    ) internal pure returns (uint256[] memory res) {
         {
             uint256 palletLength = reader.select(4) + 1;
 
@@ -133,7 +132,7 @@ library DotnuggV1Parser {
 
     uint8 constant DATA_RLUD_LEN = DATA_COORDINATE_BIT_LEN * 4;
 
-    function parseData(Reader.Memory memory reader, uint256 feature) internal view returns (uint256 res) {
+    function parseData(Reader.Memory memory reader, uint256 feature) internal pure returns (uint256 res) {
         // 12 bits: coordinate - anchor x and y
 
         res |= feature << DATA_FEATURE_OFFSET;
@@ -151,13 +150,13 @@ library DotnuggV1Parser {
         res |= anchorY << DATA_Y_ANCHOR_OFFSET;
 
         // 1 or 25 bits: rlud - radii
-        res |= (reader.select(1) == 0x1 ? 0x000_00000 : reader.select(DATA_RLUD_LEN)) << DATA_RADII_OFFSET;
+        res |= (reader.select(1) == 0x1 ? 0 : reader.select(DATA_RLUD_LEN)) << DATA_RADII_OFFSET;
 
         // 1 or 25 bits: rlud - expanders
-        res |= (reader.select(1) == 0x1 ? 0x000_00000 : reader.select(DATA_RLUD_LEN)) << 3;
+        res |= (reader.select(1) == 0x1 ? 0 : reader.select(DATA_RLUD_LEN)) << 3;
     }
 
-    function parseReceivers(Reader.Memory memory reader) internal view returns (uint256 res) {
+    function parseReceivers(Reader.Memory memory reader) internal pure returns (uint256 res) {
         uint256 receiversLength = reader.select(1) == 0x1 ? 0x1 : reader.select(4);
 
         for (uint256 j = 0; j < receiversLength; j++) {
@@ -190,7 +189,7 @@ library DotnuggV1Parser {
         Reader.Memory memory reader,
         uint256 height,
         uint256 width
-    ) internal view returns (uint256[] memory res) {
+    ) internal pure returns (uint256[] memory res) {
         uint256 groupsLength = reader.select(1) == 0x1 ? reader.select(8) + 1 : reader.select(16) + 1;
 
         res = new uint256[]((height * width) / 64 + 1);
@@ -217,7 +216,7 @@ library DotnuggV1Parser {
         bool calculated
     )
         internal
-        view
+        pure
         returns (
             uint256 x,
             uint256 y,
@@ -240,7 +239,7 @@ library DotnuggV1Parser {
         bool calculated,
         uint256 x,
         uint256 y
-    ) internal view returns (uint256 res) {
+    ) internal pure returns (uint256 res) {
         // yOrYOffset
         res |= y << DATA_COORDINATE_BIT_LEN;
 
@@ -250,25 +249,25 @@ library DotnuggV1Parser {
         m.receivers |= res << ((index * DATA_COORDINATE_BIT_LEN_2X) + (calculated ? 128 : 0));
     }
 
-    function getRadii(Memory memory m) internal view returns (uint256 res) {
+    function getRadii(Memory memory m) internal pure returns (uint256 res) {
         res = (m.data >> DATA_RADII_OFFSET) & ShiftLib.mask(DATA_RLUD_LEN);
     }
 
-    function getExpanders(Memory memory m) internal view returns (uint256 res) {
+    function getExpanders(Memory memory m) internal pure returns (uint256 res) {
         res = (m.data >> 3) & ShiftLib.mask(DATA_RLUD_LEN);
     }
 
-    function setFeature(Memory memory m, uint256 z) internal view {
+    function setFeature(Memory memory m, uint256 z) internal pure {
         require(z <= ShiftLib.mask(3), "VERS:SETF:0");
         m.data &= ShiftLib.fullsubmask(3, DATA_FEATURE_OFFSET);
         m.data |= (z << DATA_FEATURE_OFFSET);
     }
 
-    function getFeature(Memory memory m) internal view returns (uint256 res) {
+    function getFeature(Memory memory m) internal pure returns (uint256 res) {
         res = (m.data >> DATA_FEATURE_OFFSET) & ShiftLib.mask(3);
     }
 
-    function getWidth(Memory memory m) internal view returns (uint256 width, uint256 height) {
+    function getWidth(Memory memory m) internal pure returns (uint256 width, uint256 height) {
         // yOrYOffset
         width = (m.data >> DATA_WIDTH_OFFSET) & ShiftLib.mask(DATA_COORDINATE_BIT_LEN);
         height = (m.data >> DATA_HIEGHT_OFFSET) & ShiftLib.mask(DATA_COORDINATE_BIT_LEN);
@@ -278,7 +277,7 @@ library DotnuggV1Parser {
         Memory memory m,
         uint256 w,
         uint256 h
-    ) internal view {
+    ) internal pure {
         require(w <= ShiftLib.mask(DATA_COORDINATE_BIT_LEN), "VERS:SETW:0");
         require(h <= ShiftLib.mask(DATA_COORDINATE_BIT_LEN), "VERS:SETW:1");
 
@@ -288,7 +287,7 @@ library DotnuggV1Parser {
         m.data |= (h << DATA_HIEGHT_OFFSET);
     }
 
-    function getAnchor(Memory memory m) internal view returns (uint256 x, uint256 y) {
+    function getAnchor(Memory memory m) internal pure returns (uint256 x, uint256 y) {
         // yOrYOffset
         x = (m.data >> DATA_X_ANCHOR_OFFSET) & ShiftLib.mask(DATA_COORDINATE_BIT_LEN);
         y = (m.data >> DATA_Y_ANCHOR_OFFSET) & ShiftLib.mask(DATA_COORDINATE_BIT_LEN);
@@ -298,7 +297,7 @@ library DotnuggV1Parser {
         Memory memory m,
         uint256 x,
         uint256 y
-    ) internal view returns (uint256 palletKey) {
+    ) internal pure returns (uint256 palletKey) {
         (uint256 width, ) = getWidth(m);
         uint256 index = x + (y * width);
 
@@ -309,7 +308,7 @@ library DotnuggV1Parser {
 
     function getPalletColorAt(Memory memory m, uint256 index)
         internal
-        view
+        pure
         returns (
             uint256 res,
             uint256 color,
@@ -324,7 +323,7 @@ library DotnuggV1Parser {
         zindex = Pixel.z(res);
     }
 
-    function initBigMatrix(Memory memory m, uint256 width) internal view {
+    function initBigMatrix(Memory memory m, uint256 width) internal pure {
         m.bigmatrix = new uint256[](((width * width) / 6) + 2);
     }
 
@@ -333,7 +332,7 @@ library DotnuggV1Parser {
         uint256 x,
         uint256 y,
         uint256 color
-    ) internal view {
+    ) internal pure {
         (uint256 width, ) = getWidth(m);
 
         uint256 index = x + (y * width);
@@ -345,7 +344,7 @@ library DotnuggV1Parser {
         Memory memory m,
         uint256 index,
         uint256 color
-    ) internal view {
+    ) internal pure {
         if (m.bigmatrix.length > index / 6) {
             uint8 offset = uint8(42 * (index % 6)); // NOTE: i removed safe8
             m.bigmatrix[index / 6] &= ShiftLib.fullsubmask(42, offset);
@@ -361,7 +360,7 @@ library DotnuggV1Parser {
         Memory memory m,
         uint256 x,
         uint256 y
-    ) internal view returns (uint256 res) {
+    ) internal pure returns (uint256 res) {
         (uint256 width, ) = getWidth(m);
 
         (res, ) = getPixelAt(m.bigmatrix, x, y, width);
@@ -372,7 +371,7 @@ library DotnuggV1Parser {
         uint256 x,
         uint256 y,
         uint256 width
-    ) internal view returns (uint256 res, uint256 row) {
+    ) internal pure returns (uint256 res, uint256 row) {
         uint256 index = x + (y * width);
 
         if (index / 6 >= arr.length) return (0, 0);
@@ -386,13 +385,13 @@ library DotnuggV1Parser {
         Memory memory m,
         uint256 x,
         uint256 y
-    ) internal view returns (bool res) {
+    ) internal pure returns (bool res) {
         uint256 pix = getBigMatrixPixelAt(m, x, y);
 
         res = pix & 0x7 != 0x00;
     }
 
-    function setArrayLength(uint256[] memory input, uint256 size) internal view {
+    function setArrayLength(uint256[] memory input, uint256 size) internal pure {
         assembly {
             let ptr := mload(input)
             ptr := size

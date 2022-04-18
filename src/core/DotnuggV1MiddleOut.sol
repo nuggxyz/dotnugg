@@ -8,7 +8,6 @@ import {DotnuggV1Pixel as Pixel} from "./DotnuggV1Pixel.sol";
 
 import {DotnuggV1Matrix as Matrix} from "./DotnuggV1Matrix.sol";
 import {DotnuggV1Parser as Parser} from "./DotnuggV1Parser.sol";
-import "../_test/utils/forge.sol";
 
 contract DotnuggV1MiddleOut {
     using Matrix for Matrix.Memory;
@@ -24,7 +23,7 @@ contract DotnuggV1MiddleOut {
     uint8 constant WIDTH = 255;
     uint8 constant CENTER = (WIDTH / 2) + 1;
 
-    function execute(uint256[][] calldata files) public view returns (uint256[] memory res, uint256 dat) {
+    function execute(uint256[][] calldata files) public pure returns (uint256[] memory res, uint256 dat) {
         {
             Run memory run;
 
@@ -76,18 +75,18 @@ contract DotnuggV1MiddleOut {
         uint256 b,
         uint256 c,
         uint256 d
-    ) internal view returns (uint256 res) {
+    ) internal pure returns (uint256 res) {
         res |= a;
         res |= b << 64;
         res |= c << 128;
         res |= d << 192;
     }
 
-    function center() internal view returns (Coordinate memory) {
+    function center() internal pure returns (Coordinate memory) {
         return Coordinate({a: CENTER, b: CENTER, exists: true});
     }
 
-    function myCenter() internal view returns (Coordinate memory) {
+    function myCenter() internal pure returns (Coordinate memory) {
         return Coordinate({a: CENTER, b: CENTER, exists: true});
     }
 
@@ -146,7 +145,7 @@ contract DotnuggV1MiddleOut {
         uint8 xoffset;
     }
 
-    function postionForCanvas(Canvas memory canvas, Mix memory mix) internal view {
+    function postionForCanvas(Canvas memory canvas, Mix memory mix) internal pure {
         {
             Anchor memory receiver = canvas.receivers[mix.feature];
             Anchor memory anchor = mix.version.anchor;
@@ -167,7 +166,7 @@ contract DotnuggV1MiddleOut {
         }
     }
 
-    function formatForCanvas(Canvas memory canvas, Mix memory mix) internal view {
+    function formatForCanvas(Canvas memory canvas, Mix memory mix) internal pure {
         {
             Anchor memory receiver = canvas.receivers[mix.feature];
             Anchor memory anchor = mix.version.anchor;
@@ -193,7 +192,7 @@ contract DotnuggV1MiddleOut {
         }
     }
 
-    // function pickVersionIndex(Canvas memory canvas, Parser.Memory[] memory versions) internal view returns (uint8) {
+    // function pickVersionIndex(Canvas memory canvas, Parser.Memory[] memory versions) internal pure returns (uint8) {
     //     require(versions.length == 1, "CALC:PVI:0");
     //     if (versions.length == 1) {
     //         return 0;
@@ -222,14 +221,14 @@ contract DotnuggV1MiddleOut {
     //     return 0;
     // }
 
-    function checkRluds(Rlud memory r1, Rlud memory r2) internal view returns (bool) {
+    function checkRluds(Rlud memory r1, Rlud memory r2) internal pure returns (bool) {
         return (r1.r <= r2.r && r1.l <= r2.l) || (r1.u <= r2.u && r1.d <= r2.d);
     }
 
     function setMix(
         Mix memory res,
         Parser.Memory memory version // uint8 versionIndex
-    ) internal view {
+    ) internal pure {
         // console.log(1);
         {
             uint256 radiiBits = version.getRadii();
@@ -293,7 +292,7 @@ contract DotnuggV1MiddleOut {
         // console.log(2);
     }
 
-    function updateReceivers(Canvas memory canvas, Mix memory mix) internal view {
+    function updateReceivers(Canvas memory canvas, Mix memory mix) internal pure {
         {
             for (uint8 i = 0; i < mix.receivers.length; i++) {
                 Anchor memory m = mix.receivers[i];
@@ -306,7 +305,7 @@ contract DotnuggV1MiddleOut {
         }
     }
 
-    function mergeToCanvas(Canvas memory canvas, Mix memory mix) internal view {
+    function mergeToCanvas(Canvas memory canvas, Mix memory mix) internal pure {
         {
             while (canvas.matrix.next() && mix.matrix.next()) {
                 uint256 canvasPixel = canvas.matrix.current();
@@ -322,7 +321,7 @@ contract DotnuggV1MiddleOut {
         }
     }
 
-    function convertReceiversToAnchors(Mix memory mix) internal view {
+    function convertReceiversToAnchors(Mix memory mix) internal pure {
         {
             Coordinate[] memory anchors;
             uint8 stat = 0;
@@ -354,7 +353,7 @@ contract DotnuggV1MiddleOut {
         Mix memory mix,
         Coordinate memory coordinate,
         uint8 index
-    ) internal view {
+    ) internal pure {
         {
             Rlud memory radii;
 
@@ -395,7 +394,7 @@ contract DotnuggV1MiddleOut {
         Mix memory mix,
         Coordinate memory calculatedReceiver,
         Coordinate[] memory anchors
-    ) internal view returns (Coordinate memory coordinate) {
+    ) internal pure returns (Coordinate memory coordinate) {
         {
             coordinate.a = anchors[calculatedReceiver.a].a;
             coordinate.b = anchors[calculatedReceiver.a].b;
@@ -418,7 +417,7 @@ contract DotnuggV1MiddleOut {
         }
     }
 
-    function getAnchors(Matrix.Memory memory matrix) internal view returns (Coordinate[] memory anchors) {
+    function getAnchors(Matrix.Memory memory matrix) internal pure returns (Coordinate[] memory anchors) {
         {
             (uint8 topOffset, uint8 bottomOffset, Coordinate memory center) = getBox(matrix);
 
@@ -446,7 +445,7 @@ contract DotnuggV1MiddleOut {
 
     function getBox(Matrix.Memory memory matrix)
         internal
-        view
+        pure
         returns (
             uint8 topOffset,
             uint8 bottomOffset,

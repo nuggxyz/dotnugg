@@ -50,17 +50,17 @@ contract DotnuggV1Safe is IDotnuggV1Safe, DotnuggV1Resolver {
         }
     }
 
-    function lengthOf(uint8 feature) public view override returns (uint8 a) {
-        a = DotnuggV1Lib.size(DotnuggV1Lib.location(address(this), feature));
-    }
+    // function lengthOf(uint8 feature) public view override returns (uint8 a) {
+    //     a = DotnuggV1Lib.size(DotnuggV1Lib.location(address(this), feature));
+    // }
 
-    function randOf(uint8 feature, uint256 seed) public view override returns (uint8 a) {
-        return DotnuggV1Lib.search(address(this), feature, seed);
-    }
+    // function randOf(uint8 feature, uint256 seed) public view override returns (uint8 a) {
+    //     return DotnuggV1Lib.search(address(this), feature, seed);
+    // }
 
-    function locationOf(uint8 feature) public view override returns (address res) {
-        return address(DotnuggV1Lib.location(address(this), feature));
-    }
+    // function locationOf(uint8 feature) public view override returns (address res) {
+    //     return address(DotnuggV1Lib.location(address(this), feature));
+    // }
 
     function read(uint8[8] memory ids) public view returns (uint256[][] memory _reads) {
         _reads = new uint256[][](8);

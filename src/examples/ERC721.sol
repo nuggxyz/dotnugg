@@ -5,6 +5,7 @@ pragma solidity 0.8.13;
 import {ERC721} from "@rari-capital/solmate/tokens/ERC721.sol";
 
 import {IDotnuggV1Safe} from "../interfaces/IDotnuggV1Safe.sol";
+import {DotnuggV1Lib} from "../libraries/DotnuggV1Lib.sol";
 
 contract DotnuggV1ERC721 is ERC721 {
     IDotnuggV1Safe public immutable safe;
@@ -32,14 +33,14 @@ contract DotnuggV1ERC721 is ERC721 {
         safe = _safe;
 
         traitTotals = Metadata({
-            _0: safe.lengthOf(1),
-            _1: safe.lengthOf(1),
-            _2: safe.lengthOf(1),
-            _3: safe.lengthOf(1),
-            _4: safe.lengthOf(1),
-            _5: safe.lengthOf(1),
-            _6: safe.lengthOf(1),
-            _7: safe.lengthOf(1)
+            _0: DotnuggV1Lib.lengthOf(address(safe), 1),
+            _1: DotnuggV1Lib.lengthOf(address(safe), 1),
+            _2: DotnuggV1Lib.lengthOf(address(safe), 1),
+            _3: DotnuggV1Lib.lengthOf(address(safe), 1),
+            _4: DotnuggV1Lib.lengthOf(address(safe), 1),
+            _5: DotnuggV1Lib.lengthOf(address(safe), 1),
+            _6: DotnuggV1Lib.lengthOf(address(safe), 1),
+            _7: DotnuggV1Lib.lengthOf(address(safe), 1)
         });
     }
 

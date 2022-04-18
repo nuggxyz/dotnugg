@@ -9,21 +9,21 @@ interface IDotnuggV1Resolver {
 
     // function supersize(uint256[][][] memory reads, bool base64) external view returns (string[] memory res);
 
-    function svg(
-        uint256[] memory calculated,
-        uint256 dat,
-        bool base64
-    ) external view returns (string memory data);
+    // function svg(
+    //     uint256[] memory calculated,
+    //     uint256 dat,
+    //     bool base64
+    // ) external view returns (string memory data);
 
-    function encodeJsonAsBase64(bytes memory input) external view returns (bytes memory data);
+    // function encodeJsonAsBase64(bytes memory input) external view returns (bytes memory data);
 
-    function encodeJsonAsUtf8(bytes memory input) external view returns (bytes memory data);
+    // function encodeJsonAsUtf8(bytes memory input) external view returns (bytes memory data);
 
-    function encodeSvgAsBase64(bytes memory input) external view returns (bytes memory data);
+    // function encodeSvgAsBase64(bytes memory input) external view returns (bytes memory data);
 
-    function encodeSvgAsUtf8(bytes memory input) external view returns (bytes memory data);
+    // function encodeSvgAsUtf8(bytes memory input) external view returns (bytes memory data);
 
-    function props(uint8[8] memory input, string[8] memory labels) external view returns (string memory);
+    // function props(uint8[8] memory input, string[8] memory labels) external view returns (string memory);
 
     // function decodeProof(uint256 input) external view returns (uint16[16] memory res);
 

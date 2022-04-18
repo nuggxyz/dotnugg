@@ -4,6 +4,7 @@ pragma solidity 0.8.13;
 
 import "../main.t.sol";
 import {data} from "../../_data/nuggs.data.sol";
+import {DotnuggV1Lib} from "../../libraries/DotnuggV1Lib.sol";
 
 contract systemTest__one is t {
     IDotnuggV1Safe proxy;
@@ -98,8 +99,7 @@ contract systemTest__one is t {
     //     127755011628
     //   2919799108 =0.02285467373
     function test__something() public {
-        proxy.lengthOf(0);
-
+        DotnuggV1Lib.lengthOf(address(proxy), 0);
         // uint256[] memory a = new uint256[](7);
         // a[0] = 1;
         // a[1] = 2;
@@ -126,12 +126,12 @@ contract systemTest__one is t {
         // proxy.exec([0, 0, 0, 0, 0, 0, 0, 0], false);
         ds.emit_log_string(proxy.exec(2, 66, false));
 
-        proxy.randOf(1, 0x1234444997373738);
+        DotnuggV1Lib.randOf(address(proxy), 1, 0x1234444997373738);
     }
 
     function test__all() public {
         for (uint8 i = 0; i < 8; i++) {
-            uint8 len = proxy.lengthOf(i);
+            uint8 len = DotnuggV1Lib.lengthOf(address(proxy), i);
 
             for (uint8 j = 0; j < len; j++) {
                 proxy.exec(i, j + 1, false);

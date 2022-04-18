@@ -202,6 +202,22 @@ library DotnuggV1Lib {
         }
     }
 
+    function lengthOf(address safe, uint8 feature) internal view returns (uint8) {
+        return size(location(safe, feature));
+    }
+
+    function randOf(
+        address safe,
+        uint8 feature,
+        uint256 seed
+    ) internal view returns (uint8 a) {
+        return search(safe, feature, seed);
+    }
+
+    function locationOf(address safe, uint8 feature) internal view returns (address res) {
+        return address(location(safe, feature));
+    }
+
     function readBytecodeAsArray(
         address file,
         uint256 start,
@@ -252,8 +268,62 @@ library DotnuggV1Lib {
         }
     }
 
-    function parseItemId(uint16 itemId) internal pure returns (uint8 feat, uint8 pos) {
-        feat = uint8(itemId >> 8);
-        pos = uint8(itemId);
+    /// @notice parses the external itemId into a feautre and position
+    /// @dev this follows dotnugg v1 specification
+    /// @param itemId -> the external itemId
+    /// @return feat -> the feautre of the item
+    /// @return pos -> the file storage position of the item
+    function parseItemId(uint256 itemId) internal pure returns (uint8 feat, uint8 pos) {
+        feat = uint8(itemId / 1000);
+        pos = uint8(itemId % 1000);
+    }
+
+    /**
+     * @dev Converts a `uint256` to its ASCII `string` decimal representation.
+     */
+    function toAsciiBytes(uint256 value) internal pure returns (bytes memory buffer) {
+        // Inspired by OraclizeAPI's implementation - MIT licence
+        // https://github.com/oraclize/ethereum-api/blob/b42146b063c7d6ee1358846c198246239e9360e8/oraclizeAPI_0.4.25.sol
+
+        if (value == 0) {
+            return "0";
+        }
+        uint256 temp = value;
+        uint256 digits;
+        while (temp != 0) {
+            digits++;
+            temp /= 10;
+        }
+
+        buffer = new bytes(digits);
+
+        while (value != 0) {
+            digits -= 1;
+            buffer[digits] = bytes1(uint8(48 + uint256(value % 10)));
+            value /= 10;
+        }
+        return buffer;
+    }
+
+    function parseItemIdAsString(uint16 itemId, string[8] memory labels) internal pure returns (string memory) {
+        return string.concat(labels[(itemId / 1000)], " ", string(toAsciiBytes(itemId % 1000)));
+    }
+
+    function props(uint8[8] memory ids, string[8] memory labels) internal pure returns (string memory) {
+        bytes memory res;
+
+        for (uint8 i = 0; i < 8; i++) {
+            if (ids[i] == 0) continue;
+            res = abi.encodePacked(
+                res,
+                i != 0 ? "," : "",
+                '"',
+                labels[i],
+                '":"',
+                string(toAsciiBytes(uint8(ids[i]))),
+                '"'
+            );
+        }
+        return string(abi.encodePacked("{", res, "}"));
     }
 }
