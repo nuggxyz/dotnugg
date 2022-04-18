@@ -37,8 +37,6 @@ library DotnuggV1Matrix {
         matrix.startX = xoffset;
         matrix.width = width + xoffset;
         matrix.height = height + yoffset;
-
-        console.log(xoffset, yoffset, matrix.width, matrix.height);
     }
 
     function next(Memory memory matrix) internal view returns (bool res) {

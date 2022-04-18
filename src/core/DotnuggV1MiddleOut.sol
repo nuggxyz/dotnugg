@@ -28,11 +28,6 @@ contract DotnuggV1MiddleOut {
         {
             Run memory run;
 
-            uint256 abc;
-            assembly {
-                abc := run
-            }
-            console.log("abc", abc);
             uint256 len;
 
             (run.versions, len) = Parser.parse(files);
@@ -167,8 +162,8 @@ contract DotnuggV1MiddleOut {
             if (mix.yoffset < canvas.yStart) canvas.yStart = mix.yoffset;
             if ((mix.xoffset + mix.matrix.width) > canvas.xEnd) canvas.xEnd = (mix.xoffset + mix.matrix.width);
             if ((mix.yoffset + mix.matrix.height) > canvas.yEnd) canvas.yEnd = (mix.yoffset + mix.matrix.height);
-            console.log("new");
-            console.log(canvas.xStart, canvas.yStart, canvas.xEnd, canvas.yEnd);
+            // console.log("new");
+            // console.log(canvas.xStart, canvas.yStart, canvas.xEnd, canvas.yEnd);
         }
     }
 
@@ -235,7 +230,7 @@ contract DotnuggV1MiddleOut {
         Mix memory res,
         Parser.Memory memory version // uint8 versionIndex
     ) internal view {
-        console.log(1);
+        // console.log(1);
         {
             uint256 radiiBits = version.getRadii();
             uint256 expanderBits = version.getExpanders();
@@ -295,7 +290,7 @@ contract DotnuggV1MiddleOut {
             res.feature = uint8(version.getFeature());
             res.matrix.set(version, width, height);
         }
-        console.log(2);
+        // console.log(2);
     }
 
     function updateReceivers(Canvas memory canvas, Mix memory mix) internal view {
@@ -313,9 +308,7 @@ contract DotnuggV1MiddleOut {
 
     function mergeToCanvas(Canvas memory canvas, Mix memory mix) internal view {
         {
-            uint256 a = 0;
             while (canvas.matrix.next() && mix.matrix.next()) {
-                a++;
                 uint256 canvasPixel = canvas.matrix.current();
                 uint256 mixPixel = mix.matrix.current();
 
@@ -326,8 +319,6 @@ contract DotnuggV1MiddleOut {
             canvas.matrix.moveBack();
             canvas.matrix.resetIterator();
             mix.matrix.resetIterator();
-
-            console.log(a);
         }
     }
 

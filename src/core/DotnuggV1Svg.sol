@@ -52,8 +52,6 @@ library DotnuggV1Svg {
 
             (uint256 last, ) = Parser.getPixelAt(calculated, xStart, yStart, WIDTH);
 
-            // yEnd++;
-
             exec.yStart = yStart;
             exec.xStart = xStart;
             exec.yEnd = yEnd;
@@ -149,7 +147,7 @@ library DotnuggV1Svg {
 
     function gWrap(Execution memory exec, bytes memory children) internal view returns (bytes memory res) {
         {
-            console.log(exec.xStart, exec.yStart, exec.xEnd, exec.yEnd);
+            // console.log(exec.xStart, exec.yStart, exec.xEnd, exec.yEnd);
 
             exec.xEnd -= exec.xStart;
             exec.yEnd -= exec.yStart;

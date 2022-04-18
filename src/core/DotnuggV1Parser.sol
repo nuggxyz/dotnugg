@@ -182,11 +182,7 @@ library DotnuggV1Parser {
 
             receiver <<= ((rFeature * DATA_COORDINATE_BIT_LEN_2X) + (calculated == 0x1 ? 128 : 0));
 
-            console.logBytes32(bytes32(receiver));
-
             res |= receiver;
-
-            console.logBytes32(bytes32(res));
         }
     }
 
@@ -253,15 +249,6 @@ library DotnuggV1Parser {
 
         m.receivers |= res << ((index * DATA_COORDINATE_BIT_LEN_2X) + (calculated ? 128 : 0));
     }
-
-    // function setZ(Memory memory m, uint256 z) internal view {
-    //     require(z <= 0xf, "VERS:SETZ:0");
-    //     m.data |= z << DATA_Z_OFFSET;
-    // }
-
-    // function getZ(Memory memory m) internal view returns (uint256 res) {
-    //     res = (m.data >> DATA_Z_OFFSET) & 0xf;
-    // }
 
     function getRadii(Memory memory m) internal view returns (uint256 res) {
         res = (m.data >> DATA_RADII_OFFSET) & ShiftLib.mask(DATA_RLUD_LEN);
