@@ -28,25 +28,33 @@ library DotnuggV1Svg {
         uint256 yStart;
         uint256 isaG;
     }
+    uint256 constant TRANS_MUL = 1000;
 
-    function fledgeOutTheRekts(uint256[] memory calculated) internal pure returns (bytes memory res) {
+    uint256 constant WIDTH = 255;
+    uint256 constant WIDTH_SUB_1 = WIDTH - 1;
+    uint256 constant WIDTH_MID = (WIDTH / 2) + 1;
+    uint256 constant WIDTH_MID_10X = uint256(WIDTH_MID) * TRANS_MUL;
+
+    function fledgeOutTheRekts(uint256[] memory calculated) internal view returns (bytes memory res) {
         unchecked {
-            (uint256 last, ) = Parser.getPixelAt(calculated, 0, 0, 63);
-
             uint256 count = 1;
 
             Execution memory exec = Execution({
                 mapper: new Memory[](64),
                 xEnd: 0,
                 yEnd: 0,
-                xStart: 62,
-                yStart: 62,
+                xStart: WIDTH_SUB_1,
+                yStart: WIDTH_SUB_1,
                 isaG: 0
             });
 
-            for (uint256 y = 0; y < 63; y++) {
-                for (uint256 x = y == 0 ? 1 : 0; x < 63; x++) {
-                    (uint256 curr, ) = Parser.getPixelAt(calculated, x, y, 63);
+            (uint8 xStart, uint8 yStart) = getStarts(calculated);
+
+            (uint256 last, ) = Parser.getPixelAt(calculated, xStart, yStart, WIDTH);
+
+            for (uint256 y = yStart; y < WIDTH; y++) {
+                for (uint256 x = y == yStart ? xStart + 1 : xStart; x < WIDTH; x++) {
+                    (uint256 curr, ) = Parser.getPixelAt(calculated, x, y, WIDTH);
 
                     if (curr.rgba() == last.rgba()) {
                         count++;
@@ -59,11 +67,14 @@ library DotnuggV1Svg {
                     count = 1;
                 }
 
-                setRektPath(exec, last, (63 - count), y, count);
+                setRektPath(exec, last, (WIDTH - count), y, count);
 
                 last = 0;
                 count = 0;
             }
+
+            require(xStart == exec.xStart, "X start off");
+            require(yStart == exec.yStart, "Y start off");
 
             for (uint256 i = 1; i < exec.mapper.length; i++) {
                 if (exec.mapper[i].color == 0) break;
@@ -74,19 +85,44 @@ library DotnuggV1Svg {
         }
     }
 
-    function gWrap(Execution memory exec, bytes memory children) internal pure returns (bytes memory res) {
-        unchecked {
+    function getStarts(uint256[] memory calced) internal view returns (uint8 resx, uint8 resy) {
+        bool ok = false;
+        for (uint256 y = 0; y < WIDTH; y++) {
+            for (uint256 x = y == 0 ? 1 : 0; x < WIDTH; x++) {
+                (uint256 curr, ) = Parser.getPixelAt(calced, x, y, WIDTH);
+                if (curr == 0) continue;
+                resy = uint8(y);
+                ok = true;
+                break;
+            }
+            if (ok) break;
+        }
+        ok = false;
+        for (uint256 y = 0; y < WIDTH; y++) {
+            for (uint256 x = y == 0 ? 1 : 0; x < WIDTH; x++) {
+                (uint256 curr, ) = Parser.getPixelAt(calced, y, x, WIDTH);
+                if (curr == 0) continue;
+                resx = uint8(y);
+                ok = true;
+                break;
+            }
+            if (ok) break;
+        }
+    }
+
+    function gWrap(Execution memory exec, bytes memory children) internal view returns (bytes memory res) {
+        {
             exec.xEnd -= exec.xStart;
             exec.yEnd -= exec.yStart;
 
-            uint256 xTrans = ((exec.xEnd + 1) * 10) / 2 + (exec.xStart) * 10;
-            uint256 yTrans = ((exec.yEnd + 1) * 10) / 2 + (exec.yStart) * 10;
+            uint256 xTrans = ((exec.xEnd + 1) * TRANS_MUL) / 2 + (exec.xStart) * TRANS_MUL;
+            uint256 yTrans = ((exec.yEnd + 1) * TRANS_MUL) / 2 + (exec.yStart) * TRANS_MUL;
 
             if (exec.xEnd == 0) exec.xEnd++;
             if (exec.yEnd == 0) exec.yEnd++;
 
-            uint256 xScale = (6200000) / exec.xEnd;
-            uint256 yScale = (6200000) / exec.yEnd;
+            uint256 xScale = (uint256(WIDTH_SUB_1) * 100000) / exec.xEnd;
+            uint256 yScale = (uint256(WIDTH_SUB_1) * 100000) / exec.yEnd;
 
             if (yScale < xScale) xScale = yScale;
 
@@ -94,11 +130,11 @@ library DotnuggV1Svg {
                 '<g class="DN" transform="scale(',
                 string((xScale).toAsciiBytes(5)),
                 ") translate(",
-                xTrans > 320 ? "-" : "",
-                string((xTrans > 320 ? xTrans - 320 : 320 - xTrans).toAsciiBytes(1)),
+                xTrans > WIDTH_MID_10X ? "-" : "",
+                string((xTrans > WIDTH_MID_10X ? xTrans - WIDTH_MID_10X : WIDTH_MID_10X - xTrans).toAsciiBytes(3)),
                 ",",
-                yTrans > 320 ? "-" : "",
-                string((yTrans > 320 ? yTrans - 320 : 320 - yTrans).toAsciiBytes(1)),
+                yTrans > WIDTH_MID_10X ? "-" : "",
+                string((yTrans > WIDTH_MID_10X ? yTrans - WIDTH_MID_10X : WIDTH_MID_10X - yTrans).toAsciiBytes(3)),
                 ')" transform-origin="center center">',
                 children,
                 "</g>"
@@ -106,7 +142,7 @@ library DotnuggV1Svg {
         }
     }
 
-    function getColorIndex(Memory[] memory mapper, uint256 color) internal pure returns (uint256 i) {
+    function getColorIndex(Memory[] memory mapper, uint256 color) internal view returns (uint256 i) {
         unchecked {
             if (color.rgba() == 0) return 0;
             i++;
@@ -131,7 +167,7 @@ library DotnuggV1Svg {
         uint256 x,
         uint256 y,
         uint256 xlen
-    ) internal pure {
+    ) internal view {
         unchecked {
             if (color == 0) return;
 

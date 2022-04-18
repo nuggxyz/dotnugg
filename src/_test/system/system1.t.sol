@@ -116,11 +116,11 @@ contract systemTest__one is t {
         // check[0] = proxy.read(0, 3);
         // check[1] = proxy.read(1, 5);
         // check[2] = proxy.read(2, 5);
-        check[2] = proxy.read(5, 3);
-        check[1] = proxy.read(5, 2);
-        check[3] = proxy.read(5, 1);
-        check[4] = proxy.read(5, 4);
-        check[5] = proxy.read(5, 5);
+        check[2] = proxy.read(0, 3);
+        check[1] = proxy.read(1, 2);
+        check[3] = proxy.read(2, 1);
+        check[4] = proxy.read(3, 9);
+        check[5] = proxy.read(4, 5);
 
         // check[3] = proxy.read(2, 87);
 

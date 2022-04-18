@@ -8,6 +8,7 @@ import {DotnuggV1Pixel as Pixel} from "./DotnuggV1Pixel.sol";
 
 import {DotnuggV1Matrix as Matrix} from "./DotnuggV1Matrix.sol";
 import {DotnuggV1Parser as Parser} from "./DotnuggV1Parser.sol";
+import "../_test/utils/forge.sol";
 
 contract DotnuggV1MiddleOut {
     using Matrix for Matrix.Memory;
@@ -20,21 +21,24 @@ contract DotnuggV1MiddleOut {
         Mix mix;
     }
 
-    function execute(uint256[][] memory files) public pure returns (uint256[] memory res) {
-        unchecked {
+    uint8 constant WIDTH = 255;
+    uint8 constant CENTER = (WIDTH / 2) + 1;
+
+    function execute(uint256[][] memory files) public view returns (uint256[] memory res) {
+        {
             Run memory run;
             uint256 len;
 
             (run.versions, len) = Parser.parse(files);
 
-            run.canvas.matrix = Matrix.create(63, 63);
-            run.canvas.matrix.width = run.canvas.matrix.height = 63;
+            run.canvas.matrix = Matrix.create(WIDTH, WIDTH);
+            run.canvas.matrix.width = run.canvas.matrix.height = WIDTH;
 
             for (uint8 i = 0; i < run.versions.length; i++) {
                 run.canvas.receivers[i].coordinate = center();
             }
 
-            run.mix.matrix = Matrix.create(63, 63);
+            run.mix.matrix = Matrix.create(WIDTH, WIDTH);
 
             for (uint8 i = 0; i < 8; i++) {
                 if (!run.versions[i].exists) continue;
@@ -44,14 +48,18 @@ contract DotnuggV1MiddleOut {
 
                 // no reposition on single items
                 if (len == 1) return run.mix.matrix.version.bigmatrix;
-
+                console.log("c");
                 formatForCanvas(run.canvas, run.mix);
+                console.log("d");
 
                 postionForCanvas(run.canvas, run.mix);
+                console.log("e");
 
                 mergeToCanvas(run.canvas, run.mix);
+                console.log("f");
 
                 convertReceiversToAnchors(run.mix);
+                console.log("g");
 
                 updateReceivers(run.canvas, run.mix);
             }
@@ -60,8 +68,12 @@ contract DotnuggV1MiddleOut {
         }
     }
 
-    function center() internal pure returns (Coordinate memory) {
-        return Coordinate({a: 32, b: 32, exists: true});
+    function center() internal view returns (Coordinate memory) {
+        return Coordinate({a: CENTER, b: CENTER, exists: true});
+    }
+
+    function myCenter() internal view returns (Coordinate memory) {
+        return Coordinate({a: CENTER, b: CENTER, exists: true});
     }
 
     struct Rlud {
@@ -115,8 +127,8 @@ contract DotnuggV1MiddleOut {
         uint8 xoffset;
     }
 
-    function postionForCanvas(Canvas memory canvas, Mix memory mix) internal pure {
-        unchecked {
+    function postionForCanvas(Canvas memory canvas, Mix memory mix) internal view {
+        {
             Anchor memory receiver = canvas.receivers[mix.feature];
             Anchor memory anchor = mix.version.anchor;
 
@@ -129,8 +141,8 @@ contract DotnuggV1MiddleOut {
         }
     }
 
-    function formatForCanvas(Canvas memory canvas, Mix memory mix) internal pure {
-        unchecked {
+    function formatForCanvas(Canvas memory canvas, Mix memory mix) internal view {
+        {
             Anchor memory receiver = canvas.receivers[mix.feature];
             Anchor memory anchor = mix.version.anchor;
 
@@ -155,7 +167,7 @@ contract DotnuggV1MiddleOut {
         }
     }
 
-    // function pickVersionIndex(Canvas memory canvas, Parser.Memory[] memory versions) internal pure returns (uint8) {
+    // function pickVersionIndex(Canvas memory canvas, Parser.Memory[] memory versions) internal view returns (uint8) {
     //     require(versions.length == 1, "CALC:PVI:0");
     //     if (versions.length == 1) {
     //         return 0;
@@ -184,39 +196,40 @@ contract DotnuggV1MiddleOut {
     //     return 0;
     // }
 
-    function checkRluds(Rlud memory r1, Rlud memory r2) internal pure returns (bool) {
+    function checkRluds(Rlud memory r1, Rlud memory r2) internal view returns (bool) {
         return (r1.r <= r2.r && r1.l <= r2.l) || (r1.u <= r2.u && r1.d <= r2.d);
     }
 
     function setMix(
         Mix memory res,
         Parser.Memory memory version // uint8 versionIndex
-    ) internal pure {
-        unchecked {
-            uint256 radiiBits = (version.data >> 27) & ShiftLib.mask(24);
-            uint256 expanderBits = (version.data >> 3) & ShiftLib.mask(24);
+    ) internal view {
+        console.log(1);
+        {
+            uint256 radiiBits = version.getRadii();
+            uint256 expanderBits = version.getExpanders();
 
-            (uint256 x, uint256 y) = Parser.getAnchor(version);
+            (uint256 x, uint256 y) = version.getAnchor();
 
-            (uint256 width, uint256 height) = Parser.getWidth(version);
+            (uint256 width, uint256 height) = version.getWidth();
 
             res.version.width = uint8(width);
             res.version.height = uint8(height);
             res.version.anchor = Anchor({
                 radii: Rlud({
-                    r: uint8((radiiBits >> 18) & ShiftLib.mask(6)),
-                    l: uint8((radiiBits >> 12) & ShiftLib.mask(6)),
-                    u: uint8((radiiBits >> 6) & ShiftLib.mask(6)),
-                    d: uint8((radiiBits >> 0) & ShiftLib.mask(6)),
+                    r: uint8((radiiBits >> 24) & ShiftLib.mask(8)),
+                    l: uint8((radiiBits >> 16) & ShiftLib.mask(8)),
+                    u: uint8((radiiBits >> 8) & ShiftLib.mask(8)),
+                    d: uint8((radiiBits >> 0) & ShiftLib.mask(8)),
                     exists: true
                 }),
                 coordinate: Coordinate({a: uint8(x), b: uint8(y), exists: true})
             });
             res.version.expanders = Rlud({
-                r: uint8((expanderBits >> 18) & ShiftLib.mask(6)),
-                l: uint8((expanderBits >> 12) & ShiftLib.mask(6)),
-                u: uint8((expanderBits >> 6) & ShiftLib.mask(6)),
-                d: uint8((expanderBits >> 0) & ShiftLib.mask(6)),
+                r: uint8((expanderBits >> 24) & ShiftLib.mask(8)),
+                l: uint8((expanderBits >> 16) & ShiftLib.mask(8)),
+                u: uint8((expanderBits >> 8) & ShiftLib.mask(8)),
+                d: uint8((expanderBits >> 0) & ShiftLib.mask(8)),
                 exists: true
             });
             res.version.calculatedReceivers = new Coordinate[](8);
@@ -224,7 +237,7 @@ contract DotnuggV1MiddleOut {
             res.version.staticReceivers = new Coordinate[](8);
 
             for (uint256 i = 0; i < 8; i++) {
-                (uint256 _x, uint256 _y, bool exists) = Parser.getReceiverAt(version, i, false);
+                (uint256 _x, uint256 _y, bool exists) = version.getReceiverAt(i, false);
                 if (exists) {
                     res.version.staticReceivers[i].a = uint8(_x);
                     res.version.staticReceivers[i].b = uint8(_y);
@@ -233,7 +246,7 @@ contract DotnuggV1MiddleOut {
             }
 
             for (uint256 i = 0; i < 8; i++) {
-                (uint256 _x, uint256 _y, bool exists) = Parser.getReceiverAt(version, i, true);
+                (uint256 _x, uint256 _y, bool exists) = version.getReceiverAt(i, true);
                 if (exists) {
                     res.version.calculatedReceivers[i].a = uint8(_x);
                     res.version.calculatedReceivers[i].b = uint8(_y);
@@ -248,13 +261,14 @@ contract DotnuggV1MiddleOut {
             Anchor[8] memory upd;
             res.receivers = upd;
 
-            res.feature = uint8((version.data >> 75) & ShiftLib.mask(3));
+            res.feature = uint8(version.getFeature());
             res.matrix.set(version, width, height);
         }
+        console.log(2);
     }
 
-    function updateReceivers(Canvas memory canvas, Mix memory mix) internal pure {
-        unchecked {
+    function updateReceivers(Canvas memory canvas, Mix memory mix) internal view {
+        {
             for (uint8 i = 0; i < mix.receivers.length; i++) {
                 Anchor memory m = mix.receivers[i];
                 if (m.coordinate.exists) {
@@ -266,8 +280,8 @@ contract DotnuggV1MiddleOut {
         }
     }
 
-    function mergeToCanvas(Canvas memory canvas, Mix memory mix) internal pure {
-        unchecked {
+    function mergeToCanvas(Canvas memory canvas, Mix memory mix) internal view {
+        {
             while (canvas.matrix.next() && mix.matrix.next()) {
                 uint256 canvasPixel = canvas.matrix.current();
                 uint256 mixPixel = mix.matrix.current();
@@ -282,8 +296,8 @@ contract DotnuggV1MiddleOut {
         }
     }
 
-    function convertReceiversToAnchors(Mix memory mix) internal pure {
-        unchecked {
+    function convertReceiversToAnchors(Mix memory mix) internal view {
+        {
             Coordinate[] memory anchors;
             uint8 stat = 0;
             uint8 cal = 0;
@@ -301,7 +315,9 @@ contract DotnuggV1MiddleOut {
 
                     cal++;
                     if (anchors.length == 0) anchors = getAnchors(mix.matrix);
+
                     coordinate = calculateReceiverCoordinate(mix, mix.version.calculatedReceivers[i], anchors);
+
                     fledgeOutTheRluds(mix, coordinate, i);
                 }
             }
@@ -312,8 +328,8 @@ contract DotnuggV1MiddleOut {
         Mix memory mix,
         Coordinate memory coordinate,
         uint8 index
-    ) internal pure {
-        unchecked {
+    ) internal view {
+        {
             Rlud memory radii;
 
             while (
@@ -353,16 +369,16 @@ contract DotnuggV1MiddleOut {
         Mix memory mix,
         Coordinate memory calculatedReceiver,
         Coordinate[] memory anchors
-    ) internal pure returns (Coordinate memory coordinate) {
-        unchecked {
+    ) internal view returns (Coordinate memory coordinate) {
+        {
             coordinate.a = anchors[calculatedReceiver.a].a;
             coordinate.b = anchors[calculatedReceiver.a].b;
             coordinate.exists = true;
 
-            if (calculatedReceiver.b < 32) {
+            if (calculatedReceiver.b < 128) {
                 coordinate.b = coordinate.b - calculatedReceiver.b;
             } else {
-                coordinate.b = coordinate.b + (calculatedReceiver.b - 32);
+                coordinate.b = uint8(uint256(coordinate.b) + (calculatedReceiver.b - 128));
             }
 
             while (!mix.matrix.version.bigMatrixHasPixelAt(coordinate.a, coordinate.b)) {
@@ -376,8 +392,8 @@ contract DotnuggV1MiddleOut {
         }
     }
 
-    function getAnchors(Matrix.Memory memory matrix) internal pure returns (Coordinate[] memory anchors) {
-        unchecked {
+    function getAnchors(Matrix.Memory memory matrix) internal view returns (Coordinate[] memory anchors) {
+        {
             (uint8 topOffset, uint8 bottomOffset, Coordinate memory center) = getBox(matrix);
 
             anchors = new Coordinate[](5);
@@ -404,14 +420,14 @@ contract DotnuggV1MiddleOut {
 
     function getBox(Matrix.Memory memory matrix)
         internal
-        pure
+        view
         returns (
             uint8 topOffset,
             uint8 bottomOffset,
             Coordinate memory center
         )
     {
-        unchecked {
+        {
             center.a = (matrix.width) / 2;
             center.b = (matrix.height) / 2;
             center.exists = true;
