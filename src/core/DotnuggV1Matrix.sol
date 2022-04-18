@@ -3,6 +3,7 @@
 pragma solidity 0.8.13;
 
 import {DotnuggV1Parser as Parser} from "./DotnuggV1Parser.sol";
+import "../_test/utils/forge.sol";
 
 library DotnuggV1Matrix {
     using Parser for Parser.Memory;
@@ -36,6 +37,8 @@ library DotnuggV1Matrix {
         matrix.startX = xoffset;
         matrix.width = width + xoffset;
         matrix.height = height + yoffset;
+
+        console.log(xoffset, yoffset, matrix.width, matrix.height);
     }
 
     function next(Memory memory matrix) internal view returns (bool res) {

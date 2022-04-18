@@ -24,15 +24,22 @@ contract DotnuggV1MiddleOut {
     uint8 constant WIDTH = 255;
     uint8 constant CENTER = (WIDTH / 2) + 1;
 
-    function execute(uint256[][] memory files) public view returns (uint256[] memory res) {
+    function execute(uint256[][] calldata files) public view returns (uint256[] memory res, uint256 dat) {
         {
             Run memory run;
+
+            uint256 abc;
+            assembly {
+                abc := run
+            }
+            console.log("abc", abc);
             uint256 len;
 
             (run.versions, len) = Parser.parse(files);
 
             run.canvas.matrix = Matrix.create(WIDTH, WIDTH);
             run.canvas.matrix.width = run.canvas.matrix.height = WIDTH;
+            run.canvas.xStart = run.canvas.yStart = WIDTH;
 
             for (uint8 i = 0; i < run.versions.length; i++) {
                 run.canvas.receivers[i].coordinate = center();
@@ -47,25 +54,38 @@ contract DotnuggV1MiddleOut {
                 setMix(run.mix, run.versions[i]);
 
                 // no reposition on single items
-                if (len == 1) return run.mix.matrix.version.bigmatrix;
-                console.log("c");
+                if (len == 1)
+                    return (
+                        run.mix.matrix.version.bigmatrix,
+                        buildDat(0, run.mix.matrix.width, 0, run.mix.matrix.height)
+                    );
+
                 formatForCanvas(run.canvas, run.mix);
-                console.log("d");
 
                 postionForCanvas(run.canvas, run.mix);
-                console.log("e");
 
                 mergeToCanvas(run.canvas, run.mix);
-                console.log("f");
 
                 convertReceiversToAnchors(run.mix);
-                console.log("g");
 
                 updateReceivers(run.canvas, run.mix);
             }
 
             res = run.canvas.matrix.version.bigmatrix;
+            dat = buildDat(run.canvas.xStart, run.canvas.xEnd, run.canvas.yStart, run.canvas.yEnd);
         }
+    }
+
+    function buildDat(
+        uint256 a,
+        uint256 b,
+        uint256 c,
+        uint256 d
+    ) internal view returns (uint256 res) {
+        res |= a;
+        res |= b << 64;
+        res |= c << 128;
+        res |= d << 192;
     }
 
     function center() internal view returns (Coordinate memory) {
@@ -116,6 +136,10 @@ contract DotnuggV1MiddleOut {
     struct Canvas {
         Matrix.Memory matrix;
         Anchor[8] receivers;
+        uint256 xStart;
+        uint256 xEnd;
+        uint256 yStart;
+        uint256 yEnd;
     }
 
     struct Mix {
@@ -138,6 +162,13 @@ contract DotnuggV1MiddleOut {
             mix.xoffset++;
 
             canvas.matrix.moveTo(mix.xoffset, mix.yoffset, mix.matrix.width, mix.matrix.height);
+
+            if (mix.xoffset < canvas.xStart) canvas.xStart = mix.xoffset;
+            if (mix.yoffset < canvas.yStart) canvas.yStart = mix.yoffset;
+            if ((mix.xoffset + mix.matrix.width) > canvas.xEnd) canvas.xEnd = (mix.xoffset + mix.matrix.width);
+            if ((mix.yoffset + mix.matrix.height) > canvas.yEnd) canvas.yEnd = (mix.yoffset + mix.matrix.height);
+            console.log("new");
+            console.log(canvas.xStart, canvas.yStart, canvas.xEnd, canvas.yEnd);
         }
     }
 
@@ -282,7 +313,9 @@ contract DotnuggV1MiddleOut {
 
     function mergeToCanvas(Canvas memory canvas, Mix memory mix) internal view {
         {
+            uint256 a = 0;
             while (canvas.matrix.next() && mix.matrix.next()) {
+                a++;
                 uint256 canvasPixel = canvas.matrix.current();
                 uint256 mixPixel = mix.matrix.current();
 
@@ -293,6 +326,8 @@ contract DotnuggV1MiddleOut {
             canvas.matrix.moveBack();
             canvas.matrix.resetIterator();
             mix.matrix.resetIterator();
+
+            console.log(a);
         }
     }
 

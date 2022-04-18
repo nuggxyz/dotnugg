@@ -26,7 +26,7 @@ contract DotnuggV1Safe is IDotnuggV1Safe, DotnuggV1Resolver {
     // }
 
     function exec(uint8[8] memory ids, bool base64) external view returns (string memory) {
-        return combo(read(ids), base64);
+        return this.combo(read(ids), base64);
     }
 
     function exec(
@@ -36,7 +36,7 @@ contract DotnuggV1Safe is IDotnuggV1Safe, DotnuggV1Resolver {
     ) external view returns (string memory) {
         uint256[][] memory arr = new uint256[][](1);
         arr[0] = read(feature, pos);
-        return combo(arr, base64);
+        return this.combo(arr, base64);
     }
 
     function write(bytes[] memory data) public {

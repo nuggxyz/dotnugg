@@ -35,7 +35,7 @@ library DotnuggV1Svg {
     uint256 constant WIDTH_MID = (WIDTH / 2) + 1;
     uint256 constant WIDTH_MID_10X = uint256(WIDTH_MID) * TRANS_MUL;
 
-    function fledgeOutTheRekts(uint256[] memory calculated) internal view returns (bytes memory res) {
+    function fledgeOutTheRekts(uint256[] memory calculated, uint256 dat) internal view returns (bytes memory res) {
         unchecked {
             uint256 count = 1;
 
@@ -48,12 +48,19 @@ library DotnuggV1Svg {
                 isaG: 0
             });
 
-            (uint8 xStart, uint8 yStart) = getStarts(calculated);
+            (uint256 xStart, uint256 xEnd, uint256 yStart, uint256 yEnd) = buildDat(dat);
 
             (uint256 last, ) = Parser.getPixelAt(calculated, xStart, yStart, WIDTH);
 
-            for (uint256 y = yStart; y < WIDTH; y++) {
-                for (uint256 x = y == yStart ? xStart + 1 : xStart; x < WIDTH; x++) {
+            // yEnd++;
+
+            exec.yStart = yStart;
+            exec.xStart = xStart;
+            exec.yEnd = yEnd;
+            exec.xEnd = xEnd;
+
+            for (uint256 y = yStart; y <= yEnd; y++) {
+                for (uint256 x = y == yStart ? xStart + 1 : xStart; x <= xEnd; x++) {
                     (uint256 curr, ) = Parser.getPixelAt(calculated, x, y, WIDTH);
 
                     if (curr.rgba() == last.rgba()) {
@@ -75,6 +82,9 @@ library DotnuggV1Svg {
 
             require(xStart == exec.xStart, "X start off");
             require(yStart == exec.yStart, "Y start off");
+            require(xEnd == exec.xEnd, "X End off");
+            require(yEnd == exec.yEnd, "Y End off");
+            exec.yEnd--;
 
             for (uint256 i = 1; i < exec.mapper.length; i++) {
                 if (exec.mapper[i].color == 0) break;
@@ -85,38 +95,67 @@ library DotnuggV1Svg {
         }
     }
 
-    function getStarts(uint256[] memory calced) internal view returns (uint8 resx, uint8 resy) {
-        bool ok = false;
-        for (uint256 y = 0; y < WIDTH; y++) {
-            for (uint256 x = y == 0 ? 1 : 0; x < WIDTH; x++) {
-                (uint256 curr, ) = Parser.getPixelAt(calced, x, y, WIDTH);
-                if (curr == 0) continue;
-                resy = uint8(y);
-                ok = true;
-                break;
-            }
-            if (ok) break;
-        }
-        ok = false;
-        for (uint256 y = 0; y < WIDTH; y++) {
-            for (uint256 x = y == 0 ? 1 : 0; x < WIDTH; x++) {
-                (uint256 curr, ) = Parser.getPixelAt(calced, y, x, WIDTH);
-                if (curr == 0) continue;
-                resx = uint8(y);
-                ok = true;
-                break;
-            }
-            if (ok) break;
-        }
+    // function getStarts(uint256[] memory calced) internal view returns (uint8 resx, uint8 resy) {
+    //     bool ok = false;
+    //     for (uint256 y = 0; y < WIDTH; y++) {
+    //         for (uint256 x = y == 0 ? 1 : 0; x < WIDTH; x++) {
+    //             (uint256 curr, ) = Parser.getPixelAt(calced, x, y, WIDTH);
+    //             if (curr == 0) continue;
+    //             resy = uint8(y);
+    //             ok = true;
+    //             break;
+    //         }
+    //         if (ok) break;
+    //     }
+    //     ok = false;
+    //     for (uint256 y = 0; y < WIDTH; y++) {
+    //         for (uint256 x = y == 0 ? 1 : 0; x < WIDTH; x++) {
+    //             (uint256 curr, ) = Parser.getPixelAt(calced, y, x, WIDTH);
+    //             if (curr == 0) continue;
+    //             resx = uint8(y);
+    //             ok = true;
+    //             break;
+    //         }
+    //         if (ok) break;
+    //     }
+    // }
+
+    function buildDat(uint256 abc)
+        internal
+        view
+        returns (
+            uint256 a,
+            uint256 b,
+            uint256 c,
+            uint256 d
+        )
+    {
+        a = abc & type(uint64).max;
+        b = (abc >> 64) & type(uint64).max;
+        c = (abc >> 128) & type(uint64).max;
+        d = (abc >> 192) & type(uint64).max;
     }
+
+    // function getStarts(uint256 dat)
+    //     internal
+    //     view
+    //     returns (
+    //         uint8 resx,
+    //         uint8 resy,
+    //         uint8 resx,
+    //         uint8 resy
+    //     )
+    // {}
 
     function gWrap(Execution memory exec, bytes memory children) internal view returns (bytes memory res) {
         {
+            console.log(exec.xStart, exec.yStart, exec.xEnd, exec.yEnd);
+
             exec.xEnd -= exec.xStart;
             exec.yEnd -= exec.yStart;
 
-            uint256 xTrans = ((exec.xEnd + 1) * TRANS_MUL) / 2 + (exec.xStart) * TRANS_MUL;
-            uint256 yTrans = ((exec.yEnd + 1) * TRANS_MUL) / 2 + (exec.yStart) * TRANS_MUL;
+            uint256 xTrans = ((exec.xEnd + 1) * TRANS_MUL) / 2 + (0) * TRANS_MUL;
+            uint256 yTrans = ((exec.yEnd + 1) * TRANS_MUL) / 2 + (0) * TRANS_MUL;
 
             if (exec.xEnd == 0) exec.xEnd++;
             if (exec.yEnd == 0) exec.yEnd++;
@@ -174,7 +213,7 @@ library DotnuggV1Svg {
             exec.isaG = 1;
             if (x < exec.xStart) exec.xStart = x;
             if (y < exec.yStart) exec.yStart = y;
-            if (x + xlen > exec.xEnd) exec.xEnd = x + xlen;
+            if (x + xlen > exec.xEnd) exec.xEnd = (x + xlen);
             if (y > exec.yEnd) exec.yEnd = y;
 
             uint256 index = getColorIndex(exec.mapper, color);
@@ -182,9 +221,9 @@ library DotnuggV1Svg {
             exec.mapper[index].data = abi.encodePacked(
                 exec.mapper[index].data, //
                 "M",
-                (x).toAsciiString(),
+                (x - exec.xStart).toAsciiString(),
                 " ",
-                (y).toAsciiString(),
+                (y - exec.yStart).toAsciiString(),
                 "h",
                 (xlen).toAsciiString()
             );

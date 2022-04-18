@@ -3,13 +3,17 @@
 pragma solidity 0.8.13;
 
 interface IDotnuggV1Resolver {
-    function calc(uint256[][] memory reads) external view returns (uint256[] memory calculated);
+    function calc(uint256[][] memory reads) external view returns (uint256[] memory calculated, uint256 dat);
 
     function combo(uint256[][] memory reads, bool base64) external view returns (string memory data);
 
-    function supersize(uint256[][][] memory reads, bool base64) external view returns (string[] memory res);
+    // function supersize(uint256[][][] memory reads, bool base64) external view returns (string[] memory res);
 
-    function svg(uint256[] memory calculated, bool base64) external view returns (string memory data);
+    function svg(
+        uint256[] memory calculated,
+        uint256 dat,
+        bool base64
+    ) external view returns (string memory data);
 
     function encodeJsonAsBase64(bytes memory input) external view returns (bytes memory data);
 

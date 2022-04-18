@@ -11,24 +11,32 @@ import {Base64} from "./libraries/Base64.sol";
 import {StringCastLib} from "./libraries/StringCastLib.sol";
 
 abstract contract DotnuggV1Resolver is IDotnuggV1Resolver, MiddleOut {
-    function calc(uint256[][] memory reads) public view returns (uint256[] memory) {
+    function calc(uint256[][] calldata reads) public view returns (uint256[] memory, uint256) {
         return execute(reads);
     }
 
-    function combo(uint256[][] memory reads, bool base64) public view returns (string memory) {
-        return svg(calc(reads), base64);
+    function combo(uint256[][] calldata reads, bool base64) public view returns (string memory) {
+        (uint256[] memory calced, uint256 sizes) = calc(reads);
+        return svg(calced, sizes, base64);
     }
 
-    function supersize(uint256[][][] memory reads, bool base64) public view returns (string[] memory res) {
-        res = new string[](reads.length);
-        for (uint256 i = 0; i < reads.length; i++) res[i] = svg(calc(reads[i]), base64);
-    }
+    // function supersize(uint256[][][] calldata reads, bool base64) public view returns (string[] memory res) {
+    //     res = new string[](reads.length);
+    //     for (uint256 i = 0; i < reads.length; i++) {
+    //         (uint256[] memory working, uint256 dat) = calc(reads[i]);
+    //         res[i] = svg(working, dat, base64);
+    //     }
+    // }
 
-    function svg(uint256[] memory calculated, bool base64) public view override returns (string memory res) {
+    function svg(
+        uint256[] memory calculated,
+        uint256 dat,
+        bool base64
+    ) public view override returns (string memory res) {
         bytes memory image = (
             abi.encodePacked(
                 '<svg viewBox="0 0 255 255" xmlns="http://www.w3.org/2000/svg">',
-                Svg.fledgeOutTheRekts(calculated),
+                Svg.fledgeOutTheRekts(calculated, dat),
                 "</svg>"
             )
         );

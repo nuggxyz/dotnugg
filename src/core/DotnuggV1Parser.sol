@@ -23,7 +23,7 @@ library DotnuggV1Parser {
         bool exists;
     }
 
-    function parse(uint256[][] memory reads) internal view returns (Memory[8] memory m, uint256 len) {
+    function parse(uint256[][] calldata reads) internal view returns (Memory[8] memory m, uint256 len) {
         {
             for (uint256 j = 0; j < reads.length; j++) {
                 (bool empty, Reader.Memory memory reader) = Reader.init(reads[j]);
