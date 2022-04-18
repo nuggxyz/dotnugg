@@ -44,7 +44,7 @@ abstract contract DotnuggV1Resolver is IDotnuggV1Resolver, MiddleOut {
         res = abi.encodePacked("data:image/svg+xml;charset=UTF-8,", input);
     }
 
-    function encodeJsonAsBase64(bytes memory input) internal pure returns (bytes memory res) {
+    function encodeJsonAsBase64(bytes memory input) public pure returns (bytes memory res) {
         res = abi.encodePacked("data:application/json;base64,", Base64._encode(input));
     }
 

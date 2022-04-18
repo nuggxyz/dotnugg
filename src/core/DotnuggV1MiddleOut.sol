@@ -161,8 +161,6 @@ contract DotnuggV1MiddleOut {
             if (mix.yoffset < canvas.yStart) canvas.yStart = mix.yoffset;
             if ((mix.xoffset + mix.matrix.width) > canvas.xEnd) canvas.xEnd = (mix.xoffset + mix.matrix.width);
             if ((mix.yoffset + mix.matrix.height) > canvas.yEnd) canvas.yEnd = (mix.yoffset + mix.matrix.height);
-            // console.log("new");
-            // console.log(canvas.xStart, canvas.yStart, canvas.xEnd, canvas.yEnd);
         }
     }
 

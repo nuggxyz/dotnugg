@@ -214,7 +214,7 @@ library DotnuggV1Lib {
         return search(safe, feature, seed);
     }
 
-    function locationOf(address safe, uint8 feature) internal view returns (address res) {
+    function locationOf(address safe, uint8 feature) internal pure returns (address res) {
         return address(location(safe, feature));
     }
 
