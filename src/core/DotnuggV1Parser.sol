@@ -19,6 +19,7 @@ library DotnuggV1Parser {
         uint256 receivers;
         uint256 data;
         uint256 bitmatrixptr;
+        uint8 palletBitLen;
         bool exists;
     }
 
@@ -49,7 +50,9 @@ library DotnuggV1Parser {
 
                 uint256 id = m[feature].reader.select(8);
 
-                uint256[] memory pallet = parsePallet(m[feature].reader, id, feature, graftPallet);
+                m[feature].palletBitLen = uint8((m[feature].reader.select(1) * 4) + 4);
+
+                uint256[] memory pallet = parsePallet(m[feature], id, feature, graftPallet);
 
                 if (m[feature].reader.select(1) == 1) {
                     require(graftPallet.length == 0, "0x34");
@@ -66,7 +69,7 @@ library DotnuggV1Parser {
 
                 (uint256 width, uint256 height) = getWidth(m[feature]);
 
-                m[feature].minimatrix = parseMiniMatrix(m[feature].reader, width, height);
+                m[feature].minimatrix = parseMiniMatrix(m[feature], width, height);
 
                 m[feature].pallet = pallet;
             }
@@ -74,13 +77,13 @@ library DotnuggV1Parser {
     }
 
     function parsePallet(
-        Reader.Memory memory reader,
+        Memory memory parser,
         uint256 id,
         uint256 feature,
         uint256[] memory graftPallet
     ) internal pure returns (uint256[] memory res) {
         {
-            uint256 palletLength = reader.select(4) + 1;
+            uint256 palletLength = parser.reader.select(parser.palletBitLen) + 1;
 
             res = new uint256[](palletLength + 1);
 
@@ -88,27 +91,27 @@ library DotnuggV1Parser {
                 // uint256 working = 0;
 
                 // 4 bits: zindex
-                // working |= (reader.select(4) << 32);
-                uint256 z = reader.select(4);
+                // working |= (parser.reader.select(4) << 32);
+                uint256 z = parser.reader.select(4);
 
                 uint256 color;
 
-                uint256 graftIndex = reader.select(1);
-                if (graftIndex == 1) graftIndex = reader.select(4);
+                uint256 graftIndex = parser.reader.select(1);
+                if (graftIndex == 1) graftIndex = parser.reader.select(4);
 
-                uint256 isWhite = reader.select(1);
-                uint256 isBlack = reader.select(1);
+                uint256 isWhite = parser.reader.select(1);
+                uint256 isBlack = parser.reader.select(1);
 
                 if (isWhite == 1) {
                     color = 0x000000;
                 } else if (isBlack == 1) {
                     color = 0xffffff;
                 } else {
-                    color = reader.select(24);
+                    color = parser.reader.select(24);
                 }
 
                 // // 1 or 8 bits: a
-                uint256 a = (reader.select(1) == 0x1 ? 0xff : reader.select(8));
+                uint256 a = (parser.reader.select(1) == 0x1 ? 0xff : parser.reader.select(8));
 
                 if (graftIndex != 0 && graftPallet.length > graftIndex) {
                     res[i + 1] = Pixel.unsafeGraft(graftPallet[graftIndex], id, z, feature);
@@ -186,25 +189,28 @@ library DotnuggV1Parser {
     }
 
     function parseMiniMatrix(
-        Reader.Memory memory reader,
+        Memory memory parser,
         uint256 height,
         uint256 width
     ) internal pure returns (uint256[] memory res) {
-        uint256 groupsLength = reader.select(1) == 0x1 ? reader.select(8) + 1 : reader.select(16) + 1;
+        uint8 miniMatrixSizer = uint8(256 / parser.palletBitLen);
+        uint256 groupsLength = parser.reader.select(1) == 0x1
+            ? parser.reader.select(8) + 1
+            : parser.reader.select(16) + 1;
 
-        res = new uint256[]((height * width) / 64 + 1);
+        res = new uint256[]((height * width) / miniMatrixSizer + 1);
 
         uint256 index = 0;
 
         for (uint256 a = 0; a < groupsLength; a++) {
-            uint256 len = reader.select(2) + 1;
+            uint256 len = parser.reader.select(2) + 1;
 
-            if (len == 4) len = reader.select(4) + 4;
+            if (len == 4) len = parser.reader.select(4) + 4;
 
-            uint256 key = reader.select(4);
+            uint256 key = parser.reader.select(parser.palletBitLen);
 
             for (uint256 i = 0; i < len; i++) {
-                res[index / 64] |= (key << (4 * (index % 64)));
+                res[index / miniMatrixSizer] |= (key << (parser.palletBitLen * (index % miniMatrixSizer)));
                 index++;
             }
         }
@@ -298,12 +304,16 @@ library DotnuggV1Parser {
         uint256 x,
         uint256 y
     ) internal pure returns (uint256 palletKey) {
+        uint8 miniMatrixSizer = uint8(256 / m.palletBitLen);
+
         (uint256 width, ) = getWidth(m);
         uint256 index = x + (y * width);
 
-        if (index / 64 >= m.minimatrix.length) return 0x0;
+        if (index / miniMatrixSizer >= m.minimatrix.length) return 0x0;
 
-        palletKey = (m.minimatrix[index / 64] >> (4 * (index % 64))) & 0xf;
+        palletKey =
+            (m.minimatrix[index / miniMatrixSizer] >> (m.palletBitLen * (index % miniMatrixSizer))) &
+            ShiftLib.mask(m.palletBitLen);
     }
 
     function getPalletColorAt(Memory memory m, uint256 index)
