@@ -80,31 +80,6 @@ library DotnuggV1Svg {
         }
     }
 
-    // function getStarts(uint256[] memory calced) internal pure returns (uint8 resx, uint8 resy) {
-    //     bool ok = false;
-    //     for (uint256 y = 0; y < WIDTH; y++) {
-    //         for (uint256 x = y == 0 ? 1 : 0; x < WIDTH; x++) {
-    //             (uint256 curr, ) = Parser.getPixelAt(calced, x, y, WIDTH);
-    //             if (curr == 0) continue;
-    //             resy = uint8(y);
-    //             ok = true;
-    //             break;
-    //         }
-    //         if (ok) break;
-    //     }
-    //     ok = false;
-    //     for (uint256 y = 0; y < WIDTH; y++) {
-    //         for (uint256 x = y == 0 ? 1 : 0; x < WIDTH; x++) {
-    //             (uint256 curr, ) = Parser.getPixelAt(calced, y, x, WIDTH);
-    //             if (curr == 0) continue;
-    //             resx = uint8(y);
-    //             ok = true;
-    //             break;
-    //         }
-    //         if (ok) break;
-    //     }
-    // }
-
     function buildDat(uint256 abc)
         internal
         pure
@@ -158,20 +133,27 @@ library DotnuggV1Svg {
 
     function getColorIndex(Memory[] memory mapper, uint256 color) internal pure returns (uint256 i) {
         unchecked {
-            if (color.rgba() == 0) return 0;
+            if (color == 0) return 0;
+
+            uint256 rgba = color.rgba();
+
             i++;
+
             for (; i < mapper.length; i++) {
                 if (mapper[i].color == 0) break;
-                if (mapper[i].color == color) return i;
+                if (mapper[i].color == rgba) return i;
             }
 
-            mapper[i].color = color;
+            mapper[i].color = rgba;
 
-            string memory colorStr = color.rgba() & 0xff == 0xff
-                ? (color.rgba() >> 8).toHexStringNoPrefix(3)
-                : color.rgba().toHexStringNoPrefix(4);
+            uint256 rgb = rgba >> 8;
+            uint256 a = rgba & 0xff;
 
-            mapper[i].data = abi.encodePacked('<path class="', uint8(color.f() + 65), '" stroke="#', colorStr, '" d="');
+            string memory colorStr = a == 0xff
+                ? rgb == 0xffffff ? "FFF" : rgb == 0 ? "000" : rgb.toHexStringNoPrefix(3)
+                : rgba.toHexStringNoPrefix(4);
+
+            mapper[i].data = abi.encodePacked('<path stroke="#', colorStr, '" d="');
         }
     }
 

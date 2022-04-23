@@ -129,6 +129,37 @@ contract systemTest__one is t {
         DotnuggV1Lib.randOf(address(proxy), 1, 0x1234444997373738);
     }
 
+    function test__smaller() public {
+        DotnuggV1Lib.lengthOf(address(proxy), 0);
+        // uint256[] memory a = new uint256[](7);
+        // a[0] = 1;
+        // a[1] = 2;
+        // a[2] = 3;
+        // a[3] = 4;
+        // a[4] = 5;
+        // a[5] = 6;
+        // a[6] = 7;
+
+        // assembly {
+        //     log1(a, mul(8, 32), a)
+        // }
+
+        // proxy.exec(0, 1, false);
+
+        // proxy.exec([1, 1, 1, 1, 1, 0, 0, 0], true);
+
+        // proxy.exec([1, 16, 16], false);
+
+        ds.emit_log_string(proxy.exec([4, 108, 93, 32, 0, 14, 0, 0], true));
+        // ds.emit_log_string(proxy.exec([3, 47, 23, 21, 0, 0, 0, 0], false));
+        // ds.emit_log_string(proxy.exec([2, 0, 0, 18, 0, 0, 0, 0], false));
+        // ds.emit_log_string(proxy.exec(3, 48, false));
+        // proxy.exec([0, 0, 0, 0, 0, 0, 0, 0], false);
+        // ds.emit_log_string(proxy.exec(2, 66, false));
+
+        // DotnuggV1Lib.randOf(address(proxy), 1, 0x1234444997373738);
+    }
+
     function test__all() public {
         for (uint8 i = 0; i < 8; i++) {
             uint8 len = DotnuggV1Lib.lengthOf(address(proxy), i);
