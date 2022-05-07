@@ -7,13 +7,15 @@ import {data} from "../../_data/nuggs.data.sol";
 import {DotnuggV1Lib} from "../../libraries/DotnuggV1Lib.sol";
 
 contract systemTest__one is t {
-    IDotnuggV1Safe proxy;
+    DotnuggV1 proxy;
 
     function setUp() public {
         reset();
         forge.vm.startPrank(users.frank);
 
-        proxy = factory.register(abi.decode(data, (bytes[])));
+        // proxy = factory.register(abi.decode(data, (bytes[])));
+
+        proxy = factory;
 
         forge.vm.stopPrank();
     }
@@ -235,6 +237,65 @@ contract systemTest__one is t {
         //     proxy.exec([0, 0, 0, 0, 0, 0, 0, 0], false);
         // }
     }
+
+    function test__chunk1() public {
+        // for (uint8 i = 0; i < 8; i++) {
+        // uint8 len = proxy.lengthOf(i);
+
+        /// OK
+        uint256[][] memory check = new uint256[][](16);
+
+        // not OK
+        // uint256[][] memory check = new uint256[][](4);
+
+        // check[0] = proxy.read(0, 3);
+        // check[1] = proxy.read(1, 5);
+        // check[2] = proxy.read(2, 5);
+        // check[2] = proxy.read(0, 3);
+        // check[1] = proxy.read(1, 2);
+        // check[3] = proxy.read(2, 1);
+        // check[4] = proxy.read(3, 9);
+        // check[5] = proxy.read(4, 5);
+
+        check[2] = proxy.read(0, 1);
+        check[1] = proxy.read(1, 44);
+        check[3] = proxy.read(2, 33);
+        check[4] = proxy.read(3, 12);
+        check[5] = proxy.read(4, 33);
+        check[6] = proxy.read(5, 3);
+        // check[7] = proxy.read(7, 5);
+
+        // check[3] = proxy.read(2, 87);
+
+        // for (uint8 i = 0; i < 5; i++) {
+        //     ds.emit_log_string(proxy.combo2(check, 4, i));
+        // }
+
+        // for (uint8 j = 0; j < len; j++) {
+        //     proxy.exec(i, j + 1, false);
+        //     proxy.exec(i, j + 1, false);
+        //     proxy.exec([0, 0, 0, 0, 0, 0, 0, 0], false);
+        // }
+    }
+
+    function test__chunk1__exec() public {
+        for (uint8 i = 0; i < 5; i++) {
+            ds.emit_log_string(DotnuggV1Lib.chunk(proxy.exec([1, 44, 33, 12, 33, 3, 0, 0], false), 4, i));
+        }
+
+        // ds.emit_log_string(proxy.exec([1, 44, 33, 12, 33, 3, 0, 0], false));
+    }
+
+    // // 193015236
+    // // 121998950
+    // function test__chunk3__exec() public {
+    //     (, , bytes memory a) = proxy.execute(proxy.read([1, 44, 33, 12, 33, 3, 0, 0]), 1, "");
+    //     (, , a) = proxy.execute(new uint256[][](0), 5, a);
+    //     (uint256[] memory res, uint256 dat, ) = proxy.execute(new uint256[][](0), 8, a);
+    //     ds.emit_log_string(proxy.svg(res, dat, false));
+
+    //     // ds.emit_log_string(proxy.exec([1, 44, 33, 12, 33, 3, 0, 0], false));
+    // }
 
     // function test__supersize() public {
     //     // for (uint8 i = 0; i < 8; i++) {

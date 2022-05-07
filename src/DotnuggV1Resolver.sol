@@ -24,7 +24,7 @@ abstract contract DotnuggV1Resolver is IDotnuggV1Resolver, MiddleOut {
         uint256[] memory calculated,
         uint256 dat,
         bool base64
-    ) internal pure returns (string memory res) {
+    ) public pure returns (string memory res) {
         bytes memory image = (
             abi.encodePacked(
                 '<svg viewBox="0 0 255 255" xmlns="http://www.w3.org/2000/svg">',
@@ -33,22 +33,20 @@ abstract contract DotnuggV1Resolver is IDotnuggV1Resolver, MiddleOut {
             )
         );
 
-        return string(base64 ? encodeSvgAsBase64(image) : encodeSvgAsUtf8(image));
+        return string(encodeSvg(image, base64));
     }
 
-    function encodeSvgAsBase64(bytes memory input) internal pure returns (bytes memory res) {
-        res = abi.encodePacked("data:image/svg+xml;base64,", Base64._encode(input));
+    function encodeSvg(bytes memory input, bool base64) internal pure returns (bytes memory res) {
+        res = abi.encodePacked(
+            base64 ? "data:image/svg+xml;base64," : "data:image/svg+xml;charset=UTF-8,",
+            base64 ? Base64._encode(input) : input
+        );
     }
 
-    function encodeSvgAsUtf8(bytes memory input) internal pure returns (bytes memory res) {
-        res = abi.encodePacked("data:image/svg+xml;charset=UTF-8,", input);
-    }
-
-    function encodeJsonAsBase64(bytes memory input) public pure returns (bytes memory res) {
-        res = abi.encodePacked("data:application/json;base64,", Base64._encode(input));
-    }
-
-    function encodeJsonAsUtf8(bytes memory input) internal pure returns (bytes memory res) {
-        res = abi.encodePacked("data:application/json;charset=UTF-8,", input);
+    function encodeJson(bytes memory input, bool base64) public pure returns (bytes memory res) {
+        res = abi.encodePacked(
+            base64 ? "data:application/json;base64," : "data:application/json;charset=UTF-8,",
+            base64 ? Base64._encode(input) : input
+        );
     }
 }

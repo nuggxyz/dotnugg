@@ -326,4 +326,28 @@ library DotnuggV1Lib {
         }
         return string(abi.encodePacked("{", res, "}"));
     }
+
+    function chunk(
+        string memory input,
+        uint8 chunks,
+        uint8 index
+    ) internal pure returns (string memory res) {
+        res = input;
+
+        if (chunks == 0) return res;
+
+        assembly {
+            let strlen := div(mload(res), chunks)
+
+            let start := mul(strlen, index)
+
+            if gt(strlen, sub(mload(res), start)) {
+                strlen := sub(mload(res), start)
+            }
+
+            res := add(res, start)
+
+            mstore(res, strlen)
+        }
+    }
 }

@@ -23,7 +23,7 @@ contract DotnuggV1MiddleOut {
     uint8 constant WIDTH = 255;
     uint8 constant CENTER = (WIDTH / 2) + 1;
 
-    function execute(uint256[][] calldata files) public pure returns (uint256[] memory res, uint256 dat) {
+    function execute(uint256[][] calldata files) internal pure returns (uint256[] memory res, uint256 dat) {
         {
             Run memory run;
 

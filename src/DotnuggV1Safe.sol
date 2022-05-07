@@ -12,20 +12,17 @@ contract DotnuggV1Safe is IDotnuggV1Safe, DotnuggV1Resolver {
     address public immutable factory;
 
     constructor() {
+        // ds.inject.log(33);
         factory = address(this);
     }
 
-    function init(bytes[] memory input) public {
-        require(msg.sender == factory, "C:0");
+    // function init(bytes[] memory input) public {
+    //     require(msg.sender == factory, "C:0");
 
-        write(input);
-    }
-
-    // function exec(uint256 proof, bool base64) external view returns (string memory) {
-    //     return combo(read(decodeProofCore(proof)), base64);
+    //     write(input);
     // }
 
-    function exec(uint8[8] memory ids, bool base64) external view returns (string memory) {
+    function exec(uint8[8] memory ids, bool base64) public view returns (string memory) {
         return this.combo(read(ids), base64);
     }
 
@@ -39,7 +36,7 @@ contract DotnuggV1Safe is IDotnuggV1Safe, DotnuggV1Resolver {
         return this.combo(arr, base64);
     }
 
-    function write(bytes[] memory data) public {
+    function write(bytes[] memory data) internal {
         require(data.length == 8, "nope");
         for (uint8 feature = 0; feature < 8; feature++) {
             if (data[feature].length > 0) {
@@ -49,18 +46,6 @@ contract DotnuggV1Safe is IDotnuggV1Safe, DotnuggV1Resolver {
             }
         }
     }
-
-    // function lengthOf(uint8 feature) public view override returns (uint8 a) {
-    //     a = DotnuggV1Lib.size(DotnuggV1Lib.location(address(this), feature));
-    // }
-
-    // function randOf(uint8 feature, uint256 seed) public view override returns (uint8 a) {
-    //     return DotnuggV1Lib.search(address(this), feature, seed);
-    // }
-
-    // function locationOf(uint8 feature) public view override returns (address res) {
-    //     return address(DotnuggV1Lib.location(address(this), feature));
-    // }
 
     function read(uint8[8] memory ids) public view returns (uint256[][] memory _reads) {
         _reads = new uint256[][](8);
