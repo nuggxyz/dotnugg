@@ -97,7 +97,7 @@ library DotnuggV1Svg {
     }
 
     function gWrap(Execution memory exec, bytes memory children) internal pure returns (bytes memory res) {
-        {
+        unchecked {
             // console.log(exec.xStart, exec.yStart, exec.xEnd, exec.yEnd);
             exec.yEnd--;
 

@@ -6,7 +6,9 @@ import {ShiftLib} from "../libraries/ShiftLib.sol";
 
 library DotnuggV1Pixel {
     function rgba(uint256 input) internal pure returns (uint256 res) {
-        return ((input << 5) & 0xffffff_00) | a(input);
+        unchecked {
+            return ((input << 5) & 0xffffff_00) | a(input);
+        }
     }
 
     function unsafePack(

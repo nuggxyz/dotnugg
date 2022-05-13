@@ -43,7 +43,7 @@ library DotnuggV1Matrix {
     }
 
     function next(Memory memory matrix, uint8 width) internal pure returns (bool res) {
-        {
+        unchecked {
             if (matrix.init) {
                 if (width <= matrix.currentUnsetX + 1) {
                     if (matrix.height == matrix.currentUnsetY + 1) {
@@ -88,7 +88,7 @@ library DotnuggV1Matrix {
         uint256 groupWidth,
         uint256 groupHeight
     ) internal pure {
-        {
+        unchecked {
             matrix.height = uint8(groupHeight);
 
             for (uint256 y = 0; y < groupHeight; y++) {
@@ -116,7 +116,7 @@ library DotnuggV1Matrix {
         uint8 index,
         uint8 amount
     ) internal pure {
-        {
+        unchecked {
             for (uint256 i = 0; i < matrix.height; i++) {
                 for (uint256 j = matrix.height; j > index; j--) {
                     if (j < index) break;
@@ -136,7 +136,7 @@ library DotnuggV1Matrix {
         uint8 index,
         uint8 amount
     ) internal pure {
-        {
+        unchecked {
             // require(index < matrix.data[0].length, 'MAT:ACA:0');
             for (uint256 i = 0; i < matrix.width; i++) {
                 for (uint256 j = matrix.width; j > index; j--) {
