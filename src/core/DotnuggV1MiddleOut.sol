@@ -240,19 +240,19 @@ contract DotnuggV1MiddleOut {
             res.version.height = uint8(height);
             res.version.anchor = Anchor({
                 radii: Rlud({
-                    r: uint8((radiiBits >> 24) & ShiftLib.mask(8)),
-                    l: uint8((radiiBits >> 16) & ShiftLib.mask(8)),
-                    u: uint8((radiiBits >> 8) & ShiftLib.mask(8)),
-                    d: uint8((radiiBits >> 0) & ShiftLib.mask(8)),
+                    r: uint8((radiiBits >> 24)),
+                    l: uint8((radiiBits >> 16)),
+                    u: uint8((radiiBits >> 8)),
+                    d: uint8((radiiBits >> 0)),
                     exists: true
                 }),
                 coordinate: Coordinate({a: uint8(x), b: uint8(y), exists: true})
             });
             res.version.expanders = Rlud({
-                r: uint8((expanderBits >> 24) & ShiftLib.mask(8)),
-                l: uint8((expanderBits >> 16) & ShiftLib.mask(8)),
-                u: uint8((expanderBits >> 8) & ShiftLib.mask(8)),
-                d: uint8((expanderBits >> 0) & ShiftLib.mask(8)),
+                r: uint8((expanderBits >> 24)),
+                l: uint8((expanderBits >> 16)),
+                u: uint8((expanderBits >> 8)),
+                d: uint8((expanderBits >> 0)),
                 exists: true
             });
             res.version.calculatedReceivers = new Coordinate[](8);
