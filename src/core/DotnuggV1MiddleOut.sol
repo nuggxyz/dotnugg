@@ -24,7 +24,7 @@ contract DotnuggV1MiddleOut {
     uint8 constant CENTER = (WIDTH / 2) + 1;
 
     function execute(uint256[][] calldata files) internal pure returns (uint256[] memory res, uint256 dat) {
-        {
+        unchecked {
             Run memory run;
 
             uint256 len;
@@ -146,7 +146,7 @@ contract DotnuggV1MiddleOut {
     }
 
     function postionForCanvas(Canvas memory canvas, Mix memory mix) internal pure {
-        {
+        unchecked {
             Anchor memory receiver = canvas.receivers[mix.feature];
             Anchor memory anchor = mix.version.anchor;
 
@@ -165,7 +165,7 @@ contract DotnuggV1MiddleOut {
     }
 
     function formatForCanvas(Canvas memory canvas, Mix memory mix) internal pure {
-        {
+        unchecked {
             Anchor memory receiver = canvas.receivers[mix.feature];
             Anchor memory anchor = mix.version.anchor;
 
@@ -228,7 +228,7 @@ contract DotnuggV1MiddleOut {
         Parser.Memory memory version // uint8 versionIndex
     ) internal pure {
         // console.log(1);
-        {
+        unchecked {
             uint256 radiiBits = version.getRadii();
             uint256 expanderBits = version.getExpanders();
 
@@ -291,7 +291,7 @@ contract DotnuggV1MiddleOut {
     }
 
     function updateReceivers(Canvas memory canvas, Mix memory mix) internal pure {
-        {
+        unchecked {
             for (uint8 i = 0; i < mix.receivers.length; i++) {
                 Anchor memory m = mix.receivers[i];
                 if (m.coordinate.exists) {
@@ -304,7 +304,7 @@ contract DotnuggV1MiddleOut {
     }
 
     function mergeToCanvas(Canvas memory canvas, Mix memory mix) internal pure {
-        {
+        unchecked {
             while (canvas.matrix.next() && mix.matrix.next()) {
                 uint256 canvasPixel = canvas.matrix.current();
                 uint256 mixPixel = mix.matrix.current();
@@ -320,7 +320,7 @@ contract DotnuggV1MiddleOut {
     }
 
     function convertReceiversToAnchors(Mix memory mix) internal pure {
-        {
+        unchecked {
             Coordinate[] memory anchors;
             uint8 stat = 0;
             uint8 cal = 0;
@@ -352,7 +352,7 @@ contract DotnuggV1MiddleOut {
         Coordinate memory coordinate,
         uint8 index
     ) internal pure {
-        {
+        unchecked {
             Rlud memory radii;
 
             while (
@@ -393,7 +393,7 @@ contract DotnuggV1MiddleOut {
         Coordinate memory calculatedReceiver,
         Coordinate[] memory anchors
     ) internal pure returns (Coordinate memory coordinate) {
-        {
+        unchecked {
             coordinate.a = anchors[calculatedReceiver.a].a;
             coordinate.b = anchors[calculatedReceiver.a].b;
             coordinate.exists = true;
@@ -416,7 +416,7 @@ contract DotnuggV1MiddleOut {
     }
 
     function getAnchors(Matrix.Memory memory matrix) internal pure returns (Coordinate[] memory anchors) {
-        {
+        unchecked {
             (uint8 topOffset, uint8 bottomOffset, Coordinate memory center) = getBox(matrix);
 
             anchors = new Coordinate[](5);
@@ -450,7 +450,7 @@ contract DotnuggV1MiddleOut {
             Coordinate memory center
         )
     {
-        {
+        unchecked {
             center.a = (matrix.width) / 2;
             center.b = (matrix.height) / 2;
             center.exists = true;

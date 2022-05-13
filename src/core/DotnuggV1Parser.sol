@@ -24,7 +24,7 @@ library DotnuggV1Parser {
     }
 
     function parse(uint256[][] calldata reads) internal pure returns (Memory[8] memory m, uint256 len) {
-        {
+        unchecked {
             for (uint256 j = 0; j < reads.length; j++) {
                 (bool empty, Reader.Memory memory reader) = Reader.init(reads[j]);
 
@@ -82,7 +82,7 @@ library DotnuggV1Parser {
         uint256 feature,
         uint256[] memory graftPallet
     ) internal pure returns (uint256[] memory res) {
-        {
+        unchecked {
             uint256 palletLength = parser.reader.select(parser.palletBitLen) + 1;
 
             res = new uint256[](palletLength + 1);
@@ -137,54 +137,57 @@ library DotnuggV1Parser {
 
     function parseData(Reader.Memory memory reader, uint256 feature) internal pure returns (uint256 res) {
         // 12 bits: coordinate - anchor x and y
+        unchecked {
+            res |= feature << DATA_FEATURE_OFFSET;
 
-        res |= feature << DATA_FEATURE_OFFSET;
+            uint256 width = reader.select(DATA_COORDINATE_BIT_LEN);
+            uint256 height = reader.select(DATA_COORDINATE_BIT_LEN);
 
-        uint256 width = reader.select(DATA_COORDINATE_BIT_LEN);
-        uint256 height = reader.select(DATA_COORDINATE_BIT_LEN);
+            res |= height << DATA_HIEGHT_OFFSET; // heighth and width
+            res |= width << DATA_WIDTH_OFFSET;
 
-        res |= height << DATA_HIEGHT_OFFSET; // heighth and width
-        res |= width << DATA_WIDTH_OFFSET;
+            uint256 anchorX = reader.select(DATA_COORDINATE_BIT_LEN);
+            uint256 anchorY = reader.select(DATA_COORDINATE_BIT_LEN);
 
-        uint256 anchorX = reader.select(DATA_COORDINATE_BIT_LEN);
-        uint256 anchorY = reader.select(DATA_COORDINATE_BIT_LEN);
+            res |= anchorX << DATA_X_ANCHOR_OFFSET;
+            res |= anchorY << DATA_Y_ANCHOR_OFFSET;
 
-        res |= anchorX << DATA_X_ANCHOR_OFFSET;
-        res |= anchorY << DATA_Y_ANCHOR_OFFSET;
+            // 1 or 25 bits: rlud - radii
+            res |= (reader.select(1) == 0x1 ? 0 : reader.select(DATA_RLUD_LEN)) << DATA_RADII_OFFSET;
 
-        // 1 or 25 bits: rlud - radii
-        res |= (reader.select(1) == 0x1 ? 0 : reader.select(DATA_RLUD_LEN)) << DATA_RADII_OFFSET;
-
-        // 1 or 25 bits: rlud - expanders
-        res |= (reader.select(1) == 0x1 ? 0 : reader.select(DATA_RLUD_LEN)) << 3;
+            // 1 or 25 bits: rlud - expanders
+            res |= (reader.select(1) == 0x1 ? 0 : reader.select(DATA_RLUD_LEN)) << 3;
+        }
     }
 
     function parseReceivers(Reader.Memory memory reader) internal pure returns (uint256 res) {
-        uint256 receiversLength = reader.select(1) == 0x1 ? 0x1 : reader.select(4);
+        unchecked {
+            uint256 receiversLength = reader.select(1) == 0x1 ? 0x1 : reader.select(4);
 
-        for (uint256 j = 0; j < receiversLength; j++) {
-            uint256 receiver = 0;
+            for (uint256 j = 0; j < receiversLength; j++) {
+                uint256 receiver = 0;
 
-            uint256 yOrYOffset = reader.select(DATA_COORDINATE_BIT_LEN);
+                uint256 yOrYOffset = reader.select(DATA_COORDINATE_BIT_LEN);
 
-            uint256 xOrPreset = reader.select(DATA_COORDINATE_BIT_LEN);
+                uint256 xOrPreset = reader.select(DATA_COORDINATE_BIT_LEN);
 
-            // rFeature
-            uint256 rFeature = reader.select(3);
+                // rFeature
+                uint256 rFeature = reader.select(3);
 
-            uint256 calculated = reader.select(1);
+                uint256 calculated = reader.select(1);
 
-            if (calculated == 0x1) {
-                receiver |= yOrYOffset << DATA_COORDINATE_BIT_LEN;
-                receiver |= xOrPreset;
-            } else {
-                receiver |= xOrPreset << DATA_COORDINATE_BIT_LEN;
-                receiver |= yOrYOffset;
+                if (calculated == 0x1) {
+                    receiver |= yOrYOffset << DATA_COORDINATE_BIT_LEN;
+                    receiver |= xOrPreset;
+                } else {
+                    receiver |= xOrPreset << DATA_COORDINATE_BIT_LEN;
+                    receiver |= yOrYOffset;
+                }
+
+                receiver <<= ((rFeature * DATA_COORDINATE_BIT_LEN_2X) + (calculated == 0x1 ? 128 : 0));
+
+                res |= receiver;
             }
-
-            receiver <<= ((rFeature * DATA_COORDINATE_BIT_LEN_2X) + (calculated == 0x1 ? 128 : 0));
-
-            res |= receiver;
         }
     }
 
@@ -193,25 +196,27 @@ library DotnuggV1Parser {
         uint256 height,
         uint256 width
     ) internal pure returns (uint256[] memory res) {
-        uint8 miniMatrixSizer = uint8(256 / parser.palletBitLen);
-        uint256 groupsLength = parser.reader.select(1) == 0x1
-            ? parser.reader.select(8) + 1
-            : parser.reader.select(16) + 1;
+        unchecked {
+            uint8 miniMatrixSizer = uint8(256 / parser.palletBitLen);
+            uint256 groupsLength = parser.reader.select(1) == 0x1
+                ? parser.reader.select(8) + 1
+                : parser.reader.select(16) + 1;
 
-        res = new uint256[]((height * width) / miniMatrixSizer + 1);
+            res = new uint256[]((height * width) / miniMatrixSizer + 1);
 
-        uint256 index = 0;
+            uint256 index = 0;
 
-        for (uint256 a = 0; a < groupsLength; a++) {
-            uint256 len = parser.reader.select(2) + 1;
+            for (uint256 a = 0; a < groupsLength; a++) {
+                uint256 len = parser.reader.select(2) + 1;
 
-            if (len == 4) len = parser.reader.select(4) + 4;
+                if (len == 4) len = parser.reader.select(4) + 4;
 
-            uint256 key = parser.reader.select(parser.palletBitLen);
+                uint256 key = parser.reader.select(parser.palletBitLen);
 
-            for (uint256 i = 0; i < len; i++) {
-                res[index / miniMatrixSizer] |= (key << (parser.palletBitLen * (index % miniMatrixSizer)));
-                index++;
+                for (uint256 i = 0; i < len; i++) {
+                    res[index / miniMatrixSizer] |= (key << (parser.palletBitLen * (index % miniMatrixSizer)));
+                    index++;
+                }
             }
         }
     }
@@ -229,14 +234,16 @@ library DotnuggV1Parser {
             bool exists
         )
     {
-        uint256 data = m.receivers >> (index * DATA_COORDINATE_BIT_LEN_2X + (calculated ? 128 : 0));
+        unchecked {
+            uint256 data = m.receivers >> (index * DATA_COORDINATE_BIT_LEN_2X + (calculated ? 128 : 0));
 
-        data &= ShiftLib.mask(DATA_COORDINATE_BIT_LEN_2X);
+            data &= ShiftLib.mask(DATA_COORDINATE_BIT_LEN_2X);
 
-        x = data & ShiftLib.mask(DATA_COORDINATE_BIT_LEN);
-        y = data >> DATA_COORDINATE_BIT_LEN;
+            x = data & ShiftLib.mask(DATA_COORDINATE_BIT_LEN);
+            y = data >> DATA_COORDINATE_BIT_LEN;
 
-        exists = x != 0 || y != 0;
+            exists = x != 0 || y != 0;
+        }
     }
 
     function setReceiverAt(
@@ -246,37 +253,49 @@ library DotnuggV1Parser {
         uint256 x,
         uint256 y
     ) internal pure returns (uint256 res) {
-        // yOrYOffset
-        res |= y << DATA_COORDINATE_BIT_LEN;
+        unchecked {
+            // yOrYOffset
+            res |= y << DATA_COORDINATE_BIT_LEN;
 
-        //xOrPreset
-        res |= x;
+            //xOrPreset
+            res |= x;
 
-        m.receivers |= res << ((index * DATA_COORDINATE_BIT_LEN_2X) + (calculated ? 128 : 0));
+            m.receivers |= res << ((index * DATA_COORDINATE_BIT_LEN_2X) + (calculated ? 128 : 0));
+        }
     }
 
     function getRadii(Memory memory m) internal pure returns (uint256 res) {
-        res = (m.data >> DATA_RADII_OFFSET) & ShiftLib.mask(DATA_RLUD_LEN);
+        unchecked {
+            res = (m.data >> DATA_RADII_OFFSET) & ShiftLib.mask(DATA_RLUD_LEN);
+        }
     }
 
     function getExpanders(Memory memory m) internal pure returns (uint256 res) {
-        res = (m.data >> 3) & ShiftLib.mask(DATA_RLUD_LEN);
+        unchecked {
+            res = (m.data >> 3) & ShiftLib.mask(DATA_RLUD_LEN);
+        }
     }
 
     function setFeature(Memory memory m, uint256 z) internal pure {
-        require(z <= ShiftLib.mask(3), "VERS:SETF:0");
-        m.data &= ShiftLib.fullsubmask(3, DATA_FEATURE_OFFSET);
-        m.data |= (z << DATA_FEATURE_OFFSET);
+        unchecked {
+            require(z <= ShiftLib.mask(3), "VERS:SETF:0");
+            m.data &= ShiftLib.fullsubmask(3, DATA_FEATURE_OFFSET);
+            m.data |= (z << DATA_FEATURE_OFFSET);
+        }
     }
 
     function getFeature(Memory memory m) internal pure returns (uint256 res) {
-        res = (m.data >> DATA_FEATURE_OFFSET) & ShiftLib.mask(3);
+        unchecked {
+            res = (m.data >> DATA_FEATURE_OFFSET) & ShiftLib.mask(3);
+        }
     }
 
     function getWidth(Memory memory m) internal pure returns (uint256 width, uint256 height) {
-        // yOrYOffset
-        width = (m.data >> DATA_WIDTH_OFFSET) & ShiftLib.mask(DATA_COORDINATE_BIT_LEN);
-        height = (m.data >> DATA_HIEGHT_OFFSET) & ShiftLib.mask(DATA_COORDINATE_BIT_LEN);
+        unchecked {
+            // yOrYOffset
+            width = (m.data >> DATA_WIDTH_OFFSET) & ShiftLib.mask(DATA_COORDINATE_BIT_LEN);
+            height = (m.data >> DATA_HIEGHT_OFFSET) & ShiftLib.mask(DATA_COORDINATE_BIT_LEN);
+        }
     }
 
     function setWidth(
@@ -284,19 +303,23 @@ library DotnuggV1Parser {
         uint256 w,
         uint256 h
     ) internal pure {
-        require(w <= ShiftLib.mask(DATA_COORDINATE_BIT_LEN), "VERS:SETW:0");
-        require(h <= ShiftLib.mask(DATA_COORDINATE_BIT_LEN), "VERS:SETW:1");
+        unchecked {
+            require(w <= ShiftLib.mask(DATA_COORDINATE_BIT_LEN), "VERS:SETW:0");
+            require(h <= ShiftLib.mask(DATA_COORDINATE_BIT_LEN), "VERS:SETW:1");
 
-        m.data &= ShiftLib.fullsubmask(DATA_COORDINATE_BIT_LEN_2X, DATA_WIDTH_OFFSET);
+            m.data &= ShiftLib.fullsubmask(DATA_COORDINATE_BIT_LEN_2X, DATA_WIDTH_OFFSET);
 
-        m.data |= (w << DATA_WIDTH_OFFSET);
-        m.data |= (h << DATA_HIEGHT_OFFSET);
+            m.data |= (w << DATA_WIDTH_OFFSET);
+            m.data |= (h << DATA_HIEGHT_OFFSET);
+        }
     }
 
     function getAnchor(Memory memory m) internal pure returns (uint256 x, uint256 y) {
-        // yOrYOffset
-        x = (m.data >> DATA_X_ANCHOR_OFFSET) & ShiftLib.mask(DATA_COORDINATE_BIT_LEN);
-        y = (m.data >> DATA_Y_ANCHOR_OFFSET) & ShiftLib.mask(DATA_COORDINATE_BIT_LEN);
+        unchecked {
+            // yOrYOffset
+            x = (m.data >> DATA_X_ANCHOR_OFFSET) & ShiftLib.mask(DATA_COORDINATE_BIT_LEN);
+            y = (m.data >> DATA_Y_ANCHOR_OFFSET) & ShiftLib.mask(DATA_COORDINATE_BIT_LEN);
+        }
     }
 
     function getPixelAt(
@@ -304,16 +327,18 @@ library DotnuggV1Parser {
         uint256 x,
         uint256 y
     ) internal pure returns (uint256 palletKey) {
-        uint8 miniMatrixSizer = uint8(256 / m.palletBitLen);
+        unchecked {
+            uint8 miniMatrixSizer = uint8(256 / m.palletBitLen);
 
-        (uint256 width, ) = getWidth(m);
-        uint256 index = x + (y * width);
+            (uint256 width, ) = getWidth(m);
+            uint256 index = x + (y * width);
 
-        if (index / miniMatrixSizer >= m.minimatrix.length) return 0x0;
+            if (index / miniMatrixSizer >= m.minimatrix.length) return 0x0;
 
-        palletKey =
-            (m.minimatrix[index / miniMatrixSizer] >> (m.palletBitLen * (index % miniMatrixSizer))) &
-            ShiftLib.mask(m.palletBitLen);
+            palletKey =
+                (m.minimatrix[index / miniMatrixSizer] >> (m.palletBitLen * (index % miniMatrixSizer))) &
+                ShiftLib.mask(m.palletBitLen);
+        }
     }
 
     function getPalletColorAt(Memory memory m, uint256 index)
@@ -325,16 +350,20 @@ library DotnuggV1Parser {
             uint256 zindex
         )
     {
-        // res = (m.pallet[index / 7] >> (36 * (index % 7))) & ShiftLib.mask(36);
-        res = m.pallet[index];
+        unchecked {
+            // res = (m.pallet[index / 7] >> (36 * (index % 7))) & ShiftLib.mask(36);
+            res = m.pallet[index];
 
-        color = Pixel.rgba(res);
+            color = Pixel.rgba(res);
 
-        zindex = Pixel.z(res);
+            zindex = Pixel.z(res);
+        }
     }
 
     function initBigMatrix(Memory memory m, uint256 width) internal pure {
-        m.bigmatrix = new uint256[](((width * width) / 6) + 2);
+        unchecked {
+            m.bigmatrix = new uint256[](((width * width) / 6) + 2);
+        }
     }
 
     function setBigMatrixPixelAt(
@@ -343,11 +372,13 @@ library DotnuggV1Parser {
         uint256 y,
         uint256 color
     ) internal pure {
-        (uint256 width, ) = getWidth(m);
+        unchecked {
+            (uint256 width, ) = getWidth(m);
 
-        uint256 index = x + (y * width);
+            uint256 index = x + (y * width);
 
-        setBigMatrixPixelAt(m, index, color);
+            setBigMatrixPixelAt(m, index, color);
+        }
     }
 
     function setBigMatrixPixelAt(
@@ -355,13 +386,15 @@ library DotnuggV1Parser {
         uint256 index,
         uint256 color
     ) internal pure {
-        if (m.bigmatrix.length > index / 6) {
-            uint8 offset = uint8(42 * (index % 6)); // NOTE: i removed safe8
-            m.bigmatrix[index / 6] &= ShiftLib.fullsubmask(42, offset);
-            m.bigmatrix[index / 6] |= (color << offset);
+        unchecked {
+            if (m.bigmatrix.length > index / 6) {
+                uint8 offset = uint8(42 * (index % 6)); // NOTE: i removed safe8
+                m.bigmatrix[index / 6] &= ShiftLib.fullsubmask(42, offset);
+                m.bigmatrix[index / 6] |= (color << offset);
 
-            assembly {
+                assembly {
 
+                }
             }
         }
     }
@@ -371,9 +404,11 @@ library DotnuggV1Parser {
         uint256 x,
         uint256 y
     ) internal pure returns (uint256 res) {
-        (uint256 width, ) = getWidth(m);
+        unchecked {
+            (uint256 width, ) = getWidth(m);
 
-        (res, ) = getPixelAt(m.bigmatrix, x, y, width);
+            (res, ) = getPixelAt(m.bigmatrix, x, y, width);
+        }
     }
 
     function getPixelAt(
@@ -382,13 +417,15 @@ library DotnuggV1Parser {
         uint256 y,
         uint256 width
     ) internal pure returns (uint256 res, uint256 row) {
-        uint256 index = x + (y * width);
+        unchecked {
+            uint256 index = x + (y * width);
 
-        if (index / 6 >= arr.length) return (0, 0);
+            if (index / 6 >= arr.length) return (0, 0);
 
-        row = (arr[index / 6] >> (42 * (index % 6)));
+            row = (arr[index / 6] >> (42 * (index % 6)));
 
-        res = row & ShiftLib.mask(42);
+            res = row & ShiftLib.mask(42);
+        }
     }
 
     function bigMatrixHasPixelAt(
@@ -396,9 +433,11 @@ library DotnuggV1Parser {
         uint256 x,
         uint256 y
     ) internal pure returns (bool res) {
-        uint256 pix = getBigMatrixPixelAt(m, x, y);
+        unchecked {
+            uint256 pix = getBigMatrixPixelAt(m, x, y);
 
-        res = pix & 0x7 != 0x00;
+            res = pix & 0x7 != 0x00;
+        }
     }
 
     function setArrayLength(uint256[] memory input, uint256 size) internal pure {
