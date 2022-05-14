@@ -66,4 +66,11 @@
     "solidity-va.deco.statevars": false,
     "solidity-va.deco.warn.reserved": true,
     "solidity-va.codelens.enable": false
+    // "solidity.defaultCompiler": "localFile",
+    // "solidity.compileUsingRemoteVersion": "/Users/dub6ix/.svm/0.8.13/solc-0.8.13",
+    // "solidity.compilerOptimization": 0,
+    // "solidity.compileUsingLocalVersion": "soljson-v0.8.13+commit.abaa5c0e.js",
+    // "solidity.compileUsingRemoteVersion": "",
+    // "solidity.compileUsingLocalVersion": "/Users/dub6ix/.vscode/extensions/juanblanco.solidity-0.0.139/soljson-v0.8.13+commit.abaa5c0e.js"
+    // "solidity.compileUsingLocalVersion": "/Users/dub6ix/.svm/0.8.13/solc-0.8.13"
 }

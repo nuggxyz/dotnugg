@@ -12,15 +12,8 @@ contract DotnuggV1Safe is IDotnuggV1Safe, DotnuggV1Resolver {
     address public immutable factory;
 
     constructor() {
-        // ds.inject.log(33);
         factory = address(this);
     }
-
-    // function init(bytes[] memory input) public {
-    //     require(msg.sender == factory, "C:0");
-
-    //     write(input);
-    // }
 
     function exec(uint8[8] memory ids, bool base64) public view returns (string memory) {
         return this.combo(read(ids), base64);
@@ -63,3 +56,9 @@ contract DotnuggV1Safe is IDotnuggV1Safe, DotnuggV1Resolver {
         return _read;
     }
 }
+
+// function init(bytes[] memory input) public {
+//     require(msg.sender == factory, "C:0");
+
+//     write(input);
+// }
