@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BUSL-1.1
 
-pragma solidity 0.8.13;
+pragma solidity 0.8.14;
 
 import {ERC721} from "@rari-capital/solmate/tokens/ERC721.sol";
 

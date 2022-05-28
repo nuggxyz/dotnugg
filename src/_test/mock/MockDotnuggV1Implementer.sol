@@ -1,6 +1,6 @@
 // // SPDX-License-Identifier: BUSL-1.1
 
-// pragma solidity 0.8.13;
+// pragma solidity 0.8.14;
 
 // import {IDotnuggV1} from './../interfaces/IDotnuggV1.sol';
 // import {IDotnuggV1Implementer} from './../interfaces/IDotnuggV1Implementer.sol';
