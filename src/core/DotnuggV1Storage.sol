@@ -2,8 +2,7 @@
 
 pragma solidity 0.8.14;
 
-import {DotnuggV1Lib} from "../libraries/DotnuggV1Lib.sol";
-import "../_test/utils/forge.sol";
+import {DotnuggV1Lib, IDotnuggV1} from "../DotnuggV1Lib.sol";
 
 // ======================
 // add = []
@@ -13,9 +12,7 @@ import "../_test/utils/forge.sol";
 // refered = !
 // ======================
 library DotnuggV1Storage {
-    // uint8 constant DOTNUGG_HEADER_BYTE_LEN = 84;
-
-    // uint8 constant DOTNUGG_RUNTIME_BYTE_LEN = 0x39;
+    using DotnuggV1Lib for IDotnuggV1;
 
     uint8 constant DOTNUGG_HEADER_BYTE_LEN = 25;
 
@@ -23,14 +20,6 @@ library DotnuggV1Storage {
 
     bytes25 internal constant DOTNUGG_HEADER =
         0x60_20_80_60_18_80_38_03_80_91_3D_39_03_80_3D_82_90_20_81_51_14_02_3D_F3_00;
-    // keccak256(
-    //     abi.encodePacked(
-    //         // DOTNUGG_CONSTRUCTOR
-    //         hex"60006020601e80380380913d390380918082039020815114023df300"
-    //         // DOTNUGG_RUNTIME
-    //         // hex"6020600260043581026004808483603a01903982513D8452809180519086801B90520380859006606003600186830401865281838239013DF3"
-    //     )
-    // );
 
     // DOTNUGG_CONSTRUCTOR [32 bytes]
     // +=====+==============+==============+========================================+
@@ -77,7 +66,7 @@ library DotnuggV1Storage {
     //   12    60 [18]        PUSH1          [22] 10
     //   13    F3             RETURN         {22 10} | mem[22, 32) -> contract code
     // +=====+==============+==============+========================================+
-    //  RUNTIME [10 bytes]: 0x36_3d_3d_36_3d_3d_37_f0_33_FF\
+    //  RUNTIME [10 bytes]: 0x36_3d_3d_36_3d_3d_37_f0_33_FF
     //   - executed during "call"
     //   - saved during "create2"
     // +=====+==============+==============+========================================+
@@ -94,7 +83,8 @@ library DotnuggV1Storage {
     // +=====+==============+==============+========================================+
 
     function save(bytes memory data, uint8 feature) internal returns (uint8 amount) {
-        // require(DOTNUGG_HEADER == bytes25(data[:DOTNUGG_HEADER_BYTE_LEN]), "A");
+        require(DOTNUGG_HEADER == bytes25(data), "ABCDEFG");
+
         address proxy;
 
         assembly {
@@ -109,61 +99,8 @@ library DotnuggV1Storage {
 
         require(fileDeployed, "");
 
-        require((amount = DotnuggV1Lib.size(DotnuggV1Lib.location(address(this), feature))) > 0, "");
+        amount = IDotnuggV1(address(this)).lengthOf(feature);
+
+        require(amount > 0 && amount < 256, "");
     }
 }
-
-// SIZE HAS BEEN REDUCED 1
-
-// 6020_6002_6004_35_81_02_60_04_80_84_83_603b_01_90_39_82_51_3D_84_52_80_91_80_51_90_86_80_1B_90_52_03_80____85_90_06_6060_03__6001_86_83_04_01_86_52__81_83_82_39_01_3D_F3
-
-// // 60 [20]   PUSH1 32     [32]
-// // 60 [02]   PUSH1 02     [02] 32
-// // 60 [04]   PUSH1 04     [04] 02 32
-// // 35        CALLDATALOAD <A: cload(0, 32)> 02 32
-// // 81        DUP2         [02] _A !02 32
-// // 02        MUL          <B:2*A> 02 32
-//    60 [04]   PUSH1        [04] _B 02 32
-// // 80        DUP          [04] !04 _B 02 32
-// // 84        DUP5         [32] 04 04 _B 02 !32
-// // 83        DUP4         [_B] 32 04 04 !_B 02 32
-// // 60 [35]   PUSH1        [48] _B 32 04 04 _B 02 32 @note 2d = len of this + 1 (the size)
-// // 01        ADD          <D:45+B> 32 04 04 _B 02 32
-// // 90        SWAP         (32) (_D) 04 04 _B 02 32
-// // 39        CODECOPY     {32 _D 04} | code[D,D+4) -> mem[32,32+4)
-// // 82        DUP3         [02] 04 _B !02 32
-// // 51        MLOAD        {02} <E: mem[32,34)> 04 _B 02 32
-//              RETCOPY
-// // 84        DUP5         [02] _L _E 04 _B !02 32
-// // 52        MSTORE       {02 _L} | 0 -> mem[32,34)
-// // 80        DUP          [_E] !_E 04 _B 02 32
-// // 91        SWA2P2       (04) _E (_E) _B 02 32
-//    80        DUP
-// // 51        MLOAD        {04} <F: mem[34,36)> 04 _E _E _B 02 32
-//    90        SWAP 1
-// // 86        DUP7         [32] _E 04 _B 02 !32
-//    80        DUP1         [32] 32 _E 04 _B 02 32
-//    1B        SHL          <L:32<<32> _E 04 _B 02 32
-//    90        SWAP1
-//    52        MSTORE
-// // 03        SUB          <G:F-E> _E _B 02 32
-// // 80        DUP          [_G] !_G _E _B 02 32
-//    85        DUP6         [32] _G _G _E _B 02 !32
-//    90        SWAP         (_G) (32) _G _E _B 02 32
-// // 06        MOD          <H:G%32> _G _E _B 02 32
-//    60 [60]   PUSH1        [96] _H _G _E _B 02 !32 @note - would need to dup 32 and add, dup 32 again
-// // 03        SUB          <I:64-H> _G _E _B 02 32 @note - dup i and then divide by 32 - mstore that to 0
-//    60 [01]   PUSH1        [01] _I _G _E _B 02 32
-//    86        DUP7         [32] 01 _I _G _E _B 02 !32
-///   83        DUP4         [_G] 32 01 _I !_G _E _B 02 32
-//    04        DIV          <L:G/32> 01 _I _G _E _B 02 32
-//    01        ADD          <M:L+1> _I _G _E _B 02 32
-//    86        DUP7         [00] [_M] _I _G _E _B 02 32
-//    52        MSTORE        {0 M} | M -> mem[0,32)
-// // 81        DUP2         [_G] _I !_G _E _B 02 32
-// // 83        DUP4         [_E] _G _I _G !_E _B 02 32
-// // 82        DUP3         [_I] _E _G !_I _G _E _B 02 32
-// // 39        CODE COPY    {I E G} | code[E,E+G) -> mem[I,I+G]
-// // 01        ADD          <K:I+G> _E _B 02 32
-// // 3D        RETSIZE      [0] _K _E _B 02 32
-// // F3        RETURN       {0 _K} | mem[0, K) -> returndata

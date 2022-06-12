@@ -5,11 +5,10 @@ pragma solidity 0.8.14;
 import {ShiftLib} from "../libraries/ShiftLib.sol";
 
 import {DotnuggV1Pixel as Pixel} from "./DotnuggV1Pixel.sol";
-
 import {DotnuggV1Matrix as Matrix} from "./DotnuggV1Matrix.sol";
 import {DotnuggV1Parser as Parser} from "./DotnuggV1Parser.sol";
 
-contract DotnuggV1MiddleOut {
+library DotnuggV1MiddleOut {
     using Matrix for Matrix.Memory;
     using Parser for Parser.Memory;
     using Pixel for uint256;
@@ -23,7 +22,7 @@ contract DotnuggV1MiddleOut {
     uint8 constant WIDTH = 255;
     uint8 constant CENTER = (WIDTH / 2) + 1;
 
-    function execute(uint256[][] calldata files) internal pure returns (uint256[] memory res, uint256 dat) {
+    function execute(uint256[][] memory files) internal pure returns (uint256[] memory res, uint256 dat) {
         unchecked {
             Run memory run;
 
@@ -44,7 +43,6 @@ contract DotnuggV1MiddleOut {
             for (uint8 i = 0; i < 8; i++) {
                 if (!run.versions[i].exists) continue;
 
-                // setMix(run.mix, run.versions[i], pickVersionIndex(run.canvas, run.versions[i]));
                 setMix(run.mix, run.versions[i]);
 
                 // no reposition on single items
@@ -83,10 +81,6 @@ contract DotnuggV1MiddleOut {
     }
 
     function center() internal pure returns (Coordinate memory) {
-        return Coordinate({a: CENTER, b: CENTER, exists: true});
-    }
-
-    function myCenter() internal pure returns (Coordinate memory) {
         return Coordinate({a: CENTER, b: CENTER, exists: true});
     }
 
@@ -190,44 +184,11 @@ contract DotnuggV1MiddleOut {
         }
     }
 
-    // function pickVersionIndex(Canvas memory canvas, Parser.Memory[] memory versions) internal pure returns (uint8) {
-    //     require(versions.length == 1, "CALC:PVI:0");
-    //     if (versions.length == 1) {
-    //         return 0;
-    //     }
-
-    //     uint8 index = uint8(versions.length) - 1;
-
-    //     uint256 feature = (versions[0].data >> 75) & ShiftLib.mask(3);
-
-    //     while (index > 0) {
-    //         uint256 bits = (versions[index].data >> 27) & ShiftLib.mask(24);
-    //         Rlud memory anchorRadii = Rlud({
-    //             r: uint8((bits >> 18) & ShiftLib.mask(6)),
-    //             l: uint8((bits >> 12) & ShiftLib.mask(6)),
-    //             u: uint8((bits >> 6) & ShiftLib.mask(6)),
-    //             d: uint8((bits) & ShiftLib.mask(6)),
-    //             exists: true
-    //         });
-
-    //         if (checkRluds(anchorRadii, canvas.receivers[feature].radii)) {
-    //             return index;
-    //         }
-    //         index = index - 1;
-    //     }
-
-    //     return 0;
-    // }
-
     function checkRluds(Rlud memory r1, Rlud memory r2) internal pure returns (bool) {
         return (r1.r <= r2.r && r1.l <= r2.l) || (r1.u <= r2.u && r1.d <= r2.d);
     }
 
-    function setMix(
-        Mix memory res,
-        Parser.Memory memory version // uint8 versionIndex
-    ) internal pure {
-        // console.log(1);
+    function setMix(Mix memory res, Parser.Memory memory version) internal pure {
         unchecked {
             uint256 radiiBits = version.getRadii();
             uint256 expanderBits = version.getExpanders();
@@ -287,7 +248,6 @@ contract DotnuggV1MiddleOut {
             res.feature = uint8(version.getFeature());
             res.matrix.set(version, width, height);
         }
-        // console.log(2);
     }
 
     function updateReceivers(Canvas memory canvas, Mix memory mix) internal pure {
@@ -417,27 +377,27 @@ contract DotnuggV1MiddleOut {
 
     function getAnchors(Matrix.Memory memory matrix) internal pure returns (Coordinate[] memory anchors) {
         unchecked {
-            (uint8 topOffset, uint8 bottomOffset, Coordinate memory center) = getBox(matrix);
+            (uint8 topOffset, uint8 bottomOffset, Coordinate memory _center) = getBox(matrix);
 
             anchors = new Coordinate[](5);
 
-            anchors[0] = center; // center
+            anchors[0] = _center; // _center
 
-            anchors[1] = Coordinate({a: center.a, b: center.b - topOffset, exists: true}); // top
+            anchors[1] = Coordinate({a: _center.a, b: _center.b - topOffset, exists: true}); // top
 
             uint8 upperOffset = topOffset;
             if (upperOffset % 2 != 0) {
                 upperOffset++;
             }
-            anchors[2] = Coordinate({a: center.a, b: center.b - (upperOffset / 2), exists: true}); // inner top
+            anchors[2] = Coordinate({a: _center.a, b: _center.b - (upperOffset / 2), exists: true}); // inner top
 
             uint8 lowerOffset = bottomOffset;
             if (lowerOffset % 2 != 0) {
                 lowerOffset++;
             }
-            anchors[3] = Coordinate({a: center.a, b: center.b + (lowerOffset / 2), exists: true}); // inner bottom
+            anchors[3] = Coordinate({a: _center.a, b: _center.b + (lowerOffset / 2), exists: true}); // inner bottom
 
-            anchors[4] = Coordinate({a: center.a, b: center.b + bottomOffset, exists: true}); // bottom
+            anchors[4] = Coordinate({a: _center.a, b: _center.b + bottomOffset, exists: true}); // bottom
         }
     }
 
@@ -447,13 +407,13 @@ contract DotnuggV1MiddleOut {
         returns (
             uint8 topOffset,
             uint8 bottomOffset,
-            Coordinate memory center
+            Coordinate memory _center
         )
     {
         unchecked {
-            center.a = (matrix.width) / 2;
-            center.b = (matrix.height) / 2;
-            center.exists = true;
+            _center.a = (matrix.width) / 2;
+            _center.b = (matrix.height) / 2;
+            _center.exists = true;
 
             bool topFound = false;
             bool bottomFound = false;
@@ -469,13 +429,13 @@ contract DotnuggV1MiddleOut {
             while (!allFound) {
                 if (shouldExpandSide = !shouldExpandSide && !sideFound) {
                     if (
-                        matrix.version.bigMatrixHasPixelAt(center.a - (sideOffset + 1), center.b - topOffset) &&
+                        matrix.version.bigMatrixHasPixelAt(_center.a - (sideOffset + 1), _center.b - topOffset) &&
                         // potential top left
-                        matrix.version.bigMatrixHasPixelAt(center.a + (sideOffset + 1), center.b - topOffset) &&
+                        matrix.version.bigMatrixHasPixelAt(_center.a + (sideOffset + 1), _center.b - topOffset) &&
                         // potential top right
-                        matrix.version.bigMatrixHasPixelAt(center.a - (sideOffset + 1), center.b + bottomOffset) &&
+                        matrix.version.bigMatrixHasPixelAt(_center.a - (sideOffset + 1), _center.b + bottomOffset) &&
                         // potential bot left
-                        matrix.version.bigMatrixHasPixelAt(center.a + (sideOffset + 1), center.b + bottomOffset)
+                        matrix.version.bigMatrixHasPixelAt(_center.a + (sideOffset + 1), _center.b + bottomOffset)
                         // potential bot right
                     ) {
                         sideOffset++;
@@ -485,10 +445,10 @@ contract DotnuggV1MiddleOut {
                 }
                 if (!topFound) {
                     if (
-                        center.b - topOffset > 0 &&
-                        matrix.version.bigMatrixHasPixelAt(center.a - sideOffset, center.b - (topOffset + 1)) &&
+                        _center.b - topOffset > 0 &&
+                        matrix.version.bigMatrixHasPixelAt(_center.a - sideOffset, _center.b - (topOffset + 1)) &&
                         // potential top left
-                        matrix.version.bigMatrixHasPixelAt(center.a + sideOffset, center.b - (topOffset + 1))
+                        matrix.version.bigMatrixHasPixelAt(_center.a + sideOffset, _center.b - (topOffset + 1))
                         // potential top right
                     ) {
                         topOffset++;
@@ -498,10 +458,10 @@ contract DotnuggV1MiddleOut {
                 }
                 if (!bottomFound) {
                     if (
-                        center.b + bottomOffset < matrix.height - 1 &&
-                        matrix.version.bigMatrixHasPixelAt(center.a - sideOffset, center.b + (bottomOffset + 1)) &&
+                        _center.b + bottomOffset < matrix.height - 1 &&
+                        matrix.version.bigMatrixHasPixelAt(_center.a - sideOffset, _center.b + (bottomOffset + 1)) &&
                         // potential bot left
-                        matrix.version.bigMatrixHasPixelAt(center.a + sideOffset, center.b + (bottomOffset + 1))
+                        matrix.version.bigMatrixHasPixelAt(_center.a + sideOffset, _center.b + (bottomOffset + 1))
                         // potenetial bot right
                     ) {
                         bottomOffset++;
@@ -515,17 +475,17 @@ contract DotnuggV1MiddleOut {
             if (topOffset != bottomOffset) {
                 uint8 newHeight = topOffset + bottomOffset + 1;
                 uint8 relativeCenter = (newHeight % 2 == 0 ? newHeight : newHeight + 1) / 2;
-                uint8 newCenter = relativeCenter + center.b - 1 - topOffset;
-                if (newCenter > center.b) {
-                    uint8 diff = newCenter - center.b;
+                uint8 newCenter = relativeCenter + _center.b - 1 - topOffset;
+                if (newCenter > _center.b) {
+                    uint8 diff = newCenter - _center.b;
                     topOffset += diff;
                     bottomOffset > diff ? bottomOffset = bottomOffset - diff : bottomOffset = diff - bottomOffset;
                 } else {
-                    uint8 diff = center.b - newCenter;
+                    uint8 diff = _center.b - newCenter;
                     topOffset > diff ? topOffset = topOffset - diff : topOffset = diff - topOffset;
                     bottomOffset += diff;
                 }
-                center.b = newCenter;
+                _center.b = newCenter;
             }
         }
     }

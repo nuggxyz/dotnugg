@@ -23,7 +23,7 @@ library DotnuggV1Parser {
         bool exists;
     }
 
-    function parse(uint256[][] calldata reads) internal pure returns (Memory[8] memory m, uint256 len) {
+    function parse(uint256[][] memory reads) internal pure returns (Memory[8] memory m, uint256 len) {
         unchecked {
             for (uint256 j = 0; j < reads.length; j++) {
                 (bool empty, Reader.Memory memory reader) = Reader.init(reads[j]);
@@ -61,7 +61,7 @@ library DotnuggV1Parser {
 
                 uint256 versionLength = m[feature].reader.select(2) + 1;
 
-                require(versionLength == 1, "OOPSSSS");
+                require(versionLength == 1, "UNSUPPORTED_VERSION_LEN");
 
                 m[feature].data = parseData(m[feature].reader, feature);
 
@@ -88,10 +88,7 @@ library DotnuggV1Parser {
             res = new uint256[](palletLength + 1);
 
             for (uint256 i = 0; i < palletLength; i++) {
-                // uint256 working = 0;
-
                 // 4 bits: zindex
-                // working |= (parser.reader.select(4) << 32);
                 uint256 z = parser.reader.select(4);
 
                 uint256 color;
@@ -99,13 +96,13 @@ library DotnuggV1Parser {
                 uint256 graftIndex = parser.reader.select(1);
                 if (graftIndex == 1) graftIndex = parser.reader.select(4);
 
-                uint256 isWhite = parser.reader.select(1);
                 uint256 isBlack = parser.reader.select(1);
+                uint256 isWhite = parser.reader.select(1);
 
                 if (isWhite == 1) {
-                    color = 0x000000;
-                } else if (isBlack == 1) {
                     color = 0xffffff;
+                } else if (isBlack == 1) {
+                    color = 0x000000;
                 } else {
                     color = parser.reader.select(24);
                 }
@@ -122,17 +119,14 @@ library DotnuggV1Parser {
         }
     }
 
-    // uint8 constant DATA_Z_OFFSET = 98;
     uint8 constant DATA_FEATURE_OFFSET = 95;
     uint8 constant DATA_WIDTH_OFFSET = 67;
     uint8 constant DATA_HIEGHT_OFFSET = 75;
     uint8 constant DATA_X_ANCHOR_OFFSET = 51;
     uint8 constant DATA_Y_ANCHOR_OFFSET = 59;
     uint8 constant DATA_RADII_OFFSET = 128;
-
     uint8 constant DATA_COORDINATE_BIT_LEN = 8;
     uint8 constant DATA_COORDINATE_BIT_LEN_2X = 16;
-
     uint8 constant DATA_RLUD_LEN = DATA_COORDINATE_BIT_LEN * 4;
 
     function parseData(Reader.Memory memory reader, uint256 feature) internal pure returns (uint256 res) {
@@ -143,7 +137,7 @@ library DotnuggV1Parser {
             uint256 width = reader.select(DATA_COORDINATE_BIT_LEN);
             uint256 height = reader.select(DATA_COORDINATE_BIT_LEN);
 
-            res |= height << DATA_HIEGHT_OFFSET; // heighth and width
+            res |= height << DATA_HIEGHT_OFFSET;
             res |= width << DATA_WIDTH_OFFSET;
 
             uint256 anchorX = reader.select(DATA_COORDINATE_BIT_LEN);

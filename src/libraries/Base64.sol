@@ -10,7 +10,7 @@ pragma solidity 0.8.14;
 library Base64 {
     string internal constant _TABLE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-    function _encode(bytes memory data) internal pure returns (bytes memory) {
+    function _encode(bytes memory data) internal pure returns (bytes memory result) {
         unchecked {
             if (data.length == 0) return "";
 
@@ -21,7 +21,7 @@ library Base64 {
             uint256 encodedLen = 4 * ((data.length + 2) / 3);
 
             // add some extra buffer at the end required for the writing
-            bytes memory result = new bytes(encodedLen + 32);
+            result = new bytes(encodedLen + 32);
 
             assembly {
                 // set the actual output length
@@ -68,8 +68,6 @@ library Base64 {
                     mstore(sub(resultPtr, 1), shl(248, 0x3d))
                 }
             }
-
-            return result;
         }
     }
 }

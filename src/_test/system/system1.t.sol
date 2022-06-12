@@ -4,10 +4,10 @@ pragma solidity 0.8.14;
 
 import "../main.t.sol";
 import {data} from "../../_data/nuggs.data.sol";
-import {DotnuggV1Lib} from "../../libraries/DotnuggV1Lib.sol";
+import {DotnuggV1Lib, IDotnuggV1} from "../../DotnuggV1Lib.sol";
 
 contract systemTest__one is t {
-    DotnuggV1 proxy;
+    IDotnuggV1 proxy;
 
     function setUp() public {
         reset();
@@ -101,7 +101,7 @@ contract systemTest__one is t {
     //     127755011628
     //   2919799108 =0.02285467373
     function test__something() public {
-        DotnuggV1Lib.lengthOf(address(proxy), 0);
+        DotnuggV1Lib.lengthOf(proxy, 0);
         // uint256[] memory a = new uint256[](7);
         // a[0] = 1;
         // a[1] = 2;
@@ -128,11 +128,11 @@ contract systemTest__one is t {
         // proxy.exec([0, 0, 0, 0, 0, 0, 0, 0], false);
         ds.emit_log_string(proxy.exec(2, 66, false));
 
-        DotnuggV1Lib.randOf(address(proxy), 1, 0x1234444997373738);
+        DotnuggV1Lib.search(proxy, 1, 0x1234444997373738);
     }
 
     function test__smaller() public {
-        DotnuggV1Lib.lengthOf(address(proxy), 0);
+        DotnuggV1Lib.lengthOf(proxy, 0);
         // uint256[] memory a = new uint256[](7);
         // a[0] = 1;
         // a[1] = 2;
@@ -159,12 +159,12 @@ contract systemTest__one is t {
         // proxy.exec([0, 0, 0, 0, 0, 0, 0, 0], false);
         // ds.emit_log_string(proxy.exec(2, 66, false));
 
-        // DotnuggV1Lib.randOf(address(proxy), 1, 0x1234444997373738);
+        // DotnuggV1Lib.randOf(proxy, 1, 0x1234444997373738);
     }
 
     function test__all() public {
         for (uint8 i = 0; i < 8; i++) {
-            uint8 len = DotnuggV1Lib.lengthOf(address(proxy), i);
+            uint8 len = DotnuggV1Lib.lengthOf(proxy, i);
 
             for (uint8 j = 0; j < len; j++) {
                 proxy.exec(i, j + 1, false);

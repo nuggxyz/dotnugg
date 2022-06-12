@@ -4,67 +4,67 @@ pragma solidity 0.8.14;
 
 import {ERC721} from "@rari-capital/solmate/tokens/ERC721.sol";
 
-import {IDotnuggV1Safe} from "../interfaces/IDotnuggV1Safe.sol";
-import {DotnuggV1Lib} from "../libraries/DotnuggV1Lib.sol";
+import {DotnuggV1} from "../DotnuggV1.sol";
+import {DotnuggV1Lib} from "../DotnuggV1Lib.sol";
 
+/// this example implements rari-capital/solmate's ERC721 under MIT License
 contract DotnuggV1ERC721 is ERC721 {
-    IDotnuggV1Safe public immutable safe;
+    DotnuggV1 public immutable safe;
 
-    struct Metadata {
-        uint8 _0;
-        uint8 _1;
-        uint8 _2;
-        uint8 _3;
-        uint8 _4;
-        uint8 _5;
-        uint8 _6;
-        uint8 _7;
-    }
+    uint256 constant MAX_TOKENS = 10000;
 
-    Metadata public traitTotals;
-
-    mapping(uint256 => Metadata) traits;
+    uint256 immutable globalSeed;
 
     constructor(
         string memory _name,
         string memory _symbol,
-        IDotnuggV1Safe _safe
+        DotnuggV1 _safe
     ) ERC721(_name, _symbol) {
         safe = _safe;
 
-        traitTotals = Metadata({
-            _0: DotnuggV1Lib.lengthOf(address(safe), 1),
-            _1: DotnuggV1Lib.lengthOf(address(safe), 1),
-            _2: DotnuggV1Lib.lengthOf(address(safe), 1),
-            _3: DotnuggV1Lib.lengthOf(address(safe), 1),
-            _4: DotnuggV1Lib.lengthOf(address(safe), 1),
-            _5: DotnuggV1Lib.lengthOf(address(safe), 1),
-            _6: DotnuggV1Lib.lengthOf(address(safe), 1),
-            _7: DotnuggV1Lib.lengthOf(address(safe), 1)
-        });
+        /// Generates a pseudo-random number to be cached for deterministic seed generation
+        globalSeed = uint256(
+            keccak256(
+                abi.encodePacked(
+                    msg.sender,
+                    blockhash(block.number - 1),
+                    block.difficulty //
+                )
+            )
+        );
     }
 
-    function mint() public payable {
-        uint8[8] memory working;
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        require(tokenId <= MAX_TOKENS && tokenId != 0, "");
 
-        // dotnuggIds[0] = safe.pack(traits);
-    }
+        uint256 seed = generateDeterministicRandomNumber(tokenId);
 
-    function tokenURI(uint256) public view override returns (string memory) {
-        return safe.exec([1, 1, 1, 1, 1, 1, 1, 1], false);
+        return
+            safe.exec(
+                [
+                    DotnuggV1Lib.search(safe, 0, seed),
+                    DotnuggV1Lib.search(safe, 1, seed),
+                    DotnuggV1Lib.search(safe, 2, seed),
+                    DotnuggV1Lib.search(safe, 3, seed),
+                    DotnuggV1Lib.search(safe, 4, seed),
+                    DotnuggV1Lib.search(safe, 5, seed),
+                    DotnuggV1Lib.search(safe, 6, seed),
+                    DotnuggV1Lib.search(safe, 7, seed)
+                ],
+                false
+            );
     }
 
     /// @notice Generates a pseudo-random number with parameters that is hard for one entity to
-    /// reasonably control.
+    /// reasonably control
     /// @param _nonce A nonce hashed as part of the pseudo-random generation.
     /// @return A pseudo-random uint256.
-    function generateRandomNumber(uint256 _nonce) internal view returns (uint256) {
+    function generateDeterministicRandomNumber(uint256 _nonce) internal view returns (uint256) {
         return
             uint256(
                 keccak256(
                     abi.encodePacked(
-                        msg.sender,
-                        block.difficulty,
+                        globalSeed,
                         _nonce
                         //
                     )
