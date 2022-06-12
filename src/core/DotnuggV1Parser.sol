@@ -7,6 +7,9 @@ import {ShiftLib} from "../libraries/ShiftLib.sol";
 import {DotnuggV1Pixel as Pixel} from "./DotnuggV1Pixel.sol";
 import {DotnuggV1Reader as Reader} from "./DotnuggV1Reader.sol";
 
+/// @title DotnuggV1Parser
+/// @author nugg.xyz - danny7even and dub6ix - 2022
+/// @notice a library decoding DotnuggV1 encoded data files
 library DotnuggV1Parser {
     using Reader for Reader.Memory;
     using Pixel for uint256;

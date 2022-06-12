@@ -4,6 +4,9 @@ pragma solidity 0.8.14;
 
 import {ShiftLib} from "../libraries/ShiftLib.sol";
 
+/// @title DotnuggV1Reader
+/// @author nugg.xyz - danny7even and dub6ix - 2022
+/// @notice a library encoded/decoding color and other pixel related data
 library DotnuggV1Pixel {
     function rgba(uint256 input) internal pure returns (uint256 res) {
         unchecked {

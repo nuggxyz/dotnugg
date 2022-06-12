@@ -26,6 +26,9 @@ interface IDotnuggV1 {
 
     function encodeJson(bytes memory input, bool base64) external pure returns (bytes memory data);
 
+    function encodeSvg(bytes memory input, bool base64) external pure returns (bytes memory data);
+
+
 }
 
 interface IDotnuggV1File {}

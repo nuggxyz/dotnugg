@@ -8,6 +8,9 @@ import {DotnuggV1Pixel as Pixel} from "./DotnuggV1Pixel.sol";
 import {DotnuggV1Matrix as Matrix} from "./DotnuggV1Matrix.sol";
 import {DotnuggV1Parser as Parser} from "./DotnuggV1Parser.sol";
 
+/// @title DotnuggV1MiddleOut
+/// @author nugg.xyz - danny7even and dub6ix - 2022
+/// @notice core of dotnugg - combines multiple DotnuggV1 encoded files into one
 library DotnuggV1MiddleOut {
     using Matrix for Matrix.Memory;
     using Parser for Parser.Memory;

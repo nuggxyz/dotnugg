@@ -4,6 +4,9 @@ pragma solidity 0.8.14;
 
 import {ShiftLib} from "../libraries/ShiftLib.sol";
 
+/// @title DotnuggV1Reader
+/// @author nugg.xyz - danny7even and dub6ix - 2022
+/// @notice a library for reading DotnuggV1 encoded data files
 library DotnuggV1Reader {
     using ShiftLib for uint256;
 

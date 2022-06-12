@@ -3,8 +3,6 @@ src = 'src'
 test = '_test'
 out = './out'
 libs = ['lib']
-# remappings = ['dotnuggv1-core/=/Users/***REMOVED***/Developer/nugglabs/github/dotnugg-core/src/']
-# libraries = ['../dotnugg-core']
 cache = true
 force = false
 evm_version = 'london'

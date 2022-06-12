@@ -7,7 +7,7 @@ import {ERC721} from "@rari-capital/solmate/tokens/ERC721.sol";
 import {DotnuggV1} from "../DotnuggV1.sol";
 import {DotnuggV1Lib} from "../DotnuggV1Lib.sol";
 
-/// this example implements rari-capital/solmate's ERC721 under MIT License
+/// this example implements rari-capital/solmate's ERC721
 contract DotnuggV1ERC721 is ERC721 {
     DotnuggV1 public immutable safe;
 

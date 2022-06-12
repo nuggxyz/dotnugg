@@ -4,13 +4,11 @@ pragma solidity 0.8.14;
 
 import {DotnuggV1Lib, IDotnuggV1} from "../DotnuggV1Lib.sol";
 
-// ======================
-// add = []
-// move= ()
-// delete = {}
-// transform = <>
-// refered = !
-// ======================
+/// @title DotnuggV1Reader
+/// @author nugg.xyz - danny7even and dub6ix - 2022
+/// @author inspired by 0xSequence's implemenation of
+///      [ SSTORE2.sol : MIT ] - https://github.com/0xsequence/sstore2/blob/0a28fe61b6e81de9a05b462a24b9f4ba8c70d5b7/contracts/SSTORE2.sol
+///      [ Create3.sol : MIT ] - https://github.com/0xsequence/create3/blob/acc4703a21ec1d71dc2a99db088c4b1f467530fd/contracts/Create3.sol
 library DotnuggV1Storage {
     using DotnuggV1Lib for IDotnuggV1;
 
@@ -18,10 +16,18 @@ library DotnuggV1Storage {
 
     uint8 constant DOTNUGG_RUNTIME_BYTE_LEN = 1;
 
+    // ======================
+    // add = []
+    // move= ()
+    // delete = {}
+    // transform = <>
+    // refered = !
+    // ======================
+
     bytes25 internal constant DOTNUGG_HEADER =
         0x60_20_80_60_18_80_38_03_80_91_3D_39_03_80_3D_82_90_20_81_51_14_02_3D_F3_00;
 
-    // DOTNUGG_CONSTRUCTOR [32 bytes]
+    // DOTNUGG_CONSTRUCTOR [25 bytes]
     // +=====+==============+==============+========================================+
     // | pos |    opcode    |   name       |          stack                         |
     // +=====+==============+==============+========================================+
@@ -83,7 +89,7 @@ library DotnuggV1Storage {
     // +=====+==============+==============+========================================+
 
     function save(bytes memory data, uint8 feature) internal returns (uint8 amount) {
-        require(DOTNUGG_HEADER == bytes25(data), "ABCDEFG");
+        require(DOTNUGG_HEADER == bytes25(data), "INVALID_HEADER");
 
         address proxy;
 

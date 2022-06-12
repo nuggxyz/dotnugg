@@ -4,6 +4,9 @@ pragma solidity 0.8.14;
 
 import {DotnuggV1Parser as Parser} from "./DotnuggV1Parser.sol";
 
+/// @title DotnuggV1Matrix
+/// @author nugg.xyz - danny7even and dub6ix - 2022
+/// @notice implementation of a 2D array used in combination of dotnugg files
 library DotnuggV1Matrix {
     using Parser for Parser.Memory;
 

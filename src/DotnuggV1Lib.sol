@@ -4,6 +4,9 @@ pragma solidity 0.8.14;
 
 import {IDotnuggV1, IDotnuggV1File} from "./IDotnuggV1.sol";
 
+/// @title DotnuggV1Lib
+/// @author nugg.xyz - danny7even and dub6ix - 2022
+/// @notice helper functions for working with dotnuggv1 files on chain
 library DotnuggV1Lib {
     uint8 constant DOTNUGG_HEADER_BYTE_LEN = 25;
 
@@ -145,6 +148,8 @@ library DotnuggV1Lib {
         }
     }
 
+    /// binary search usage inspired by implementation from fiveoutofnine
+    /// [ OnMintGeneration.sol : MIT ] - https://github.com/fiveoutofnine/on-mint-generation/blob/719f19a10d19956c8414e421517d902ab3591111/src/OnMintGeneration.sol
     function search(
         IDotnuggV1 safe,
         uint8 feature,
@@ -279,6 +284,7 @@ library DotnuggV1Lib {
         return readBytecodeAsArray(loc, begin, (startAndEnd & 0xffff) - begin);
     }
 
+    // adapted from rari-capital/solmate's SSTORE2.sol
     function readBytecodeAsArray(
         IDotnuggV1File file,
         uint256 start,
@@ -306,6 +312,7 @@ library DotnuggV1Lib {
         }
     }
 
+    // adapted from rari-capital/solmate's SSTORE2.sol
     function readBytecode(
         IDotnuggV1File file,
         uint256 start,
@@ -341,8 +348,8 @@ library DotnuggV1Lib {
     }
 
     ///
-    /// Inspired by OraclizeAPI's implementation - MIT licence
-    /// https://github.com/oraclize/ethereum-api/blob/b42146b063c7d6ee1358846c198246239e9360e8/oraclizeAPI_0.4.25.sol
+    /// inspired by OraclizeAPI's implementation
+    /// [ oraclizeAPI_0.4.25.sol : MIT ] - https://github.com/oraclize/ethereum-api/blob/b42146b063c7d6ee1358846c198246239e9360e8/oraclizeAPI_0.4.25.sol
     function toFixedPointString(uint256 value, uint256 places) internal pure returns (string memory) {
         unchecked {
             if (value == 0) return "0";
