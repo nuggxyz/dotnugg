@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: BUSL-1.1
+// SPDX-License-Identifier: MIT
 
 pragma solidity 0.8.14;
 
-import {ERC721} from "@rari-capital/solmate/tokens/ERC721.sol";
+import {ERC721} from "solmate/tokens/ERC721.sol";
 
 import {DotnuggV1} from "../DotnuggV1.sol";
 import {DotnuggV1Lib} from "../DotnuggV1Lib.sol";
