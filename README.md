@@ -1,6 +1,14 @@
-# dotnugg v1 core smart contracts
+# Dotnugg V1 Smart Contracts
+
+> **Warning**
+> this code is yet to be deployed and licensed under BUSL-1.1
 
 [![forge](https://github.com/nuggxyz/dotnugg-v1-core/actions/workflows/forge.yaml/badge.svg)](https://github.com/nuggxyz/dotnugg-v1-core/actions/workflows/forge.yaml)
+
+the core logic and smart contracts for dotnugg v1
+
+-   written in solidity
+-   (to be soon) deployed on ethereum
 
 ## Deployments
 
@@ -15,6 +23,9 @@
 ## Developing Locally
 
 ### **using nuggft's dotnugg data**
+
+> **Note**
+> the main DotnuggV1 contract is deployed with all NuggftV1's dotnugg data
 
 ```solidity
 pragma solidity 0.8.14;
