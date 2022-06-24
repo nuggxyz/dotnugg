@@ -12,13 +12,13 @@ the core logic and smart contracts for dotnugg v1
 
 ## Deployments
 
-| network | address |
-| ------- | ------- |
-| mainnet | `TBD`   |
-| ropsten | `0x`    |
-| rinkeby | `0x`    |
-| goerli  | `0x`    |
-| kovan   | `0x`    |
+| network | addresses                                    |
+| ------- | -------------------------------------------- |
+| mainnet | `TBD`                                        |
+| ropsten | `0x`                                         |
+| rinkeby | `0x`                                         |
+| goerli  | `0xec4bbbed9cf6f30d08f619de28f6af05c3bb0658` |
+| kovan   | `0x`                                         |
 
 ## Developing Locally
 
