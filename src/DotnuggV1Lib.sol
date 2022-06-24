@@ -33,6 +33,15 @@ library DotnuggV1Lib {
         pos = uint8(itemId % 1000);
     }
 
+    /// @notice parses the external itemId into a feautre and position
+    /// @dev this follows dotnugg v1 specification
+    /// @return itemId -> the external itemId
+    /// @param feat -> the feautre of the item
+    /// @param pos -> the file storage position of the item
+    function encodeItemId(uint8 feat, uint8 pos) internal pure returns (uint16 itemId) {
+        return (uint16(feat) * 1000) + pos;
+    }
+
     function itemIdToString(uint16 itemId, string[8] memory labels) internal pure returns (string memory) {
         (uint8 feat, uint8 pos) = parseItemId(itemId);
         return string.concat(labels[feat], " ", toString(pos));
@@ -43,7 +52,7 @@ library DotnuggV1Lib {
         uint8 feature,
         uint256 seed
     ) internal view returns (uint16 res) {
-        return (uint16(feature) * 1000) + search(safe, feature, seed);
+        return encodeItemId(feature, search(safe, feature, seed));
     }
 
     function props(uint8[8] memory ids, string[8] memory labels) internal pure returns (string memory) {
