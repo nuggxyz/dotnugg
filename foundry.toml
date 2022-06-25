@@ -29,3 +29,8 @@ block_difficulty = 0
 gas_reports = ["RiggedNuggft", "NuggftV1", "Expect"]
 
 
+[default.optimizer_details]
+constantOptimizer = true
+cse = true
+deduplicate=true
+orderLiterals=true

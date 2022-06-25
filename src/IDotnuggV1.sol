@@ -14,9 +14,14 @@ interface IDotnuggV1 {
 
     function read(uint8 feature, uint8 pos) external view returns (uint256[] memory data);
 
+    function read(uint256 proof) external view returns (uint256[][] memory _reads);
+
+
     function exec(uint8[8] memory ids, bool base64) external view returns (string memory);
 
     function exec(uint8 feature, uint8 pos, bool base64) external view returns (string memory);
+
+    function exec(uint256 proof, bool base64) external view returns (string memory);
 
     function calc(uint256[][] memory reads) external view returns (uint256[] memory calculated, uint256 dat);
 
@@ -28,7 +33,7 @@ interface IDotnuggV1 {
 
     function encodeSvg(bytes memory input, bool base64) external pure returns (bytes memory data);
 
-
+    function props(uint256 proof, string[8] memory labels) external pure returns (string memory res);
 }
 
 interface IDotnuggV1File {}

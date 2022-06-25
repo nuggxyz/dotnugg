@@ -55,16 +55,6 @@ library DotnuggV1Lib {
         return encodeItemId(feature, search(safe, feature, seed));
     }
 
-    function props(uint8[8] memory ids, string[8] memory labels) internal pure returns (string memory) {
-        bytes memory res;
-
-        for (uint8 i = 0; i < 8; i++) {
-            if (ids[i] == 0) continue;
-            res = abi.encodePacked(res, i != 0 ? "," : "", '"', labels[i], '":"', toString(uint8(ids[i])), '"');
-        }
-        return string(abi.encodePacked("{", res, "}"));
-    }
-
     function lengthOf(IDotnuggV1 safe, uint8 feature) internal view returns (uint8) {
         return size(location(safe, feature));
     }
@@ -411,6 +401,50 @@ library DotnuggV1Lib {
             res := add(res, start)
 
             mstore(res, strlen)
+        }
+    }
+
+    function decodeProof(uint256 input) internal pure returns (uint16[16] memory res) {
+        unchecked {
+            for (uint256 i = 0; i < 16; i++) {
+                res[i] = uint16(input);
+                input >>= 16;
+            }
+        }
+    }
+
+    function decodeProofCore(uint256 proof) internal pure returns (uint8[8] memory res) {
+        unchecked {
+            for (uint256 i = 0; i < 8; i++) {
+                (uint8 feature, uint8 pos) = parseItemId(uint16(proof));
+                if (res[feature] == 0) res[feature] = pos;
+                proof >>= 16;
+            }
+        }
+    }
+
+    function encodeProof(uint8[8] memory ids) internal pure returns (uint256 proof) {
+        unchecked {
+            for (uint256 i = 0; i < 8; i++) proof |= ((i << 8) | uint256(ids[i])) << (i << 3);
+        }
+    }
+
+    function encodeProof(uint16[16] memory ids) internal pure returns (uint256 proof) {
+        unchecked {
+            for (uint256 i = 0; i < 16; i++) proof |= uint256(ids[i]) << (i << 4);
+        }
+    }
+
+    function props(uint16[16] memory ids, string[8] memory labels) internal pure returns (string memory) {
+        unchecked {
+            bytes memory res;
+
+            for (uint8 i = 0; i < ids.length; i++) {
+                (uint8 feature, uint8 pos) = parseItemId(ids[i]);
+                if (ids[i] == 0) continue;
+                res = abi.encodePacked(res, i != 0 ? "," : "", '"', labels[feature], "-", toString(uint8(pos)), '"');
+            }
+            return string(abi.encodePacked("[", res, "]"));
         }
     }
 }
