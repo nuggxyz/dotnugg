@@ -80,10 +80,6 @@ contract DotnuggV1 is IDotnuggV1 {
        read dotnugg v1 files
     //////////////////////////////////////////////////////////////////////// */
 
-    function read(uint256 proof) public view returns (uint256[][] memory _reads) {
-        _reads = read(DotnuggV1Lib.decodeProofCore(proof));
-    }
-
     function read(uint8[8] memory ids) public view returns (uint256[][] memory _reads) {
         _reads = new uint256[][](8);
 
@@ -137,10 +133,6 @@ contract DotnuggV1 is IDotnuggV1 {
         return combo(read(ids), base64);
     }
 
-    function exec(uint256 proof, bool base64) public view returns (string memory) {
-        return exec(DotnuggV1Lib.decodeProofCore(proof), base64);
-    }
-
     // prettier-ignore
     function exec(uint8 feature, uint8 pos, bool base64) external view returns (string memory) {
         uint256[][] memory arr = new uint256[][](1);
@@ -168,10 +160,6 @@ contract DotnuggV1 is IDotnuggV1 {
             ",",
             base64 ? Base64.encode(input) : input
         );
-    }
-
-    function props(uint256 proof, string[8] memory labels) public pure returns (string memory res) {
-        return DotnuggV1Lib.props(DotnuggV1Lib.decodeProof(proof), labels);
     }
 }
 // function clone() internal returns (DotnuggV1 instance) {
