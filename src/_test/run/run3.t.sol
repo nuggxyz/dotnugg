@@ -5,17 +5,17 @@ pragma solidity 0.8.15;
 import "../utils/forge.sol";
 
 contract runner {
-    struct Test {
-        uint256 a;
-        uint256 b;
-        uint256 c;
-    }
+	struct Test {
+		uint256 a;
+		uint256 b;
+		uint256 c;
+	}
 
-    function run() external {
-        Test storage s;
+	function run() external {
+		Test storage s;
 
-        // prettier-ignore
-        assembly {
+		// prettier-ignore
+		assembly {
 
             let ptr := "my random storage pointer"
             s.slot := ptr
@@ -29,10 +29,10 @@ contract runner {
             sstore(add(ptr, 0x02), 0xfff2)
         }
 
-        console.log(s.a);
+		console.log(s.a);
 
-        console.log(s.b);
+		console.log(s.b);
 
-        console.log(s.c);
-    }
+		console.log(s.c);
+	}
 }

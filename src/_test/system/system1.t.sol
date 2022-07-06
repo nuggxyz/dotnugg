@@ -7,331 +7,331 @@ import {data} from "../../_data/nuggs.data.sol";
 import {DotnuggV1Lib, IDotnuggV1} from "../../DotnuggV1Lib.sol";
 
 contract systemTest__one is t {
-    IDotnuggV1 proxy;
-
-    function setUp() public {
-        reset();
-        forge.vm.startPrank(users.frank);
-
-        // proxy = factory.register(abi.decode(data, (bytes[])));
-
-        proxy = factory;
-
-        forge.vm.stopPrank();
-    }
-
-    function test__gas__mask() public pure {
-        assembly {
-            let res := 0x81026004808483603a01903982513d8452809180519086801b90
-
-            res := shr(96, shl(44, res))
-        }
-    }
-
-    function test__gas__juke() public pure {
-        assembly {
-            let res := 0x81026004808483603a01903982513d8452809180519086801b90
-
-            res := and(res, sub(shl(44, 1), 1))
-        }
-    }
-
-    // Running 2 tests for src/_test/general/generate.t.sol:generalTest__generate
-    // [PASS] test__trr() (gas: 4526)
-    // [PASS] test__trr2() (gas: 26968)
-    // Test result: ok. 2 passed; 0 failed; finished in 1.25ms
-
-    // Running 2 tests for src/_test/general/Pixel.t.sol:generalTest__PixelType
-    // [PASS] test__general__PixelType__a() (gas: 1202)
-    // [PASS] test__general__PixelType__toHexString() (gas: 4040)
-    // Test result: ok. 2 passed; 0 failed; finished in 1.40ms
-
-    // Running 2 tests for src/_test/deploy/deploy.t.sol:t__deployment
-    // [PASS] test__deployment() (gas: 15027961)
-    // [PASS] test__general__PixelType__toHexString() (gas: 143)
-    // Test result: ok. 2 passed; 0 failed; finished in 5.91ms
-
-    // Running 3 tests for src/_test/general/mint.t.sol:systemTest__two
-    // [PASS] test__gas__juke() (gas: 120)
-    // [PASS] test__gas__mask() (gas: 165)
-    // [PASS] test__structStoragePointer() (gas: 70220)
-    // Test result: ok. 3 passed; 0 failed; finished in 6.35ms
-
-    // Running 7 tests for src/_test/system/system1.t.sol:systemTest__one
-    // [PASS] test__all() (gas: 127755011628)
-    // [PASS] test__back__offset() (gas: 87228368)
-    // [PASS] test__back__offset2() (gas: 82303141)
-    // [PASS] test__gas__juke() (gas: 187)
-    // [PASS] test__gas__mask() (gas: 165)
-    // [PASS] test__something() (gas: 78324104)
-    // [PASS] test__supersize() (gas: 4259246535)
-    // Test result: ok. 7 passed; 0 failed; finished in 203.35s
-
-    //     Running 2 tests for src/_test/general/Pixel.t.sol:generalTest__PixelType
-    // [PASS] test__general__PixelType__a() (gas: 1202)
-    // [PASS] test__general__PixelType__toHexString() (gas: 4040)
-    // Test result: ok. 2 passed; 0 failed; finished in 1.33ms
-
-    // Running 2 tests for src/_test/general/generate.t.sol:generalTest__generate
-    // [PASS] test__trr() (gas: 4526)
-    // [PASS] test__trr2() (gas: 26968)
-    // Test result: ok. 2 passed; 0 failed; finished in 1.38ms
-
-    // Running 2 tests for src/_test/deploy/deploy.t.sol:t__deployment
-    // [PASS] test__deployment() (gas: 15228199)
-    // [PASS] test__general__PixelType__toHexString() (gas: 143)
-    // Test result: ok. 2 passed; 0 failed; finished in 5.93ms
-
-    // Running 3 tests for src/_test/general/mint.t.sol:systemTest__two
-    // [PASS] test__gas__juke() (gas: 120)
-    // [PASS] test__gas__mask() (gas: 165)
-    // [PASS] test__structStoragePointer() (gas: 70220)
-    // Test result: ok. 3 passed; 0 failed; finished in 6.07ms
-
-    // Running 7 tests for src/_test/system/system1.t.sol:systemTest__one
-    // [PASS] test__all() (gas: 2919799108)
-    // [PASS] test__back__offset() (gas: 12419179)
-    // [PASS] test__back__offset2() (gas: 19188721)
-    // [PASS] test__gas__juke() (gas: 187)
-    // [PASS] test__gas__mask() (gas: 165)
-    // [PASS] test__something() (gas: 1275024)
-    // [PASS] test__supersize() (gas: 2622197584)
-    // Test result: ok. 7 passed; 0 failed; finished in 3.37s
-
-    //     127755011628
-    //   2919799108 =0.02285467373
-    function test__something() public {
-        DotnuggV1Lib.lengthOf(proxy, 0);
-        // uint256[] memory a = new uint256[](7);
-        // a[0] = 1;
-        // a[1] = 2;
-        // a[2] = 3;
-        // a[3] = 4;
-        // a[4] = 5;
-        // a[5] = 6;
-        // a[6] = 7;
+	IDotnuggV1 proxy;
+
+	function setUp() public {
+		reset();
+		forge.vm.startPrank(users.frank);
+
+		// proxy = factory.register(abi.decode(data, (bytes[])));
+
+		proxy = factory;
+
+		forge.vm.stopPrank();
+	}
+
+	function test__gas__mask() public pure {
+		assembly {
+			let res := 0x81026004808483603a01903982513d8452809180519086801b90
+
+			res := shr(96, shl(44, res))
+		}
+	}
+
+	function test__gas__juke() public pure {
+		assembly {
+			let res := 0x81026004808483603a01903982513d8452809180519086801b90
+
+			res := and(res, sub(shl(44, 1), 1))
+		}
+	}
+
+	// Running 2 tests for src/_test/general/generate.t.sol:generalTest__generate
+	// [PASS] test__trr() (gas: 4526)
+	// [PASS] test__trr2() (gas: 26968)
+	// Test result: ok. 2 passed; 0 failed; finished in 1.25ms
+
+	// Running 2 tests for src/_test/general/Pixel.t.sol:generalTest__PixelType
+	// [PASS] test__general__PixelType__a() (gas: 1202)
+	// [PASS] test__general__PixelType__toHexString() (gas: 4040)
+	// Test result: ok. 2 passed; 0 failed; finished in 1.40ms
+
+	// Running 2 tests for src/_test/deploy/deploy.t.sol:t__deployment
+	// [PASS] test__deployment() (gas: 15027961)
+	// [PASS] test__general__PixelType__toHexString() (gas: 143)
+	// Test result: ok. 2 passed; 0 failed; finished in 5.91ms
+
+	// Running 3 tests for src/_test/general/mint.t.sol:systemTest__two
+	// [PASS] test__gas__juke() (gas: 120)
+	// [PASS] test__gas__mask() (gas: 165)
+	// [PASS] test__structStoragePointer() (gas: 70220)
+	// Test result: ok. 3 passed; 0 failed; finished in 6.35ms
+
+	// Running 7 tests for src/_test/system/system1.t.sol:systemTest__one
+	// [PASS] test__all() (gas: 127755011628)
+	// [PASS] test__back__offset() (gas: 87228368)
+	// [PASS] test__back__offset2() (gas: 82303141)
+	// [PASS] test__gas__juke() (gas: 187)
+	// [PASS] test__gas__mask() (gas: 165)
+	// [PASS] test__something() (gas: 78324104)
+	// [PASS] test__supersize() (gas: 4259246535)
+	// Test result: ok. 7 passed; 0 failed; finished in 203.35s
+
+	//     Running 2 tests for src/_test/general/Pixel.t.sol:generalTest__PixelType
+	// [PASS] test__general__PixelType__a() (gas: 1202)
+	// [PASS] test__general__PixelType__toHexString() (gas: 4040)
+	// Test result: ok. 2 passed; 0 failed; finished in 1.33ms
+
+	// Running 2 tests for src/_test/general/generate.t.sol:generalTest__generate
+	// [PASS] test__trr() (gas: 4526)
+	// [PASS] test__trr2() (gas: 26968)
+	// Test result: ok. 2 passed; 0 failed; finished in 1.38ms
+
+	// Running 2 tests for src/_test/deploy/deploy.t.sol:t__deployment
+	// [PASS] test__deployment() (gas: 15228199)
+	// [PASS] test__general__PixelType__toHexString() (gas: 143)
+	// Test result: ok. 2 passed; 0 failed; finished in 5.93ms
+
+	// Running 3 tests for src/_test/general/mint.t.sol:systemTest__two
+	// [PASS] test__gas__juke() (gas: 120)
+	// [PASS] test__gas__mask() (gas: 165)
+	// [PASS] test__structStoragePointer() (gas: 70220)
+	// Test result: ok. 3 passed; 0 failed; finished in 6.07ms
+
+	// Running 7 tests for src/_test/system/system1.t.sol:systemTest__one
+	// [PASS] test__all() (gas: 2919799108)
+	// [PASS] test__back__offset() (gas: 12419179)
+	// [PASS] test__back__offset2() (gas: 19188721)
+	// [PASS] test__gas__juke() (gas: 187)
+	// [PASS] test__gas__mask() (gas: 165)
+	// [PASS] test__something() (gas: 1275024)
+	// [PASS] test__supersize() (gas: 2622197584)
+	// Test result: ok. 7 passed; 0 failed; finished in 3.37s
+
+	//     127755011628
+	//   2919799108 =0.02285467373
+	function test__something() public {
+		DotnuggV1Lib.lengthOf(proxy, 0);
+		// uint256[] memory a = new uint256[](7);
+		// a[0] = 1;
+		// a[1] = 2;
+		// a[2] = 3;
+		// a[3] = 4;
+		// a[4] = 5;
+		// a[5] = 6;
+		// a[6] = 7;
 
-        // assembly {
-        //     log1(a, mul(8, 32), a)
-        // }
-
-        // proxy.exec(0, 1, false);
-
-        // proxy.exec([1, 1, 1, 1, 1, 0, 0, 0], true);
-
-        // proxy.exec([1, 16, 16], false);
-
-        // ds.emit_log_string(proxy.exec([2, 47, 23, 0, 25, 0, 0, 15], false));
-        // ds.emit_log_string(proxy.exec([3, 47, 23, 21, 0, 0, 0, 0], false));
-        // ds.emit_log_string(proxy.exec([2, 0, 0, 18, 0, 0, 0, 0], false));
-        // ds.emit_log_string(proxy.exec(3, 48, false));
-        // proxy.exec([0, 0, 0, 0, 0, 0, 0, 0], false);
-        ds.emit_log_string(proxy.exec(2, 66, false));
-
-        DotnuggV1Lib.search(proxy, 1, 0x1234444997373738);
-    }
-
-    function test__smaller() public {
-        DotnuggV1Lib.lengthOf(proxy, 0);
-        // uint256[] memory a = new uint256[](7);
-        // a[0] = 1;
-        // a[1] = 2;
-        // a[2] = 3;
-        // a[3] = 4;
-        // a[4] = 5;
-        // a[5] = 6;
-        // a[6] = 7;
-
-        // assembly {
-        //     log1(a, mul(8, 32), a)
-        // }
-
-        // proxy.exec(0, 1, false);
-
-        // proxy.exec([1, 1, 1, 1, 1, 0, 0, 0], true);
-
-        // proxy.exec([1, 16, 16], false);
-
-        ds.emit_log_string(proxy.exec([4, 108, 93, 32, 0, 14, 0, 0], true));
-        // ds.emit_log_string(proxy.exec([3, 47, 23, 21, 0, 0, 0, 0], false));
-        // ds.emit_log_string(proxy.exec([2, 0, 0, 18, 0, 0, 0, 0], false));
-        // ds.emit_log_string(proxy.exec(3, 48, false));
-        // proxy.exec([0, 0, 0, 0, 0, 0, 0, 0], false);
-        // ds.emit_log_string(proxy.exec(2, 66, false));
-
-        // DotnuggV1Lib.randOf(proxy, 1, 0x1234444997373738);
-    }
-
-    function test__all() public {
-        for (uint8 i = 0; i < 8; i++) {
-            uint8 len = DotnuggV1Lib.lengthOf(proxy, i);
-
-            for (uint8 j = 0; j < len; j++) {
-                proxy.exec(i, j + 1, false);
-                proxy.exec(i, j + 1, false);
-                proxy.exec([0, 0, 0, 0, 0, 0, 0, 0], false);
-            }
-        }
-    }
-
-    function test__back__offset() public {
-        // for (uint8 i = 0; i < 8; i++) {
-        // uint8 len = proxy.lengthOf(i);
-
-        /// OK
-        uint256[][] memory check = new uint256[][](4);
-
-        // not OK
-        // uint256[][] memory check = new uint256[][](4);
-
-        // check[0] = proxy.read(0, 3);
-        // check[1] = proxy.read(1, 5);
-        // check[2] = proxy.read(2, 5);
-        check[3] = proxy.read(5, 3);
-
-        // check[3] = proxy.read(2, 87);
-
-        ds.emit_log_string(proxy.combo(check, false));
-
-        // for (uint8 j = 0; j < len; j++) {
-        //     proxy.exec(i, j + 1, false);
-        //     proxy.exec(i, j + 1, false);
-        //     proxy.exec([0, 0, 0, 0, 0, 0, 0, 0], false);
-        // }
-    }
-
-    function test__back__offset2() public {
-        // for (uint8 i = 0; i < 8; i++) {
-        // uint8 len = proxy.lengthOf(i);
-
-        /// OK
-        uint256[][] memory check = new uint256[][](16);
-
-        // not OK
-        // uint256[][] memory check = new uint256[][](4);
-
-        // check[0] = proxy.read(0, 3);
-        // check[1] = proxy.read(1, 5);
-        // check[2] = proxy.read(2, 5);
-        // check[2] = proxy.read(0, 3);
-        // check[1] = proxy.read(1, 2);
-        // check[3] = proxy.read(2, 1);
-        // check[4] = proxy.read(3, 9);
-        // check[5] = proxy.read(4, 5);
-
-        check[2] = proxy.read(0, 1);
-        check[1] = proxy.read(1, 44);
-        check[3] = proxy.read(2, 33);
-        check[4] = proxy.read(3, 12);
-        check[5] = proxy.read(4, 33);
-        check[6] = proxy.read(5, 3);
-        // check[7] = proxy.read(7, 5);
-
-        // check[3] = proxy.read(2, 87);
-
-        ds.emit_log_string(proxy.combo(check, false));
-
-        // for (uint8 j = 0; j < len; j++) {
-        //     proxy.exec(i, j + 1, false);
-        //     proxy.exec(i, j + 1, false);
-        //     proxy.exec([0, 0, 0, 0, 0, 0, 0, 0], false);
-        // }
-    }
-
-    function test__chunk1() public {
-        // for (uint8 i = 0; i < 8; i++) {
-        // uint8 len = proxy.lengthOf(i);
-
-        /// OK
-        uint256[][] memory check = new uint256[][](16);
-
-        // not OK
-        // uint256[][] memory check = new uint256[][](4);
-
-        // check[0] = proxy.read(0, 3);
-        // check[1] = proxy.read(1, 5);
-        // check[2] = proxy.read(2, 5);
-        // check[2] = proxy.read(0, 3);
-        // check[1] = proxy.read(1, 2);
-        // check[3] = proxy.read(2, 1);
-        // check[4] = proxy.read(3, 9);
-        // check[5] = proxy.read(4, 5);
-
-        check[2] = proxy.read(0, 1);
-        check[1] = proxy.read(1, 44);
-        check[3] = proxy.read(2, 33);
-        check[4] = proxy.read(3, 12);
-        check[5] = proxy.read(4, 33);
-        check[6] = proxy.read(5, 3);
-        // check[7] = proxy.read(7, 5);
-
-        // check[3] = proxy.read(2, 87);
-
-        // for (uint8 i = 0; i < 5; i++) {
-        //     ds.emit_log_string(proxy.combo2(check, 4, i));
-        // }
-
-        // for (uint8 j = 0; j < len; j++) {
-        //     proxy.exec(i, j + 1, false);
-        //     proxy.exec(i, j + 1, false);
-        //     proxy.exec([0, 0, 0, 0, 0, 0, 0, 0], false);
-        // }
-    }
-
-    function test__chunk1__exec() public {
-        for (uint8 i = 0; i < 5; i++) {
-            ds.emit_log_string(DotnuggV1Lib.chunk(proxy.exec([1, 44, 33, 12, 33, 3, 0, 0], false), 4, i));
-        }
-
-        // ds.emit_log_string(proxy.exec([1, 44, 33, 12, 33, 3, 0, 0], false));
-    }
-
-    // // 193015236
-    // // 121998950
-    // function test__chunk3__exec() public {
-    //     (, , bytes memory a) = proxy.execute(proxy.read([1, 44, 33, 12, 33, 3, 0, 0]), 1, "");
-    //     (, , a) = proxy.execute(new uint256[][](0), 5, a);
-    //     (uint256[] memory res, uint256 dat, ) = proxy.execute(new uint256[][](0), 8, a);
-    //     ds.emit_log_string(proxy.svg(res, dat, false));
-
-    //     // ds.emit_log_string(proxy.exec([1, 44, 33, 12, 33, 3, 0, 0], false));
-    // }
-
-    // function test__supersize() public {
-    //     // for (uint8 i = 0; i < 8; i++) {
-    //     // uint8 len = proxy.lengthOf(i);
-    //     uint256[][][] memory arg = new uint256[][][](25);
-    //     for (uint256 i = 0; i < arg.length; i++) {
-    //         uint256[][] memory check = new uint256[][](8);
-
-    //         // not OK
-    //         // uint256[][] memory check = new uint256[][](4);
-
-    //         // check[0] = proxy.read(0, 3);
-    //         // check[1] = proxy.read(1, 5);
-    //         // check[2] = proxy.read(2, 5);
-    //         check[0] = proxy.read(0, 2);
-    //         check[2] = proxy.read(5, 3);
-    //         check[1] = proxy.read(1, 2);
-    //         check[3] = proxy.read(2, 1);
-    //         check[4] = proxy.read(3, 4);
-    //         check[5] = proxy.read(4, 5);
-
-    //         arg[i] = check;
-
-    //         // check[3] = proxy.read(2, 87);
-    //     }
-
-    //     string[] memory ret = proxy.supersize(arg, true);
-
-    //     for (uint256 i = 0; i < arg.length; i++) {
-    //         // ds.emit_log_string(ret[i]);
-    //     }
-    // }
-    // }
-
-    // 3D_60_20_80_80_80_38_03_80_91_85_39_03_80_82_84_81_53_20_83_51_14_02_90_F3_00_04_20_00_00_69_00
-    // 3D6020808080380380918539038082848153208351140290F300042000006900
+		// assembly {
+		//     log1(a, mul(8, 32), a)
+		// }
+
+		// proxy.exec(0, 1, false);
+
+		// proxy.exec([1, 1, 1, 1, 1, 0, 0, 0], true);
+
+		// proxy.exec([1, 16, 16], false);
+
+		// ds.emit_log_string(proxy.exec([2, 47, 23, 0, 25, 0, 0, 15], false));
+		// ds.emit_log_string(proxy.exec([3, 47, 23, 21, 0, 0, 0, 0], false));
+		// ds.emit_log_string(proxy.exec([2, 0, 0, 18, 0, 0, 0, 0], false));
+		// ds.emit_log_string(proxy.exec(3, 48, false));
+		// proxy.exec([0, 0, 0, 0, 0, 0, 0, 0], false);
+		ds.emit_log_string(proxy.exec(2, 3, false));
+
+		DotnuggV1Lib.search(proxy, 1, 0x1234444997373738);
+	}
+
+	function test__smaller() public {
+		DotnuggV1Lib.lengthOf(proxy, 0);
+		// uint256[] memory a = new uint256[](7);
+		// a[0] = 1;
+		// a[1] = 2;
+		// a[2] = 3;
+		// a[3] = 4;
+		// a[4] = 5;
+		// a[5] = 6;
+		// a[6] = 7;
+
+		// assembly {
+		//     log1(a, mul(8, 32), a)
+		// }
+
+		// proxy.exec(0, 1, false);
+
+		// proxy.exec([1, 1, 1, 1, 1, 0, 0, 0], true);
+
+		// proxy.exec([1, 16, 16], false);
+
+		ds.emit_log_string(proxy.exec([2, 2, 2, 2, 0, 2, 0, 0], true));
+		// ds.emit_log_string(proxy.exec([3, 47, 23, 21, 0, 0, 0, 0], false));
+		// ds.emit_log_string(proxy.exec([2, 0, 0, 18, 0, 0, 0, 0], false));
+		// ds.emit_log_string(proxy.exec(3, 48, false));
+		// proxy.exec([0, 0, 0, 0, 0, 0, 0, 0], false);
+		// ds.emit_log_string(proxy.exec(2, 66, false));
+
+		// DotnuggV1Lib.randOf(proxy, 1, 0x1234444997373738);
+	}
+
+	function test__all() public {
+		for (uint8 i = 0; i < 8; i++) {
+			uint8 len = DotnuggV1Lib.lengthOf(proxy, i);
+
+			for (uint8 j = 0; j < len; j++) {
+				proxy.exec(i, j + 1, false);
+				proxy.exec(i, j + 1, false);
+				proxy.exec([0, 0, 0, 0, 0, 0, 0, 0], false);
+			}
+		}
+	}
+
+	function test__back__offset() public {
+		// for (uint8 i = 0; i < 8; i++) {
+		// uint8 len = proxy.lengthOf(i);
+
+		/// OK
+		uint256[][] memory check = new uint256[][](4);
+
+		// not OK
+		// uint256[][] memory check = new uint256[][](4);
+
+		// check[0] = proxy.read(0, 3);
+		// check[1] = proxy.read(1, 5);
+		// check[2] = proxy.read(2, 5);
+		check[3] = proxy.read(5, 3);
+
+		// check[3] = proxy.read(2, 87);
+
+		ds.emit_log_string(proxy.combo(check, false));
+
+		// for (uint8 j = 0; j < len; j++) {
+		//     proxy.exec(i, j + 1, false);
+		//     proxy.exec(i, j + 1, false);
+		//     proxy.exec([0, 0, 0, 0, 0, 0, 0, 0], false);
+		// }
+	}
+
+	function test__back__offset2() public {
+		// for (uint8 i = 0; i < 8; i++) {
+		// uint8 len = proxy.lengthOf(i);
+
+		/// OK
+		uint256[][] memory check = new uint256[][](16);
+
+		// not OK
+		// uint256[][] memory check = new uint256[][](4);
+
+		// check[0] = proxy.read(0, 3);
+		// check[1] = proxy.read(1, 5);
+		// check[2] = proxy.read(2, 5);
+		// check[2] = proxy.read(0, 3);
+		// check[1] = proxy.read(1, 2);
+		// check[3] = proxy.read(2, 1);
+		// check[4] = proxy.read(3, 9);
+		// check[5] = proxy.read(4, 5);
+
+		check[2] = proxy.read(0, 1);
+		check[1] = proxy.read(1, 1);
+		check[3] = proxy.read(2, 1);
+		check[4] = proxy.read(3, 1);
+		check[5] = proxy.read(4, 1);
+		check[6] = proxy.read(5, 1);
+		// check[7] = proxy.read(7, 5);
+
+		// check[3] = proxy.read(2, 87);
+
+		ds.emit_log_string(proxy.combo(check, false));
+
+		// for (uint8 j = 0; j < len; j++) {
+		//     proxy.exec(i, j + 1, false);
+		//     proxy.exec(i, j + 1, false);
+		//     proxy.exec([0, 0, 0, 0, 0, 0, 0, 0], false);
+		// }
+	}
+
+	function test__chunk1() public {
+		// for (uint8 i = 0; i < 8; i++) {
+		// uint8 len = proxy.lengthOf(i);
+
+		/// OK
+		uint256[][] memory check = new uint256[][](16);
+
+		// not OK
+		// uint256[][] memory check = new uint256[][](4);
+
+		// check[0] = proxy.read(0, 3);
+		// check[1] = proxy.read(1, 5);
+		// check[2] = proxy.read(2, 5);
+		// check[2] = proxy.read(0, 3);
+		// check[1] = proxy.read(1, 2);
+		// check[3] = proxy.read(2, 1);
+		// check[4] = proxy.read(3, 9);
+		// check[5] = proxy.read(4, 5);
+
+		check[2] = proxy.read(0, 1);
+		check[1] = proxy.read(1, 1);
+		check[3] = proxy.read(2, 1);
+		check[4] = proxy.read(3, 1);
+		check[5] = proxy.read(4, 1);
+		check[6] = proxy.read(5, 1);
+		// check[7] = proxy.read(7, 5);
+
+		// check[3] = proxy.read(2, 87);
+
+		// for (uint8 i = 0; i < 5; i++) {
+		//     ds.emit_log_string(proxy.combo2(check, 4, i));
+		// }
+
+		// for (uint8 j = 0; j < len; j++) {
+		//     proxy.exec(i, j + 1, false);
+		//     proxy.exec(i, j + 1, false);
+		//     proxy.exec([0, 0, 0, 0, 0, 0, 0, 0], false);
+		// }
+	}
+
+	function test__chunk1__exec() public {
+		for (uint8 i = 0; i < 5; i++) {
+			ds.emit_log_string(DotnuggV1Lib.chunk(proxy.exec([1, 1, 1, 1, 1, 1, 0, 0], false), 4, i));
+		}
+
+		// ds.emit_log_string(proxy.exec([1, 44, 33, 12, 33, 3, 0, 0], false));
+	}
+
+	// // 193015236
+	// // 121998950
+	// function test__chunk3__exec() public {
+	//     (, , bytes memory a) = proxy.execute(proxy.read([1, 44, 33, 12, 33, 3, 0, 0]), 1, "");
+	//     (, , a) = proxy.execute(new uint256[][](0), 5, a);
+	//     (uint256[] memory res, uint256 dat, ) = proxy.execute(new uint256[][](0), 8, a);
+	//     ds.emit_log_string(proxy.svg(res, dat, false));
+
+	//     // ds.emit_log_string(proxy.exec([1, 44, 33, 12, 33, 3, 0, 0], false));
+	// }
+
+	// function test__supersize() public {
+	//     // for (uint8 i = 0; i < 8; i++) {
+	//     // uint8 len = proxy.lengthOf(i);
+	//     uint256[][][] memory arg = new uint256[][][](25);
+	//     for (uint256 i = 0; i < arg.length; i++) {
+	//         uint256[][] memory check = new uint256[][](8);
+
+	//         // not OK
+	//         // uint256[][] memory check = new uint256[][](4);
+
+	//         // check[0] = proxy.read(0, 3);
+	//         // check[1] = proxy.read(1, 5);
+	//         // check[2] = proxy.read(2, 5);
+	//         check[0] = proxy.read(0, 2);
+	//         check[2] = proxy.read(5, 3);
+	//         check[1] = proxy.read(1, 2);
+	//         check[3] = proxy.read(2, 1);
+	//         check[4] = proxy.read(3, 4);
+	//         check[5] = proxy.read(4, 5);
+
+	//         arg[i] = check;
+
+	//         // check[3] = proxy.read(2, 87);
+	//     }
+
+	//     string[] memory ret = proxy.supersize(arg, true);
+
+	//     for (uint256 i = 0; i < arg.length; i++) {
+	//         // ds.emit_log_string(ret[i]);
+	//     }
+	// }
+	// }
+
+	// 3D_60_20_80_80_80_38_03_80_91_85_39_03_80_82_84_81_53_20_83_51_14_02_90_F3_00_04_20_00_00_69_00
+	// 3D6020808080380380918539038082848153208351140290F300042000006900
 }
 
 // 0x00000000000000000000000000000000000000000000000000000000000000070000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000500000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000007
