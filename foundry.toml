@@ -1,6 +1,20 @@
+
+[deployment]
+src = './src'
+test = './src'
+# allow_paths = ["../dotnugg-v1-core/src"]
+sparse_mode = true
+sender = '0x9b0e2b16f57648c7baf28edd7772a815af266e77'
+optimizer_runs = 10000000
+cache = false
+force = false
+via_ir=true
+solc_version = '0.8.15'
+
+
 [default]
 src = 'src'
-test = '_test'
+test = 'test'
 out = './out'
 libs = ['lib']
 cache = true

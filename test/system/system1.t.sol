@@ -2,9 +2,9 @@
 
 pragma solidity 0.8.15;
 
-import "../main.t.sol";
-import {data} from "../../_data/nuggs.data.sol";
-import {DotnuggV1Lib, IDotnuggV1} from "../../DotnuggV1Lib.sol";
+import "@dotnugg-v1-core/test/main.t.sol";
+import {data} from "@dotnugg-v1-core/src/nuggs.data.sol";
+import {DotnuggV1Lib, IDotnuggV1} from "@dotnugg-v1-core/src/DotnuggV1Lib.sol";
 
 contract systemTest__one is t {
 	IDotnuggV1 proxy;
