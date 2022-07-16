@@ -1,5 +1,5 @@
 
-[deployment]
+[profile.deployment]
 src = './src'
 test = './src'
 # allow_paths = ["../dotnugg-v1-core/src"]
@@ -12,7 +12,7 @@ via_ir=true
 solc_version = '0.8.15'
 
 
-[default]
+[profile.default]
 src = 'src'
 test = 'test'
 out = './out'
@@ -43,7 +43,7 @@ block_difficulty = 0
 gas_reports = ["RiggedNuggft", "NuggftV1", "Expect"]
 
 
-[default.optimizer_details]
+[profile.default.optimizer_details]
 constantOptimizer = true
 cse = true
 deduplicate=true
