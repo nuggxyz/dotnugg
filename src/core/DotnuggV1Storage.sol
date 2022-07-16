@@ -99,14 +99,14 @@ library DotnuggV1Storage {
 			proxy := create2(0, 0, 18, feature)
 		}
 
-		require(proxy != address(0), "");
+		require(proxy != address(0), "PROXY_CREATE_FAILED");
 
 		(bool fileDeployed, ) = proxy.call(data);
 
-		require(fileDeployed, "");
+		require(fileDeployed, "dotnugg file deploy failed");
 
 		amount = IDotnuggV1(address(this)).lengthOf(feature);
 
-		require(amount > 0 && amount < 256, "");
+		require(amount > 0 && amount < 256, "save failed");
 	}
 }
