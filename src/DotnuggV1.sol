@@ -17,13 +17,11 @@ import {whoa as nuggs} from "@dotnugg-v1-core/src/nuggs.data.sol";
 /// @title DotnuggV1
 /// @author nugg.xyz - danny7even and dub6ix - 2022
 /// @dev implements [EIP 1167] minimal proxy for cloning
-contract DotnuggV1 is IDotnuggV1 {
+abstract contract DotnuggV1Base is IDotnuggV1 {
 	address public immutable factory;
 
 	constructor() {
 		factory = address(this);
-
-		write(abi.decode(nuggs.data, (bytes[])));
 	}
 
 	/* ////////////////////////////////////////////////////////////////////////
@@ -47,7 +45,7 @@ contract DotnuggV1 is IDotnuggV1 {
 	/// @dev implementation the EIP 1167 standard for deploying minimal proxy contracts, also known as "clones"
 	/// adapted from openzeppelin's unreleased implementation written by Philogy
 	/// [ Clones.sol : MIT ] - https://github.com/OpenZeppelin/openzeppelin-contracts/blob/28dd490726f045f7137fa1903b7a6b8a52d6ffcb/contracts/proxy/Clones.sol
-	function clone() internal returns (DotnuggV1 instance) {
+	function clone() internal returns (DotnuggV1Base instance) {
 		/// @solidity memory-safe-assembly
 		assembly {
 			let ptr := mload(0x40)
@@ -162,6 +160,7 @@ contract DotnuggV1 is IDotnuggV1 {
 		);
 	}
 }
+
 // function clone() internal returns (DotnuggV1 instance) {
 //     assembly {
 //         let ptr := mload(0x40)
@@ -172,3 +171,26 @@ contract DotnuggV1 is IDotnuggV1 {
 //     }
 //     require(address(instance) != address(0), "E");
 // }
+
+contract DotnuggV1Light is DotnuggV1Base {
+	address public immutable deployer;
+	bool public written;
+
+	constructor() {
+		deployer = tx.origin;
+	}
+
+	function lightWrite(bytes[] memory data) public {
+		require(deployer == tx.origin, "not deployer");
+		require(!written, "already written");
+
+		written = true;
+		write(data);
+	}
+}
+
+contract DotnuggV1 is DotnuggV1Base {
+	constructor() {
+		write(abi.decode(nuggs.data, (bytes[])));
+	}
+}
