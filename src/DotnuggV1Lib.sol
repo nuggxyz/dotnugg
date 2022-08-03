@@ -311,6 +311,22 @@ library DotnuggV1Lib {
 		}
 	}
 
+	function offsetBytesToArray(bytes memory b) internal pure returns (uint256[] memory a) {
+		require(b.length % 32 == 0, "offsetBytesToArray: bytes must be offset properly");
+
+		assembly {
+			a := mload(0x40)
+
+			let offset := 0
+
+			let arrlen := div(mload(b), 0x20)
+
+			mstore(b, arrlen)
+
+			a := b
+		}
+	}
+
 	// adapted from rari-capital/solmate's SSTORE2.sol
 	function readBytecode(
 		IDotnuggV1File file,

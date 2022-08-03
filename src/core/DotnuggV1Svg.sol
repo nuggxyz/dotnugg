@@ -39,7 +39,7 @@ library DotnuggV1Svg {
 
 			Execution memory exec;
 
-			exec.mapper = new Memory[](64);
+			exec.mapper = new Memory[](256);
 
 			exec.xStart = uint64(dat);
 			exec.xEnd = uint64(dat >>= 64);
