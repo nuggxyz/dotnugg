@@ -28,7 +28,7 @@ the core logic and smart contracts for dotnugg v1
 > the main DotnuggV1 contract is deployed with all NuggftV1's dotnugg data
 
 ```solidity
-pragma solidity 0.8.15;
+pragma solidity 0.8.16;
 
 import {DotnuggV1} "dotnugg-v1-core/DotnuggV1.sol";
 
@@ -54,7 +54,7 @@ contract MyTestContract {
 ### **using your own dotnugg data**
 
 ```solidity
-pragma solidity 0.8.15;
+pragma solidity 0.8.16;
 
 import {DotnuggV1} "dotnugg-v1-core/DotnuggV1.sol";
 
@@ -91,7 +91,7 @@ contract MyContract {
 brew install solidity
 
 # each shell you want to use forge in
-export SOLC_PATH=/opt/homebrew/Cellar/solidity/0.8.15/bin/solc
+export SOLC_PATH=/opt/homebrew/Cellar/solidity/0.8.16/bin/solc
 ```
 
 ## Licensing

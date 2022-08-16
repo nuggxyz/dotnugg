@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 
-pragma solidity 0.8.15;
+pragma solidity 0.8.16;
 
 // import {DotnuggV1} from '../../DotnuggV1.sol';
 
@@ -15,114 +15,114 @@ pragma solidity 0.8.15;
 // import '../utils/Vm.sol';
 
 contract ImplementerRun {
-    //---------------------------------------------------------------------------------------------------------------
-    // Opcode  | Opcode + Arguments  | Description  | Stack View
-    //---------------------------------------------------------------------------------------------------------------//
-    // 0x60    |  0x60_20            | PUSH1 32     | 32   *****
-    // 0x80    |  0x80               | DUP          | 32 32               //
-    // 0x60    |  0x60_1e            | PUSH1 1e     | codeOffset 32 32
-    // 0x80    |  0x80               | DUP          | codeOffset codeOffset 32 32
-    // 0x38    |  0x38               | CODESIZE     | codeSize codeOffset codeOffset 32 32
-    // 0x03    |  0x03               | SUB          | DATA_LEN codeOffset 32   32                        //
-    // 0x80    |  0x80               | DUP          | DATA_LEN DATA_LEN codeOffset 32 32   //
-    // 0x91    |  0x91               | SWAP2        | codeOffset DATA_LEN DATA_LEN 32 32   //
-    // 0x60    |  0x60_01            | PUSH1 01     | 01 codeOffset DATA_LEN DATA_LEN 32 32 //
-    // 0x39    |  0x39               | CODECOPY     | DATA_LEN 32 32
-    //
-    // _______10
-    // 0x03    |  0x03               | SUB          | (DATA_LEN - 32) 32
-    // 0x80    |  0x80               | DUP          | (DATA_LEN - 32) (DATA_LEN - 32) 32
-    // 0x82    |  0x82               | DUP3         | 32 (DATA_LEN - 32) (DATA_LEN - 32) 32
-    // 0x20    |  0x20               | SHA3         | TRUSTED_KEC (DATA_LEN - 32) 32                                               //
-    // 0x60    |  0x60_00            | PUSH1 00     | 0 TRUSTED_KEC (DATA_LEN - 32) 32
+	//---------------------------------------------------------------------------------------------------------------
+	// Opcode  | Opcode + Arguments  | Description  | Stack View
+	//---------------------------------------------------------------------------------------------------------------//
+	// 0x60    |  0x60_20            | PUSH1 32     | 32   *****
+	// 0x80    |  0x80               | DUP          | 32 32               //
+	// 0x60    |  0x60_1e            | PUSH1 1e     | codeOffset 32 32
+	// 0x80    |  0x80               | DUP          | codeOffset codeOffset 32 32
+	// 0x38    |  0x38               | CODESIZE     | codeSize codeOffset codeOffset 32 32
+	// 0x03    |  0x03               | SUB          | DATA_LEN codeOffset 32   32                        //
+	// 0x80    |  0x80               | DUP          | DATA_LEN DATA_LEN codeOffset 32 32   //
+	// 0x91    |  0x91               | SWAP2        | codeOffset DATA_LEN DATA_LEN 32 32   //
+	// 0x60    |  0x60_01            | PUSH1 01     | 01 codeOffset DATA_LEN DATA_LEN 32 32 //
+	// 0x39    |  0x39               | CODECOPY     | DATA_LEN 32 32
+	//
+	// _______10
+	// 0x03    |  0x03               | SUB          | (DATA_LEN - 32) 32
+	// 0x80    |  0x80               | DUP          | (DATA_LEN - 32) (DATA_LEN - 32) 32
+	// 0x82    |  0x82               | DUP3         | 32 (DATA_LEN - 32) (DATA_LEN - 32) 32
+	// 0x20    |  0x20               | SHA3         | TRUSTED_KEC (DATA_LEN - 32) 32                                               //
+	// 0x60    |  0x60_00            | PUSH1 00     | 0 TRUSTED_KEC (DATA_LEN - 32) 32
 
-    // 0x51    |  0x51               | MLOAD        | UNTRUSTED_KEC TRUSTED_KEK (DATA_LEN - 32) 32
-    // 0x14    |  0x14               | EQ           | OK (DATA_LEN - 32) 32
-    // 0x02    |  0x02               | MUL          | VALID_LEN 32
-    // 0x90    |  0x90               | SWAP         | 32 VALID_LEN
-    // 0xf3    |  0xf3               | RETURN       |
-    // ________17
-    //
+	// 0x51    |  0x51               | MLOAD        | UNTRUSTED_KEC TRUSTED_KEK (DATA_LEN - 32) 32
+	// 0x14    |  0x14               | EQ           | OK (DATA_LEN - 32) 32
+	// 0x02    |  0x02               | MUL          | VALID_LEN 32
+	// 0x90    |  0x90               | SWAP         | 32 VALID_LEN
+	// 0xf3    |  0xf3               | RETURN       |
+	// ________17
+	//
 
-    //   3D_60_20_80_80_80_38_03_80_91_85_39_03_80_82_84_81_53_20_83_51_14_02_90_F3_00_04_20_00_00_69_00:
-    //       0x00  0x67  0x67XXXXXXXXXXXXXXXX  PUSH8 bytecode  0x363d3d37363d34f0
-    //       0x01  0x3d  0x3d                  RETURNDATASIZE  0 0x363d3d37363d34f0
-    //       0x02  0x52  0x52                  MSTORE
-    //       0x03  0x60  0x6008                PUSH1 08        8
-    //       0x04  0x60  0x6018                PUSH1 18        24 8
-    //       0x05  0xf3  0xf3                  RETURN
-    //   0x363d3d37363d34f0:
-    //       0x00  0x36  0x36                  CALLDATASIZE    cds
-    //       0x01  0x3d  0x3d                  RETURNDATASIZE  0 cds
-    //       0x02  0x3d  0x3d                  RETURNDATASIZE  0 0 cds
-    //       0x03  0x37  0x37                  CALLDATACOPY
-    //       0x04  0x36  0x36                  CALLDATASIZE    cds
-    //       0x05  0x3d  0x3d                  RETURNDATASIZE  0 cds
-    //       0x06  0x34  0x34                  CALLVALUE       val 0 cds
-    //       0x07  0xf0  0xf0                  CREATE          addr
+	//   3D_60_20_80_80_80_38_03_80_91_85_39_03_80_82_84_81_53_20_83_51_14_02_90_F3_00_04_20_00_00_69_00:
+	//       0x00  0x67  0x67XXXXXXXXXXXXXXXX  PUSH8 bytecode  0x363d3d37363d34f0
+	//       0x01  0x3d  0x3d                  RETURNDATASIZE  0 0x363d3d37363d34f0
+	//       0x02  0x52  0x52                  MSTORE
+	//       0x03  0x60  0x6008                PUSH1 08        8
+	//       0x04  0x60  0x6018                PUSH1 18        24 8
+	//       0x05  0xf3  0xf3                  RETURN
+	//   0x363d3d37363d34f0:
+	//       0x00  0x36  0x36                  CALLDATASIZE    cds
+	//       0x01  0x3d  0x3d                  RETURNDATASIZE  0 cds
+	//       0x02  0x3d  0x3d                  RETURNDATASIZE  0 0 cds
+	//       0x03  0x37  0x37                  CALLDATACOPY
+	//       0x04  0x36  0x36                  CALLDATASIZE    cds
+	//       0x05  0x3d  0x3d                  RETURNDATASIZE  0 cds
+	//       0x06  0x34  0x34                  CALLVALUE       val 0 cds
+	//       0x07  0xf0  0xf0                  CREATE          addr
 
-    // bytes hess = hex'60_20_80_60_1e_80_38_03_80_91_60_01_39_03_80_82_20_83_51_14_02_90_F3_64_6f_74_6e_75_67_67';
+	// bytes hess = hex'60_20_80_60_1e_80_38_03_80_91_60_01_39_03_80_82_20_83_51_14_02_90_F3_64_6f_74_6e_75_67_67';
 
-    function run() public {
-        // bytes[] memory dat = abi.decode(__data, (bytes[]));
+	function run() public {
+		// bytes[] memory dat = abi.decode(__data, (bytes[]));
 
-        bytes
-            memory data = hex"3D_60_20_80_80_80_38_03_80_91_85_39_03_80_82_84_81_53_20_83_51_14_02_90_F3_00_04_20_00_00_69_00_8040049e9133abd913d6db437bc0b591f6312de387ac1a38b8e3f206d6debc110002000100de1e0392092105e094951052422003e422021431154861402e450c214455314624500372431430850c41535880291c8185503153151188240606163318801955f314320024816736001c616b31801c316f32470c5bcc720316f321316b361316f321314316331895855055d056006050c50c50d050d082406021150c51151050e000e030858c51256100e060835445540c41802e060d592814600f898598881f7203900bc7f08058316031e8005070c850b330a61324ccb5824792ea049dab4789517edc128561f224d67fd0492c9f889128aeb133587dc240104206900106cf81ec0a722a98d006c0861a4a982b001b0218692c608c006c196420a188c006c1869296c82ca16a790c00ca16a990c00ca0eab90c00c10a24afb003042c82be43242a42c643242de43242de43242de43242de43242a64296c1a9e890a1b20b06a9692cc006c1aa3a4b3001b0728e81a8c006c9ca1a4a3203b06a3b40db1e05c6f8402c18b018f400283864285998530991e4ba8128561f224d67fd04894575892593f1124ccb582281842069001";
+		bytes
+			memory data = hex"3D_60_20_80_80_80_38_03_80_91_85_39_03_80_82_84_81_53_20_83_51_14_02_90_F3_00_04_20_00_00_69_00_8040049e9133abd913d6db437bc0b591f6312de387ac1a38b8e3f206d6debc110002000100de1e0392092105e094951052422003e422021431154861402e450c214455314624500372431430850c41535880291c8185503153151188240606163318801955f314320024816736001c616b31801c316f32470c5bcc720316f321316b361316f321314316331895855055d056006050c50c50d050d082406021150c51151050e000e030858c51256100e060835445540c41802e060d592814600f898598881f7203900bc7f08058316031e8005070c850b330a61324ccb5824792ea049dab4789517edc128561f224d67fd0492c9f889128aeb133587dc240104206900106cf81ec0a722a98d006c0861a4a982b001b0218692c608c006c196420a188c006c1869296c82ca16a790c00ca16a990c00ca0eab90c00c10a24afb003042c82be43242a42c643242de43242de43242de43242de43242a64296c1a9e890a1b20b06a9692cc006c1aa3a4b3001b0728e81a8c006c9ca1a4a3203b06a3b40db1e05c6f8402c18b018f400283864285998530991e4ba8128561f224d67fd04894575892593f1124ccb582281842069001";
 
-        // bytes
-        //     memory data = hex"3D_60_20_80_80_80_38_03_80_91_85_39_03_80_82_84_81_53_20_83_51_14_02_90_F3_00_04_20_00_00_69_00_8040049e9133abd913d6db437bc0b591f6312de387ac1a38b8e3f206d6debc11_6902000100de1e0392092105e094951052422003e422021431154861402e450c214455314624500372431430850c41535880291c8185503153151188240606163318801955f314320024816736001c616b31801c316f32470c5bcc720316f321316b361316f321314316331895855055d056006050c50c50d050d082406021150c51151050e000e030858c51256100e060835445540c41802e060d592814600f898598881f7203900bc7f08058316031e8005070c850b330a61324ccb5824792ea049dab4789517edc128561f224d67fd0492c9f889128aeb133587dc240104206900106cf81ec0a722a98d006c0861a4a982b001b0218692c608c006c196420a188c006c1869296c82ca16a790c00ca16a990c00ca0eab90c00c10a24afb003042c82be43242a42c643242de43242de43242de43242de43242a64296c1a9e890a1b20b06a9692cc006c1aa3a4b3001b0728e81a8c006c9ca1a4a3203b06a3b40db1e05c6f8402c18b018f400283864285998530991e4ba8128561f224d67fd04894575892593f1124ccb582281842069001";
+		// bytes
+		//     memory data = hex"3D_60_20_80_80_80_38_03_80_91_85_39_03_80_82_84_81_53_20_83_51_14_02_90_F3_00_04_20_00_00_69_00_8040049e9133abd913d6db437bc0b591f6312de387ac1a38b8e3f206d6debc11_6902000100de1e0392092105e094951052422003e422021431154861402e450c214455314624500372431430850c41535880291c8185503153151188240606163318801955f314320024816736001c616b31801c316f32470c5bcc720316f321316b361316f321314316331895855055d056006050c50c50d050d082406021150c51151050e000e030858c51256100e060835445540c41802e060d592814600f898598881f7203900bc7f08058316031e8005070c850b330a61324ccb5824792ea049dab4789517edc128561f224d67fd0492c9f889128aeb133587dc240104206900106cf81ec0a722a98d006c0861a4a982b001b0218692c608c006c196420a188c006c1869296c82ca16a790c00ca16a990c00ca0eab90c00c10a24afb003042c82be43242a42c643242de43242de43242de43242de43242a64296c1a9e890a1b20b06a9692cc006c1aa3a4b3001b0728e81a8c006c9ca1a4a3203b06a3b40db1e05c6f8402c18b018f400283864285998530991e4ba8128561f224d67fd04894575892593f1124ccb582281842069001";
 
-        // bytes
-        //     memory data = hex'60_20_80_60_1f_80_38_03_80_91_60_00_39_03_80_82_20_60_00_51_14_02_90_F3_64_6f_74_6e_75_67_67_7040049e9133abd913d6db437bc0b591f6312de387ac1a38b8e3f206d6debc11_0002000100de1e0392092105e094951052422003e422021431154861402e450c214455314624500372431430850c41535880291c8185503153151188240606163318801955f314320024816736001c616b31801c316f32470c5bcc720316f321316b361316f321314316331895855055d056006050c50c50d050d082406021150c51151050e000e030858c51256100e060835445540c41802e060d592814600f898598881f7203900bc7f08058316031e8005070c850b330a61324ccb5824792ea049dab4789517edc128561f224d67fd0492c9f889128aeb133587dc240104206900106cf81ec0a722a98d006c0861a4a982b001b0218692c608c006c196420a188c006c1869296c82ca16a790c00ca16a990c00ca0eab90c00c10a24afb003042c82be43242a42c643242de43242de43242de43242de43242a64296c1a9e890a1b20b06a9692cc006c1aa3a4b3001b0728e81a8c006c9ca1a4a3203b06a3b40db1e05c6f8402c18b018f400283864285998530991e4ba8128561f224d67fd04894575892593f1124ccb582281842069001';
+		// bytes
+		//     memory data = hex'60_20_80_60_1f_80_38_03_80_91_60_00_39_03_80_82_20_60_00_51_14_02_90_F3_64_6f_74_6e_75_67_67_7040049e9133abd913d6db437bc0b591f6312de387ac1a38b8e3f206d6debc11_0002000100de1e0392092105e094951052422003e422021431154861402e450c214455314624500372431430850c41535880291c8185503153151188240606163318801955f314320024816736001c616b31801c316f32470c5bcc720316f321316b361316f321314316331895855055d056006050c50c50d050d082406021150c51151050e000e030858c51256100e060835445540c41802e060d592814600f898598881f7203900bc7f08058316031e8005070c850b330a61324ccb5824792ea049dab4789517edc128561f224d67fd0492c9f889128aeb133587dc240104206900106cf81ec0a722a98d006c0861a4a982b001b0218692c608c006c196420a188c006c1869296c82ca16a790c00ca16a990c00ca0eab90c00c10a24afb003042c82be43242a42c643242de43242de43242de43242de43242a64296c1a9e890a1b20b06a9692cc006c1aa3a4b3001b0728e81a8c006c9ca1a4a3203b06a3b40db1e05c6f8402c18b018f400283864285998530991e4ba8128561f224d67fd04894575892593f1124ccb582281842069001';
 
-        // bytes
-        //     memory data = hex'59_60_1e_81_38_03_80_91_59_39_60_20_80_82q_03_90_20_82_51_14_02_90_F3_64_6f_74_6e_75_67_67_00_02000100de1e0392092105e094951052422003e422021431154861402e450c214455314624500372431430850c41535880291c8185503153151188240606163318801955f314320024816736001c616b31801c316f32470c5bcc720316f321316b361316f321314316331895855055d056006050c50c50d050d082406021150c51151050e000e030858c51256100e060835445540c41802e060d592814600f898598881f7203900bc7f08058316031e8005070c850b330a61324ccb5824792ea049dab4789517edc128561f224d67fd0492c9f889128aeb133587dc240104206900106cf81ec0a722a98d006c0861a4a982b001b0218692c608c006c196420a188c006c1869296c82ca16a790c00ca16a990c00ca0eab90c00c10a24afb003042c82be43242a42c643242de43242de43242de43242de43242a64296c1a9e890a1b20b06a9692cc006c1aa3a4b3001b0728e81a8c006c9ca1a4a3203b06a3b40db1e05c6f8402c18b018f400283864285998530991e4ba8128561f224d67fd04894575892593f1124ccb582281842069001786649bb786ebec160886f32184c4fc127cfd3546f902141632047921d19bfbb';
+		// bytes
+		//     memory data = hex'59_60_1e_81_38_03_80_91_59_39_60_20_80_82q_03_90_20_82_51_14_02_90_F3_64_6f_74_6e_75_67_67_00_02000100de1e0392092105e094951052422003e422021431154861402e450c214455314624500372431430850c41535880291c8185503153151188240606163318801955f314320024816736001c616b31801c316f32470c5bcc720316f321316b361316f321314316331895855055d056006050c50c50d050d082406021150c51151050e000e030858c51256100e060835445540c41802e060d592814600f898598881f7203900bc7f08058316031e8005070c850b330a61324ccb5824792ea049dab4789517edc128561f224d67fd0492c9f889128aeb133587dc240104206900106cf81ec0a722a98d006c0861a4a982b001b0218692c608c006c196420a188c006c1869296c82ca16a790c00ca16a990c00ca0eab90c00c10a24afb003042c82be43242a42c643242de43242de43242de43242de43242a64296c1a9e890a1b20b06a9692cc006c1aa3a4b3001b0728e81a8c006c9ca1a4a3203b06a3b40db1e05c6f8402c18b018f400283864285998530991e4ba8128561f224d67fd04894575892593f1124ccb582281842069001786649bb786ebec160886f32184c4fc127cfd3546f902141632047921d19bfbb';
 
-        // uint256 header = 0x60_12_59_80_38_03_80_92_59_39_F3_64_6F_74_6E_75_67_67_00;
+		// uint256 header = 0x60_12_59_80_38_03_80_92_59_39_F3_64_6F_74_6E_75_67_67_00;
 
-        address pointer;
-        uint8 size = 128;
-        uint8 start = 0;
-        assembly {
-            // Deploy a new contract with the generated creation code.
-            // We start 32 bytes into the code to avoid copying the byte length.
-            pointer := create(0, add(data, 32), mload(data))
+		address pointer;
+		uint8 size = 128;
+		uint8 start = 0;
+		assembly {
+			// Deploy a new contract with the generated creation code.
+			// We start 32 bytes into the code to avoid copying the byte length.
+			pointer := create(0, add(data, 32), mload(data))
 
-            // Get a pointer to some free memory.
-            data := mload(0x40)
+			// Get a pointer to some free memory.
+			data := mload(0x40)
 
-            // Update the free memory pointer to prevent overriding our data.
-            // We use and(x, not(31)) as a cheaper equivalent to sub(x, mod(x, 32)).
-            // Adding 31 to size and running the result through the logic above ensures
-            // the memory pointer remains word-aligned, following the Solidity convention.
-            mstore(0x40, add(data, and(add(add(size, 32), 31), not(31))))
+			// Update the free memory pointer to prevent overriding our data.
+			// We use and(x, not(31)) as a cheaper equivalent to sub(x, mod(x, 32)).
+			// Adding 31 to size and running the result through the logic above ensures
+			// the memory pointer remains word-aligned, following the Solidity convention.
+			mstore(0x40, add(data, and(add(add(size, 32), 31), not(31))))
 
-            // Store the size of the data in the first 32 byte chunk of free memory.
-            mstore(data, size)
+			// Store the size of the data in the first 32 byte chunk of free memory.
+			mstore(data, size)
 
-            // Copy the code into memory right after the 32 bytes we used to store the size.
-            extcodecopy(pointer, add(data, 32), start, size)
-        }
+			// Copy the code into memory right after the 32 bytes we used to store the size.
+			extcodecopy(pointer, add(data, 32), start, size)
+		}
 
-        pointer.code;
+		pointer.code;
 
-        // require(pointer.code.length != 0, 'DEPLOYMENT_FAILED');
+		// require(pointer.code.length != 0, 'DEPLOYMENT_FAILED');
 
-        // MockDotnuggV1Implementer impl = new MockDotnuggV1Implementer(processor);
+		// MockDotnuggV1Implementer impl = new MockDotnuggV1Implementer(processor);
 
-        // forge.vm.prank(address(impl));
-        // impl.dotnuggV1StorageProxy().store(0, dat[0]);
+		// forge.vm.prank(address(impl));
+		// impl.dotnuggV1StorageProxy().store(0, dat[0]);
 
-        // for (uint8 i = 0; i < 1; i++) {
-        //     // address res = impl.dotnuggV1StorageProxy().pointer(i);
-        //     // bytes memory a = res.code;
-        //     // emit log_named_address('[i]', res);
-        //     // assertTrue(false);
-        // }
-    }
+		// for (uint8 i = 0; i < 1; i++) {
+		//     // address res = impl.dotnuggV1StorageProxy().pointer(i);
+		//     // bytes memory a = res.code;
+		//     // emit log_named_address('[i]', res);
+		//     // assertTrue(false);
+		// }
+	}
 
-    // bytes __data2 =
-    //     hex'60125981380380925939f3646f746e7567670002000100de1e0392092105e094951052422003e422021431154861402e450c214455314624500372431430850c41535880291c8185503153151188240606163318801955f314320024816736001c616b31801c316f32470c5bcc720316f321316b361316f321314316331895855055d056006050c50c50d050d082406021150c51151050e000e030858c51256100e060835445540c41802e060d592814600f898598881f7203900bc7f08058316031e8005070c850b330a61324ccb5824792ea049dab4789517edc128561f224d67fd0492c9f889128aeb133587dc240104206900106cf81ec0a722a98d006c0861a4a982b001b0218692c608c006c196420a188c006c1869296c82ca16a790c00ca16a990c00ca0eab90c00c10a24afb003042c82be43242a42c643242de43242de43242de43242de43242a64296c1a9e890a1b20b06a9692cc006c1aa3a4b3001b0728e81a8c006c9ca1a4a3203b06a3b40db1e05c6f8402c18b018f400283864285998530991e4ba8128561f224d67fd04894575892593f1124ccb582281842069001786649bb786ebec160886f32184c4fc127cfd3546f902141632047921d19bfbb';
+	// bytes __data2 =
+	//     hex'60125981380380925939f3646f746e7567670002000100de1e0392092105e094951052422003e422021431154861402e450c214455314624500372431430850c41535880291c8185503153151188240606163318801955f314320024816736001c616b31801c316f32470c5bcc720316f321316b361316f321314316331895855055d056006050c50c50d050d082406021150c51151050e000e030858c51256100e060835445540c41802e060d592814600f898598881f7203900bc7f08058316031e8005070c850b330a61324ccb5824792ea049dab4789517edc128561f224d67fd0492c9f889128aeb133587dc240104206900106cf81ec0a722a98d006c0861a4a982b001b0218692c608c006c196420a188c006c1869296c82ca16a790c00ca16a990c00ca0eab90c00c10a24afb003042c82be43242a42c643242de43242de43242de43242de43242a64296c1a9e890a1b20b06a9692cc006c1aa3a4b3001b0728e81a8c006c9ca1a4a3203b06a3b40db1e05c6f8402c18b018f400283864285998530991e4ba8128561f224d67fd04894575892593f1124ccb582281842069001786649bb786ebec160886f32184c4fc127cfd3546f902141632047921d19bfbb';
 }
 
 //---------------------------------------------------------------------------------------------------------------
