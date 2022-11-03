@@ -107,13 +107,7 @@ abstract contract DotnuggV1Base is IDotnuggV1 {
 
 	// prettier-ignore
 	function svg(uint256[] memory calculated, uint256 dat, bool base64) public override pure returns (string memory res) {
-        bytes memory image = (
-            abi.encodePacked(
-                '<svg viewBox="0 0 255 255" xmlns="http://www.w3.org/2000/svg">',
-                DotnuggV1Svg.fledgeOutTheRekts(calculated, dat),
-                "</svg>"
-            )
-        );
+        bytes memory image = DotnuggV1Svg.fledgeOutTheRekts(calculated, dat);
 
         return string(encodeSvg(image, base64));
     }

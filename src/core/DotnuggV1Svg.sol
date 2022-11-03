@@ -27,11 +27,12 @@ library DotnuggV1Svg {
 		uint256 isaG;
 	}
 
-	uint256 constant TRANSFORM_MULTIPLIER = 1000;
+	// uint256 constant TRANSFORM_MULTIPLIER = 1000;
 	uint256 constant WIDTH = 255;
-	uint256 constant WIDTH_SUB_1 = WIDTH - 1;
-	uint256 constant WIDTH_MID = (WIDTH / 2) + 1;
-	uint256 constant WIDTH_MID_10X = uint256(WIDTH_MID) * TRANSFORM_MULTIPLIER;
+
+	// uint256 constant WIDTH_SUB_1 = WIDTH - 1;
+	// uint256 constant WIDTH_MID = (WIDTH / 2) + 1;
+	// uint256 constant WIDTH_MID_10X = uint256(WIDTH_MID) * TRANSFORM_MULTIPLIER;
 
 	function fledgeOutTheRekts(uint256[] memory calculated, uint256 dat) internal pure returns (bytes memory res) {
 		unchecked {
@@ -74,7 +75,17 @@ library DotnuggV1Svg {
 				res = abi.encodePacked(res, exec.mapper[i].data, '"/>');
 			}
 
-			if (exec.isaG == 1) res = gWrap(exec, res);
+			if (exec.isaG == 1) {
+				res = abi.encodePacked(
+					'<svg viewBox="0 0.5 ',
+					(exec.xEnd - exec.xStart).toString(),
+					" ",
+					(exec.yEnd - exec.yStart).toString(),
+					'" xmlns="http://www.w3.org/2000/svg"><g>',
+					res,
+					"</g></svg>"
+				);
+			}
 		}
 	}
 
@@ -94,39 +105,39 @@ library DotnuggV1Svg {
 		d = uint64(abc >>= 64);
 	}
 
-	function gWrap(Execution memory exec, bytes memory children) internal pure returns (bytes memory res) {
-		unchecked {
-			exec.yEnd--;
+	// function gWrap(Execution memory exec, bytes memory children) internal pure returns (bytes memory res) {
+	// 	unchecked {
+	// 		exec.yEnd--;
 
-			exec.xEnd -= exec.xStart;
-			exec.yEnd -= exec.yStart;
+	// 		exec.xEnd -= exec.xStart;
+	// 		exec.yEnd -= exec.yStart;
 
-			uint256 xTrans = ((exec.xEnd + 1) * TRANSFORM_MULTIPLIER) / 2 + (0) * TRANSFORM_MULTIPLIER;
-			uint256 yTrans = ((exec.yEnd + 1) * TRANSFORM_MULTIPLIER) / 2 + (0) * TRANSFORM_MULTIPLIER;
+	// 		uint256 xTrans = ((exec.xEnd + 1) * TRANSFORM_MULTIPLIER) / 2 + (0) * TRANSFORM_MULTIPLIER;
+	// 		uint256 yTrans = ((exec.yEnd + 1) * TRANSFORM_MULTIPLIER) / 2 + (0) * TRANSFORM_MULTIPLIER;
 
-			if (exec.xEnd == 0) exec.xEnd++;
-			if (exec.yEnd == 0) exec.yEnd++;
+	// 		if (exec.xEnd == 0) exec.xEnd++;
+	// 		if (exec.yEnd == 0) exec.yEnd++;
 
-			uint256 xScale = (uint256(WIDTH_SUB_1) * 100000) / exec.xEnd;
-			uint256 yScale = (uint256(WIDTH_SUB_1) * 100000) / exec.yEnd;
+	// 		uint256 xScale = (uint256(WIDTH_SUB_1) * 100000) / exec.xEnd;
+	// 		uint256 yScale = (uint256(WIDTH_SUB_1) * 100000) / exec.yEnd;
 
-			if (yScale < xScale) xScale = yScale;
+	// 		if (yScale < xScale) xScale = yScale;
 
-			res = abi.encodePacked(
-				'<g class="DN" transform="scale(',
-				(xScale).toFixedPointString(5),
-				") translate(",
-				xTrans > WIDTH_MID_10X ? "-" : "",
-				(xTrans > WIDTH_MID_10X ? xTrans - WIDTH_MID_10X : WIDTH_MID_10X - xTrans).toFixedPointString(3),
-				",",
-				yTrans > WIDTH_MID_10X ? "-" : "",
-				(yTrans > WIDTH_MID_10X ? yTrans - WIDTH_MID_10X : WIDTH_MID_10X - yTrans).toFixedPointString(3),
-				')" transform-origin="center center">',
-				children,
-				"</g>"
-			);
-		}
-	}
+	// 		res = abi.encodePacked(
+	// 			'<g class="DN" transform="scale(',
+	// 			(xScale).toFixedPointString(5),
+	// 			") translate(",
+	// 			xTrans > WIDTH_MID_10X ? "-" : "",
+	// 			(xTrans > WIDTH_MID_10X ? xTrans - WIDTH_MID_10X : WIDTH_MID_10X - xTrans).toFixedPointString(3),
+	// 			",",
+	// 			yTrans > WIDTH_MID_10X ? "-" : "",
+	// 			(yTrans > WIDTH_MID_10X ? yTrans - WIDTH_MID_10X : WIDTH_MID_10X - yTrans).toFixedPointString(3),
+	// 			')" transform-origin="center center">',
+	// 			children,
+	// 			"</g>"
+	// 		);
+	// 	}
+	// }
 
 	function getColorIndex(Memory[] memory mapper, uint256 color) internal pure returns (uint256 i) {
 		unchecked {
@@ -173,7 +184,7 @@ library DotnuggV1Svg {
 				"M",
 				(x - exec.xStart).toString(),
 				" ",
-				(y - exec.yStart).toString(),
+				(y - exec.yStart + 1).toString(),
 				"h",
 				(xlen).toString()
 			);

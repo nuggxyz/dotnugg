@@ -121,9 +121,9 @@ contract systemTest__one is t {
 		// proxy.exec([1, 16, 16], false);
 
 		// ds.emit_log_string(proxy.exec([2, 47, 23, 0, 25, 0, 0, 15], false));
-		// ds.emit_log_string(proxy.exec([3, 47, 23, 21, 0, 0, 0, 0], false));
-		// ds.emit_log_string(proxy.exec([2, 0, 0, 18, 0, 0, 0, 0], false));
-		// ds.emit_log_string(proxy.exec(3, 48, false));
+		ds.emit_log_string(proxy.exec([3, 47, 23, 21, 0, 0, 0, 0], false));
+		ds.emit_log_string(proxy.exec([2, 0, 0, 18, 0, 0, 0, 0], false));
+		ds.emit_log_string(proxy.exec(3, 48, false));
 		// proxy.exec([0, 0, 0, 0, 0, 0, 0, 0], false);
 		ds.emit_log_string(proxy.exec(2, 3, false));
 
@@ -151,7 +151,7 @@ contract systemTest__one is t {
 
 		// proxy.exec([1, 16, 16], false);
 
-		ds.emit_log_string(proxy.exec([2, 2, 2, 2, 0, 2, 0, 0], true));
+		ds.emit_log_string(proxy.exec([10, 2, 2, 2, 2, 2, 2, 2], false));
 		// ds.emit_log_string(proxy.exec([3, 47, 23, 21, 0, 0, 0, 0], false));
 		// ds.emit_log_string(proxy.exec([2, 0, 0, 18, 0, 0, 0, 0], false));
 		// ds.emit_log_string(proxy.exec(3, 48, false));
