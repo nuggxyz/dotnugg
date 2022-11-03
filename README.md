@@ -1,7 +1,7 @@
 # Dotnugg V1 Smart Contracts
 
 > **Warning**
-> this code is yet to be deployed and licensed under BUSL-1.1
+> this code is yet to be deployed and licensed under UNLICENSED
 
 [![forge](https://github.com/nuggxyz/dotnugg-v1-core/actions/workflows/forge.yaml/badge.svg)](https://github.com/nuggxyz/dotnugg-v1-core/actions/workflows/forge.yaml)
 
@@ -28,7 +28,7 @@ the core logic and smart contracts for dotnugg v1
 > the main DotnuggV1 contract is deployed with all NuggftV1's dotnugg data
 
 ```solidity
-pragma solidity 0.8.16;
+pragma solidity 0.8.17;
 
 import {DotnuggV1} "dotnugg-v1-core/DotnuggV1.sol";
 
@@ -54,7 +54,7 @@ contract MyTestContract {
 ### **using your own dotnugg data**
 
 ```solidity
-pragma solidity 0.8.16;
+pragma solidity 0.8.17;
 
 import {DotnuggV1} "dotnugg-v1-core/DotnuggV1.sol";
 
@@ -91,13 +91,5 @@ contract MyContract {
 brew install solidity
 
 # each shell you want to use forge in
-export SOLC_PATH=/opt/homebrew/Cellar/solidity/0.8.16/bin/solc
+export SOLC_PATH=/opt/homebrew/Cellar/solidity/0.8.17/bin/solc
 ```
-
-## Licensing
-
-The primary license for DotnuggV1 Core is the Business Source License 1.1 (`BUSL-1.1`), see [`LICENSE`](./LICENSE).
-
-### Exceptions
-
--   All files in `src/_test` are unlicensed
