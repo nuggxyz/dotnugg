@@ -7,13 +7,13 @@ import "@dotnugg-v1-core/test/utils/forge.sol";
 import "@dotnugg-v1-core/src/DotnuggV1.sol";
 
 contract t is ForgeTest {
-	DotnuggV1 factory;
+	IDotnuggV1 factory;
 
 	constructor() {
 		ds.setDsTest(address(this));
 	}
 
 	function reset() internal {
-		factory = new DotnuggV1();
+		factory = IDotnuggV1(address(new DotnuggV1()));
 	}
 }
