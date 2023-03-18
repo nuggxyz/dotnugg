@@ -23,6 +23,19 @@ library DotnuggV1Lib {
 		return toFixedPointString(value, 0);
 	}
 
+	/**
+	 * @dev Converts a `uint256` to its ASCII `string` decimal representation.
+	 */
+	function toString(int256 value) internal pure returns (string memory) {
+		if (value == 0) {
+			return "0";
+		} else if (value < 0) {
+			return string.concat("-", toString(uint256(-1 * value)));
+		} else {
+			return toString(uint256(value));
+		}
+	}
+
 	/// @notice parses the external itemId into a feautre and position
 	/// @dev this follows dotnugg v1 specification
 	/// @param itemId -> the external itemId

@@ -11,6 +11,8 @@ library DotnuggV1Svg {
 	using DotnuggV1Lib for uint256;
 	using DotnuggV1Lib for uint8;
 	using DotnuggV1Pixel for uint256;
+	using DotnuggV1Lib for int256;
+
 	using DotnuggV1Parser for uint256[];
 
 	struct Memory {
