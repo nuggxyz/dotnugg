@@ -1,6 +1,6 @@
 // // SPDX-License-Identifier: UNLICENSED
 
-// pragma solidity 0.8.17;
+// pragma solidity 0.8.20;
 
 // import {IDotnuggV1} from './../interfaces/IDotnuggV1.sol';
 // import {IDotnuggV1Implementer} from './../interfaces/IDotnuggV1Implementer.sol';
