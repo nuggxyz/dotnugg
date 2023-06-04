@@ -2,10 +2,10 @@
 
 pragma solidity 0.8.17;
 
-import {ShiftLib} from "@dotnugg-v1-core/src/libraries/ShiftLib.sol";
+import {ShiftLib} from "git.nugg.xyz/dotnugg/src/libraries/ShiftLib.sol";
 
-import {DotnuggV1Pixel as Pixel} from "@dotnugg-v1-core/src/core/DotnuggV1Pixel.sol";
-import {DotnuggV1Reader as Reader} from "@dotnugg-v1-core/src/core/DotnuggV1Reader.sol";
+import {DotnuggV1Pixel as Pixel} from "git.nugg.xyz/dotnugg/src/core/DotnuggV1Pixel.sol";
+import {DotnuggV1Reader as Reader} from "git.nugg.xyz/dotnugg/src/core/DotnuggV1Reader.sol";
 
 /// @title DotnuggV1Parser
 /// @author nugg.xyz - danny7even and dub6ix - 2022

@@ -2,11 +2,11 @@
 
 pragma solidity 0.8.17;
 
-import {ShiftLib} from "@dotnugg-v1-core/src/libraries/ShiftLib.sol";
+import {ShiftLib} from "git.nugg.xyz/dotnugg/src/libraries/ShiftLib.sol";
 
-import {DotnuggV1Pixel as Pixel} from "@dotnugg-v1-core/src/core/DotnuggV1Pixel.sol";
-import {DotnuggV1Matrix as Matrix} from "@dotnugg-v1-core/src/core/DotnuggV1Matrix.sol";
-import {DotnuggV1Parser as Parser} from "@dotnugg-v1-core/src/core/DotnuggV1Parser.sol";
+import {DotnuggV1Pixel as Pixel} from "git.nugg.xyz/dotnugg/src/core/DotnuggV1Pixel.sol";
+import {DotnuggV1Matrix as Matrix} from "git.nugg.xyz/dotnugg/src/core/DotnuggV1Matrix.sol";
+import {DotnuggV1Parser as Parser} from "git.nugg.xyz/dotnugg/src/core/DotnuggV1Parser.sol";
 
 /// @title DotnuggV1MiddleOut
 /// @author nugg.xyz - danny7even and dub6ix - 2022

@@ -2,7 +2,7 @@
 [profile.deployment]
 src = './src'
 test = './src'
-# allow_paths = ["../dotnugg-v1-core/src"]
+# allow_paths = ["../dotnugg/src"]
 sparse_mode = true
 sender = '0x9b0e2b16f57648c7baf28edd7772a815af266e77'
 optimizer_runs = 10000000

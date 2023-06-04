@@ -2,9 +2,9 @@
 
 pragma solidity 0.8.17;
 
-import "@dotnugg-v1-core/test/main.t.sol";
+import "git.nugg.xyz/dotnugg/test/main.t.sol";
 
-import {DotnuggV1Pixel as Pixel} from "@dotnugg-v1-core/src/core/DotnuggV1Pixel.sol";
+import {DotnuggV1Pixel as Pixel} from "git.nugg.xyz/dotnugg/src/core/DotnuggV1Pixel.sol";
 
 contract generalTest__generate is t {
 	function test__trr() public {

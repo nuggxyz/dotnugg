@@ -1,5 +1,5 @@
-ds-test/=lib/ds-test/src/
+ds-test/=lib/ds-test/
 forge-std/=lib/forge-std/src/
-@dotnugg-v1-core/src/=src/
-@dotnugg-v1-core/test/=test/
+git.nugg.xyz/dotnugg/src/=src/
+git.nugg.xyz/dotnugg/test/=test/
 solmate/=lib/solmate/src

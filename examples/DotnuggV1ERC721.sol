@@ -4,8 +4,8 @@ pragma solidity 0.8.17;
 
 import {ERC721} from "./solmate/ERC721.sol";
 
-import {DotnuggV1} from "@dotnugg-v1-core/src/DotnuggV1.sol";
-import {DotnuggV1Lib} from "@dotnugg-v1-core/src/DotnuggV1Lib.sol";
+import {DotnuggV1} from "git.nugg.xyz/dotnugg/src/DotnuggV1.sol";
+import {DotnuggV1Lib} from "git.nugg.xyz/dotnugg/src/DotnuggV1Lib.sol";
 
 /// this example implements rari-capital/solmate's ERC721
 contract DotnuggV1ERC721 is ERC721 {

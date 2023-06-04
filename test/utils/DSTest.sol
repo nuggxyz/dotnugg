@@ -4,7 +4,7 @@ pragma solidity 0.8.17;
 
 import "./ds.sol";
 
-import {DSTest as ogDSTest} from "../../../lib/ds-test/src/test.sol";
+import {DSTest as ogDSTest} from "ds-test/src/test.sol";
 
 contract DSTest is ogDSTest {
 	address internal constant DEAD_ADDRESS = 0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF;

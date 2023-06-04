@@ -3,7 +3,7 @@
 > **Warning**
 > this code is yet to be deployed and licensed under UNLICENSED
 
-[![forge](https://github.com/nuggxyz/dotnugg-v1-core/actions/workflows/forge.yaml/badge.svg)](https://github.com/nuggxyz/dotnugg-v1-core/actions/workflows/forge.yaml)
+[![forge](https://github.com/nuggxyz/dotnugg/actions/workflows/forge.yaml/badge.svg)](https://github.com/nuggxyz/dotnugg/actions/workflows/forge.yaml)
 
 the core logic and smart contracts for dotnugg v1
 
@@ -30,7 +30,7 @@ the core logic and smart contracts for dotnugg v1
 ```solidity
 pragma solidity 0.8.17;
 
-import {DotnuggV1} "dotnugg-v1-core/DotnuggV1.sol";
+import {DotnuggV1} "dotnugg/DotnuggV1.sol";
 
 contract MyTestContract {
 
@@ -56,7 +56,7 @@ contract MyTestContract {
 ```solidity
 pragma solidity 0.8.17;
 
-import {DotnuggV1} "dotnugg-v1-core/DotnuggV1.sol";
+import {DotnuggV1} "dotnugg/DotnuggV1.sol";
 
 import {data as myData} from "./MyDotnuggData.sol";
 

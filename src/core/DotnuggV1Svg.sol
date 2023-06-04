@@ -2,10 +2,10 @@
 
 pragma solidity 0.8.17;
 
-import {DotnuggV1Lib} from "@dotnugg-v1-core/src/DotnuggV1Lib.sol";
+import {DotnuggV1Lib} from "git.nugg.xyz/dotnugg/src/DotnuggV1Lib.sol";
 
-import {DotnuggV1Parser} from "@dotnugg-v1-core/src/core/DotnuggV1Parser.sol";
-import {DotnuggV1Pixel} from "@dotnugg-v1-core/src/core/DotnuggV1Pixel.sol";
+import {DotnuggV1Parser} from "git.nugg.xyz/dotnugg/src/core/DotnuggV1Parser.sol";
+import {DotnuggV1Pixel} from "git.nugg.xyz/dotnugg/src/core/DotnuggV1Pixel.sol";
 
 library DotnuggV1Svg {
 	using DotnuggV1Lib for uint256;

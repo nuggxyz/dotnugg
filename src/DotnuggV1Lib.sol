@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.17;
 
-import {IDotnuggV1, IDotnuggV1File} from "@dotnugg-v1-core/src/IDotnuggV1.sol";
+import {IDotnuggV1, IDotnuggV1File} from "git.nugg.xyz/dotnugg/src/IDotnuggV1.sol";
 
 /// @title DotnuggV1Lib
 /// @author nugg.xyz - danny7even and dub6ix - 2022

@@ -2,21 +2,21 @@
 
 pragma solidity 0.8.17;
 
-import {IDotnuggV1} from "@dotnugg-v1-core/src/IDotnuggV1.sol";
+import {IDotnuggV1} from "git.nugg.xyz/dotnugg/src/IDotnuggV1.sol";
 
-import {DotnuggV1Storage} from "@dotnugg-v1-core/src/core/DotnuggV1Storage.sol";
-import {DotnuggV1MiddleOut} from "@dotnugg-v1-core/src/core/DotnuggV1MiddleOut.sol";
-import {DotnuggV1Svg} from "@dotnugg-v1-core/src/core/DotnuggV1Svg.sol";
+import {DotnuggV1Storage} from "git.nugg.xyz/dotnugg/src/core/DotnuggV1Storage.sol";
+import {DotnuggV1MiddleOut} from "git.nugg.xyz/dotnugg/src/core/DotnuggV1MiddleOut.sol";
+import {DotnuggV1Svg} from "git.nugg.xyz/dotnugg/src/core/DotnuggV1Svg.sol";
 
-import {DotnuggV1Lib} from "@dotnugg-v1-core/src/DotnuggV1Lib.sol";
+import {DotnuggV1Lib} from "git.nugg.xyz/dotnugg/src/DotnuggV1Lib.sol";
 
-import {Base64} from "@dotnugg-v1-core/src/libraries/Base64.sol";
+import {Base64} from "git.nugg.xyz/dotnugg/src/libraries/Base64.sol";
 
-import {whoa as nuggs} from "@dotnugg-v1-core/src/nuggs.data.sol";
+import {whoa as nuggs} from "git.nugg.xyz/dotnugg/src/nuggs.data.sol";
 
-import "@dotnugg-v1-core/src/abi/Decode.sol" as decode;
+import "git.nugg.xyz/dotnugg/src/abi/Decode.sol" as decode;
 
-import {cds} from "@dotnugg-v1-core/src/abi/Pointer.sol";
+import {cds} from "git.nugg.xyz/dotnugg/src/abi/Pointer.sol";
 
 /// @title DotnuggV1
 /// @author nugg.xyz - danny7even and dub6ix - 2022

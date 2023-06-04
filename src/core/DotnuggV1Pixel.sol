@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.17;
 
-import {ShiftLib} from "@dotnugg-v1-core/src/libraries/ShiftLib.sol";
+import {ShiftLib} from "git.nugg.xyz/dotnugg/src/libraries/ShiftLib.sol";
 
 /// @title DotnuggV1Reader
 /// @author nugg.xyz - danny7even and dub6ix - 2022

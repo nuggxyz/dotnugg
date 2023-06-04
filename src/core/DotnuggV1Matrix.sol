@@ -2,7 +2,7 @@
 
 pragma solidity 0.8.17;
 
-import {DotnuggV1Parser as Parser} from "@dotnugg-v1-core/src/core/DotnuggV1Parser.sol";
+import {DotnuggV1Parser as Parser} from "git.nugg.xyz/dotnugg/src/core/DotnuggV1Parser.sol";
 
 /// @title DotnuggV1Matrix
 /// @author nugg.xyz - danny7even and dub6ix - 2022

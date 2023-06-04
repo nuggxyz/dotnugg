@@ -2,8 +2,8 @@
 
 pragma solidity 0.8.17;
 
-import "@dotnugg-v1-core/test/main.t.sol";
-import {DotnuggV1Lib, IDotnuggV1} from "@dotnugg-v1-core/src/DotnuggV1Lib.sol";
+import "git.nugg.xyz/dotnugg/test/main.t.sol";
+import {DotnuggV1Lib, IDotnuggV1} from "git.nugg.xyz/dotnugg/src/DotnuggV1Lib.sol";
 
 contract systemTest__one is t {
 	IDotnuggV1 proxy;

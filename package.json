@@ -1,9 +1,9 @@
 {
-    "name": "dotnugg-v1-core",
+    "name": "dotnugg",
     "version": "0.0.1",
     "description": "Core smart contracts of DotnuggV1",
     "main": "index.js",
-    "repository": "https://github.com/nuggxyz/dotnugg-v1-core.git",
+    "repository": "https://github.com/nuggxyz/dotnugg.git",
     "author": "dub6ix <dub6ix@nugg.xyz>",
     "license": "UNLICENSED",
     "devDependencies": {
