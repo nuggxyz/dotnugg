@@ -15,11 +15,7 @@ function abi_decode_dyn_array_bytes(CalldataPointer cdPtrLength) pure returns (M
 		let mPtrTail := add(mPtrHead, tailOffset)
 		let totalOffset := tailOffset
 		let isInvalid := 0
-		for {
-			let offset := 0
-		} lt(offset, tailOffset) {
-			offset := add(offset, 32)
-		} {
+		for { let offset := 0 } lt(offset, tailOffset) { offset := add(offset, 32) } {
 			mstore(add(mPtrHead, offset), add(mPtrHead, totalOffset))
 			let cdOffsetItemLength := calldataload(add(cdPtrHead, offset))
 			isInvalid := or(isInvalid, xor(cdOffsetItemLength, totalOffset))
@@ -27,9 +23,7 @@ function abi_decode_dyn_array_bytes(CalldataPointer cdPtrLength) pure returns (M
 			let length := and(add(calldataload(cdPtrItemLength), AlmostTwoWords), OnlyFullWordMask)
 			totalOffset := add(totalOffset, length)
 		}
-		if isInvalid {
-			revert(0, 0)
-		}
+		if isInvalid { revert(0, 0) }
 		calldatacopy(mPtrTail, add(cdPtrHead, tailOffset), sub(totalOffset, tailOffset))
 		mstore(0x40, add(mPtrHead, totalOffset))
 	}
@@ -60,11 +54,7 @@ function abi_decode_dyn_array_dyn_array_uint256(CalldataPointer cdPtrLength) pur
 		let mPtrTail := add(mPtrHead, tailOffset)
 		let totalOffset := tailOffset
 		let isInvalid := 0
-		for {
-			let offset := 0
-		} lt(offset, tailOffset) {
-			offset := add(offset, 32)
-		} {
+		for { let offset := 0 } lt(offset, tailOffset) { offset := add(offset, 32) } {
 			mstore(add(mPtrHead, offset), add(mPtrHead, totalOffset))
 			let cdOffsetItemLength := calldataload(add(cdPtrHead, offset))
 			isInvalid := or(isInvalid, xor(cdOffsetItemLength, totalOffset))
@@ -72,9 +62,7 @@ function abi_decode_dyn_array_dyn_array_uint256(CalldataPointer cdPtrLength) pur
 			let length := mul(add(calldataload(cdPtrItemLength), 1), 0x20)
 			totalOffset := add(totalOffset, length)
 		}
-		if isInvalid {
-			revert(0, 0)
-		}
+		if isInvalid { revert(0, 0) }
 		calldatacopy(mPtrTail, add(cdPtrHead, tailOffset), sub(totalOffset, tailOffset))
 		mstore(0x40, add(mPtrHead, totalOffset))
 	}
