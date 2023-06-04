@@ -174,12 +174,12 @@ contract DotnuggV1Light is DotnuggV1Base {
 		deployer = tx.origin;
 	}
 
-	function lightWrite(bytes[] memory data) public {
+	function lightWrite(bytes calldata data) public {
 		require(deployer == tx.origin, "not deployer");
 		require(!written, "already written");
 
 		written = true;
-		write(data);
+		write(abi.decode(data, (bytes[])));
 	}
 }
 
