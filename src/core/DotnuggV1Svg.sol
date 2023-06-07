@@ -49,11 +49,11 @@ library DotnuggV1Svg {
 			exec.yStart = uint64(dat >>= 64);
 			exec.yEnd = uint64(dat >>= 64);
 
-			(uint256 last, ) = calculated.getPixelAt(exec.xStart, exec.yStart, WIDTH);
+			(uint256 last,) = calculated.getPixelAt(exec.xStart, exec.yStart, WIDTH);
 
 			for (uint256 y = exec.yStart; y <= exec.yEnd; y++) {
 				for (uint256 x = y == exec.yStart ? exec.xStart + 1 : exec.xStart; x <= exec.xEnd; x++) {
-					(uint256 curr, ) = calculated.getPixelAt(x, y, WIDTH);
+					(uint256 curr,) = calculated.getPixelAt(x, y, WIDTH);
 
 					if (curr.rgba() == last.rgba()) {
 						count++;
@@ -91,16 +91,7 @@ library DotnuggV1Svg {
 		}
 	}
 
-	function buildDat(uint256 abc)
-		internal
-		pure
-		returns (
-			uint64 a,
-			uint64 b,
-			uint64 c,
-			uint64 d
-		)
-	{
+	function buildDat(uint256 abc) internal pure returns (uint64 a, uint64 b, uint64 c, uint64 d) {
 		a = uint64(abc);
 		b = uint64(abc >>= 64);
 		c = uint64(abc >>= 64);
@@ -159,21 +150,14 @@ library DotnuggV1Svg {
 			uint256 rgb = rgba >> 8;
 			uint256 a = rgba & 0xff;
 
-			string memory colorStr = a == 0xff
-				? rgb == 0xffffff ? "FFF" : rgb == 0 ? "000" : rgb.toHex(3)
-				: rgba.toHex(4);
+			string memory colorStr =
+				a == 0xff ? rgb == 0xffffff ? "FFF" : rgb == 0 ? "000" : rgb.toHex(3) : rgba.toHex(4);
 
 			mapper[i].data = abi.encodePacked('<path stroke="#', colorStr, '" d="');
 		}
 	}
 
-	function setRektPath(
-		Execution memory exec,
-		uint256 color,
-		uint256 x,
-		uint256 y,
-		uint256 xlen
-	) internal pure {
+	function setRektPath(Execution memory exec, uint256 color, uint256 x, uint256 y, uint256 xlen) internal pure {
 		unchecked {
 			if (color == 0) return;
 

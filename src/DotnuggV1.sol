@@ -25,8 +25,8 @@ abstract contract DotnuggV1Base is IDotnuggV1 {
 	}
 
 	/* ////////////////////////////////////////////////////////////////////////
-       [EIP 1167] minimal proxy
-    //////////////////////////////////////////////////////////////////////// */
+	[EIP 1167] minimal proxy
+	//////////////////////////////////////////////////////////////////////// */
 
 	function register(bytes[] calldata input) external override returns (IDotnuggV1 proxy) {
 		require(address(this) == factory, "O");
@@ -44,7 +44,8 @@ abstract contract DotnuggV1Base is IDotnuggV1 {
 
 	/// @dev implementation the EIP 1167 standard for deploying minimal proxy contracts, also known as "clones"
 	/// adapted from openzeppelin's unreleased implementation written by Philogy
-	/// [ Clones.sol : MIT ] - https://github.com/OpenZeppelin/openzeppelin-contracts/blob/28dd490726f045f7137fa1903b7a6b8a52d6ffcb/contracts/proxy/Clones.sol
+	/// [ Clones.sol : MIT ] -
+	/// https://github.com/OpenZeppelin/openzeppelin-contracts/blob/28dd490726f045f7137fa1903b7a6b8a52d6ffcb/contracts/proxy/Clones.sol
 	function clone() internal returns (DotnuggV1Base instance) {
 		/// @solidity memory-safe-assembly
 		assembly {
@@ -58,8 +59,8 @@ abstract contract DotnuggV1Base is IDotnuggV1 {
 	}
 
 	/* ////////////////////////////////////////////////////////////////////////
-       store dotnugg v1 files on chain
-    //////////////////////////////////////////////////////////////////////// */
+	store dotnugg v1 files on chain
+	//////////////////////////////////////////////////////////////////////// */
 
 	function write(bytes[] memory data) internal {
 		unchecked {
@@ -75,8 +76,8 @@ abstract contract DotnuggV1Base is IDotnuggV1 {
 	}
 
 	/* ////////////////////////////////////////////////////////////////////////
-       read dotnugg v1 files
-    //////////////////////////////////////////////////////////////////////// */
+	read dotnugg v1 files
+	//////////////////////////////////////////////////////////////////////// */
 
 	function read(uint8[8] memory ids) public view returns (uint256[][] memory _reads) {
 		_reads = new uint256[][](8);
@@ -94,27 +95,36 @@ abstract contract DotnuggV1Base is IDotnuggV1 {
 	}
 
 	/* ////////////////////////////////////////////////////////////////////////
-       calculate raw dotnugg v1 files
-    //////////////////////////////////////////////////////////////////////// */
+	calculate raw dotnugg v1 files
+	//////////////////////////////////////////////////////////////////////// */
 
 	function calc(uint256[][] memory reads) public pure override returns (uint256[] memory, uint256) {
 		return DotnuggV1MiddleOut.execute(reads);
 	}
 
 	/* ////////////////////////////////////////////////////////////////////////
-       display dotnugg v1 computed fils
-    //////////////////////////////////////////////////////////////////////// */
+	display dotnugg v1 computed fils
+	//////////////////////////////////////////////////////////////////////// */
 
 	// prettier-ignore
-	function svg(uint256[] memory calculated, uint256 dat, bool base64) public override pure returns (string memory res) {
-        bytes memory image = DotnuggV1Svg.fledgeOutTheRekts(calculated, dat);
+	function svg(
+		uint256[] memory calculated,
+		uint256 dat,
+		bool base64
+	)
+		public
+		pure
+		override
+		returns (string memory res)
+	{
+		bytes memory image = DotnuggV1Svg.fledgeOutTheRekts(calculated, dat);
 
-        return string(encodeSvg(image, base64));
-    }
+		return string(encodeSvg(image, base64));
+	}
 
 	/* ////////////////////////////////////////////////////////////////////////
-       execution - read & compute
-    //////////////////////////////////////////////////////////////////////// */
+	execution - read & compute
+	//////////////////////////////////////////////////////////////////////// */
 
 	function combo(uint256[][] memory reads, bool base64) public pure override returns (string memory) {
 		(uint256[] memory calced, uint256 sizes) = calc(reads);
@@ -127,44 +137,27 @@ abstract contract DotnuggV1Base is IDotnuggV1 {
 
 	// prettier-ignore
 	function exec(uint8 feature, uint8 pos, bool base64) external view returns (string memory) {
-        uint256[][] memory arr = new uint256[][](1);
-        arr[0] = read(feature, pos);
-        return combo(arr, base64);
-    }
+		uint256[][] memory arr = new uint256[][](1);
+		arr[0] = read(feature, pos);
+		return combo(arr, base64);
+	}
 
 	/* ////////////////////////////////////////////////////////////////////////
-       helper functions
-    //////////////////////////////////////////////////////////////////////// */
+	helper functions
+	//////////////////////////////////////////////////////////////////////// */
 
 	function encodeSvg(bytes memory input, bool base64) public pure override returns (bytes memory res) {
 		res = abi.encodePacked(
-			"data:image/svg+xml;",
-			base64 ? "base64" : "charset=UTF-8",
-			",",
-			base64 ? Base64.encode(input) : input
+			"data:image/svg+xml;", base64 ? "base64" : "charset=UTF-8", ",", base64 ? Base64.encode(input) : input
 		);
 	}
 
 	function encodeJson(bytes memory input, bool base64) public pure override returns (bytes memory res) {
 		res = abi.encodePacked(
-			"data:application/json;",
-			base64 ? "base64" : "charset=UTF-8",
-			",",
-			base64 ? Base64.encode(input) : input
+			"data:application/json;", base64 ? "base64" : "charset=UTF-8", ",", base64 ? Base64.encode(input) : input
 		);
 	}
 }
-
-// function clone() internal returns (DotnuggV1 instance) {
-//     assembly {
-//         let ptr := mload(0x40)
-//         mstore(ptr, shl(96, 0x3d602d80600a3d3981f3363d3d373d3d3d363d73))
-//         mstore(add(ptr, 0x14), shl(0x60, address()))
-//         mstore(add(ptr, 0x28), shl(136, 0x5af43d82803e903d91602b57fd5bf3))
-//         instance := create(0, ptr, 0x37)
-//     }
-//     require(address(instance) != address(0), "E");
-// }
 
 contract DotnuggV1Light is DotnuggV1Base {
 	address public immutable deployer;

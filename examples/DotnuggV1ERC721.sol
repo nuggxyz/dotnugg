@@ -11,15 +11,11 @@ import {DotnuggV1Lib} from "git.nugg.xyz/dotnugg/src/DotnuggV1Lib.sol";
 contract DotnuggV1ERC721 is ERC721 {
 	DotnuggV1 public immutable safe;
 
-	uint256 constant MAX_TOKENS = 10000;
+	uint256 constant MAX_TOKENS = 10_000;
 
 	uint256 immutable globalSeed;
 
-	constructor(
-		string memory _name,
-		string memory _symbol,
-		DotnuggV1 _safe
-	) ERC721(_name, _symbol) {
+	constructor(string memory _name, string memory _symbol, DotnuggV1 _safe) ERC721(_name, _symbol) {
 		safe = _safe;
 
 		/// Generates a pseudo-random number to be cached for deterministic seed generation
@@ -28,7 +24,7 @@ contract DotnuggV1ERC721 is ERC721 {
 				abi.encodePacked(
 					msg.sender,
 					blockhash(block.number - 1),
-					block.difficulty //
+					block.prevrandao //
 				)
 			)
 		);
@@ -39,20 +35,19 @@ contract DotnuggV1ERC721 is ERC721 {
 
 		uint256 seed = generateDeterministicRandomNumber(tokenId);
 
-		return
-			safe.exec(
-				[
-					DotnuggV1Lib.search(safe, 0, seed),
-					DotnuggV1Lib.search(safe, 1, seed),
-					DotnuggV1Lib.search(safe, 2, seed),
-					DotnuggV1Lib.search(safe, 3, seed),
-					DotnuggV1Lib.search(safe, 4, seed),
-					DotnuggV1Lib.search(safe, 5, seed),
-					DotnuggV1Lib.search(safe, 6, seed),
-					DotnuggV1Lib.search(safe, 7, seed)
-				],
-				false
-			);
+		return safe.exec(
+			[
+				DotnuggV1Lib.search(safe, 0, seed),
+				DotnuggV1Lib.search(safe, 1, seed),
+				DotnuggV1Lib.search(safe, 2, seed),
+				DotnuggV1Lib.search(safe, 3, seed),
+				DotnuggV1Lib.search(safe, 4, seed),
+				DotnuggV1Lib.search(safe, 5, seed),
+				DotnuggV1Lib.search(safe, 6, seed),
+				DotnuggV1Lib.search(safe, 7, seed)
+			],
+			false
+		);
 	}
 
 	/// @notice Generates a pseudo-random number with parameters that is hard for one entity to
@@ -60,15 +55,10 @@ contract DotnuggV1ERC721 is ERC721 {
 	/// @param _nonce A nonce hashed as part of the pseudo-random generation.
 	/// @return A pseudo-random uint256.
 	function generateDeterministicRandomNumber(uint256 _nonce) internal view returns (uint256) {
-		return
-			uint256(
-				keccak256(
-					abi.encodePacked(
-						globalSeed,
-						_nonce
-						//
-					)
-				)
-			);
+		return uint256(
+			keccak256(
+				abi.encodePacked(globalSeed, _nonce) //
+			)
+		);
 	}
 }

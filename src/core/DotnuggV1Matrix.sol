@@ -27,13 +27,7 @@ library DotnuggV1Matrix {
 		res.version.setWidth(width, height);
 	}
 
-	function moveTo(
-		Memory memory matrix,
-		uint8 xoffset,
-		uint8 yoffset,
-		uint8 width,
-		uint8 height
-	) internal pure {
+	function moveTo(Memory memory matrix, uint8 xoffset, uint8 yoffset, uint8 width, uint8 height) internal pure {
 		matrix.currentUnsetX = xoffset;
 		matrix.currentUnsetY = yoffset;
 		matrix.startX = xoffset;
@@ -90,7 +84,10 @@ library DotnuggV1Matrix {
 		Parser.Memory memory data,
 		uint256 groupWidth,
 		uint256 groupHeight
-	) internal pure {
+	)
+		internal
+		pure
+	{
 		unchecked {
 			matrix.height = uint8(groupHeight);
 
@@ -99,7 +96,7 @@ library DotnuggV1Matrix {
 					next(matrix, uint8(groupWidth));
 					uint256 col = data.getPixelAt(x, y);
 					if (col != 0) {
-						(uint256 yo, , ) = data.getPalletColorAt(col);
+						(uint256 yo,,) = data.getPalletColorAt(col);
 
 						setCurrent(matrix, yo);
 					} else {
@@ -114,11 +111,7 @@ library DotnuggV1Matrix {
 		}
 	}
 
-	function addRowsAt(
-		Memory memory matrix,
-		uint8 index,
-		uint8 amount
-	) internal pure {
+	function addRowsAt(Memory memory matrix, uint8 index, uint8 amount) internal pure {
 		unchecked {
 			for (uint256 i = 0; i < matrix.height; i++) {
 				for (uint256 j = matrix.height; j > index; j--) {
@@ -134,11 +127,7 @@ library DotnuggV1Matrix {
 		}
 	}
 
-	function addColumnsAt(
-		Memory memory matrix,
-		uint8 index,
-		uint8 amount
-	) internal pure {
+	function addColumnsAt(Memory memory matrix, uint8 index, uint8 amount) internal pure {
 		unchecked {
 			// require(index < matrix.data[0].length, 'MAT:ACA:0');
 			for (uint256 i = 0; i < matrix.width; i++) {

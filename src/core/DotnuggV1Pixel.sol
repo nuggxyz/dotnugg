@@ -20,7 +20,11 @@ library DotnuggV1Pixel {
 		uint256 _id,
 		uint256 _zindex,
 		uint256 _feature
-	) internal pure returns (uint256 res) {
+	)
+		internal
+		pure
+		returns (uint256 res)
+	{
 		unchecked {
 			res |= (_feature & 0x7) << 39;
 			res |= (_zindex & 0xf) << 35;
@@ -35,7 +39,11 @@ library DotnuggV1Pixel {
 		uint256 _id,
 		uint256 _zindex,
 		uint256 _feature
-	) internal pure returns (uint256 res) {
+	)
+		internal
+		pure
+		returns (uint256 res)
+	{
 		unchecked {
 			res = base & ShiftLib.mask(27);
 			res |= (_feature & 0x7) << 39;

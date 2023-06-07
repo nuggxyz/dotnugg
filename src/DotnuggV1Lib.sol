@@ -60,11 +60,7 @@ library DotnuggV1Lib {
 		return string.concat(labels[feat], " ", toString(pos));
 	}
 
-	function searchToId(
-		IDotnuggV1 safe,
-		uint8 feature,
-		uint256 seed
-	) internal view returns (uint16 res) {
+	function searchToId(IDotnuggV1 safe, uint8 feature, uint256 seed) internal view returns (uint16 res) {
 		return encodeItemId(feature, search(safe, feature, seed));
 	}
 
@@ -161,98 +157,93 @@ library DotnuggV1Lib {
 	}
 
 	/// binary search usage inspired by implementation from fiveoutofnine
-	/// [ OnMintGeneration.sol : MIT ] - https://github.com/fiveoutofnine/on-mint-generation/blob/719f19a10d19956c8414e421517d902ab3591111/src/OnMintGeneration.sol
-	function search(
-		IDotnuggV1 safe,
-		uint8 feature,
-		uint256 seed
-	) internal view returns (uint8 res) {
+	/// [ OnMintGeneration.sol : MIT ] -
+	/// https://github.com/fiveoutofnine/on-mint-generation/blob/719f19a10d19956c8414e421517d902ab3591111/src/OnMintGeneration.sol
+	function search(IDotnuggV1 safe, uint8 feature, uint256 seed) internal view returns (uint8 res) {
 		IDotnuggV1File loc = location(safe, feature);
 
 		uint256 high = size(loc);
 
 		// prettier-ignore
 		assembly {
+			// we adjust the seed to be unique per feature and safe, yet still deterministic
 
-            // we adjust the seed to be unique per feature and safe, yet still deterministic
+			mstore(0x00, seed)
+			mstore(0x20, or(shl(160, feature), safe))
 
-            mstore(0x00, seed)
-            mstore(0x20, or(shl(160, feature), safe))
+			seed :=
+				keccak256( //-----------------------------------------
+					0x00, /* [ seed                                  ]    0x20
+					0x20     [ uint8(feature) | address(safe)        ] */
+					0x40
+				) // ---------------------------------------------------------
 
-            seed := keccak256( //-----------------------------------------
-                0x00, /* [ seed                                  ]    0x20
-                0x20     [ uint8(feature) | address(safe)        ] */ 0x40
-            ) // ---------------------------------------------------------
+			// normalize seed to be <= type(uint16).max
+			// if we did not want to use weights, we could just mod by "len" and have our final value
+			// without any calcualtion
+			seed := mod(seed, 0xffff)
 
-            // normalize seed to be <= type(uint16).max
-            // if we did not want to use weights, we could just mod by "len" and have our final value
-            // without any calcualtion
-            seed := mod(seed, 0xffff)
+			//////////////////////////////////////////////////////////////////////////
 
-            //////////////////////////////////////////////////////////////////////////
+			// Get a pointer to some free memory.
+			// no need update pointer becasue after this function, the loaded data is no longer needed
+			//    and solidity does not assume the free memory pointer points to "clean" data
+			let A := mload(0x40)
 
-            // Get a pointer to some free memory.
-            // no need update pointer becasue after this function, the loaded data is no longer needed
-            //    and solidity does not assume the free memory pointer points to "clean" data
-            let A := mload(0x40)
+			// Copy the code into memory right after the 32 bytes we used to store the len.
+			extcodecopy(loc, add(0x20, A), add(DOTNUGG_RUNTIME_BYTE_LEN, 1), mul(high, 2))
 
-            // Copy the code into memory right after the 32 bytes we used to store the len.
-            extcodecopy(loc, add(0x20, A), add(DOTNUGG_RUNTIME_BYTE_LEN, 1), mul(high, 2))
+			// adjust data pointer to make mload return our uint16[] index easily using below funciton
+			A := add(A, 0x2)
 
-            // adjust data pointer to make mload return our uint16[] index easily using below funciton
-            A := add(A, 0x2)
+			function index(arr, m) -> val {
+				val := and(mload(add(arr, shl(1, m))), 0xffff)
+			}
 
-            function index(arr, m) -> val {
-                val := and(mload(add(arr, shl(1, m))), 0xffff)
-            }
+			//////////////////////////////////////////////////////////////////////////
 
-            //////////////////////////////////////////////////////////////////////////
+			// each dotnuggv1 file includes a sorted weight list that we can use to convert "random" seeds into item
+			// numbers:
 
-            // each dotnuggv1 file includes a sorted weight list that we can use to convert "random" seeds into item numbers:
+			// lets say we have an file containing 4 itmes with these as their respective weights:
+			// [ 0.10  0.10  0.15  0.15 ]
 
-            // lets say we have an file containing 4 itmes with these as their respective weights:
-            // [ 0.10  0.10  0.15  0.15 ]
+			// then on chain, an array like this is stored: (represented in decimal for the example)
+			// [ 2000  4000  7000  10000 ]
 
-            // then on chain, an array like this is stored: (represented in decimal for the example)
-            // [ 2000  4000  7000  10000 ]
+			// assuming we can only pass a seed between 0 and 10000, we know that:
+			// - we have an 20% chance, of picking a number less than weight 1      -  0    < x < 2000
+			// - we have an 20% chance, of picking a number between weights 1 and 2 -  2000 < x < 4000
+			// - we have an 30% chance, of picking a number between weights 2 and 3 -  4000 < x < 7000
+			// - we have an 30% chance, of picking a number between weights 3 and 4 -  7000 < x < 10000
 
-            // assuming we can only pass a seed between 0 and 10000, we know that:
-            // - we have an 20% chance, of picking a number less than weight 1      -  0    < x < 2000
-            // - we have an 20% chance, of picking a number between weights 1 and 2 -  2000 < x < 4000
-            // - we have an 30% chance, of picking a number between weights 2 and 3 -  4000 < x < 7000
-            // - we have an 30% chance, of picking a number between weights 3 and 4 -  7000 < x < 10000
+			// now, all we need to do is pick a seed, say "6942", and search for which number it is between
 
-            // now, all we need to do is pick a seed, say "6942", and search for which number it is between
+			// the higher of which will be the value we are looking for
 
-            // the higher of which will be the value we are looking for
+			// in our example, "6942" is between weights 2 and 3, so [res = 3]
 
-            // in our example, "6942" is between weights 2 and 3, so [res = 3]
+			//////////////////////////////////////////////////////////////////////////
 
-            //////////////////////////////////////////////////////////////////////////
+			// right most "successor" binary search
+			// https://en.wikipedia.org/wiki/Binary_search_algorithm#Procedure_for_finding_the_rightmost_element
 
-            // right most "successor" binary search
-            // https://en.wikipedia.org/wiki/Binary_search_algorithm#Procedure_for_finding_the_rightmost_element
+			let L := 0
+			let R := high
 
-            let L := 0
-            let R := high
+			for {} lt(L, R) {} {
+				let m := shr(1, add(L, R)) // == (L + R) / 2
+				switch gt(index(A, m), seed)
+				case 1 { R := m }
+				default { L := add(m, 1) }
+			}
 
-            for { } lt(L, R) { } {
-                let m := shr(1, add(L, R)) // == (L + R) / 2
-                switch gt(index(A, m), seed)
-                case 1  { R := m         }
-                default { L := add(m, 1) }
-            }
-
-            // we add one because items are 1 base indexed, not 0
-            res := add(R, 1)
-        }
+			// we add one because items are 1 base indexed, not 0
+			res := add(R, 1)
+		}
 	}
 
-	function rarity(
-		IDotnuggV1 safe,
-		uint8 feature,
-		uint8 position
-	) internal view returns (uint16 res) {
+	function rarity(IDotnuggV1 safe, uint8 feature, uint8 position) internal view returns (uint16 res) {
 		IDotnuggV1File loc = location(safe, uint8(feature));
 
 		assembly {
@@ -274,11 +265,7 @@ library DotnuggV1Lib {
 		}
 	}
 
-	function read(
-		IDotnuggV1 safe,
-		uint8 feature,
-		uint8 position
-	) internal view returns (uint256[] memory res) {
+	function read(IDotnuggV1 safe, uint8 feature, uint8 position) internal view returns (uint256[] memory res) {
 		IDotnuggV1File loc = location(safe, feature);
 
 		uint256 length = size(loc);
@@ -287,9 +274,8 @@ library DotnuggV1Lib {
 
 		position = position - 1;
 
-		uint32 startAndEnd = uint32(
-			bytes4(readBytecode(loc, DOTNUGG_RUNTIME_BYTE_LEN + length * 2 + 1 + position * 2, 4))
-		);
+		uint32 startAndEnd =
+			uint32(bytes4(readBytecode(loc, DOTNUGG_RUNTIME_BYTE_LEN + length * 2 + 1 + position * 2, 4)));
 
 		uint32 begin = startAndEnd >> 16;
 
@@ -301,7 +287,11 @@ library DotnuggV1Lib {
 		IDotnuggV1File file,
 		uint256 start,
 		uint256 len
-	) private view returns (uint256[] memory data) {
+	)
+		private
+		view
+		returns (uint256[] memory data)
+	{
 		assembly {
 			let offset := sub(0x20, mod(len, 0x20))
 
@@ -341,11 +331,7 @@ library DotnuggV1Lib {
 	}
 
 	// adapted from rari-capital/solmate's SSTORE2.sol
-	function readBytecode(
-		IDotnuggV1File file,
-		uint256 start,
-		uint256 len
-	) private view returns (bytes memory data) {
+	function readBytecode(IDotnuggV1File file, uint256 start, uint256 len) private view returns (bytes memory data) {
 		assembly {
 			// Get a pointer to some free memory.
 			data := mload(0x40)
@@ -377,7 +363,8 @@ library DotnuggV1Lib {
 
 	///
 	/// inspired by OraclizeAPI's implementation
-	/// [ oraclizeAPI_0.4.25.sol : MIT ] - https://github.com/oraclize/ethereum-api/blob/b42146b063c7d6ee1358846c198246239e9360e8/oraclizeAPI_0.4.25.sol
+	/// [ oraclizeAPI_0.4.25.sol : MIT ] -
+	/// https://github.com/oraclize/ethereum-api/blob/b42146b063c7d6ee1358846c198246239e9360e8/oraclizeAPI_0.4.25.sol
 	function toFixedPointString(uint256 value, uint256 places) internal pure returns (string memory) {
 		unchecked {
 			if (value == 0) return "0";
@@ -409,11 +396,7 @@ library DotnuggV1Lib {
 		}
 	}
 
-	function chunk(
-		string memory input,
-		uint8 chunks,
-		uint8 index
-	) internal pure returns (string memory res) {
+	function chunk(string memory input, uint8 chunks, uint8 index) internal pure returns (string memory res) {
 		res = input;
 
 		if (chunks == 0) return res;
@@ -423,9 +406,7 @@ library DotnuggV1Lib {
 
 			let start := mul(strlen, index)
 
-			if gt(strlen, sub(mload(res), start)) {
-				strlen := sub(mload(res), start)
-			}
+			if gt(strlen, sub(mload(res), start)) { strlen := sub(mload(res), start) }
 
 			res := add(res, start)
 
@@ -454,13 +435,17 @@ library DotnuggV1Lib {
 
 	function encodeProof(uint8[8] memory ids) internal pure returns (uint256 proof) {
 		unchecked {
-			for (uint256 i = 0; i < 8; i++) proof |= ((i << 8) | uint256(ids[i])) << (i << 3);
+			for (uint256 i = 0; i < 8; i++) {
+				proof |= ((i << 8) | uint256(ids[i])) << (i << 3);
+			}
 		}
 	}
 
 	function encodeProof(uint16[16] memory ids) internal pure returns (uint256 proof) {
 		unchecked {
-			for (uint256 i = 0; i < 16; i++) proof |= uint256(ids[i]) << (i << 4);
+			for (uint256 i = 0; i < 16; i++) {
+				proof |= uint256(ids[i]) << (i << 4);
+			}
 		}
 	}
 

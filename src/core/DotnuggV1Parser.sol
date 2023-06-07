@@ -84,7 +84,11 @@ library DotnuggV1Parser {
 		uint256 id,
 		uint256 feature,
 		uint256[] memory graftPallet
-	) internal pure returns (uint256[] memory res) {
+	)
+		internal
+		pure
+		returns (uint256[] memory res)
+	{
 		unchecked {
 			uint256 palletLength = parser.reader.select(parser.palletBitLen) + 1;
 
@@ -192,12 +196,15 @@ library DotnuggV1Parser {
 		Memory memory parser,
 		uint256 height,
 		uint256 width
-	) internal pure returns (uint256[] memory res) {
+	)
+		internal
+		pure
+		returns (uint256[] memory res)
+	{
 		unchecked {
 			uint8 miniMatrixSizer = uint8(256 / parser.palletBitLen);
-			uint256 groupsLength = parser.reader.select(1) == 0x1
-				? parser.reader.select(8) + 1
-				: parser.reader.select(16) + 1;
+			uint256 groupsLength =
+				parser.reader.select(1) == 0x1 ? parser.reader.select(8) + 1 : parser.reader.select(16) + 1;
 
 			res = new uint256[]((height * width) / miniMatrixSizer + 1);
 
@@ -225,11 +232,7 @@ library DotnuggV1Parser {
 	)
 		internal
 		pure
-		returns (
-			uint256 x,
-			uint256 y,
-			bool exists
-		)
+		returns (uint256 x, uint256 y, bool exists)
 	{
 		unchecked {
 			uint256 data = m.receivers >> (index * DATA_COORDINATE_BIT_LEN_2X + (calculated ? 128 : 0));
@@ -249,7 +252,11 @@ library DotnuggV1Parser {
 		bool calculated,
 		uint256 x,
 		uint256 y
-	) internal pure returns (uint256 res) {
+	)
+		internal
+		pure
+		returns (uint256 res)
+	{
 		unchecked {
 			// yOrYOffset
 			res |= y << DATA_COORDINATE_BIT_LEN;
@@ -295,11 +302,7 @@ library DotnuggV1Parser {
 		}
 	}
 
-	function setWidth(
-		Memory memory m,
-		uint256 w,
-		uint256 h
-	) internal pure {
+	function setWidth(Memory memory m, uint256 w, uint256 h) internal pure {
 		unchecked {
 			require(w <= ShiftLib.mask(DATA_COORDINATE_BIT_LEN), "VERS:SETW:0");
 			require(h <= ShiftLib.mask(DATA_COORDINATE_BIT_LEN), "VERS:SETW:1");
@@ -319,33 +322,27 @@ library DotnuggV1Parser {
 		}
 	}
 
-	function getPixelAt(
-		Memory memory m,
-		uint256 x,
-		uint256 y
-	) internal pure returns (uint256 palletKey) {
+	function getPixelAt(Memory memory m, uint256 x, uint256 y) internal pure returns (uint256 palletKey) {
 		unchecked {
 			uint8 miniMatrixSizer = uint8(256 / m.palletBitLen);
 
-			(uint256 width, ) = getWidth(m);
+			(uint256 width,) = getWidth(m);
 			uint256 index = x + (y * width);
 
 			if (index / miniMatrixSizer >= m.minimatrix.length) return 0x0;
 
-			palletKey =
-				(m.minimatrix[index / miniMatrixSizer] >> (m.palletBitLen * (index % miniMatrixSizer))) &
-				ShiftLib.mask(m.palletBitLen);
+			palletKey = (m.minimatrix[index / miniMatrixSizer] >> (m.palletBitLen * (index % miniMatrixSizer)))
+				& ShiftLib.mask(m.palletBitLen);
 		}
 	}
 
-	function getPalletColorAt(Memory memory m, uint256 index)
+	function getPalletColorAt(
+		Memory memory m,
+		uint256 index
+	)
 		internal
 		pure
-		returns (
-			uint256 res,
-			uint256 color,
-			uint256 zindex
-		)
+		returns (uint256 res, uint256 color, uint256 zindex)
 	{
 		unchecked {
 			// res = (m.pallet[index / 7] >> (36 * (index % 7))) & ShiftLib.mask(36);
@@ -363,14 +360,9 @@ library DotnuggV1Parser {
 		}
 	}
 
-	function setBigMatrixPixelAt(
-		Memory memory m,
-		uint256 x,
-		uint256 y,
-		uint256 color
-	) internal pure {
+	function setBigMatrixPixelAt(Memory memory m, uint256 x, uint256 y, uint256 color) internal pure {
 		unchecked {
-			(uint256 width, ) = getWidth(m);
+			(uint256 width,) = getWidth(m);
 
 			uint256 index = x + (y * width);
 
@@ -378,33 +370,23 @@ library DotnuggV1Parser {
 		}
 	}
 
-	function setBigMatrixPixelAt(
-		Memory memory m,
-		uint256 index,
-		uint256 color
-	) internal pure {
+	function setBigMatrixPixelAt(Memory memory m, uint256 index, uint256 color) internal pure {
 		unchecked {
 			if (m.bigmatrix.length > index / 6) {
 				uint8 offset = uint8(42 * (index % 6)); // NOTE: i removed safe8
 				m.bigmatrix[index / 6] &= ShiftLib.fullsubmask(42, offset);
 				m.bigmatrix[index / 6] |= (color << offset);
 
-				assembly {
-
-				}
+				assembly {}
 			}
 		}
 	}
 
-	function getBigMatrixPixelAt(
-		Memory memory m,
-		uint256 x,
-		uint256 y
-	) internal pure returns (uint256 res) {
+	function getBigMatrixPixelAt(Memory memory m, uint256 x, uint256 y) internal pure returns (uint256 res) {
 		unchecked {
-			(uint256 width, ) = getWidth(m);
+			(uint256 width,) = getWidth(m);
 
-			(res, ) = getPixelAt(m.bigmatrix, x, y, width);
+			(res,) = getPixelAt(m.bigmatrix, x, y, width);
 		}
 	}
 
@@ -413,7 +395,11 @@ library DotnuggV1Parser {
 		uint256 x,
 		uint256 y,
 		uint256 width
-	) internal pure returns (uint256 res, uint256 row) {
+	)
+		internal
+		pure
+		returns (uint256 res, uint256 row)
+	{
 		unchecked {
 			uint256 index = x + (y * width);
 
@@ -425,11 +411,7 @@ library DotnuggV1Parser {
 		}
 	}
 
-	function bigMatrixHasPixelAt(
-		Memory memory m,
-		uint256 x,
-		uint256 y
-	) internal pure returns (bool res) {
+	function bigMatrixHasPixelAt(Memory memory m, uint256 x, uint256 y) internal pure returns (bool res) {
 		unchecked {
 			uint256 pix = getBigMatrixPixelAt(m, x, y);
 

@@ -49,11 +49,10 @@ library DotnuggV1MiddleOut {
 				setMix(run.mix, run.versions[i]);
 
 				// no reposition on single items
-				if (len == 1)
-					return (
-						run.mix.matrix.version.bigmatrix,
-						buildDat(0, run.mix.matrix.width, 0, run.mix.matrix.height)
-					);
+				if (len == 1) {
+					return
+						(run.mix.matrix.version.bigmatrix, buildDat(0, run.mix.matrix.width, 0, run.mix.matrix.height));
+				}
 
 				formatForCanvas(run.canvas, run.mix);
 
@@ -71,12 +70,7 @@ library DotnuggV1MiddleOut {
 		}
 	}
 
-	function buildDat(
-		uint256 a,
-		uint256 b,
-		uint256 c,
-		uint256 d
-	) internal pure returns (uint256 res) {
+	function buildDat(uint256 a, uint256 b, uint256 c, uint256 d) internal pure returns (uint256 res) {
 		res |= a;
 		res |= b << 64;
 		res |= c << 128;
@@ -310,37 +304,31 @@ library DotnuggV1MiddleOut {
 		}
 	}
 
-	function fledgeOutTheRluds(
-		Mix memory mix,
-		Coordinate memory coordinate,
-		uint8 index
-	) internal pure {
+	function fledgeOutTheRluds(Mix memory mix, Coordinate memory coordinate, uint8 index) internal pure {
 		unchecked {
 			Rlud memory radii;
 
 			while (
-				coordinate.a < mix.matrix.width - 1 &&
-				mix.matrix.version.bigMatrixHasPixelAt(coordinate.a + (radii.r + 1), coordinate.b)
+				coordinate.a < mix.matrix.width - 1
+					&& mix.matrix.version.bigMatrixHasPixelAt(coordinate.a + (radii.r + 1), coordinate.b)
 			) {
 				radii.r++;
 			}
 			while (
-				coordinate.a != 0 &&
-				coordinate.a >= (radii.l + 1) &&
-				mix.matrix.version.bigMatrixHasPixelAt(coordinate.a - (radii.l + 1), coordinate.b)
+				coordinate.a != 0 && coordinate.a >= (radii.l + 1)
+					&& mix.matrix.version.bigMatrixHasPixelAt(coordinate.a - (radii.l + 1), coordinate.b)
 			) {
 				radii.l++;
 			}
 			while (
-				coordinate.b != 0 &&
-				coordinate.b >= (radii.u + 1) &&
-				mix.matrix.version.bigMatrixHasPixelAt(coordinate.a, coordinate.b - (radii.u + 1))
+				coordinate.b != 0 && coordinate.b >= (radii.u + 1)
+					&& mix.matrix.version.bigMatrixHasPixelAt(coordinate.a, coordinate.b - (radii.u + 1))
 			) {
 				radii.u++;
 			}
 			while (
-				coordinate.b < mix.matrix.height - 1 &&
-				mix.matrix.version.bigMatrixHasPixelAt(coordinate.a, coordinate.b + (radii.d + 1))
+				coordinate.b < mix.matrix.height - 1
+					&& mix.matrix.version.bigMatrixHasPixelAt(coordinate.a, coordinate.b + (radii.d + 1))
 			) {
 				radii.d++;
 			}
@@ -355,7 +343,11 @@ library DotnuggV1MiddleOut {
 		Mix memory mix,
 		Coordinate memory calculatedReceiver,
 		Coordinate[] memory anchors
-	) internal pure returns (Coordinate memory coordinate) {
+	)
+		internal
+		pure
+		returns (Coordinate memory coordinate)
+	{
 		unchecked {
 			coordinate.a = anchors[calculatedReceiver.a].a;
 			coordinate.b = anchors[calculatedReceiver.a].b;
@@ -407,11 +399,7 @@ library DotnuggV1MiddleOut {
 	function getBox(Matrix.Memory memory matrix)
 		internal
 		pure
-		returns (
-			uint8 topOffset,
-			uint8 bottomOffset,
-			Coordinate memory _center
-		)
+		returns (uint8 topOffset, uint8 bottomOffset, Coordinate memory _center)
 	{
 		unchecked {
 			_center.a = (matrix.width) / 2;
@@ -432,15 +420,16 @@ library DotnuggV1MiddleOut {
 			while (!allFound) {
 				if (shouldExpandSide = !shouldExpandSide && !sideFound) {
 					if (
-						matrix.version.bigMatrixHasPixelAt(_center.a - (sideOffset + 1), _center.b - topOffset) &&
+						matrix.version.bigMatrixHasPixelAt(_center.a - (sideOffset + 1), _center.b - topOffset)
 						// potential top left
-						matrix.version.bigMatrixHasPixelAt(_center.a + (sideOffset + 1), _center.b - topOffset) &&
+						&& matrix.version.bigMatrixHasPixelAt(_center.a + (sideOffset + 1), _center.b - topOffset)
 						// potential top right
-						matrix.version.bigMatrixHasPixelAt(_center.a - (sideOffset + 1), _center.b + bottomOffset) &&
+						&& matrix.version.bigMatrixHasPixelAt(_center.a - (sideOffset + 1), _center.b + bottomOffset)
 						// potential bot left
-						matrix.version.bigMatrixHasPixelAt(_center.a + (sideOffset + 1), _center.b + bottomOffset)
-						// potential bot right
+						&& matrix.version.bigMatrixHasPixelAt(_center.a + (sideOffset + 1), _center.b + bottomOffset)
 					) {
+						// potential bot right
+
 						sideOffset++;
 					} else {
 						sideFound = true;
@@ -448,12 +437,13 @@ library DotnuggV1MiddleOut {
 				}
 				if (!topFound) {
 					if (
-						_center.b - topOffset > 0 &&
-						matrix.version.bigMatrixHasPixelAt(_center.a - sideOffset, _center.b - (topOffset + 1)) &&
+						_center.b - topOffset > 0
+							&& matrix.version.bigMatrixHasPixelAt(_center.a - sideOffset, _center.b - (topOffset + 1))
 						// potential top left
-						matrix.version.bigMatrixHasPixelAt(_center.a + sideOffset, _center.b - (topOffset + 1))
-						// potential top right
+						&& matrix.version.bigMatrixHasPixelAt(_center.a + sideOffset, _center.b - (topOffset + 1))
 					) {
+						// potential top right
+
 						topOffset++;
 					} else {
 						topFound = true;
@@ -461,12 +451,13 @@ library DotnuggV1MiddleOut {
 				}
 				if (!bottomFound) {
 					if (
-						_center.b + bottomOffset < matrix.height - 1 &&
-						matrix.version.bigMatrixHasPixelAt(_center.a - sideOffset, _center.b + (bottomOffset + 1)) &&
+						_center.b + bottomOffset < matrix.height - 1
+							&& matrix.version.bigMatrixHasPixelAt(_center.a - sideOffset, _center.b + (bottomOffset + 1))
 						// potential bot left
-						matrix.version.bigMatrixHasPixelAt(_center.a + sideOffset, _center.b + (bottomOffset + 1))
-						// potenetial bot right
+						&& matrix.version.bigMatrixHasPixelAt(_center.a + sideOffset, _center.b + (bottomOffset + 1))
 					) {
+						// potenetial bot right
+
 						bottomOffset++;
 					} else {
 						bottomFound = true;

@@ -7,8 +7,10 @@ import {DotnuggV1Lib, IDotnuggV1} from "git.nugg.xyz/dotnugg/src/DotnuggV1Lib.so
 /// @title DotnuggV1Reader
 /// @author nugg.xyz - danny7even and dub6ix - 2022
 /// @author inspired by 0xSequence's implemenation of
-///      [ SSTORE2.sol : MIT ] - https://github.com/0xsequence/sstore2/blob/0a28fe61b6e81de9a05b462a24b9f4ba8c70d5b7/contracts/SSTORE2.sol
-///      [ Create3.sol : MIT ] - https://github.com/0xsequence/create3/blob/acc4703a21ec1d71dc2a99db088c4b1f467530fd/contracts/Create3.sol
+/// [ SSTORE2.sol : MIT ] -
+/// https://github.com/0xsequence/sstore2/blob/0a28fe61b6e81de9a05b462a24b9f4ba8c70d5b7/contracts/SSTORE2.sol
+/// [ Create3.sol : MIT ] -
+/// https://github.com/0xsequence/create3/blob/acc4703a21ec1d71dc2a99db088c4b1f467530fd/contracts/Create3.sol
 library DotnuggV1Storage {
 	using DotnuggV1Lib for IDotnuggV1;
 
@@ -101,7 +103,7 @@ library DotnuggV1Storage {
 
 		require(proxy != address(0), "PROXY_CREATE_FAILED");
 
-		(bool fileDeployed, ) = proxy.call(data);
+		(bool fileDeployed,) = proxy.call(data);
 
 		require(fileDeployed, "dotnugg file deploy failed");
 
